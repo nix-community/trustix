@@ -1,0 +1,84 @@
+* Trustix - A new model for Nix binary substitutions
+
+** Problem description
+The Nix binary substituters are a single source of failure in the chain of trust when delivering binaries to Nix users.
+This is problematic for several reasons:
+
+- Getting code execution on the [[https://hydra.nixos.org/][NixOS Hydra]] build machines means it's possible to upload backdoored builds.
+And the way https://cache.nixos.org is set up does not make key-rolling easy.
+This means that a key compromise would realistically mean that _all_ packages would have to be rebuilt or garbage collected.
+
+- The NixOS Hydra _hardware_ may not be considered trustworthy by some more security conscious users.
+
+** Trustix design
+=Trustix= aims to solve this problem by allowing distributed trust & trust agility, much in the same way [[https://en.wikipedia.org/wiki/Convergence_(SSL)][Convergence]] attempted to do for TLS.
+
+This is achieved through the following methodology:
+*** Each builder is associated with public-private key pair
+*** In a post-build hook the output hash (NAR hash) of the build is uploaded to a ledger
+
+This allows a user to:
+- Trust binary substitutions on an M-of-N basis
+Let's say we have 4 builders configured: =Alice=, =Bob=, =Chuck= & =Dan=.
+We have configured =Trustix= to require a 3/4 majority for a build to be trusted.
+
+=Alice=, =Bob=, & =Dan= have all built the =hello= derivation but =Chuck= has not
+All 3 builders have arrived at the same output hash.
+
+This build can now be considered trusted and we can use the binary substitution.
+
+- Automatically identify misbehaving builders
+Let's say again that we have 4 builders configured: =Alice=, =Bob=, =Chuck= & =Dan=.
+
+=Alice=, =Bob=, =Chuck= & =Dan= have all built the =hello= derivation but has not arrived at the same output hash!
+We can now identify that =Chuck= is up to no good and may decide to distrust this builder from future substutions completely.
+
+- Track build reproducability across a large number of builders
+As a nice side-effect of the systems general design we can now track reproducability across all builders participating in the global namespace.
+
+** Implementation details
+*** Built on Ethereum
+This does not strictly require a blockchain but it has some interesting properties for our use case such as:
+
+**** All builders can easily participate in a single global namespace
+This increases discoverability and may further facilitate reproducible builds tracking.
+
+**** Immutability
+Build hashes can never be removed from the ledger and can never be altered.
+
+** Notes on non-reproducible builds
+Non-reproducible builds will have a large degree of hash mismatches and will never be substituted.
+
+** Hacking
+
+*** Dependencies
+All dependencies for the project are in [[./shell.nix][shell.nix]].
+All you need to do to start hacking is:
+#+begin_src bash
+nix-shell
+#+end_src
+Or use [[https://direnv.net/][direnv]] to load the Nix environment.
+
+*** Running the project
+We are using a [[https://heroku.com][Heroku]] style =Procfile= for local development.
+Simply run:
+#+begin_src bash
+hivemind
+#+end_src
+to run the project in watch-mode.
+
+** Components
+*** Daemon
+- Receives hashes over a UNIX domain socket
+- Publishes said hashes on the chain
+- Reacts to blockchain events and populate local database
+- Provides an API for querying the state of the network
+
+*** Binary cache frontend
+- Queries daemon for concencus
+- Re-signs narinfo Sig using digest from chain
+- Races upstream binary caches to fetch NAR
+
+*** CLI
+- Push built hashes to the chain
+- Possible query the daemon for concencus

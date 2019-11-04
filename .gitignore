@@ -1,0 +1,3 @@
+*.sock
+/trustix
+/registry/registry.go
