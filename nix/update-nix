@@ -1,0 +1,7 @@
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash -p curl jq nix
+set -euxo pipefail
+
+commit_sha=$(curl 'https://api.github.com/repos/nixos/nixpkgs-channels/commits?sha=nixos-unstable-small' | jq -r 'first.sha')
+digest=$(nix-prefetch-url --unpack "https://github.com/nixos/nixpkgs-channels/archive/${commit_sha}.tar.gz")
+echo "{\"rev\": \"${commit_sha}\", \"sha256\": \"${digest}\"}" > nixpkgs.json

@@ -11,26 +11,26 @@ let
 
   inherit (pkgs) stdenv buildGoPackage darwin;
 
-in buildGoPackage {
-  pname = "trustix";
-  version = "git";
+in null # buildGoPackage {
+#   pname = "trustix";
+#   version = "git";
 
-  goDeps = ./deps.nix;
+#   goDeps = ./deps.nix;
 
-  goPackagePath = "github.com/adisbladis/trustix";
-  # Fix for usb-related segmentation faults on darwin
-  propagatedBuildInputs =
-    stdenv.lib.optionals stdenv.isDarwin [ darwin.libobjc darwin.IOKit ];
+#   goPackagePath = "github.com/adisbladis/trustix";
+#   # Fix for usb-related segmentation faults on darwin
+#   propagatedBuildInputs =
+#     stdenv.lib.optionals stdenv.isDarwin [ darwin.libobjc darwin.IOKit ];
 
-  nativeBuildInputs = [ pkgs.go-ethereum pkgs.solc ];
+#   nativeBuildInputs = [ pkgs.go-ethereum pkgs.solc ];
 
-  # Fixes Cgo related build failures (see https://github.com/NixOS/nixpkgs/issues/25959 )
-  hardeningDisable = [ "fortify" ];
+#   # Fixes Cgo related build failures (see https://github.com/NixOS/nixpkgs/issues/25959 )
+#   hardeningDisable = [ "fortify" ];
 
-  src = gitignoreSource ./.;
+#   src = gitignoreSource ./.;
 
-  preConfigure = ''
-    make contract
-  '';
+#   preConfigure = ''
+#     make contract
+#   '';
 
-}
+# }
