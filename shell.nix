@@ -15,6 +15,7 @@ in pkgs.mkShell {
   ];
 
   TRILLIAN_SCHEMA = "${pkgs.trillian.src}/storage/mysql/schema/storage.sql";
+  MYSQL_BASEDIR = pkgs.mysql;
 
   MYSQL_ROOT_PASSWORD = "trustix-test-log";
   MYSQL_DATABASE = "test";

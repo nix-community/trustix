@@ -1,4 +1,4 @@
-.PHONY: contract run-contract all
+.PHONY: all build nix test run-build run-test
 
 all: build
 
@@ -17,3 +17,6 @@ run-build:
 
 run-test:
 	reflex -g trustix make test
+
+run-mysql:
+	./dev/mysql

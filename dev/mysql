@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+datadir=$WORKDIR/mysql
+socket=$WORKDIR/mysql.sock
+
+mkdir -p $datadir
+
+mysql_install_db --basedir $MYSQL_BASEDIR --datadir $datadir --socket $socket
+exec mysqld --basedir $MYSQL_BASEDIR --datadir $datadir --socket $socket
