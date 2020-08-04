@@ -24,6 +24,10 @@ in buildGoModule {
     "server/trillian_log_server"
     "server/trillian_log_signer"
     "server/trillian_map_server"
+    "cmd/createtree"
+    "cmd/deletetree"
+    "cmd/get_tree_public_key"
+    "cmd/updatetree"
   ];
 
   meta = with lib; {

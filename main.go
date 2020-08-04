@@ -1,34 +1,67 @@
-package main // import "github.com/adisbladis/trustix"
+package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
+	"time"
+
+	"github.com/google/trillian"
+
+	"google.golang.org/grpc"
+)
+
+const (
+	serviceName = "image-transparency-server"
+)
+
+var (
+	tLogEndpoint = flag.String("tlog_endpoint", "", "The gRPC endpoint of the Trillian Log Server.")
+	tLogID       = flag.Int64("tlog_id", 0, "Trillian Log ID")
 )
 
 func main() {
+	flag.Parse()
 
-	fmt.Println("HELLO")
+	// Establish gRPC connection w/ Trillian Log Server
+	log.Printf("[main] Establishing connection w/ Trillian Log Server [%s]", *tLogEndpoint)
+	conn, err := grpc.Dial(*tLogEndpoint, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
 
-	// contractAddr := common.HexToAddress("0x21e6fc92f93c8a1bb41e2be64b4e1f88a54d3576")
-	// // Fake derivation hash
-	// drvHash := sha256.Sum256([]byte("fakeDerivationHash"))
-	// // Fake signer address
-	// signer := common.HexToAddress("0x21e6fc92f93c8a1bb41e2be64b4e1f88a54d3576")
+	// Create a Trillian Log Server client
+	log.Println("[main] Creating new Trillian Log Client")
+	tLogClient := trillian.NewTrillianLogClient(conn)
 
-	// conn, err := ethclient.Dial("./geth.sock")
-	// if err != nil {
-	// 	log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-	// }
+	// Eventually this personality will be a server
+	log.Printf("[main] Creating Server using LogID [%d]", *tLogID)
+	server := newServer(tLogClient, *tLogID)
 
-	// // Instantiate the contract at known address
-	// registry, err := registry.NewNarRegistry(contractAddr, conn)
-	// if err != nil {
-	// 	log.Fatalf("Failed to instantiate a NarRegistry contract: %v", err)
-	// }
+	// Leaves comprise a primary LeafValue (thing) and may have associated ExtraData(extra)
+	// The LeafValue will become the hashed value for a node in the Merkle Tree
+	log.Println("[main] Creating a 'Thing' and something 'Extra'")
+	thing := newThing(fmt.Sprintf("[%s] Thing", time.Now().Format(time.RFC3339)))
+	extra := newExtra("Extra")
+	fmt.Println(thing)
 
-	// narInfoHash, err := registry.LookupNarInfoHash(nil, signer, drvHash)
-	// if err != nil {
-	// 	log.Fatalf("Failed to retrieve narinfo hash: %v", err)
-	// }
-	// fmt.Println("Hash: ", narInfoHash)
+	// Eventually it will be convenient to explicit Request and Response types
+	resp := &Response{}
 
+	// Try to put this Request (Thing+Extra) in the Log
+	log.Println("[main] Submitting it for inclusion in the Trillian Log")
+	resp, err = server.put(&Request{
+		thing: *thing,
+		extra: *extra,
+	})
+	log.Printf("[main] put: %s", resp.status)
+
+	// Try to get this Request (Thing+Extra) from the Log
+	log.Println("[main] Retrieving it from the Trillian Log")
+	resp, err = server.get(&Request{
+		thing: *thing,
+		extra: *extra,
+	})
+	log.Printf("[main] get: %s", resp.status)
 }

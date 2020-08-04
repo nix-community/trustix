@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+until echo | mysql --socket $WORKDIR/mysql.sock
+do
+  printf "."
+  sleep 1
+done
