@@ -10,7 +10,6 @@ type Extra struct {
 }
 
 func newExtra(name string) *Extra {
-	log.Printf("[extra:new] Creating: %s", name)
 	return &Extra{
 		name: name,
 	}
@@ -18,6 +17,5 @@ func newExtra(name string) *Extra {
 
 // Marshal Extra.name into []byte
 func (e *Extra) Marshal() ([]byte, error) {
-	log.Printf("[extra:marshal] Marshaling: %s", e.name)
 	return []byte(e.name), nil
 }

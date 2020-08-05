@@ -11,10 +11,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	serviceName = "image-transparency-server"
-)
-
 var (
 	tLogEndpoint = flag.String("tlog_endpoint", "", "The gRPC endpoint of the Trillian Log Server.")
 	tLogID       = flag.Int64("tlog_id", 0, "Trillian Log ID")

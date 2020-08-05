@@ -37,14 +37,10 @@ We can now identify that =Chuck= is up to no good and may decide to distrust thi
 As a nice side-effect of the systems general design we can now track reproducability across all builders participating in the global namespace.
 
 ** Implementation details
-*** Built on Ethereum
-This does not strictly require a blockchain but it has some interesting properties for our use case such as:
-
-**** All builders can easily participate in a single global namespace
-This increases discoverability and may further facilitate reproducible builds tracking.
-
-**** Immutability
-Build hashes can never be removed from the ledger and can never be altered.
+*** Built on Google Trillian
+Google Trillian is a cryptographically verifiable data store that uses a RDBMS for it's backing store.
+The data structure is a merkle tree.
+This also means that a log is immutable.
 
 ** Notes on non-reproducible builds
 Non-reproducible builds will have a large degree of hash mismatches and will never be substituted.
@@ -82,3 +78,7 @@ to run the project in watch-mode.
 *** CLI
 - Push built hashes to the chain
 - Possible query the daemon for concencus
+
+*** Reproducability observatory
+An added bonus of this moadel is that we can track reproducability over _all_ of Nixpkgs in a way that outsources verification to the community.
+This is an improvement over https://r13y.com/ in that we can track a larger set of packages more easily over time (and run on a much more diverse set of hardware).
