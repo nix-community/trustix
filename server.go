@@ -22,6 +22,7 @@ func newServer(client trillian.TrillianLogClient, logID int64) *server {
 		logID:  logID,
 	}
 }
+
 func (s *server) put(r *Request) (*Response, error) {
 	log.Println("[server:put] Entered")
 
@@ -63,6 +64,7 @@ func (s *server) put(r *Request) (*Response, error) {
 		status: "ok",
 	}, nil
 }
+
 func (s *server) get(r *Request) (*Response, error) {
 	log.Println("[server:get] Entered")
 
