@@ -1,9 +1,5 @@
 package main
 
-import (
-	"log"
-)
-
 // Extra is a type that corresponds to Trillian Log ExtraData
 type Extra struct {
 	name string
