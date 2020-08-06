@@ -19,6 +19,10 @@ var (
 func main() {
 	flag.Parse()
 
+	if *tLogEndpoint == "" {
+		panic("Missing log endpoint")
+	}
+
 	// Establish gRPC connection w/ Trillian Log Server
 	log.Printf("[main] Establishing connection w/ Trillian Log Server [%s]", *tLogEndpoint)
 	conn, err := grpc.Dial(*tLogEndpoint, grpc.WithInsecure())
