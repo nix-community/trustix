@@ -1,6 +1,8 @@
 let
   pkgs = import ./nix;
 
+  pythonEnv = pkgs.python3.withPackages(ps: []);
+
 in pkgs.mkShell {
 
   buildInputs = [
@@ -8,6 +10,9 @@ in pkgs.mkShell {
     pkgs.reflex  # File watcher utility
     pkgs.go
     pkgs.vgo2nix
+
+    # For development scripts
+    pythonEnv
 
     # Data store
     pkgs.mariadb

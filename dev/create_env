@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+while true; do
+    log_id=$($DIR/log_create)
+    if test $? -eq 0; then
+        echo "LOG_ID=$log_id" > $DIR/../.environment
+        break
+    fi
+    sleep 1
+done
+
+while true; do
+    sleep 3600
+done

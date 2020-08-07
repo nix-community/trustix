@@ -3,12 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
-	"time"
-
 	"github.com/google/trillian"
-
 	"google.golang.org/grpc"
+	"log"
+	"os"
+	"strconv"
+	"time"
 )
 
 var (
@@ -19,13 +19,28 @@ var (
 func main() {
 	flag.Parse()
 
+	logEndpoint := *tLogEndpoint
 	if *tLogEndpoint == "" {
-		panic("Missing log endpoint")
+		logEndpoint = ":8090"
+	}
+
+	logID := *tLogID
+	if logID == 0 {
+		envLogId := os.Getenv("LOG_ID")
+		if envLogId == "" {
+			envLogId = "0"
+		}
+		iEnvLogID, _ := strconv.Atoi(envLogId)
+		logID = int64(iEnvLogID)
+
+		if logID == 0 {
+			panic("logID 0 is invalid")
+		}
 	}
 
 	// Establish gRPC connection w/ Trillian Log Server
 	log.Printf("[main] Establishing connection w/ Trillian Log Server [%s]", *tLogEndpoint)
-	conn, err := grpc.Dial(*tLogEndpoint, grpc.WithInsecure())
+	conn, err := grpc.Dial(logEndpoint, grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,8 +51,8 @@ func main() {
 	tLogClient := trillian.NewTrillianLogClient(conn)
 
 	// Eventually this personality will be a server
-	log.Printf("[main] Creating Server using LogID [%d]", *tLogID)
-	server := newServer(tLogClient, *tLogID)
+	log.Printf("[main] Creating Server using LogID [%d]", logID)
+	server := newServer(tLogClient, logID)
 
 	// Leaves comprise a primary LeafValue (thing) and may have associated ExtraData(extra)
 	// The LeafValue will become the hashed value for a node in the Merkle Tree

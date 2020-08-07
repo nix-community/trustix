@@ -9,7 +9,7 @@ nix:
 	vgo2nix
 
 test:
-	./trustix
+	./dev/test
 
 # All commands prefixed with run- are meant to be implementing some kind of watch-mode for development
 run-build:
