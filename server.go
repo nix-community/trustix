@@ -24,16 +24,13 @@ func newServer(client trillian.TrillianLogClient, logID int64) *server {
 }
 
 func (s *server) put(r *Request) (*Response, error) {
-	log.Println("[server:put] Entered")
 
-	// Marshal a Thing (actually just 'name' which is a string) into []byte
-	// Eventually we'll marshal a more interesting data structure
-	leafValue, err := r.thing.Marshal()
+	log.Println("[server:put] Entered")
+	leafValue, err := r.input.Marshal()
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Marshal an Extra (again)
-	extraData, err := r.extra.Marshal()
+	extraData, err := r.output.Marshal()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,9 +65,7 @@ func (s *server) put(r *Request) (*Response, error) {
 func (s *server) get(r *Request) (*Response, error) {
 	log.Println("[server:get] Entered")
 
-	// Marshal a Thing (actually just 'name' which is a string) into []byte
-	// Eventually we'll marshal a more interesting data structure
-	leafValue, err := r.thing.Marshal()
+	leafValue, err := r.input.Marshal()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,17 +73,16 @@ func (s *server) get(r *Request) (*Response, error) {
 	// Trillian uses its own (rfc6962) hasher
 	hasher := rfc6962.DefaultHasher
 	leafHash := hasher.HashLeaf(leafValue)
-	// Output the hashed value (conventionally hex is used)
+	// Output the hashed value (hex)
 	log.Printf("[server:get] hash: %x\n", leafHash)
 
-	// Create the request
-	rqst := &trillian.GetLeavesByHashRequest{
+	req := &trillian.GetLeavesByHashRequest{
 		LogId:    s.logID,
 		LeafHash: [][]byte{leafHash},
 	}
 
 	// Submit the request to the Trillian Log Server
-	resp, err := s.client.GetLeavesByHash(context.Background(), rqst)
+	resp, err := s.client.GetLeavesByHash(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -96,6 +90,8 @@ func (s *server) get(r *Request) (*Response, error) {
 	// Iterate over the responses; there should be 0 or 1
 	for i, logLeaf := range resp.GetLeaves() {
 		leafValue := logLeaf.GetLeafValue()
+		extraData := logLeaf.GetExtraData()
+		log.Printf("[server:get] %d: %s", i, extraData)
 		log.Printf("[server:get] %d: %s", i, leafValue)
 	}
 
