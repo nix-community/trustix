@@ -13,83 +13,83 @@ import (
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion7
 
-// GreeterClient is the client API for Greeter service.
+// TrustixClient is the client API for Trustix service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GreeterClient interface {
+type TrustixClient interface {
 	SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitReply, error)
 }
 
-type greeterClient struct {
+type trustixClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
-	return &greeterClient{cc}
+func NewTrustixClient(cc grpc.ClientConnInterface) TrustixClient {
+	return &trustixClient{cc}
 }
 
-func (c *greeterClient) SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitReply, error) {
+func (c *trustixClient) SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitReply, error) {
 	out := new(SubmitReply)
-	err := c.cc.Invoke(ctx, "/trustix.Greeter/SubmitMapping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/trustix.Trustix/SubmitMapping", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GreeterServer is the server API for Greeter service.
-// All implementations must embed UnimplementedGreeterServer
+// TrustixServer is the server API for Trustix service.
+// All implementations must embed UnimplementedTrustixServer
 // for forward compatibility
-type GreeterServer interface {
+type TrustixServer interface {
 	SubmitMapping(context.Context, *SubmitRequest) (*SubmitReply, error)
-	mustEmbedUnimplementedGreeterServer()
+	mustEmbedUnimplementedTrustixServer()
 }
 
-// UnimplementedGreeterServer must be embedded to have forward compatible implementations.
-type UnimplementedGreeterServer struct {
+// UnimplementedTrustixServer must be embedded to have forward compatible implementations.
+type UnimplementedTrustixServer struct {
 }
 
-func (UnimplementedGreeterServer) SubmitMapping(context.Context, *SubmitRequest) (*SubmitReply, error) {
+func (UnimplementedTrustixServer) SubmitMapping(context.Context, *SubmitRequest) (*SubmitReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitMapping not implemented")
 }
-func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
+func (UnimplementedTrustixServer) mustEmbedUnimplementedTrustixServer() {}
 
-// UnsafeGreeterServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GreeterServer will
+// UnsafeTrustixServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TrustixServer will
 // result in compilation errors.
-type UnsafeGreeterServer interface {
-	mustEmbedUnimplementedGreeterServer()
+type UnsafeTrustixServer interface {
+	mustEmbedUnimplementedTrustixServer()
 }
 
-func RegisterGreeterServer(s *grpc.Server, srv GreeterServer) {
-	s.RegisterService(&_Greeter_serviceDesc, srv)
+func RegisterTrustixServer(s *grpc.Server, srv TrustixServer) {
+	s.RegisterService(&_Trustix_serviceDesc, srv)
 }
 
-func _Greeter_SubmitMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Trustix_SubmitMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubmitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).SubmitMapping(ctx, in)
+		return srv.(TrustixServer).SubmitMapping(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.Greeter/SubmitMapping",
+		FullMethod: "/trustix.Trustix/SubmitMapping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).SubmitMapping(ctx, req.(*SubmitRequest))
+		return srv.(TrustixServer).SubmitMapping(ctx, req.(*SubmitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Greeter_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "trustix.Greeter",
-	HandlerType: (*GreeterServer)(nil),
+var _Trustix_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "trustix.Trustix",
+	HandlerType: (*TrustixServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "SubmitMapping",
-			Handler:    _Greeter_SubmitMapping_Handler,
+			Handler:    _Trustix_SubmitMapping_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

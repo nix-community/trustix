@@ -4,7 +4,7 @@ option go_package = "github.com/tweag/trustix/proto";
 
 package trustix;
 
-service Greeter {
+service Trustix {
   rpc SubmitMapping (SubmitRequest) returns (SubmitReply) {}
 }
 
