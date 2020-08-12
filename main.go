@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/google/trillian"
 	"google.golang.org/grpc"
 	"log"
@@ -50,7 +49,6 @@ func main() {
 		}
 	}
 
-	// Establish gRPC connection w/ Trillian Log Server
 	log.Printf("[main] Establishing connection w/ Trillian Log Server [%s]", *tLogEndpoint)
 	conn, err := grpc.Dial(*tLogEndpoint, grpc.WithInsecure())
 	if err != nil {
@@ -62,31 +60,18 @@ func main() {
 	log.Println("[main] Creating new Trillian Log Client")
 	tLogClient := trillian.NewTrillianLogClient(conn)
 
-	// Eventually this personality will be a server
 	log.Printf("[main] Creating Server using LogID [%d]", logID)
 	server := newServer(tLogClient, logID)
 
-	// Leaves comprise a primary LeafValue (thing) and may have associated ExtraData(extra)
-	// The LeafValue will become the hashed value for a node in the Merkle Tree
-	log.Println("[main] Creating a 'Thing' and something 'Extra'")
-	value := newInput(inputHash)
-	// thing := newThing(/nix/store/x9gyyf3ish15fdvdj3lx4vqxw3j9h865-hello-2.10.drv
-	// 	fmt.Sprintf("[%s] Thing", time.Now().Format(time.RFC3339)))
-	output := newOutput(outputHash)
-	fmt.Println(value)
-
-	// Eventually it will be convenient to explicit Request and Response types
+	value := newInput(inputHash, outputHash)
 	resp := &Response{}
 
-	// Try to put this Request (Thing+Extra) in the Log
 	log.Println("[main] Submitting it for inclusion in the Trillian Log")
 	resp, err = server.put(&Request{
-		input:  *value,
-		output: *output,
+		input: *value,
 	})
 	log.Printf("[main] put: %s", resp.status)
 
-	// Try to get this Request (Thing+Extra) from the Log
 	log.Println("[main] Retrieving it from the Trillian Log")
 	resp, err = server.get(&Request{
 		input: *value,
