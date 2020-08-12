@@ -1,8 +1,7 @@
 package main
 
 type Request struct {
-	input  Input
-	output Output
+	input Input
 }
 
 type Response struct {

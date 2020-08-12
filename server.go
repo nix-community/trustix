@@ -16,7 +16,6 @@ type server struct {
 }
 
 func newServer(client trillian.TrillianLogClient, logID int64) *server {
-	log.Println("[server] Creating")
 	return &server{
 		client: client,
 		logID:  logID,
@@ -30,14 +29,11 @@ func (s *server) put(r *Request) (*Response, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	extraData, err := r.output.Marshal()
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	leaf := &trillian.LogLeaf{
 		LeafValue: leafValue,
-		ExtraData: extraData,
 	}
+
 	rqst := &trillian.QueueLeafRequest{
 		LogId: s.logID,
 		Leaf:  leaf,
@@ -70,10 +66,8 @@ func (s *server) get(r *Request) (*Response, error) {
 		log.Fatal(err)
 	}
 
-	// Trillian uses its own (rfc6962) hasher
 	hasher := rfc6962.DefaultHasher
 	leafHash := hasher.HashLeaf(leafValue)
-	// Output the hashed value (hex)
 	log.Printf("[server:get] hash: %x\n", leafHash)
 
 	req := &trillian.GetLeavesByHashRequest{
@@ -81,13 +75,11 @@ func (s *server) get(r *Request) (*Response, error) {
 		LeafHash: [][]byte{leafHash},
 	}
 
-	// Submit the request to the Trillian Log Server
 	resp, err := s.client.GetLeavesByHash(context.Background(), req)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Iterate over the responses; there should be 0 or 1
 	for i, logLeaf := range resp.GetLeaves() {
 		leafValue := logLeaf.GetLeafValue()
 		extraData := logLeaf.GetExtraData()
