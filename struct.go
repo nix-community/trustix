@@ -20,17 +20,24 @@ func (t *Input) Marshal() ([]byte, error) {
 	return []byte(t.inputHash), nil
 }
 
-// Corresponds to Trillian Log ExtraData
+// Output - Corresponds to Trillian Log ExtraData
 type Output struct {
-	name string
+	outputHash string
 }
 
-func newOutput(name string) *Output {
+// Create a new output struct from hash
+// This is a model we may actually want to extend with extra metadata
+// at some point
+//
+// Something that might be useful is to separate the hashing algo
+// into a separate field, but for now this is just the NarHash
+func newOutput(outputHash string) *Output {
 	return &Output{
-		name: name,
+		outputHash: outputHash,
 	}
 }
 
+// Marshal - Convenience method in case model is ever more complex
 func (e *Output) Marshal() ([]byte, error) {
-	return []byte(e.name), nil
+	return []byte(e.outputHash), nil
 }
