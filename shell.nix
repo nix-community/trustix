@@ -11,6 +11,8 @@ in pkgs.mkShell {
     pkgs.go
     pkgs.vgo2nix
 
+    pkgs.protobuf
+
     # For development scripts
     pythonEnv
 
