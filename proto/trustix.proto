@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "github.com/tweag/trustix";
+
+package trustix;
+
+service Greeter {
+  rpc SubmitMapping (SubmitRequest) returns (SubmitReply) {}
+}
+
+message SubmitRequest {
+  bytes InputHash = 1;
+  bytes OutputHash = 2;
+}
+
+message SubmitReply {
+  enum Status {
+    OK = 0;
+  }
+  Status status = 1;
+}
