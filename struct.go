@@ -1,24 +1,38 @@
 package main
 
+import (
+	"encoding/hex"
+)
+
 // Input - Corresponds to Trillian Log LeafValue
 type Input struct {
-	inputHash  string
-	outputHash string
+	inputHash  []byte
+	outputHash []byte
 }
 
 // Create a new Input instance from inputHash string
 func newInput(inputHash string, outputHash string) *Input {
+	i, _ := hex.DecodeString(inputHash)
+	o, _ := hex.DecodeString(outputHash)
+
 	return &Input{
-		inputHash:  inputHash,
-		outputHash: outputHash,
+		inputHash:  i,
+		outputHash: o,
 	}
 }
 
-// Marshal - A convenience method
-// While we probably don't want any extra fields in the input
-// this method exists in case we want to extend the data type
-// at some point later on
-func (t *Input) Marshal() ([]byte, error) {
+func (t *Input) IdentityHash() []byte {
+	return t.inputHash[:]
+}
 
-	return []byte(t.inputHash), nil
+func (t *Input) OutputHash() []byte {
+	return t.outputHash[:]
+}
+
+func (t *Input) IdentityHashString() string {
+	return hex.EncodeToString(t.inputHash)
+}
+
+func (t *Input) OutputHashString() string {
+	return hex.EncodeToString(t.outputHash)
 }

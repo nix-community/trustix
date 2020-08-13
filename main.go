@@ -70,6 +70,10 @@ func main() {
 	resp, err = server.put(&Request{
 		input: *value,
 	})
+	if err != nil {
+		panic(err)
+	}
+
 	log.Printf("[main] put: %s", resp.status)
 
 	log.Println("[main] Retrieving it from the Trillian Log")

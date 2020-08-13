@@ -24,14 +24,9 @@ func newServer(client trillian.TrillianLogClient, logID int64) *server {
 
 func (s *server) put(r *Request) (*Response, error) {
 
-	log.Println("[server:put] Entered")
-	leafValue, err := r.input.Marshal()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	leaf := &trillian.LogLeaf{
-		LeafValue: leafValue,
+		LeafIdentityHash: r.input.IdentityHash(),
+		LeafValue:        r.input.OutputHash(),
 	}
 
 	rqst := &trillian.QueueLeafRequest{
@@ -50,7 +45,7 @@ func (s *server) put(r *Request) (*Response, error) {
 	if c == codes.OK {
 		log.Println("[server:put] ok")
 	} else if c == codes.AlreadyExists {
-		log.Printf("[server:put] %s already Exists", leafValue)
+		return nil, fmt.Errorf("Input hash %s already exists", string(r.input.IdentityHashString()))
 	}
 
 	return &Response{
@@ -61,17 +56,15 @@ func (s *server) put(r *Request) (*Response, error) {
 func (s *server) get(r *Request) (*Response, error) {
 	log.Println("[server:get] Entered")
 
-	leafValue, err := r.input.Marshal()
-	if err != nil {
-		log.Fatal(err)
-	}
+	leafValue := r.input.OutputHash()
 
 	hasher := rfc6962.DefaultHasher
 	leafHash := hasher.HashLeaf(leafValue)
 	log.Printf("[server:get] hash: %x\n", leafHash)
 
 	req := &trillian.GetLeavesByHashRequest{
-		LogId:    s.logID,
+		LogId: s.logID,
+		// LeafIdentityHash: r.input.IdentityHash(),
 		LeafHash: [][]byte{leafHash},
 	}
 
