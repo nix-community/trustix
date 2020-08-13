@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"flag"
+	"fmt"
 	"github.com/google/trillian"
 	pb "github.com/tweag/trustix/proto"
 	"google.golang.org/grpc"
@@ -11,6 +12,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"time"
 )
 
 var (
@@ -18,6 +20,7 @@ var (
 	tLogID       = flag.Int64("tlog_id", 0, "Trillian Log ID")
 	tInputHash   = flag.String("input_hash", "", "The input hash (derivation hash)")
 	tOutputHash  = flag.String("output_hash", "", "The output hash (output hash)")
+	action       = flag.String("action", "submit", "Operation mode (submit/daemon)")
 )
 
 type pbServer struct {
@@ -25,9 +28,14 @@ type pbServer struct {
 	trillianServer *server
 }
 
-func (s *pbServer) SayHello(ctx context.Context, in *pb.SubmitRequest) (*pb.SubmitReply, error) {
+func (s *pbServer) SubmitMapping(ctx context.Context, in *pb.SubmitRequest) (*pb.SubmitReply, error) {
 	inputHash := hex.EncodeToString(in.InputHash)
 	outputHash := hex.EncodeToString(in.OutputHash)
+
+	fmt.Println(inputHash)
+	fmt.Println(outputHash)
+
+	fmt.Println(in)
 
 	value := newInput(inputHash, outputHash)
 	resp := &Response{}
@@ -72,31 +80,87 @@ func main() {
 		}
 	}
 
-	log.Printf("[main] Establishing connection w/ Trillian Log Server [%s]", *tLogEndpoint)
-	conn, err := grpc.Dial(*tLogEndpoint, grpc.WithInsecure())
-	if err != nil {
-		log.Fatal(err)
+	// if *action == "daemon"
+	switch *action {
+	case "daemon":
+
+		log.Printf("[main] Establishing connection w/ Trillian Log Server [%s]", *tLogEndpoint)
+		conn, err := grpc.Dial(*tLogEndpoint, grpc.WithInsecure())
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer conn.Close()
+
+		// Create a Trillian Log Server client
+		log.Println("[main] Creating new Trillian Log Client")
+		tLogClient := trillian.NewTrillianLogClient(conn)
+
+		log.Printf("[main] Creating Server using LogID [%d]", logID)
+		server := newServer(tLogClient, logID)
+
+		lis, err := net.Listen("tcp", port)
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+		s := grpc.NewServer()
+
+		pb.RegisterTrustixServer(s, &pbServer{
+			trillianServer: server,
+		})
+		if err := s.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	case "submit":
+
+		address := "localhost:8081"
+
+		inputHash := *tInputHash
+		outputHash := *tOutputHash
+
+		if inputHash == "" {
+			inputHash = os.Getenv("INPUT_HASH")
+			if inputHash == "" {
+				panic("Input hash cannot be empty")
+			}
+		}
+		if outputHash == "" {
+			outputHash = os.Getenv("OUTPUT_HASH")
+			if outputHash == "" {
+				panic("Output hash cannot be empty")
+			}
+		}
+
+		conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+		defer conn.Close()
+		c := pb.NewTrustixClient(conn)
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		inputHashBytes, err := hex.DecodeString(inputHash)
+		if err != nil {
+			panic(err)
+		}
+
+		outputHashBytes, err := hex.DecodeString(outputHash)
+		if err != nil {
+			panic(err)
+		}
+
+		r, err := c.SubmitMapping(ctx, &pb.SubmitRequest{
+			OutputHash: outputHashBytes,
+			InputHash:  inputHashBytes,
+		})
+		if err != nil {
+			log.Fatalf("could not greet: %v", err)
+		}
+
+		fmt.Println(r.Status)
+
+	default:
+		panic(fmt.Errorf("Action '%s' not supported", *action))
 	}
-	defer conn.Close()
-
-	// Create a Trillian Log Server client
-	log.Println("[main] Creating new Trillian Log Client")
-	tLogClient := trillian.NewTrillianLogClient(conn)
-
-	log.Printf("[main] Creating Server using LogID [%d]", logID)
-	server := newServer(tLogClient, logID)
-
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
-
-	pb.RegisterTrustixServer(s, &pbServer{
-		trillianServer: server,
-	})
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
-
 }
