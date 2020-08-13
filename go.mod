@@ -1,4 +1,4 @@
-module github.com/adisbladis/trustix
+module github.com/tweag/trustix
 
 go 1.12
 

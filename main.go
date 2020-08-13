@@ -1,10 +1,14 @@
-package main
+package main // import "github.com/tweag/trustix"
 
 import (
+	"context"
+	"encoding/hex"
 	"flag"
 	"github.com/google/trillian"
+	pb "github.com/tweag/trustix/proto"
 	"google.golang.org/grpc"
 	"log"
+	"net"
 	"os"
 	"strconv"
 )
@@ -16,8 +20,43 @@ var (
 	tOutputHash  = flag.String("output_hash", "", "The output hash (output hash)")
 )
 
+type pbServer struct {
+	pb.UnimplementedTrustixServer
+	trillianServer *server
+}
+
+func (s *pbServer) SayHello(ctx context.Context, in *pb.SubmitRequest) (*pb.SubmitReply, error) {
+	inputHash := hex.EncodeToString(in.InputHash)
+	outputHash := hex.EncodeToString(in.OutputHash)
+
+	value := newInput(inputHash, outputHash)
+	resp := &Response{}
+
+	log.Println("[main] Submitting it for inclusion in the Trillian Log")
+	resp, err := s.trillianServer.put(&Request{
+		input: *value,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("[main] put: %s", resp.status)
+
+	log.Println("[main] Retrieving it from the Trillian Log")
+	resp, err = s.trillianServer.get(&Request{
+		input: *value,
+	})
+	log.Printf("[main] get: %s", resp.status)
+
+	return &pb.SubmitReply{
+		Status: pb.SubmitReply_OK,
+	}, nil
+}
+
 func main() {
 	flag.Parse()
+
+	port := ":8081"
 
 	logID := *tLogID
 	if logID == 0 {
@@ -30,22 +69,6 @@ func main() {
 
 		if logID == 0 {
 			panic("logID 0 is invalid")
-		}
-	}
-
-	inputHash := *tInputHash
-	outputHash := *tOutputHash
-
-	if inputHash == "" {
-		inputHash = os.Getenv("INPUT_HASH")
-		if inputHash == "" {
-			panic("Input hash cannot be empty")
-		}
-	}
-	if outputHash == "" {
-		outputHash = os.Getenv("OUTPUT_HASH")
-		if outputHash == "" {
-			panic("Output hash cannot be empty")
 		}
 	}
 
@@ -63,22 +86,17 @@ func main() {
 	log.Printf("[main] Creating Server using LogID [%d]", logID)
 	server := newServer(tLogClient, logID)
 
-	value := newInput(inputHash, outputHash)
-	resp := &Response{}
-
-	log.Println("[main] Submitting it for inclusion in the Trillian Log")
-	resp, err = server.put(&Request{
-		input: *value,
-	})
+	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to listen: %v", err)
+	}
+	s := grpc.NewServer()
+
+	pb.RegisterTrustixServer(s, &pbServer{
+		trillianServer: server,
+	})
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
 
-	log.Printf("[main] put: %s", resp.status)
-
-	log.Println("[main] Retrieving it from the Trillian Log")
-	resp, err = server.get(&Request{
-		input: *value,
-	})
-	log.Printf("[main] get: %s", resp.status)
 }
