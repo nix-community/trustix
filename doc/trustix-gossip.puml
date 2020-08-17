@@ -1,0 +1,24 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam padding 2
+skinparam ParticipantPadding 10
+skinparam BoxPadding 20
+
+title Trustix gossip hub submission flow
+
+participant User
+participant Nix
+participant "Trustix Log" as Trustix
+participant "Gossip hub" as GossipHub
+
+User-->Nix: Instantiate `hello` from nixpkgs with git sha ff00ff
+User<--Nix: /nix/store/lzq1bv4y9zjr75rj7b4lixkf4l3ac0lr-hello-2.10.drv
+
+User-->Nix: Realise (substitute) /nix/store/lzq1bv4y9zjr75rj7b4lixkf4l3ac0lr-hello-2.10.drv\n (store hash 5rxgjmfa79psrfa6ynl7agywg3q1mavn)
+
+Nix-->User: Return OK
+
+User-->GossipHub: Push "I observed output hash <hash> for store hash 5rxgjmfa79psrfa6ynl7agywg3q1mavn"
+GossipHub-->GossipHub: Publish Signed Tree Head (STH) in Gossip Hub log
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml
+skinparam ParticipantPadding 0
+
+title Trustix user binary substitution flow
+
+participant User
+participant Nix
+participant Trustix
+participant "Trustix-builder1" as B1
+participant "Trustix-builder2" as B2
+participant "Trustix-builder3" as B3
+
+
+User-->Nix: Instantiate `hello` from nixpkgs with git sha ff00ff
+User<--Nix: /nix/store/lzq1bv4y9zjr75rj7b4lixkf4l3ac0lr-hello-2.10.drv
+
+User-->Nix: Realise (build) /nix/store/lzq1bv4y9zjr75rj7b4lixkf4l3ac0lr-hello-2.10.drv\n (store hash 5rxgjmfa79psrfa6ynl7agywg3q1mavn)
+
+Nix-->Trustix: Get narinfo for store hash 5rxgjmfa79psrfa6ynl7agywg3q1mavn
+
+Trustix-->B1: Give me the output hash of store hash 5rxgjmfa79psrfa6ynl7agywg3q1mavn
+B1-->Trustix: 201b6001a69044c84531db27ab6efb4d10ca2ef9b3976814666af90286043fa7
+deactivate B1
+
+Trustix-->B2: Give me the output hash of store hash 5rxgjmfa79psrfa6ynl7agywg3q1mavn
+B2-->Trustix: 201b6001a69044c84531db27ab6efb4d10ca2ef9b3976814666af90286043fa7
+deactivate B2
+
+Trustix-->B3: Give me the output hash of store hash 5rxgjmfa79psrfa6ynl7agywg3q1mavn
+B3-->Trustix: 201b6001a69044c84531db27ab6efb4d10ca2ef9b3976814666af90286043fa7
+deactivate B3
+
+Trustix-->Trustix: Is the hash 201b6001a69044c84531db27ab6efb4d10ca2ef9b3976814666af90286043fa7 \nreally the output for input hash 5rxgjmfa79psrfa6ynl7agywg3q1mavn ?
+
+alt Trustworthy build
+    Trustix-->Nix: Return narinfo (NAR (Nix archive) meta information) including hash
+    Nix-->Trustix: Download NAR
+    Trustix-->B1: Download NAR
+    Trustix-->Trustix: Verify NAR hash
+    Trustix-->Nix: Return NAR
+    Nix-->Nix: Install NAR into Nix store
+else Untrustworthy build
+    Trustix-->Nix: Return 404 for narinfo
+    Nix-->Nix: Build locally
+end
+
+Nix-->User: Return result
+
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam padding 2
+
+title Trustix log submission flow
+
+participant User
+participant Nix
+participant "Trustix post-build hook" as BuildHook
+participant "Trustix Log" as Trustix
+
+User-->Nix: Instantiate `hello` from nixpkgs with git sha ff00ff
+User<--Nix: /nix/store/lzq1bv4y9zjr75rj7b4lixkf4l3ac0lr-hello-2.10.drv
+
+User-->Nix: Realise (build) /nix/store/lzq1bv4y9zjr75rj7b4lixkf4l3ac0lr-hello-2.10.drv\n (store hash 5rxgjmfa79psrfa6ynl7agywg3q1mavn)
+
+Nix-->BuildHook: Submit 5rxgjmfa79psrfa6ynl7agywg3q1mavn
+
+BuildHook-->Trustix: Submit store hash 5rxgjmfa with output hash 0v1pkm7xg0gp5
+
+Trustix-->Trustix: Publish STH (sign log)
+
+Trustix-->BuildHook: OK
+BuildHook-->Nix: OK
+
+Nix-->User: Return OK
+
+@enduml
