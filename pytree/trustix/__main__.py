@@ -1,16 +1,10 @@
-import pygit2 as git
-import os.path
+from . import repo
 
-from . import lib
 
 if __name__ == '__main__':
-
     repo_path = "./repo"
+    name = "trustix"
+    email = "trustix@example.com"
 
-    r: git.Repository
-    if os.path.exists(repo_path):
-        r = lib.repo_open(repo_path)
-        print("Opened")
-    else:
-        r = lib.repo_create(repo_path)
-        print("Created")
+    r = repo.Repository(repo_path, name=name, email=email)
+    print(r)
