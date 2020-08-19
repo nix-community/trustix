@@ -42,27 +42,28 @@ class Repository:
 
         if os.path.exists(repo_path):
             self._repo = repo_open(repo_path)
-            self._tree = None
             self._commit = self._repo.head.resolve().target
+            self._tree = self._repo.get(self._commit).tree.id
 
         else:
+            self._commit = None
             self._repo = repo_create(repo_path)
             self._tree = self._repo.TreeBuilder().write()
-            self._commit = self.write_commit(message="Init log")
+            self.write_commit(message="Init log")
 
-    def write_commit(self, message: typing.Optional[str] = "", parent: typing.Optional[git.Oid] = None):
+    def write_commit(self, message: typing.Optional[str] = ""):
         now = int(time.time())
 
         parents: typing.List[git.Oid]
-        if parent:
-            parents = [ parent ]
+        if self._commit:
+            parents = [ self._commit ]
         else:
             parents = []
 
         sig = git.Signature(self._name, self._email, time=now)
 
-        self._repo.create_commit(
-            "refs/head/master",
+        self._commit = self._repo.create_commit(
+            "HEAD",
             sig,
             sig,
             message,
