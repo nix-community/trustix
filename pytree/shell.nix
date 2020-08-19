@@ -1,8 +1,20 @@
 { pkgs ? import <nixpkgs> {} }:
 
-pkgs.mkShell {
+let
+  pythonEnv = pkgs.poetry2nix.mkPoetryEnv {
+    projectDir = ./.;
+    overrides = pkgs.poetry2nix.overrides.withDefaults(self: super: {
+      pygit2 = super.pygit2.overridePythonAttrs(old: {
+        buildInputs = old.buildInputs ++ [
+          pkgs.libgit2
+        ];
+      });
+    });
+  };
+
+in pkgs.mkShell {
   buildInputs = [
-    pkgs.python3
     pkgs.poetry
+    pythonEnv
   ];
 }
