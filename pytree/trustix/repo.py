@@ -111,31 +111,6 @@ def recalculate_hash(repo, treebuilder, path):
     treebuilder.insert(path[0], subtree_oid, git.GIT_FILEMODE_TREE)
     return treebuilder.write()
 
-    # sub = path[0]
-    # print(sub)
-
-    # tree_oid = treebuilder.write()
-    # tree = repo.get(tree_oid)
-
-    # if path == tuple():
-    #     return
-
-    # path_s = os.path.sep.join(path[:-1])
-    # entry = tree[path_s]
-    # sub_treebuilder = repo.TreeBuilder(repo.get(entry.hex))
-
-    # m = hashlib.sha256()
-
-    # for e in entry:
-    #     node = b":::".join((e.name.encode(), e.read_raw()))
-    #     m.update(node)
-
-    # thing = repo.create_blob(m.hexdigest())
-    # sub_treebuilder.insert("hash", thing, git.GIT_FILEMODE_BLOB)
-    # subtree_oid = sub_treebuilder.write()
-
-    # treebuilder.insert(subtree_name, subtree_oid, git.GIT_FILEMODE_TREE)
-
 
 class Repository:
 
