@@ -38,11 +38,13 @@ def shard(input: str) -> typing.Tuple[str, ...]:
     """
     Decide where an input to the tree ends up
     """
-    depth = int(len(input) / 2)
+    # depth = int(len(input) / 2)
+    depth = 5
+
     return tuple(
         input[2 * i : 2 * i + 2]
         for i in range(depth)
-    )
+    ) + (input[2 * depth:],)
 
 
 def auto_insert(repo, treebuilder, path, thing, mode = git.GIT_FILEMODE_BLOB):

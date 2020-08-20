@@ -9,10 +9,11 @@ if __name__ == '__main__':
     r = repo.Repository(repo_path, name=name, email=email)
 
     from random import choice
-    from string import ascii_uppercase
+    from string import ascii_lowercase
 
     def rand_s(n):
-        return ''.join(choice(ascii_uppercase) for i in range(n))
+        return ''.join(choice(ascii_lowercase) for i in range(n))
 
-    for i in range(100):
+    for i in range(1000):
+        print(i)
         r.add_leaf(rand_s(32), rand_s(64).encode())
