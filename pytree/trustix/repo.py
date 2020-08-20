@@ -2,6 +2,7 @@ import pygit2 as git  # type: ignore
 import itertools
 import string
 import os.path
+import hashlib
 import typing
 import time
 
@@ -44,8 +45,7 @@ def shard(input: str) -> typing.Tuple[str, ...]:
     )
 
 
-def auto_insert(repo, treebuilder, path, thing, mode):
-    print(path)
+def auto_insert(repo, treebuilder, path, thing, mode = git.GIT_FILEMODE_BLOB):
     path_parts = path.split('/', 1)
     if len(path_parts) == 1:
         treebuilder.insert(path, thing, mode)
@@ -68,6 +68,73 @@ def auto_insert(repo, treebuilder, path, thing, mode):
     return treebuilder.write()
 
 
+def recalculate_hash(repo, treebuilder, path):
+
+    if path == tuple():
+        # Root hash
+        return treebuilder.write()
+
+    tree_oid = treebuilder.write()
+    tree = repo.get(tree_oid)
+
+    entry = tree[path[0]]
+
+    m = hashlib.sha256()
+    for e in sorted(entry, key=lambda x: x.name):
+        if e.name == "hash":
+            continue
+
+        content = b""
+
+        if e.filemode == git.GIT_FILEMODE_BLOB:
+            content = e.read_raw()
+        else:  # Subtree
+            try:
+                h = e["hash"]
+            except KeyError:
+                continue
+
+            content = h.read_raw()
+
+        node = b":::".join((e.name.encode(), e.read_raw()))
+        m.update(node)
+
+    hash_contents = repo.create_blob(m.hexdigest())
+    treebuilder.insert("hash", hash_contents, git.GIT_FILEMODE_BLOB)
+
+    existing_subtree = repo.get(entry.hex)
+    sub_treebuilder = repo.TreeBuilder(existing_subtree)
+
+    subtree_oid = recalculate_hash(repo, sub_treebuilder, path[1:])
+    treebuilder.insert(path[0], subtree_oid, git.GIT_FILEMODE_TREE)
+    return treebuilder.write()
+
+    # sub = path[0]
+    # print(sub)
+
+    # tree_oid = treebuilder.write()
+    # tree = repo.get(tree_oid)
+
+    # if path == tuple():
+    #     return
+
+    # path_s = os.path.sep.join(path[:-1])
+    # entry = tree[path_s]
+    # sub_treebuilder = repo.TreeBuilder(repo.get(entry.hex))
+
+    # m = hashlib.sha256()
+
+    # for e in entry:
+    #     node = b":::".join((e.name.encode(), e.read_raw()))
+    #     m.update(node)
+
+    # thing = repo.create_blob(m.hexdigest())
+    # sub_treebuilder.insert("hash", thing, git.GIT_FILEMODE_BLOB)
+    # subtree_oid = sub_treebuilder.write()
+
+    # treebuilder.insert(subtree_name, subtree_oid, git.GIT_FILEMODE_TREE)
+
+
 class Repository:
 
     _repo: git.Repository
@@ -85,36 +152,25 @@ class Repository:
             self._repo = repo_open(repo_path)
             self._commit = self._repo.head.resolve().target
             self._tree = self._repo.get(self._commit).tree.id
+            self._builder = self._repo.TreeBuilder(self._tree)
 
         else:
             self._commit = None
             self._repo = repo_create(repo_path)
             self._tree = self._repo.TreeBuilder().write()
+            self._builder = self._repo.TreeBuilder(self._tree)
+            self.update_root_hash(tuple())
             self.write_commit(message="Init log")
-            # TODO: Create an empty root hash
 
-        self._builder = self._repo.TreeBuilder(self._tree)
-
-    def _write_tree(self, full_path: typing.Tuple[str, ...], content: bytes):
-        """Write path to tree and update the internal tree reference"""
-
-        oid = self._repo.write(git.GIT_OBJ_BLOB, content)
-
-        visited = []
-        for p in full_path[:-1]:
-            visited.append(p)
-            builder = self._repo.TreeBuilder(self._tree)
-            builder.insert("/".join(visited), self._tree, git.GIT_FILEMODE_TREE)
-            self._tree = builder.write()
-
-        builder = self._repo.TreeBuilder(self._tree)
-        builder.insert("/".join(full_path), oid, git.GIT_FILEMODE_BLOB)
-        self._tree = builder.write()
+    def update_root_hash(self, node: typing.Tuple[str, ...]):
+        recalculate_hash(self._repo, self._builder, node)
 
     def add_leaf(self, input: str, content: bytes):
-        sharded = os.path.sep.join(shard(input))
+        sharded = shard(input)
 
-        auto_insert(self._repo, self._builder, sharded, self._repo.create_blob(content), git.GIT_FILEMODE_BLOB)
+        auto_insert(self._repo, self._builder, os.path.sep.join(sharded), self._repo.create_blob(content))
+        self.update_root_hash(sharded[:-1])
+
         self._tree = self._builder.write()
         self.write_commit(input)
 

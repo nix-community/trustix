@@ -8,5 +8,11 @@ if __name__ == '__main__':
 
     r = repo.Repository(repo_path, name=name, email=email)
 
-    r.add_leaf("w9yy7v61ipb5rx6i35zq1mvc2iqfmps1", b"sha256:1mi14cqk363wv368ffiiy01knardmnlyphi6h9xv6dkjz44hk30i")
-    r.add_leaf("w9yy7v61ipb5rx6i35zq1mvc2iqfmpbb", b"sha256:1mi14cqk363wv368ffiiy01knardmnlyphi6h9xv6dkjz44hk30a")
+    from random import choice
+    from string import ascii_uppercase
+
+    def rand_s(n):
+        return ''.join(choice(ascii_uppercase) for i in range(n))
+
+    for i in range(100):
+        r.add_leaf(rand_s(32), rand_s(64).encode())
