@@ -47,23 +47,39 @@ def shard(input: str) -> typing.Tuple[str, ...]:
     ) + (input[2 * depth:],)
 
 
-def insert_leaf(repo, treebuilder, path: typing.Tuple[str, ...], content: bytes):
+def auto_insert(repo, treebuilder, path, thing, mode = git.GIT_FILEMODE_BLOB):
+    path_parts = path.split('/', 1)
+    if len(path_parts) == 1:
+        treebuilder.insert(path, thing, mode)
+        return treebuilder.write()
 
-    # We have reached the leaf, insert value
-    if len(path) == 1:
-        hash_contents = repo.create_blob(content)
-        treebuilder.insert(path[0], hash_contents, git.GIT_FILEMODE_BLOB)
+    subtree_name, sub_path = path_parts
+    tree_oid = treebuilder.write()
+    tree = repo.get(tree_oid)
+    try:
+        entry = tree[subtree_name]
+        assert entry.filemode == git.GIT_FILEMODE_TREE,\
+            '{} already exists as a blob, not a tree'.format(entry.name)
+        existing_subtree = repo.get(entry.hex)
+        sub_treebuilder = repo.TreeBuilder(existing_subtree)
+    except KeyError:
+        sub_treebuilder = repo.TreeBuilder()
+
+    subtree_oid = auto_insert(repo, sub_treebuilder, sub_path, thing, mode)
+    treebuilder.insert(subtree_name, subtree_oid, git.GIT_FILEMODE_TREE)
+    return treebuilder.write()
+
+
+def recalculate_hash(repo, treebuilder, path):
+
+    if path == tuple():
+        # Root hash
         return treebuilder.write()
 
     tree_oid = treebuilder.write()
     tree = repo.get(tree_oid)
 
-    try:
-        entry = tree[path[0]]
-    except KeyError:
-        treebuilder.insert(path[0], tree_oid, git.GIT_FILEMODE_TREE)
-        tree = repo.get(treebuilder.write())
-        entry = tree[path[0]]
+    entry = tree[path[0]]
 
     m = hashlib.sha256()
     for e in sorted(entry, key=lambda x: x.name):
@@ -91,7 +107,7 @@ def insert_leaf(repo, treebuilder, path: typing.Tuple[str, ...], content: bytes)
     existing_subtree = repo.get(entry.hex)
     sub_treebuilder = repo.TreeBuilder(existing_subtree)
 
-    subtree_oid = insert_leaf(repo, sub_treebuilder, path[1:], content)
+    subtree_oid = recalculate_hash(repo, sub_treebuilder, path[1:])
     treebuilder.insert(path[0], subtree_oid, git.GIT_FILEMODE_TREE)
     return treebuilder.write()
 
@@ -120,12 +136,17 @@ class Repository:
             self._repo = repo_create(repo_path)
             self._tree = self._repo.TreeBuilder().write()
             self._builder = self._repo.TreeBuilder(self._tree)
+            self.update_root_hash(tuple())
             self.write_commit(message="Init log")
+
+    def update_root_hash(self, node: typing.Tuple[str, ...]):
+        recalculate_hash(self._repo, self._builder, node)
 
     def add_leaf(self, input: str, content: bytes):
         sharded = shard(input)
 
-        insert_leaf(self._repo, self._builder, sharded, content)
+        auto_insert(self._repo, self._builder, os.path.sep.join(sharded), self._repo.create_blob(content))
+        self.update_root_hash(sharded[:-1])
 
         self._tree = self._builder.write()
         self.write_commit(input)

@@ -11,16 +11,9 @@ if __name__ == '__main__':
     from random import choice
     from string import ascii_lowercase
 
-    def rand_b(n) -> bytes:
-        return ''.join(choice(ascii_lowercase) for i in range(n)).encode()
+    def rand_s(n):
+        return ''.join(choice(ascii_lowercase) for i in range(n))
 
-    for i in range(1):
-        # Emulate hex-encoded input hash
-        # TODO: Consider a different more compact encoding?
-        input_hash = rand_b(64).decode()
-
-        # Output NAR hash is assumed to be a binary sha256 hash
-        # We're better off not serialising the value at all
-        output_hash = rand_b(32)
-
-        r.add_leaf(input_hash, output_hash)
+    for i in range(1000):
+        print(i)
+        r.add_leaf(rand_s(32), rand_s(64).encode())
