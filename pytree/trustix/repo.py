@@ -86,8 +86,8 @@ def auto_insert(repo, treebuilder, path, content):
         node = b"".join((e.name.encode(), e.read_raw()))
         m.update(node)
 
-        hash_contents = repo.create_blob(m.hexdigest())
-        treebuilder.insert("hash", hash_contents, git.GIT_FILEMODE_BLOB)
+    hash_contents = repo.create_blob(m.digest())
+    treebuilder.insert("hash", hash_contents, git.GIT_FILEMODE_BLOB)
 
     return treebuilder.write()
 
