@@ -38,8 +38,8 @@ def shard(input: str) -> typing.Tuple[str, ...]:
     """
     Decide where an input to the tree ends up
     """
-    # depth = int(len(input) / 2)
-    depth = 5
+    # depth = int(len(input) -2 / 2)
+    depth = 6
 
     return tuple(
         input[2 * i : 2 * i + 2]
