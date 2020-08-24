@@ -1,14 +1,8 @@
 import pygit2 as git  # type: ignore
-import itertools
-import string
 import os.path
 import hashlib
 import typing
 import time
-
-
-# Precompute possible leaf permutations
-_path_permutations: typing.List[str] = list("".join(p) for p in itertools.permutations(string.hexdigits.lower(), 2))
 
 
 def repo_create(path: str) -> git.Repository:
