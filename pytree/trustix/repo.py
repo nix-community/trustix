@@ -83,7 +83,7 @@ def auto_insert(repo, treebuilder, path, content):
         else:
             raise ValueError(f"Unhandled file mode: {e.filemode}")
 
-        node = b":::".join((e.name.encode(), e.read_raw()))
+        node = b"".join((e.name.encode(), e.read_raw()))
         m.update(node)
 
         hash_contents = repo.create_blob(m.hexdigest())
