@@ -118,7 +118,7 @@ class Repository:
         auto_insert(self._repo, self._builder, sharded, content)
 
         self._tree = self._builder.write()
-        self.write_commit(input)
+        self.write_commit()
 
     def write_commit(self, message: typing.Optional[str] = ""):
         now = int(time.time())
