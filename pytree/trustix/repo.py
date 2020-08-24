@@ -48,15 +48,12 @@ def shard(input: str) -> typing.Tuple[str, ...]:
 
 
 def auto_insert(repo, treebuilder, path, content):
-    print(path)
-
-    path_parts = path.split('/', 1)
-    if len(path_parts) == 1:
+    if len(path) == 1:
         thing = repo.create_blob(content)
-        treebuilder.insert(path, thing, git.GIT_FILEMODE_BLOB)
+        treebuilder.insert(path[0], thing, git.GIT_FILEMODE_BLOB)
         return treebuilder.write()
 
-    subtree_name, sub_path = path_parts
+    subtree_name, sub_path = path[0], path[1:]
     tree_oid = treebuilder.write()
     tree = repo.get(tree_oid)
     try:
@@ -124,7 +121,7 @@ class Repository:
     def add_leaf(self, input: str, content: bytes):
         sharded = shard(input)
 
-        auto_insert(self._repo, self._builder, os.path.sep.join(sharded), content)
+        auto_insert(self._repo, self._builder, sharded, content)
 
         self._tree = self._builder.write()
         self.write_commit(input)
