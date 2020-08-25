@@ -1,5 +1,6 @@
 import pygit2 as git
 import subprocess
+from trustix.repo import shard
 
 
 # git clone --filter=blob:none --no-checkout --sparse file://(pwd)/repo r
@@ -37,8 +38,8 @@ def find_tree_obj(tree, path):
 
 
 def verify_leaf(leaf: str):
-    # TODO: Shard
-    blob = find_tree_obj(repo.get(tree), tuple(leaf.split("/")))
+    path = shard(leaf)
+    blob = find_tree_obj(repo.get(tree), path)
     fetch_oid(str(blob.oid))
 
     output_hash: bytes = blob.read_raw()
@@ -46,4 +47,4 @@ def verify_leaf(leaf: str):
     print(output_hash)
 
 
-verify_leaf("wa/sd/sz/kj/hd/zn/unvavamlliviufdxsfeg")
+verify_leaf("wasdszkjhdznunvavamlliviufdxsfeg")
