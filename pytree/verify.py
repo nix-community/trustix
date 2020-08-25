@@ -40,8 +40,11 @@ def find_tree_obj(tree, path):
 def get_leaf(leaf: str):
     path = shard(leaf)
     blob = find_tree_obj(repo.get(tree), path)
-    fetch_oid(str(blob.oid))  # Note: Side effect
-    return blob.read_raw()
+    try:
+        return blob.read_raw()
+    except KeyError:
+        fetch_oid(str(blob.oid))  # Note: Side effect
+        return blob.read_raw()
 
 
 print(get_leaf("wasdszkjhdznunvavamlliviufdxsfeg"))
