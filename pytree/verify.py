@@ -37,14 +37,11 @@ def find_tree_obj(tree, path):
     raise ValueError(f"Could not find {path[0]} in tree {tree}")
 
 
-def verify_leaf(leaf: str):
+def get_leaf(leaf: str):
     path = shard(leaf)
     blob = find_tree_obj(repo.get(tree), path)
-    fetch_oid(str(blob.oid))
-
-    output_hash: bytes = blob.read_raw()
-
-    print(output_hash)
+    fetch_oid(str(blob.oid))  # Note: Side effect
+    return blob.read_raw()
 
 
-verify_leaf("wasdszkjhdznunvavamlliviufdxsfeg")
+print(get_leaf("wasdszkjhdznunvavamlliviufdxsfeg"))
