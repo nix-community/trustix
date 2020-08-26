@@ -95,6 +95,8 @@ def auto_insert(repo, treebuilder, path, content):
             data = tree[n]["hash"].read_raw()
         m.update(format_hash(n, data))
 
+    # TODO: Special case root hash, we need to sign the root
+
     treebuilder.insert("hash", repo.create_blob(m.digest()), git.GIT_FILEMODE_BLOB)
     return treebuilder.write()
 
