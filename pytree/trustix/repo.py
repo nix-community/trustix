@@ -40,10 +40,32 @@ def shard(input: str) -> typing.Tuple[str, ...]:
     ) + (input[2 * depth:],)
 
 
+def hash_insert(repo, treebuilder, subtree_oid):
+    """Insert a blob called "hash" in the tree"""
+    m = hashlib.sha256()
+
+    for e in sorted(repo.get(subtree_oid), key=lambda x: x.name):
+        if e.filemode == git.GIT_FILEMODE_BLOB:
+            content = e.read_raw()
+        elif e.filemode == git.GIT_FILEMODE_TREE:
+            h = e["hash"]
+            content = h.read_raw()
+
+        else:
+            raise ValueError(f"Unhandled file mode: {e.filemode}")
+
+        node = b"".join((e.name.encode(), e.read_raw()))
+        m.update(node)
+
+    hash_contents = repo.create_blob(m.digest())
+    treebuilder.insert("hash", hash_contents, git.GIT_FILEMODE_BLOB)
+
+
 def auto_insert(repo, treebuilder, path, content):
     if len(path) == 1:
         thing = repo.create_blob(content)
         treebuilder.insert(path[0], thing, git.GIT_FILEMODE_BLOB)
+        hash_insert(repo, treebuilder, treebuilder.write())
         return treebuilder.write()
 
     subtree_name, sub_path = path[0], path[1:]
@@ -61,26 +83,7 @@ def auto_insert(repo, treebuilder, path, content):
     subtree_oid = auto_insert(repo, sub_treebuilder, sub_path, content)
     treebuilder.insert(subtree_name, subtree_oid, git.GIT_FILEMODE_TREE)
 
-    m = hashlib.sha256()
-
-    for e in sorted(repo.get(subtree_oid), key=lambda x: x.name):
-        if e.filemode == git.GIT_FILEMODE_BLOB:
-            content = e.read_raw()
-        elif e.filemode == git.GIT_FILEMODE_TREE:
-            try:
-                h = e["hash"]
-            except KeyError:
-                continue
-            content = h.read_raw()
-
-        else:
-            raise ValueError(f"Unhandled file mode: {e.filemode}")
-
-        node = b"".join((e.name.encode(), e.read_raw()))
-        m.update(node)
-
-    hash_contents = repo.create_blob(m.digest())
-    treebuilder.insert("hash", hash_contents, git.GIT_FILEMODE_BLOB)
+    hash_insert(repo, treebuilder, subtree_oid)
 
     return treebuilder.write()
 
