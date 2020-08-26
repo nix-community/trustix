@@ -28,6 +28,13 @@ def repo_open(path: str) -> git.Repository:
     return r
 
 
+def format_hash(name: str, data: bytes) -> bytes:
+    """Mix in name to data to strictly enforce tree structure"""
+    # Without mixing in names to the node hashes renaming a node will cause
+    # tree verification to succeed despite a renamed node as long as the sort order is the same
+    return b":".join((name.encode("utf-8"), data))
+
+
 def shard(input: str) -> typing.Tuple[str, ...]:
     """
     Decide where an input to the tree ends up
@@ -58,7 +65,7 @@ def auto_insert(repo, treebuilder, path, content):
                 data = content
             else:
                 data = tree[n].read_raw()
-            m.update(data)
+            m.update(format_hash(n, data))
 
         treebuilder.insert("hash", repo.create_blob(m.digest()), git.GIT_FILEMODE_BLOB)
         return treebuilder.write()
@@ -86,7 +93,7 @@ def auto_insert(repo, treebuilder, path, content):
             data = repo.get(subtree_oid)["hash"].read_raw()
         else:
             data = tree[n]["hash"].read_raw()
-        m.update(data)
+        m.update(format_hash(n, data))
 
     treebuilder.insert("hash", repo.create_blob(m.digest()), git.GIT_FILEMODE_BLOB)
     return treebuilder.write()
