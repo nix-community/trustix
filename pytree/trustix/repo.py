@@ -40,51 +40,55 @@ def shard(input: str) -> typing.Tuple[str, ...]:
     ) + (input[2 * depth:],)
 
 
-def hash_insert(repo, treebuilder, subtree_oid):
-    """Insert a blob called "hash" in the tree"""
-    m = hashlib.sha256()
-
-    for e in sorted(repo.get(subtree_oid), key=lambda x: x.name):
-        if e.filemode == git.GIT_FILEMODE_BLOB:
-            content = e.read_raw()
-        elif e.filemode == git.GIT_FILEMODE_TREE:
-            h = e["hash"]
-            content = h.read_raw()
-
-        else:
-            raise ValueError(f"Unhandled file mode: {e.filemode}")
-
-        node = b"".join((e.name.encode(), e.read_raw()))
-        m.update(node)
-
-    hash_contents = repo.create_blob(m.digest())
-    treebuilder.insert("hash", hash_contents, git.GIT_FILEMODE_BLOB)
-
-
 def auto_insert(repo, treebuilder, path, content):
-    if len(path) == 1:
-        thing = repo.create_blob(content)
-        treebuilder.insert(path[0], thing, git.GIT_FILEMODE_BLOB)
-        hash_insert(repo, treebuilder, treebuilder.write())
+    tree_oid = treebuilder.write()
+    tree = repo.get(tree_oid)
+
+    if len(path) == 1:  # Reached leaf, insert blob
+        blob = repo.create_blob(content)
+        treebuilder.insert(path[0], blob, git.GIT_FILEMODE_BLOB)
+
+        names = set(e.name for e in tree)
+        names.add(path[0])
+
+        m = hashlib.sha256()
+
+        for n in sorted(names):
+            if n == path[0]:
+                data = content
+            else:
+                data = tree[n].read_raw()
+            m.update(data)
+
+        treebuilder.insert("hash", repo.create_blob(m.digest()), git.GIT_FILEMODE_BLOB)
         return treebuilder.write()
 
     subtree_name, sub_path = path[0], path[1:]
-    tree_oid = treebuilder.write()
-    tree = repo.get(tree_oid)
     try:
-        entry = tree[subtree_name]
-        if not entry.filemode == git.GIT_FILEMODE_TREE:
-            raise ValueError(f'{entry.name} already exists as a blob, not a tree')
-        existing_subtree = repo.get(entry.hex)
-        sub_treebuilder = repo.TreeBuilder(existing_subtree)
+        sub_treebuilder = repo.TreeBuilder(tree[subtree_name].oid)
     except KeyError:
         sub_treebuilder = repo.TreeBuilder()
 
+    # Update or create nested subtree
     subtree_oid = auto_insert(repo, sub_treebuilder, sub_path, content)
     treebuilder.insert(subtree_name, subtree_oid, git.GIT_FILEMODE_TREE)
 
-    hash_insert(repo, treebuilder, subtree_oid)
+    names = set(e.name for e in tree)
+    names.add(subtree_name)
+    try:
+        names.remove("hash")
+    except KeyError:
+        pass
 
+    m = hashlib.sha256()
+    for n in sorted(names):
+        if n == subtree_name:
+            data = repo.get(subtree_oid)["hash"].read_raw()
+        else:
+            data = tree[n]["hash"].read_raw()
+        m.update(data)
+
+    treebuilder.insert("hash", repo.create_blob(m.digest()), git.GIT_FILEMODE_BLOB)
     return treebuilder.write()
 
 
