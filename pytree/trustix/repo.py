@@ -56,7 +56,7 @@ def auto_insert(repo, treebuilder, path, content):
         blob = repo.create_blob(content)
         treebuilder.insert(path[0], blob, git.GIT_FILEMODE_BLOB)
 
-        names = set(e.name for e in tree)
+        names = set(e.name for e in tree if e.name != "hash")
         names.add(path[0])
 
         m = hashlib.sha256()
@@ -81,12 +81,8 @@ def auto_insert(repo, treebuilder, path, content):
     subtree_oid = auto_insert(repo, sub_treebuilder, sub_path, content)
     treebuilder.insert(subtree_name, subtree_oid, git.GIT_FILEMODE_TREE)
 
-    names = set(e.name for e in tree)
+    names = set(e.name for e in tree if e.name != "hash")
     names.add(subtree_name)
-    try:
-        names.remove("hash")
-    except KeyError:
-        pass
 
     m = hashlib.sha256()
     for n in sorted(names):
