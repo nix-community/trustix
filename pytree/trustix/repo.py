@@ -39,12 +39,13 @@ def shard(input: str) -> typing.Tuple[str, ...]:
     """
     Decide where an input to the tree ends up
     """
-    depth = 6
+    depth = 7
+    l = 4
 
     return tuple(
-        input[2 * i : 2 * i + 2]
+        input[l * i : l * i + l]
         for i in range(depth)
-    ) + (input[2 * depth:],)
+    ) + (input[l * depth:],)
 
 
 def auto_insert(repo, treebuilder, path, content):
