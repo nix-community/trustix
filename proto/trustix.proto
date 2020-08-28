@@ -5,7 +5,11 @@ option go_package = "github.com/tweag/trustix/proto";
 package trustix;
 
 service Trustix {
+  // SubmitMapping - Submit an input/output mapping to the local log
   rpc SubmitMapping (SubmitRequest) returns (SubmitReply) {}
+
+  // SubmitMapping - Query a mapping from the local log
+  rpc QueryMapping (QueryRequest) returns (QueryResponse) {}
 }
 
 message SubmitRequest {
@@ -18,4 +22,12 @@ message SubmitReply {
     OK = 0;
   }
   Status status = 1;
+}
+
+message QueryRequest {
+  bytes InputHash = 1;
+}
+
+message QueryResponse {
+  bytes OutputHash = 1;
 }
