@@ -75,7 +75,6 @@ def hash_tree(root_tree, path):
 def get_leaf(leaf: str):
     root_tree = repo.get(tree)
     path = shard(leaf)
-    print("/".join(path))
 
     aggregate_hash = hash_tree(root_tree, path[:-1])
 
@@ -99,4 +98,5 @@ def get_leaf(leaf: str):
     return
 
 
-get_leaf("edlvnnnojmecqruddjtnglvwwsesaoeu")
+get_leaf("lnskpntaivodjqlvesbynelyholaaoeu")
+get_leaf("phgvuusitqrxgxpyinvozomsqlgdaoeu")
