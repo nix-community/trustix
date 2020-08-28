@@ -1,6 +1,7 @@
 import pygit2 as git
 import subprocess
-from trustix.repo import shard
+import hashlib
+from trustix.repo import shard, format_hash
 
 
 # git clone --filter=blob:none --no-checkout --sparse file://(pwd)/repo r
@@ -29,22 +30,73 @@ def fetch_oid(oid: str):
 
 
 def find_tree_obj(tree, path):
-    for x in tree:
-        if x.name == path[0]:
-            if x.filemode == git.GIT_FILEMODE_BLOB:
-                return x
+    x = tree[path[0]]
+    if x.name == path[0]:
+        if x.filemode == git.GIT_FILEMODE_BLOB:
+            return x
+        elif x.filemode == git.GIT_FILEMODE_TREE:
             return find_tree_obj(x, path[1:])
+        else:
+            raise ValueError(f"Cannot handle filemode '{x.filemode}'")
+
     raise ValueError(f"Could not find {path[0]} in tree {tree}")
 
 
+def get_oid(oid):
+    val = repo.get(oid)
+    if val is None:
+        fetch_oid(str(oid))
+    return repo.get(oid)
+
+
+def hash_tree(root_tree, path):
+    """Hash a tree (used for verification)"""
+
+    tree_sub = root_tree[path[0]]
+
+    m = hashlib.sha256()
+
+    for sub in sorted(tree_sub, key=lambda x: x.name):
+        if sub.name == "hash":
+            continue
+
+        if sub.filemode == git.GIT_FILEMODE_TREE and sub.name == path[1]:
+            data = hash_tree(tree_sub, path[1:])
+        elif sub.filemode == git.GIT_FILEMODE_TREE:
+            data = get_oid(sub["hash"].oid).read_raw()
+        else:
+            data = get_oid(sub.oid).read_raw()
+
+        m.update(format_hash(sub.name, data))
+
+    return m.digest()
+
+
 def get_leaf(leaf: str):
+    root_tree = repo.get(tree)
     path = shard(leaf)
-    blob = find_tree_obj(repo.get(tree), path)
-    try:
-        return blob.read_raw()
-    except KeyError:
-        fetch_oid(str(blob.oid))  # Note: Side effect
-        return blob.read_raw()
+    print("/".join(path))
+
+    aggregate_hash = hash_tree(root_tree, path[:-1])
+
+    m = hashlib.sha256()
+
+    # Now read the rest of the hashes
+    for sub in sorted(root_tree, key=lambda x: x.name):
+        if sub.filemode != git.GIT_FILEMODE_TREE:
+            continue
+
+        if sub.name == path[0]:
+            value = aggregate_hash
+        else:
+            value = get_oid(sub["hash"].oid).read_raw()
+
+        m.update(format_hash(sub.name, value))
+
+    if m.digest() != get_oid(root_tree["hash"].oid).read_raw():
+        raise ValueError("Root hash mismatch")
+
+    return
 
 
-print(get_leaf("wasdszkjhdznunvavamlliviufdxsfeg"))
+get_leaf("edlvnnnojmecqruddjtnglvwwsesaoeu")
