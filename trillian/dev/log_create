@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-exec createtree --admin_server=:8090

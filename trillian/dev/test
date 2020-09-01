@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-export $(grep -v '^#' $DIR/../.environment | xargs)
-
-export INPUT_HASH=$(head -n 5 /dev/urandom | sha256sum | cut -d ' ' -f 1)
-export OUTPUT_HASH=$(head -n 5 /dev/urandom | sha256sum | cut -d ' ' -f 1)
-
-exec $DIR/../trustix -tlog_endpoint :8090 -tlog_id $LOG_ID

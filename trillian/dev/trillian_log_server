@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -x
-./dev/mysql_wait
-mysql --socket $WORKDIR/mysql.sock -D test < $TRILLIAN_SCHEMA
-exec trillian_log_server --storage_system=mysql --mysql_uri "tcp(127.0.0.1:3306)/test" --rpc_endpoint=0.0.0.0:8090 --http_endpoint=0.0.0.0:8091 --alsologtostderr
