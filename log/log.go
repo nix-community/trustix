@@ -2,7 +2,6 @@ package log
 
 import (
 	"crypto/sha256"
-	"fmt"
 )
 
 type VerifiableLog struct {
@@ -56,7 +55,6 @@ func (l *VerifiableLog) addNodeToLevel(level int, hash []byte) {
 		l.hashes = append(l.hashes, h)
 	}
 
-	fmt.Println("")
 	hashes := l.hashes[level]
 	hashes = append(hashes, hash)
 	l.hashes[level] = hashes

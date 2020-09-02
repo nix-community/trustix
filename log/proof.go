@@ -53,15 +53,21 @@ func rootHashFromConsistencyProof(oldSize int, newSize int, proofNodes [][]byte,
 
 }
 
-func ValidAuditProof(rootHash []byte, treeSize int, idx int, proof [][]byte, leafData []byte) bool {
+func ValidAuditProof(rootHash []byte, treeSize int, idx int, proof [][]byte, leafData []byte) (bool, error) {
 	leafHash := sha256.New()
 	leafHash.Write([]byte{0})
 	leafHash.Write(leafData)
-	return rootHash == rootHashFromAuditProof(
+
+	fromAuditProof, err := rootHashFromAuditProof(
 		leafHash.Sum(nil),
 		proof,
 		idx,
 		treeSize)
+	if err != nil {
+		return false, err
+	}
+
+	return bytes.Compare(rootHash, fromAuditProof) == 0, nil
 }
 
 func ValidConsistencyProof(oldRoot []byte, newRoot []byte, oldSize int, newSize int, proofNodes [][]byte) bool {
