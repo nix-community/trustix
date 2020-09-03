@@ -8,7 +8,7 @@ type VerifiableLog struct {
 	treeSize int
 
 	// TODO: Implement persistent storage
-	hashes [][][]byte
+	hashes [][]*Leaf
 }
 
 func NewVerifiableLog() (*VerifiableLog, error) {
@@ -29,12 +29,12 @@ func (l *VerifiableLog) Root() []byte {
 	}
 
 	lastIndex := len(l.hashes[level]) - 1
-	hash := l.hashes[level][lastIndex]
+	hash := l.hashes[level][lastIndex].Digest
 
 	for _, hashes := range l.hashes[level+1:] {
 		if len(hashes)%2 == 1 {
 			idx := len(hashes) - 1
-			hash = branchHash(hashes[idx], hash)
+			hash = branchHash(hashes[idx].Digest, hash)
 		}
 	}
 
@@ -46,24 +46,33 @@ func (l *VerifiableLog) Append(data []byte) {
 	h := sha256.New()
 	h.Write([]byte{0}) // Write 0x00 prefix
 	h.Write(data)
-	l.addNodeToLevel(0, h.Sum(nil))
+
+	leaf := &Leaf{
+		Value:  data,
+		Digest: h.Sum(nil),
+	}
+
+	l.addNodeToLevel(0, leaf)
 }
 
-func (l *VerifiableLog) addNodeToLevel(level int, hash []byte) {
+func (l *VerifiableLog) addNodeToLevel(level int, leaf *Leaf) {
 	if len(l.hashes) == level {
-		h := [][]byte{}
+		h := []*Leaf{}
 		l.hashes = append(l.hashes, h)
 	}
 
 	hashes := l.hashes[level]
-	hashes = append(hashes, hash)
+	hashes = append(hashes, leaf)
 	l.hashes[level] = hashes
 
 	if len(l.hashes[level])%2 == 0 {
 		li := len(hashes) - 2
 		ri := len(hashes) - 1
-		newHash := branchHash(hashes[li], hashes[ri])
-		l.addNodeToLevel(level+1, newHash)
+		newHash := branchHash(hashes[li].Digest, hashes[ri].Digest)
+		l.addNodeToLevel(level+1, &Leaf{
+			// We don't save the raw value for a branch hash
+			Digest: newHash,
+		})
 	}
 }
 
@@ -79,11 +88,11 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapsh
 	}
 
 	last_node := snapshot - 1
-	last_hash := l.hashes[0][last_node]
+	last_hash := l.hashes[0][last_node].Digest
 
 	for _, row := range l.hashes[:level] {
 		if isRightChild(last_node) {
-			last_hash = branchHash(row[last_node-1], last_hash)
+			last_hash = branchHash(row[last_node-1].Digest, last_hash)
 		}
 		last_node = parent(last_node)
 	}
@@ -97,13 +106,13 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapsh
 		}
 
 		if sibling < last_node {
-			path = append(path, l.hashes[level][sibling])
+			path = append(path, l.hashes[level][sibling].Digest)
 		} else if sibling == last_node {
 			path = append(path, last_hash)
 		}
 
 		if isRightChild(last_node) {
-			last_hash = branchHash(l.hashes[level][last_node-1], last_hash)
+			last_hash = branchHash(l.hashes[level][last_node-1].Digest, last_hash)
 		}
 		level += 1
 		node = parent(node)
@@ -127,7 +136,7 @@ func (l *VerifiableLog) ConsistencyProof(fstSize int, sndSize int) [][]byte {
 	}
 
 	if node > 0 {
-		proof = append(proof, l.hashes[level][node])
+		proof = append(proof, l.hashes[level][node].Digest)
 	}
 
 	proof = append(proof, l.pathFromNodeToRootAtSnapshot(node, level, sndSize)...)
