@@ -1,79 +1,70 @@
-package main
+package main // import "github.com/tweag/trustix"
 
 import (
-	// "crypto/rand"
+	"crypto/ed25519"
 	"crypto/sha256"
 	"fmt"
 	"github.com/lazyledger/smt"
+	"github.com/tweag/trustix/sth"
 )
 
 func main() {
+	repoPath := "repo"
 
-	store, err := newGitKVStore("repo", "commiter", "commiter@example.com")
+	_, priv, _ := ed25519.GenerateKey(nil)
+
+	store, err := newGitKVStore(repoPath, "commiter", "commiter@example.com")
 	if err != nil {
 		panic(err)
 	}
 
-	// for i := 0; i < 1000; i++ {
-	// 	a := []byte(fmt.Sprintf("lolboll%d", i))
-	// 	b := []byte(fmt.Sprintf("testhest%d", i))
-	// 	store.Set(a, b)
+	hasher := sha256.New()
 
-	// 	contents, err := store.Get(a)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
+	var tree *smt.SparseMerkleTree
+	oldHead, err := store.GetRaw([]string{"HEAD"})
+	if err != nil {
+		// No STH yet, new tree
+		if err == ObjectNotFoundError {
+			tree = smt.NewSparseMerkleTree(store, hasher)
+		} else {
+			panic(err)
+		}
+	} else {
+		oldSTH := &sth.STH{}
+		err = oldSTH.FromJSON(oldHead)
+		if err != nil {
+			panic(err)
+		}
 
-	// 	dummy(contents)
-	// 	fmt.Println(contents)
-	// }
+		rootBytes, err := oldSTH.UnmarshalRoot()
+		if err != nil {
+			panic(err)
+		}
 
-	// store.Set([]byte("lol"), []byte("boll"))
+		tree = smt.ImportSparseMerkleTree(store, hasher, rootBytes)
+	}
 
-	// store := smt.NewSimpleMap()
-	tree := smt.NewSparseMerkleTree(store, sha256.New())
+	sthManager := sth.NewSTHManager(tree, priv)
 
-	for i := 0; i < 1000; i++ {
-		// fmt.Println(i)
-		// a := make([]byte, 32)
-		// b := make([]byte, 32)
-
-		// rand.Read(a)
-		// rand.Read(b)
+	for i := 0; i < (10); i++ {
+		fmt.Println(i)
 
 		a := []byte(fmt.Sprintf("lolboll%d", i))
 		b := []byte(fmt.Sprintf("testhest%d", i))
 
 		tree.Update(a, b)
+
+		sth, err := sthManager.Sign()
+		if err != nil {
+			panic(err)
+		}
+
+		store.SetRaw([]string{"HEAD"}, sth)
+
+		err = store.createCommit(fmt.Sprintf("Set key"))
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	// 	fmt.Println("Proofing")
-	// 	proof, _ := tree.Prove(a)
-	// 	root := tree.Root() // We also need the current tree root for the proof
-	// 	fmt.Println("Done proofing")
-
-	// 	// Verify the Merkle proof for foo=bar
-	// 	if smt.VerifyProof(proof, root, a, b, sha256.New()) {
-	// 		fmt.Println("Proof verification succeeded.")
-	// 	} else {
-	// 		fmt.Println("Proof verification failed.")
-	// 	}
-
-	// }
-
-	// Update the key "foo" with the value "bar"
-	// tree.Update([]byte("foo"), []byte("bar"))
-
-	// Generate a Merkle proof for foo=bar
-
-	// fmt.Println("Proofing")
-	// proof, _ := tree.Prove([]byte("foo"))
-	// root := tree.Root() // We also need the current tree root for the proof
-
-	// // Verify the Merkle proof for foo=bar
-	// if smt.VerifyProof(proof, root, []byte("foo"), []byte("bar"), sha256.New()) {
-	// 	fmt.Println("Proof verification succeeded.")
-	// } else {
-	// 	fmt.Println("Proof verification failed.")
-	// }
 }

@@ -9,12 +9,9 @@ import (
 	"time"
 )
 
-func dummy(_ interface{}) {
-
-}
+var ObjectNotFoundError = fmt.Errorf("Could not find object")
 
 func insertNode(repo *git.Repository, treebuilder *git.TreeBuilder, path []string, content []byte) (*git.Oid, error) {
-
 	odb, err := repo.Odb()
 	if err != nil {
 		return nil, err
@@ -29,7 +26,7 @@ func insertNode(repo *git.Repository, treebuilder *git.TreeBuilder, path []strin
 	if err != nil {
 		panic(err)
 	}
-	// defer tree.Free()
+	defer tree.Free()
 
 	if len(path) == 1 {
 
@@ -56,7 +53,7 @@ func insertNode(repo *git.Repository, treebuilder *git.TreeBuilder, path []strin
 		if err != nil {
 			panic(err)
 		}
-		// defer subTreebuilder.Free()
+		defer subTreebuilder.Free()
 	} else {
 		subTree, err := repo.LookupTree(entry.Id)
 		if err != nil {
@@ -76,7 +73,6 @@ func insertNode(repo *git.Repository, treebuilder *git.TreeBuilder, path []strin
 	}
 	treebuilder.Insert(subtreeName, subTreeOid, git.FilemodeTree)
 	return treebuilder.Write()
-
 }
 
 // GitKVStore - Use Git as a key/value store with automatic subtree sharding
@@ -210,16 +206,15 @@ func (kv *GitKVStore) shardKey(key []byte) []string {
 	return ret
 }
 
-func (kv *GitKVStore) Set(key []byte, value []byte) error {
-	shardKey := kv.shardKey(key)
-
+// SetRaw - Set an arbitrary object in the tree (not hash addressed)
+func (kv *GitKVStore) SetRaw(path []string, value []byte) error {
 	builder, err := kv.repo.TreeBuilderFromTree(kv.tree)
 	if err != nil {
 		return err
 	}
-	// defer builder.Free()
+	defer builder.Free()
 
-	treeOid, err := insertNode(kv.repo, builder, shardKey, value)
+	treeOid, err := insertNode(kv.repo, builder, path, value)
 	if err != nil {
 		return err
 	}
@@ -229,19 +224,24 @@ func (kv *GitKVStore) Set(key []byte, value []byte) error {
 		return err
 	}
 
-	err = kv.createCommit("something", tree)
-	if err != nil {
-		return err
-	}
+	oldTree := kv.tree
+	kv.tree = tree
+	oldTree.Free()
 
 	return nil
 }
 
-func (kv *GitKVStore) createCommit(message string, tree *git.Tree) error {
+// Set - Set an object in the tree addressed by hash(key)
+func (kv *GitKVStore) Set(key []byte, value []byte) error {
+	shardKey := kv.shardKey(key)
+	return kv.SetRaw(shardKey, value)
+}
+
+func (kv *GitKVStore) createCommit(message string) error {
 
 	sig := kv.createSig()
 
-	commitOid, err := kv.repo.CreateCommit("HEAD", sig, sig, message, tree, kv.commit)
+	commitOid, err := kv.repo.CreateCommit("HEAD", sig, sig, message, kv.tree, kv.commit)
 	if err != nil {
 		return err
 	}
@@ -252,12 +252,7 @@ func (kv *GitKVStore) createCommit(message string, tree *git.Tree) error {
 	}
 
 	oldCommit := commit
-	oldTree := kv.tree
-
-	kv.tree = tree
 	kv.commit = commit
-
-	oldTree.Free()
 	oldCommit.Free()
 
 	return nil
@@ -265,17 +260,20 @@ func (kv *GitKVStore) createCommit(message string, tree *git.Tree) error {
 
 func (kv *GitKVStore) Get(key []byte) ([]byte, error) {
 	shardKey := kv.shardKey(key)
+	return kv.GetRaw(shardKey)
+}
 
+func (kv *GitKVStore) GetRaw(path []string) ([]byte, error) {
 	tree := kv.tree
 
-	for i, p := range shardKey {
+	for i, p := range path {
 		var err error
 		entry := tree.EntryByName(p)
 		if entry == nil {
-			return nil, fmt.Errorf("Path component %s not found in tree", p)
+			return nil, ObjectNotFoundError
 		}
 
-		if i+1 == len(shardKey) {
+		if i+1 == len(path) {
 			blob, err := kv.repo.LookupBlob(entry.Id)
 			if err != nil {
 				return nil, err
@@ -291,9 +289,9 @@ func (kv *GitKVStore) Get(key []byte) ([]byte, error) {
 
 	}
 
-	return nil, fmt.Errorf("NOPO")
+	return nil, fmt.Errorf("Could not find blob")
 }
 
 func (kv *GitKVStore) Delete(key []byte) error {
-	return nil
+	return fmt.Errorf("Deletes are not supported")
 }
