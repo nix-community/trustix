@@ -1,10 +1,10 @@
 package main
 
 import (
-// "crypto/rand"
-// "crypto/sha256"
-// "fmt"
-// "github.com/lazyledger/smt"
+	// "crypto/rand"
+	"crypto/sha256"
+	"fmt"
+	"github.com/lazyledger/smt"
 )
 
 func main() {
@@ -14,22 +14,38 @@ func main() {
 		panic(err)
 	}
 
-	store.Set([]byte("lol"), []byte("boll"))
-
-	// tree := smt.NewSparseMerkleTree(store, sha256.New())
-
-	// for i := 0; i < 1; i++ {
-	// 	fmt.Println(i)
-	// 	// a := make([]byte, 32)
-	// 	// b := make([]byte, 32)
-
-	// 	// rand.Read(a)
-	// 	// rand.Read(b)
-
+	// for i := 0; i < 1000; i++ {
 	// 	a := []byte(fmt.Sprintf("lolboll%d", i))
 	// 	b := []byte(fmt.Sprintf("testhest%d", i))
+	// 	store.Set(a, b)
 
-	// 	tree.Update(a, b)
+	// 	contents, err := store.Get(a)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+
+	// 	dummy(contents)
+	// 	fmt.Println(contents)
+	// }
+
+	// store.Set([]byte("lol"), []byte("boll"))
+
+	// store := smt.NewSimpleMap()
+	tree := smt.NewSparseMerkleTree(store, sha256.New())
+
+	for i := 0; i < 1000; i++ {
+		// fmt.Println(i)
+		// a := make([]byte, 32)
+		// b := make([]byte, 32)
+
+		// rand.Read(a)
+		// rand.Read(b)
+
+		a := []byte(fmt.Sprintf("lolboll%d", i))
+		b := []byte(fmt.Sprintf("testhest%d", i))
+
+		tree.Update(a, b)
+	}
 
 	// 	fmt.Println("Proofing")
 	// 	proof, _ := tree.Prove(a)

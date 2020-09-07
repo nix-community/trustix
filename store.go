@@ -9,6 +9,76 @@ import (
 	"time"
 )
 
+func dummy(_ interface{}) {
+
+}
+
+func insertNode(repo *git.Repository, treebuilder *git.TreeBuilder, path []string, content []byte) (*git.Oid, error) {
+
+	odb, err := repo.Odb()
+	if err != nil {
+		return nil, err
+	}
+	defer odb.Free()
+
+	treeOid, err := treebuilder.Write()
+	if err != nil {
+		panic(err)
+	}
+	tree, err := repo.LookupTree(treeOid)
+	if err != nil {
+		panic(err)
+	}
+	// defer tree.Free()
+
+	if len(path) == 1 {
+
+		blobId, err := odb.Write(content, git.ObjectBlob)
+		if err != nil {
+			return nil, err
+		}
+
+		err = treebuilder.Insert(path[0], blobId, git.FilemodeBlob)
+		if err != nil {
+			return nil, err
+		}
+
+		return treebuilder.Write()
+	}
+
+	subtreeName := path[0]
+	subPath := path[1:]
+
+	var subTreebuilder *git.TreeBuilder
+	entry := tree.EntryByName(subtreeName)
+	if entry == nil {
+		subTreebuilder, err = repo.TreeBuilder()
+		if err != nil {
+			panic(err)
+		}
+		// defer subTreebuilder.Free()
+	} else {
+		subTree, err := repo.LookupTree(entry.Id)
+		if err != nil {
+			panic(err)
+		}
+
+		subTreebuilder, err = repo.TreeBuilderFromTree(subTree)
+		if err != nil {
+			panic(err)
+		}
+
+	}
+
+	subTreeOid, err := insertNode(repo, subTreebuilder, subPath, content)
+	if err != nil {
+		panic(err)
+	}
+	treebuilder.Insert(subtreeName, subTreeOid, git.FilemodeTree)
+	return treebuilder.Write()
+
+}
+
 // GitKVStore - Use Git as a key/value store with automatic subtree sharding
 type GitKVStore struct {
 	repo *git.Repository
@@ -127,57 +197,42 @@ func (kv *GitKVStore) createSig() *git.Signature {
 }
 
 // shardKey - Hash a key and return the path to the object in the Git tree
-func (kv *GitKVStore) shardKey(key []byte) ([]byte, [][]byte) {
-	var ret [][]byte
-	hash := sha256.Sum256(key)
+func (kv *GitKVStore) shardKey(key []byte) []string {
+	var ret []string
+	bH := sha256.Sum256(key)
+	hash := hex.EncodeToString(bH[:])
 
 	for i := 0; i < kv.treeDepth; i++ {
 		ret = append(ret, hash[kv.tokenLength*i:kv.tokenLength*i+kv.tokenLength])
 	}
 	ret = append(ret, hash[kv.tokenLength*kv.treeDepth:])
 
-	return hash[:], ret
+	return ret
 }
 
 func (kv *GitKVStore) Set(key []byte, value []byte) error {
-	hash, shardKey := kv.shardKey(key)
-	hexPath := hex.EncodeToString(hash)
-
-	fmt.Println(shardKey)
-
-	odb, err := kv.repo.Odb()
-	if err != nil {
-		return err
-	}
-	defer odb.Free()
+	shardKey := kv.shardKey(key)
 
 	builder, err := kv.repo.TreeBuilderFromTree(kv.tree)
 	if err != nil {
 		return err
 	}
-	defer builder.Free()
+	// defer builder.Free()
 
-	blobId, err := odb.Write(value, git.ObjectBlob)
+	treeOid, err := insertNode(kv.repo, builder, shardKey, value)
 	if err != nil {
 		return err
 	}
 
-	err = builder.Insert(hexPath, blobId, git.FilemodeBlob)
+	tree, err := kv.repo.LookupTree(treeOid)
 	if err != nil {
 		return err
 	}
 
-	treeID, err := builder.Write()
+	err = kv.createCommit("something", tree)
 	if err != nil {
 		return err
 	}
-
-	tree, err := kv.repo.LookupTree(treeID)
-	if err != nil {
-		return err
-	}
-
-	kv.createCommit(fmt.Sprintf("Set %s", hexPath), tree)
 
 	return nil
 }
@@ -209,21 +264,34 @@ func (kv *GitKVStore) createCommit(message string, tree *git.Tree) error {
 }
 
 func (kv *GitKVStore) Get(key []byte) ([]byte, error) {
-	hash, _ := kv.shardKey(key)
-	hexPath := hex.EncodeToString(hash)
+	shardKey := kv.shardKey(key)
 
-	entry, err := kv.tree.EntryByPath(hexPath)
-	if err != nil {
-		return nil, err
+	tree := kv.tree
+
+	for i, p := range shardKey {
+		var err error
+		entry := tree.EntryByName(p)
+		if entry == nil {
+			return nil, fmt.Errorf("Path component %s not found in tree", p)
+		}
+
+		if i+1 == len(shardKey) {
+			blob, err := kv.repo.LookupBlob(entry.Id)
+			if err != nil {
+				return nil, err
+			}
+
+			return blob.Contents(), nil
+		}
+
+		tree, err = kv.repo.LookupTree(entry.Id)
+		if err != nil {
+			panic(err)
+		}
+
 	}
 
-	blob, err := kv.repo.LookupBlob(entry.Id)
-	if err != nil {
-		return nil, err
-	}
-	defer blob.Free()
-
-	return blob.Contents(), nil
+	return nil, fmt.Errorf("NOPO")
 }
 
 func (kv *GitKVStore) Delete(key []byte) error {
