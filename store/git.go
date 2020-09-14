@@ -1,4 +1,4 @@
-package main
+package store
 
 import (
 	"crypto/sha256"
@@ -92,7 +92,7 @@ type GitKVStore struct {
 	commit *git.Commit // Previous commit
 }
 
-func newGitKVStore(repoPath string, name string, email string) (*GitKVStore, error) {
+func NewGitKVStore(repoPath string, name string, email string) (*GitKVStore, error) {
 
 	// Always use bare repository (no worktree)
 	bare := true
@@ -237,7 +237,7 @@ func (kv *GitKVStore) Set(key []byte, value []byte) error {
 	return kv.SetRaw(shardKey, value)
 }
 
-func (kv *GitKVStore) createCommit(message string) error {
+func (kv *GitKVStore) CreateCommit(message string) error {
 
 	sig := kv.createSig()
 

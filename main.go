@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/lazyledger/smt"
 	"github.com/tweag/trustix/sth"
+	"github.com/tweag/trustix/store"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 
 	_, priv, _ := ed25519.GenerateKey(nil)
 
-	store, err := newGitKVStore(repoPath, "commiter", "commiter@example.com")
+	kvStore, err := store.NewGitKVStore(repoPath, "commiter", "commiter@example.com")
 	if err != nil {
 		panic(err)
 	}
@@ -21,11 +22,11 @@ func main() {
 	hasher := sha256.New()
 
 	var tree *smt.SparseMerkleTree
-	oldHead, err := store.GetRaw([]string{"HEAD"})
+	oldHead, err := kvStore.GetRaw([]string{"HEAD"})
 	if err != nil {
 		// No STH yet, new tree
-		if err == ObjectNotFoundError {
-			tree = smt.NewSparseMerkleTree(store, hasher)
+		if err == store.ObjectNotFoundError {
+			tree = smt.NewSparseMerkleTree(kvStore, hasher)
 		} else {
 			panic(err)
 		}
@@ -41,7 +42,7 @@ func main() {
 			panic(err)
 		}
 
-		tree = smt.ImportSparseMerkleTree(store, hasher, rootBytes)
+		tree = smt.ImportSparseMerkleTree(kvStore, hasher, rootBytes)
 	}
 
 	sthManager := sth.NewSTHManager(tree, priv)
@@ -59,9 +60,9 @@ func main() {
 			panic(err)
 		}
 
-		store.SetRaw([]string{"HEAD"}, sth)
+		kvStore.SetRaw([]string{"HEAD"}, sth)
 
-		err = store.createCommit(fmt.Sprintf("Set key"))
+		err = kvStore.CreateCommit(fmt.Sprintf("Set key"))
 		if err != nil {
 			panic(err)
 		}
