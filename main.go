@@ -5,13 +5,14 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"github.com/lazyledger/smt"
+	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/store"
 )
 
 func main() {
 
-	config, err := newConfig("./config.toml")
+	config, err := config.NewConfigFromFile("./config.toml")
 	if err != nil {
 		panic(err)
 	}
