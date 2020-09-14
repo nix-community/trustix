@@ -1,0 +1,23 @@
+[[log]]
+# Possible modes are trustix-log, trustix-follower & trustix-gossip
+# Note that right now trustix-gossip is a TODO
+mode = "trustix-log"
+
+[log.storage]
+type = "git"
+
+[log.storage.git]
+# Do note that "remote" is set at EVERY startup to follow declarative config
+remote = "git@github.com:someuser/trustix-log.git"
+path = "./repo"
+# Only used by trustix-log mode
+commiter = "trustix"
+email = "trustix@example.com"
+
+[log.signer]
+type = "ed25519"
+publicKey = ""  # Base64 encoded public key
+
+# Implementation dependent
+[log.signer.ed25519]
+privateKeyPath = ""  # Path to base64 encode private key file (should not be in the nix store)
