@@ -5,11 +5,11 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/libgit2/git2go/v30"
+	"github.com/tweag/trustix/config"
+	"github.com/tweag/trustix/storage/errors"
 	"os"
 	"time"
 )
-
-var ObjectNotFoundError = fmt.Errorf("Could not find object")
 
 func insertNode(repo *git.Repository, treebuilder *git.TreeBuilder, path []string, content []byte) (*git.Oid, error) {
 	odb, err := repo.Odb()
@@ -92,7 +92,7 @@ type GitKVStore struct {
 	commit *git.Commit // Previous commit
 }
 
-func NewGitKVStore(repoPath string, name string, email string) (*GitKVStore, error) {
+func FromConfig(conf *config.GitStorageConfig) (*GitKVStore, error) {
 
 	// Always use bare repository (no worktree)
 	bare := true
@@ -106,15 +106,15 @@ func NewGitKVStore(repoPath string, name string, email string) (*GitKVStore, err
 
 	created := false
 
-	if _, err = os.Stat(repoPath); os.IsNotExist(err) {
+	if _, err = os.Stat(conf.Path); os.IsNotExist(err) {
 		created = true
 		// Repo doesn't exist, create it
-		repo, err = git.InitRepository(repoPath, bare)
+		repo, err = git.InitRepository(conf.Path, bare)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		repo, err = git.OpenRepository(repoPath)
+		repo, err = git.OpenRepository(conf.Path)
 		if err != nil {
 			return nil, err
 		}
@@ -124,8 +124,8 @@ func NewGitKVStore(repoPath string, name string, email string) (*GitKVStore, err
 		repo:        repo,
 		treeDepth:   treeDepth,
 		tokenLength: tokenLength,
-		name:        name,
-		email:       email,
+		name:        conf.Commiter,
+		email:       conf.Email,
 	}
 
 	if created {
@@ -270,7 +270,7 @@ func (kv *GitKVStore) GetRaw(path []string) ([]byte, error) {
 		var err error
 		entry := tree.EntryByName(p)
 		if entry == nil {
-			return nil, ObjectNotFoundError
+			return nil, errors.ObjectNotFoundError
 		}
 
 		if i+1 == len(path) {

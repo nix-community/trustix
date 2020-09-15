@@ -43,21 +43,17 @@ var rootCmd = &cobra.Command{
 				Error(fmt.Errorf("Cannot sign using the current configuration, aborting."))
 			}
 
-			if logConfig.Storage.Type != "git" {
-				panic("Only git implemented at this time")
-			}
-
-			kvStore, err := storage.NewGitKVStore(logConfig.Storage.Git.Path, logConfig.Storage.Git.Commiter, logConfig.Storage.Git.Email)
+			store, err := storage.FromConfig(logConfig.Storage)
 			if err != nil {
-				panic(err)
+				Error(err)
 			}
 
 			var tree *smt.SparseMerkleTree
-			oldHead, err := kvStore.GetRaw([]string{"HEAD"})
+			oldHead, err := store.GetRaw([]string{"HEAD"})
 			if err != nil {
 				// No STH yet, new tree
 				if err == storage.ObjectNotFoundError {
-					tree = smt.NewSparseMerkleTree(kvStore, hasher)
+					tree = smt.NewSparseMerkleTree(store, hasher)
 				} else {
 					panic(err)
 				}
@@ -73,7 +69,7 @@ var rootCmd = &cobra.Command{
 					panic(err)
 				}
 
-				tree = smt.ImportSparseMerkleTree(kvStore, hasher, rootBytes)
+				tree = smt.ImportSparseMerkleTree(store, hasher, rootBytes)
 			}
 
 			sthManager := sth.NewSTHManager(tree, sig)
@@ -91,9 +87,9 @@ var rootCmd = &cobra.Command{
 					panic(err)
 				}
 
-				kvStore.SetRaw([]string{"HEAD"}, sth)
+				store.SetRaw([]string{"HEAD"}, sth)
 
-				err = kvStore.CreateCommit(fmt.Sprintf("Set key"))
+				err = store.CreateCommit(fmt.Sprintf("Set key"))
 				if err != nil {
 					panic(err)
 				}
