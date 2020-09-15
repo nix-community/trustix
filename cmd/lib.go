@@ -7,7 +7,7 @@ import (
 
 // Error - Write error and exit with status
 func ErrorStatus(err error, status int) {
-	fmt.Fprintf(os.Stderr, "Encountered error: %s, exiting", err.Error())
+	fmt.Fprintf(os.Stderr, "Encountered error:\n%s", err.Error())
 	os.Exit(status)
 }
 
