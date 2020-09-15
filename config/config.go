@@ -28,6 +28,7 @@ type SignerConfig struct {
 }
 
 type LogConfig struct {
+	Name    string         `toml:"name"`
 	Mode    string         `toml:"mode"`
 	Storage *StorageConfig `toml:"storage"`
 	Signer  *SignerConfig  `toml:"signer"`
