@@ -10,7 +10,10 @@ import (
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/store"
 	"os"
+	"sync"
 )
+
+var once sync.Once
 
 var rootCmd = &cobra.Command{
 	Use:   "trustix",
@@ -89,7 +92,14 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+func initCommands() {
+	rootCmd.AddCommand(generateKeyCmd)
+	initGenerate()
+}
+
 func Execute() {
+	once.Do(initCommands)
+
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
