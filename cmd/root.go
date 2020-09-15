@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	// "crypto"
-	// "crypto/ed25519"
 	"crypto/sha256"
 	"fmt"
 	"github.com/lazyledger/smt"
@@ -10,7 +8,7 @@ import (
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/sth"
-	"github.com/tweag/trustix/store"
+	"github.com/tweag/trustix/storage"
 	"os"
 	"sync"
 )
@@ -49,7 +47,7 @@ var rootCmd = &cobra.Command{
 				panic("Only git implemented at this time")
 			}
 
-			kvStore, err := store.NewGitKVStore(logConfig.Storage.Git.Path, logConfig.Storage.Git.Commiter, logConfig.Storage.Git.Email)
+			kvStore, err := storage.NewGitKVStore(logConfig.Storage.Git.Path, logConfig.Storage.Git.Commiter, logConfig.Storage.Git.Email)
 			if err != nil {
 				panic(err)
 			}
@@ -58,7 +56,7 @@ var rootCmd = &cobra.Command{
 			oldHead, err := kvStore.GetRaw([]string{"HEAD"})
 			if err != nil {
 				// No STH yet, new tree
-				if err == store.ObjectNotFoundError {
+				if err == storage.ObjectNotFoundError {
 					tree = smt.NewSparseMerkleTree(kvStore, hasher)
 				} else {
 					panic(err)

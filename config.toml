@@ -3,6 +3,11 @@
 # Note that right now trustix-gossip is a TODO
 mode = "trustix-log"
 
+# Try to be globally unique when assigning names
+# This is not a strict requirement as names are only enforced to be locally unique
+name = "trustix-test"
+
+
 [log.storage]
 type = "git"
 
