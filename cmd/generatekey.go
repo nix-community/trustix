@@ -13,7 +13,7 @@ var generatePublicKeyOutput string
 
 var generateKeyCmd = &cobra.Command{
 	Use:   "generate-key",
-	Short: "Generate public/private key pair",
+	Short: "Generate an ed25519 public/private key pair",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if generatePublicKeyOutput == "" {
 			return fmt.Errorf("Missing pubkey flag")

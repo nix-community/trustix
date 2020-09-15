@@ -21,14 +21,16 @@ type ED25519SignerConfig struct {
 }
 
 type SignerConfig struct {
-	Type      string `toml:"type"`
-	KeyType   string `toml:"key-type"`
-	PublicKey string `toml:"public-key"`
+	Type      string               `toml:"type"`
+	KeyType   string               `toml:"key-type"`
+	PublicKey string               `toml:"public-key"`
+	ED25519   *ED25519SignerConfig `toml:"ed25519"`
 }
 
 type LogConfig struct {
 	Mode    string         `toml:"mode"`
 	Storage *StorageConfig `toml:"storage"`
+	Signer  *SignerConfig  `toml:"signer"`
 }
 
 type Config struct {

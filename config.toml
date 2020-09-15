@@ -19,8 +19,8 @@ email = "trustix@example.com"
 # Another signer (lets say PKCS11) could be implemented that uses the same key-type but a different signing backend
 type = "ed25519"
 key-type = "ed25519"
-public-key = ""  # Base64 encoded public key
+public-key = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo="  # Base64 encoded public key
 
 # Implementation dependent
 [log.signer.ed25519]
-private-key-path = ""  # Path to base64 encode private key file (should not be in the nix store)
+private-key-path = "./priv"  # Path to base64 encode private key file (should not be in the nix store)

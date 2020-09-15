@@ -1,12 +1,14 @@
 package cmd
 
 import (
-	"crypto/ed25519"
+	// "crypto"
+	// "crypto/ed25519"
 	"crypto/sha256"
 	"fmt"
 	"github.com/lazyledger/smt"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/config"
+	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/store"
 	"os"
@@ -32,8 +34,16 @@ var rootCmd = &cobra.Command{
 		}
 
 		for _, logConfig := range config.Logs {
+			hasher := sha256.New()
 
-			_, priv, _ := ed25519.GenerateKey(nil)
+			sig, err := signer.FromConfig(logConfig.Signer)
+			if err != nil {
+				Error(err)
+			}
+
+			if !sig.CanSign() {
+				Error(fmt.Errorf("Cannot sign using the current configuration, aborting."))
+			}
 
 			if logConfig.Storage.Type != "git" {
 				panic("Only git implemented at this time")
@@ -43,8 +53,6 @@ var rootCmd = &cobra.Command{
 			if err != nil {
 				panic(err)
 			}
-
-			hasher := sha256.New()
 
 			var tree *smt.SparseMerkleTree
 			oldHead, err := kvStore.GetRaw([]string{"HEAD"})
@@ -70,7 +78,7 @@ var rootCmd = &cobra.Command{
 				tree = smt.ImportSparseMerkleTree(kvStore, hasher, rootBytes)
 			}
 
-			sthManager := sth.NewSTHManager(tree, priv)
+			sthManager := sth.NewSTHManager(tree, sig)
 
 			for i := 0; i < (10); i++ {
 				fmt.Println(i)
