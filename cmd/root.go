@@ -14,14 +14,19 @@ import (
 )
 
 var once sync.Once
+var configPath string
 
 var rootCmd = &cobra.Command{
 	Use:   "trustix",
 	Short: "Trustix",
 	Long:  `Trustix`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
-		config, err := config.NewConfigFromFile("./config.toml")
+		if configPath == "" {
+			return fmt.Errorf("Missing config flag")
+		}
+
+		config, err := config.NewConfigFromFile(configPath)
 		if err != nil {
 			panic(err)
 		}
@@ -89,10 +94,14 @@ var rootCmd = &cobra.Command{
 			}
 
 		}
+
+		return nil
 	},
 }
 
 func initCommands() {
+	rootCmd.Flags().StringVar(&configPath, "config", "", "Path to config.toml")
+
 	rootCmd.AddCommand(generateKeyCmd)
 	initGenerate()
 }
