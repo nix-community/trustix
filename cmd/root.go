@@ -28,7 +28,7 @@ var rootCmd = &cobra.Command{
 
 		config, err := config.NewConfigFromFile(configPath)
 		if err != nil {
-			panic(err)
+			Error(err)
 		}
 
 		for _, logConfig := range config.Logs {
@@ -73,7 +73,7 @@ var rootCmd = &cobra.Command{
 
 					rootBytes, err := oldSTH.UnmarshalRoot()
 					if err != nil {
-						panic(err)
+						return err
 					}
 
 					tree = smt.ImportSparseMerkleTree(mapStore, hasher, rootBytes)
