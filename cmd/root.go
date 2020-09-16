@@ -49,52 +49,63 @@ var rootCmd = &cobra.Command{
 			}
 
 			var tree *smt.SparseMerkleTree
-			oldHead, err := store.GetRaw([]string{"HEAD"})
-			if err != nil {
-				// No STH yet, new tree
-				if err == storage.ObjectNotFoundError {
-					tree = smt.NewSparseMerkleTree(store, hasher)
+
+			mapStore := newMapStore()
+
+			err = store.View(func(txn storage.Transaction) error {
+				mapStore.setTxn(txn)
+				defer mapStore.unsetTxn()
+
+				oldHead, err := txn.Get([]byte("HEAD"))
+				if err != nil {
+					// No STH yet, new tree
+					if err == storage.ObjectNotFoundError {
+						tree = smt.NewSparseMerkleTree(mapStore, hasher)
+					} else {
+						return err
+					}
 				} else {
-					panic(err)
-				}
-			} else {
-				oldSTH := &sth.STH{}
-				err = oldSTH.FromJSON(oldHead)
-				if err != nil {
-					panic(err)
+					oldSTH := &sth.STH{}
+					err = oldSTH.FromJSON(oldHead)
+					if err != nil {
+						return err
+					}
+
+					rootBytes, err := oldSTH.UnmarshalRoot()
+					if err != nil {
+						panic(err)
+					}
+
+					tree = smt.ImportSparseMerkleTree(mapStore, hasher, rootBytes)
 				}
 
-				rootBytes, err := oldSTH.UnmarshalRoot()
-				if err != nil {
-					panic(err)
-				}
-
-				tree = smt.ImportSparseMerkleTree(store, hasher, rootBytes)
-			}
+				return nil
+			})
 
 			sthManager := sth.NewSTHManager(tree, sig)
 
 			for i := 0; i < (10); i++ {
+
 				fmt.Println(i)
 
-				a := []byte(fmt.Sprintf("lolboll%d", i))
-				b := []byte(fmt.Sprintf("testhest%d", i))
+				err = store.Update(func(txn storage.Transaction) error {
+					mapStore.setTxn(txn)
+					defer mapStore.unsetTxn()
 
-				tree.Update(a, b)
+					a := []byte(fmt.Sprintf("lolboll%d", i))
+					b := []byte(fmt.Sprintf("testhest%d", i))
 
-				sth, err := sthManager.Sign()
-				if err != nil {
-					panic(err)
-				}
+					tree.Update(a, b)
 
-				store.SetRaw([]string{"HEAD"}, sth)
+					sth, err := sthManager.Sign()
+					if err != nil {
+						return err
+					}
 
-				err = store.CreateCommit(fmt.Sprintf("Set key"))
-				if err != nil {
-					panic(err)
-				}
+					return mapStore.Set([]byte("HEAD"), sth)
+				})
+
 			}
-
 		}
 
 		return nil

@@ -11,9 +11,14 @@ type GitStorageConfig struct {
 	Email    string `toml:"email"`
 }
 
+type NativeStorageConfig struct {
+	Path string `toml:"path"`
+}
+
 type StorageConfig struct {
-	Type string            `toml:"type"`
-	Git  *GitStorageConfig `toml:"git"`
+	Type   string               `toml:"type"`
+	Git    *GitStorageConfig    `toml:"git"`
+	Native *NativeStorageConfig `toml:"native"`
 }
 
 type ED25519SignerConfig struct {
