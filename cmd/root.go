@@ -86,9 +86,8 @@ var rootCmd = &cobra.Command{
 
 			for i := 0; i < (10); i++ {
 
-				fmt.Println(i)
-
 				err = store.Update(func(txn storage.Transaction) error {
+					fmt.Println(i)
 					mapStore.setTxn(txn)
 					defer mapStore.unsetTxn()
 
@@ -102,8 +101,21 @@ var rootCmd = &cobra.Command{
 						return err
 					}
 
+					// Generate a Merkle proof for foo=bar
+					proof, _ := tree.Prove(a)
+					root := tree.Root() // We also need the current tree root for the proof
+
+					// Verify the Merkle proof for foo=bar
+					if !smt.VerifyProof(proof, root, a, b, hasher) {
+						return fmt.Errorf("Proof verification failed.")
+					}
+
 					return mapStore.Set([]byte("HEAD"), sth)
 				})
+
+				if err != nil {
+					Error(err)
+				}
 
 			}
 		}

@@ -1,9 +1,9 @@
 package storage
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"github.com/libgit2/git2go/v30"
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/storage/errors"
@@ -11,7 +11,90 @@ import (
 	"time"
 )
 
-func insertNode(repo *git.Repository, treebuilder *git.TreeBuilder, path []string, content []byte) (*git.Oid, error) {
+type gitTxn struct {
+	tree *git.Tree
+	repo *git.Repository
+}
+
+func (t *gitTxn) shardKey(key []byte) []string {
+	// HACK: Special handling of HEAD (cheaper lookup)
+	if bytes.Compare(key, []byte("HEAD")) == 0 {
+		return []string{"HEAD"}
+	}
+
+	treeDepth := 5
+	tokenLength := 2
+
+	var ret []string
+	bH := sha256.Sum256(key)
+	hash := hex.EncodeToString(bH[:])
+
+	for i := 0; i < treeDepth; i++ {
+		ret = append(ret, hash[tokenLength*i:tokenLength*i+tokenLength])
+	}
+	ret = append(ret, hash[tokenLength*treeDepth:])
+
+	return ret
+}
+
+func (t *gitTxn) Get(key []byte) ([]byte, error) {
+	path := t.shardKey(key)
+
+	tree := t.tree
+	for i, p := range path {
+		var err error
+		entry := tree.EntryByName(p)
+		if entry == nil {
+			return nil, errors.ObjectNotFoundError
+		}
+
+		if i+1 == len(path) {
+			blob, err := t.repo.LookupBlob(entry.Id)
+			if err != nil {
+				return nil, err
+			}
+
+			return blob.Contents(), nil
+		}
+
+		tree, err = t.repo.LookupTree(entry.Id)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return nil, errors.ObjectNotFoundError
+}
+
+func (t *gitTxn) Set(key []byte, value []byte) error {
+	path := t.shardKey(key)
+
+	builder, err := t.repo.TreeBuilderFromTree(t.tree)
+	if err != nil {
+		return err
+	}
+	defer builder.Free()
+
+	treeOid, err := insertGitNode(t.repo, builder, path, value)
+	if err != nil {
+		return err
+	}
+
+	tree, err := t.repo.LookupTree(treeOid)
+	if err != nil {
+		return err
+	}
+
+	t.tree = tree
+
+	return nil
+}
+
+func (t *gitTxn) commit() error {
+	return nil
+}
+
+func insertGitNode(repo *git.Repository, treebuilder *git.TreeBuilder, path []string, content []byte) (*git.Oid, error) {
 	odb, err := repo.Odb()
 	if err != nil {
 		return nil, err
@@ -67,7 +150,7 @@ func insertNode(repo *git.Repository, treebuilder *git.TreeBuilder, path []strin
 
 	}
 
-	subTreeOid, err := insertNode(repo, subTreebuilder, subPath, content)
+	subTreeOid, err := insertGitNode(repo, subTreebuilder, subPath, content)
 	if err != nil {
 		panic(err)
 	}
@@ -92,7 +175,7 @@ type GitKVStore struct {
 	commit *git.Commit // Previous commit
 }
 
-func FromConfig(conf *config.GitStorageConfig) (*GitKVStore, error) {
+func GitStorageFromConfig(conf *config.GitStorageConfig) (*GitKVStore, error) {
 
 	// Always use bare repository (no worktree)
 	bare := true
@@ -192,56 +275,40 @@ func (kv *GitKVStore) createSig() *git.Signature {
 	}
 }
 
-// shardKey - Hash a key and return the path to the object in the Git tree
-func (kv *GitKVStore) shardKey(key []byte) []string {
-	var ret []string
-	bH := sha256.Sum256(key)
-	hash := hex.EncodeToString(bH[:])
-
-	for i := 0; i < kv.treeDepth; i++ {
-		ret = append(ret, hash[kv.tokenLength*i:kv.tokenLength*i+kv.tokenLength])
-	}
-	ret = append(ret, hash[kv.tokenLength*kv.treeDepth:])
-
-	return ret
+func (kv *GitKVStore) Close() {
 }
 
-// SetRaw - Set an arbitrary object in the tree (not hash addressed)
-func (kv *GitKVStore) SetRaw(path []string, value []byte) error {
-	builder, err := kv.repo.TreeBuilderFromTree(kv.tree)
-	if err != nil {
-		return err
-	}
-	defer builder.Free()
-
-	treeOid, err := insertNode(kv.repo, builder, path, value)
-	if err != nil {
-		return err
+func (kv *GitKVStore) runTX(readWrite bool, fn func(Transaction) error) error {
+	t := &gitTxn{
+		tree: kv.tree,
+		repo: kv.repo,
 	}
 
-	tree, err := kv.repo.LookupTree(treeOid)
+	err := fn(t)
 	if err != nil {
 		return err
+	} else {
+		if readWrite {
+			return kv.createCommit("commit", t.tree)
+			// return t.commit()
+		}
 	}
 
-	oldTree := kv.tree
-	kv.tree = tree
-	oldTree.Free()
-
-	return nil
+	return err
 }
 
-// Set - Set an object in the tree addressed by hash(key)
-func (kv *GitKVStore) Set(key []byte, value []byte) error {
-	shardKey := kv.shardKey(key)
-	return kv.SetRaw(shardKey, value)
+func (kv *GitKVStore) View(fn func(Transaction) error) error {
+	return kv.runTX(false, fn)
 }
 
-func (kv *GitKVStore) CreateCommit(message string) error {
+func (kv *GitKVStore) Update(fn func(Transaction) error) error {
+	return kv.runTX(true, fn)
+}
 
+func (kv *GitKVStore) createCommit(message string, tree *git.Tree) error {
 	sig := kv.createSig()
 
-	commitOid, err := kv.repo.CreateCommit("HEAD", sig, sig, message, kv.tree, kv.commit)
+	commitOid, err := kv.repo.CreateCommit("HEAD", sig, sig, message, tree, kv.commit)
 	if err != nil {
 		return err
 	}
@@ -253,45 +320,8 @@ func (kv *GitKVStore) CreateCommit(message string) error {
 
 	oldCommit := commit
 	kv.commit = commit
+	kv.tree = tree
 	oldCommit.Free()
 
 	return nil
-}
-
-func (kv *GitKVStore) Get(key []byte) ([]byte, error) {
-	shardKey := kv.shardKey(key)
-	return kv.GetRaw(shardKey)
-}
-
-func (kv *GitKVStore) GetRaw(path []string) ([]byte, error) {
-	tree := kv.tree
-
-	for i, p := range path {
-		var err error
-		entry := tree.EntryByName(p)
-		if entry == nil {
-			return nil, errors.ObjectNotFoundError
-		}
-
-		if i+1 == len(path) {
-			blob, err := kv.repo.LookupBlob(entry.Id)
-			if err != nil {
-				return nil, err
-			}
-
-			return blob.Contents(), nil
-		}
-
-		tree, err = kv.repo.LookupTree(entry.Id)
-		if err != nil {
-			panic(err)
-		}
-
-	}
-
-	return nil, fmt.Errorf("Could not find blob")
-}
-
-func (kv *GitKVStore) Delete(key []byte) error {
-	return fmt.Errorf("Deletes are not supported")
 }
