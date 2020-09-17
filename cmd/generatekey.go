@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"io/ioutil"
+	"log"
 )
 
 var generatePrivateKeyOutput string
@@ -25,17 +26,17 @@ var generateKeyCmd = &cobra.Command{
 
 		pub, priv, err := ed25519.GenerateKey(nil)
 		if err != nil {
-			Error(err)
+			log.Fatal(err)
 		}
 
 		err = ioutil.WriteFile(generatePublicKeyOutput, []byte(base64.StdEncoding.EncodeToString(pub)), 0644)
 		if err != nil {
-			Error(err)
+			log.Fatal(err)
 		}
 
 		err = ioutil.WriteFile(generatePrivateKeyOutput, []byte(base64.StdEncoding.EncodeToString(priv)), 0644)
 		if err != nil {
-			Error(err)
+			log.Fatal(err)
 		}
 
 		return nil
