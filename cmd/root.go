@@ -16,7 +16,8 @@ import (
 
 var once sync.Once
 var configPath string
-var listen string
+
+var dialAddress string
 
 type pbServer struct {
 	pb.UnimplementedTrustixServer
@@ -51,7 +52,7 @@ var rootCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		lis, err := net.Listen("tcp", listen)
+		lis, err := net.Listen("tcp", dialAddress)
 		if err != nil {
 			log.Fatalf("failed to listen: %v", err)
 		}
@@ -78,7 +79,8 @@ var rootCmd = &cobra.Command{
 
 func initCommands() {
 	rootCmd.Flags().StringVar(&configPath, "config", "", "Path to config.toml")
-	rootCmd.Flags().StringVar(&listen, "listen", ":8080", "Path to config.toml")
+
+	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", ":8080", "Path to config.toml")
 
 	rootCmd.AddCommand(generateKeyCmd)
 	initGenerate()

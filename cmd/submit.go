@@ -22,8 +22,6 @@ var submitCommand = &cobra.Command{
 			return fmt.Errorf("Missing input/output hash")
 		}
 
-		addr := ":8080"
-
 		inputBytes, err := hex.DecodeString(inputHashHex)
 		if err != nil {
 			log.Fatal(err)
@@ -34,7 +32,7 @@ var submitCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
+		conn, err := grpc.Dial(dialAddress, grpc.WithInsecure(), grpc.WithBlock())
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
