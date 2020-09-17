@@ -20,13 +20,16 @@ var listen string
 
 type pbServer struct {
 	pb.UnimplementedTrustixServer
+	core *core.TrustixCore
 }
 
 func (s *pbServer) SubmitMapping(ctx context.Context, in *pb.SubmitRequest) (*pb.SubmitReply, error) {
+	fmt.Println(fmt.Sprintf("Received input hash %s", in.InputHash))
 
-	// in.InputHash
-	// in.OutputHash
-	fmt.Println("?")
+	err := s.core.Submit(in.InputHash, in.OutputHash)
+	if err != nil {
+		return nil, err
+	}
 
 	return &pb.SubmitReply{
 		Status: pb.SubmitReply_OK,
@@ -60,10 +63,10 @@ var rootCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 
-			fmt.Println(c)
+			pb.RegisterTrustixServer(s, &pbServer{
+				core: c,
+			})
 		}
-
-		pb.RegisterTrustixServer(s, &pbServer{})
 
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)

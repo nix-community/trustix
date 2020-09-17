@@ -10,7 +10,39 @@ import (
 	"github.com/tweag/trustix/storage"
 )
 
-type TrustixCore struct{}
+type TrustixCore struct {
+	store      storage.TrustixStorage
+	tree       *smt.SparseMerkleTree
+	sthManager *sth.STHManager
+}
+
+func (s *TrustixCore) Submit(key []byte, value []byte) error {
+	mapStore := newMapStore()
+
+	return s.store.Update(func(txn storage.Transaction) error {
+		mapStore.setTxn(txn)
+		defer mapStore.unsetTxn()
+
+		s.tree.Update(key, value)
+
+		sth, err := s.sthManager.Sign()
+		if err != nil {
+			return err
+		}
+
+		// // Generate a Merkle proof for foo=bar
+		// proof, _ := tree.Prove(a)
+		// root := tree.Root() // We also need the current tree root for the proof
+
+		// // Verify the Merkle proof for foo=bar
+		// if !smt.VerifyProof(proof, root, a, b, hasher) {
+		// 	return fmt.Errorf("Proof verification failed.")
+		// }
+
+		return mapStore.Set([]byte("HEAD"), sth)
+	})
+
+}
 
 func CoreFromConfig(conf *config.LogConfig) (*TrustixCore, error) {
 
@@ -66,39 +98,9 @@ func CoreFromConfig(conf *config.LogConfig) (*TrustixCore, error) {
 
 	sthManager := sth.NewSTHManager(tree, sig)
 
-	for i := 0; i < (10); i++ {
-
-		err = store.Update(func(txn storage.Transaction) error {
-			fmt.Println(i)
-			mapStore.setTxn(txn)
-			defer mapStore.unsetTxn()
-
-			a := []byte(fmt.Sprintf("lolboll%d", i))
-			b := []byte(fmt.Sprintf("testhest%d", i))
-
-			tree.Update(a, b)
-
-			sth, err := sthManager.Sign()
-			if err != nil {
-				return err
-			}
-
-			// Generate a Merkle proof for foo=bar
-			proof, _ := tree.Prove(a)
-			root := tree.Root() // We also need the current tree root for the proof
-
-			// Verify the Merkle proof for foo=bar
-			if !smt.VerifyProof(proof, root, a, b, hasher) {
-				return fmt.Errorf("Proof verification failed.")
-			}
-
-			return mapStore.Set([]byte("HEAD"), sth)
-		})
-
-		if err != nil {
-			return nil, err
-		}
-
-	}
-	return nil, nil
+	return &TrustixCore{
+		store:      store,
+		tree:       tree,
+		sthManager: sthManager,
+	}, nil
 }
