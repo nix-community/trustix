@@ -20,7 +20,7 @@ type TrustixCore struct {
 func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 	var buf []byte
 
-	err := s.store.Update(func(txn storage.Transaction) error {
+	err := s.store.View(func(txn storage.Transaction) error {
 		s.mapStore.setTxn(txn)
 		defer s.mapStore.unsetTxn()
 
