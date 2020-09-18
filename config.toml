@@ -14,7 +14,7 @@ type = "git"
 [log.storage.git]
 # Do note that "remote" is set at EVERY startup to follow declarative config
 remote = "git@github.com:someuser/trustix-log.git"
-path = "./repo"
+path = "repo"  # Relative to state directory
 # Only used by trustix-log mode
 commiter = "trustix"
 email = "trustix@example.com"

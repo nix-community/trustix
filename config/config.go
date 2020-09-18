@@ -6,13 +6,11 @@ import (
 
 type GitStorageConfig struct {
 	Remote   string `toml:"remote"`
-	Path     string `toml:"path"`
 	Commiter string `toml:"commiter"`
 	Email    string `toml:"email"`
 }
 
 type NativeStorageConfig struct {
-	Path string `toml:"path"`
 }
 
 type StorageConfig struct {

@@ -8,6 +8,7 @@ import (
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/storage/errors"
 	"os"
+	"path"
 	"time"
 )
 
@@ -175,7 +176,7 @@ type GitKVStore struct {
 	commit *git.Commit // Previous commit
 }
 
-func GitStorageFromConfig(conf *config.GitStorageConfig) (*GitKVStore, error) {
+func GitStorageFromConfig(name string, stateDirectory string, conf *config.GitStorageConfig) (*GitKVStore, error) {
 
 	// Always use bare repository (no worktree)
 	bare := true
@@ -189,15 +190,16 @@ func GitStorageFromConfig(conf *config.GitStorageConfig) (*GitKVStore, error) {
 
 	created := false
 
-	if _, err = os.Stat(conf.Path); os.IsNotExist(err) {
+	repoPath := path.Join(stateDirectory, name)
+	if _, err = os.Stat(repoPath); os.IsNotExist(err) {
 		created = true
 		// Repo doesn't exist, create it
-		repo, err = git.InitRepository(conf.Path, bare)
+		repo, err = git.InitRepository(repoPath, bare)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		repo, err = git.OpenRepository(conf.Path)
+		repo, err = git.OpenRepository(repoPath)
 		if err != nil {
 			return nil, err
 		}

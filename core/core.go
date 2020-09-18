@@ -10,6 +10,10 @@ import (
 	"github.com/tweag/trustix/storage"
 )
 
+type FlagConfig struct {
+	StateDirectory string
+}
+
 type TrustixCore struct {
 	store      storage.TrustixStorage
 	tree       *smt.SparseMerkleTree
@@ -65,7 +69,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 
 }
 
-func CoreFromConfig(conf *config.LogConfig) (*TrustixCore, error) {
+func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, error) {
 
 	hasher := sha256.New()
 
@@ -78,7 +82,7 @@ func CoreFromConfig(conf *config.LogConfig) (*TrustixCore, error) {
 		return nil, fmt.Errorf("Cannot sign using the current configuration, aborting.")
 	}
 
-	store, err := storage.FromConfig(conf.Storage)
+	store, err := storage.FromConfig(conf.Name, flags.StateDirectory, conf.Storage)
 	if err != nil {
 		return nil, err
 	}

@@ -9,12 +9,12 @@ import (
 // Re-export from subpackage errors for conciseness
 var ObjectNotFoundError = errors.ObjectNotFoundError
 
-func FromConfig(conf *config.StorageConfig) (TrustixStorage, error) {
+func FromConfig(name string, stateDirectory string, conf *config.StorageConfig) (TrustixStorage, error) {
 	switch conf.Type {
 	case "git":
-		return GitStorageFromConfig(conf.Git)
+		return GitStorageFromConfig(name, stateDirectory, conf.Git)
 	case "native":
-		return NativeStorageFromConfig(conf.Native)
+		return NativeStorageFromConfig(name, stateDirectory, conf.Native)
 	}
 
 	return nil, fmt.Errorf("Storage type '%s' is not supported.", conf.Type)

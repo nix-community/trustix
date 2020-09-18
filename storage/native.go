@@ -1,9 +1,9 @@
 package storage
 
 import (
-	// "fmt"
 	badger "github.com/dgraph-io/badger/v2"
 	"github.com/tweag/trustix/config"
+	"path"
 )
 
 type nativeTxn struct {
@@ -35,8 +35,10 @@ type NativeStorage struct {
 	db *badger.DB
 }
 
-func NativeStorageFromConfig(conf *config.NativeStorageConfig) (*NativeStorage, error) {
-	db, err := badger.Open(badger.DefaultOptions(conf.Path))
+func NativeStorageFromConfig(name string, stateDirectory string, conf *config.NativeStorageConfig) (*NativeStorage, error) {
+	path := path.Join(stateDirectory, name)
+
+	db, err := badger.Open(badger.DefaultOptions(path))
 	if err != nil {
 		return nil, err
 	}

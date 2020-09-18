@@ -12,11 +12,13 @@ import (
 	"log"
 	"net"
 	"os"
+	"path"
 	"sync"
 )
 
 var once sync.Once
 var configPath string
+var stateDirectory string
 
 var dialAddress string
 
@@ -72,8 +74,17 @@ var rootCmd = &cobra.Command{
 		}
 		s := grpc.NewServer()
 
+		err = os.MkdirAll(stateDirectory, 0700)
+		if err != nil {
+			log.Fatalf("Could not create state directory: %v")
+		}
+
+		flagConfig := &core.FlagConfig{
+			StateDirectory: stateDirectory,
+		}
+
 		for _, logConfig := range config.Logs {
-			c, err := core.CoreFromConfig(logConfig)
+			c, err := core.CoreFromConfig(logConfig, flagConfig)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -95,6 +106,10 @@ func initCommands() {
 	rootCmd.Flags().StringVar(&configPath, "config", "", "Path to config.toml")
 
 	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", ":8080", "Path to config.toml")
+
+	homeDir, _ := os.UserHomeDir()
+	defaultStateDir := path.Join(homeDir, ".local/share/trustix")
+	rootCmd.PersistentFlags().StringVar(&stateDirectory, "state", defaultStateDir, "State directory")
 
 	rootCmd.AddCommand(generateKeyCmd)
 	initGenerate()
