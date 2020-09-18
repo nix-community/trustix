@@ -43,6 +43,25 @@ func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 	return buf, nil
 }
 
+func (s *TrustixCore) Get(key []byte) ([]byte, error) {
+	var buf []byte
+
+	err := s.store.View(func(txn storage.Transaction) error {
+		v, err := txn.Get(key)
+		if err != nil {
+			return err
+		}
+		buf = v
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return buf, nil
+}
+
 func (s *TrustixCore) Submit(key []byte, value []byte) error {
 	return s.store.Update(func(txn storage.Transaction) error {
 		s.mapStore.setTxn(txn)

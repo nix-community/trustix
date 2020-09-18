@@ -32,3 +32,18 @@ message QueryRequest {
 message QueryResponse {
   bytes OutputHash = 1;
 }
+
+// TrustixKV - Access a remote Key/Value store
+service TrustixKV {
+  // SubmitMapping - Submit an input/output mapping to the local log
+  rpc Get (KVRequest) returns (KVResponse) {}
+
+}
+
+message KVRequest {
+  bytes key = 1;
+}
+
+message KVResponse {
+  bytes value = 1;
+}

@@ -135,3 +135,88 @@ var _TrustixRPC_serviceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "trustix.proto",
 }
+
+// TrustixKVClient is the client API for TrustixKV service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type TrustixKVClient interface {
+	// SubmitMapping - Submit an input/output mapping to the local log
+	Get(ctx context.Context, in *KVRequest, opts ...grpc.CallOption) (*KVResponse, error)
+}
+
+type trustixKVClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTrustixKVClient(cc grpc.ClientConnInterface) TrustixKVClient {
+	return &trustixKVClient{cc}
+}
+
+func (c *trustixKVClient) Get(ctx context.Context, in *KVRequest, opts ...grpc.CallOption) (*KVResponse, error) {
+	out := new(KVResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixKV/Get", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TrustixKVServer is the server API for TrustixKV service.
+// All implementations must embed UnimplementedTrustixKVServer
+// for forward compatibility
+type TrustixKVServer interface {
+	// SubmitMapping - Submit an input/output mapping to the local log
+	Get(context.Context, *KVRequest) (*KVResponse, error)
+	mustEmbedUnimplementedTrustixKVServer()
+}
+
+// UnimplementedTrustixKVServer must be embedded to have forward compatible implementations.
+type UnimplementedTrustixKVServer struct {
+}
+
+func (UnimplementedTrustixKVServer) Get(context.Context, *KVRequest) (*KVResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedTrustixKVServer) mustEmbedUnimplementedTrustixKVServer() {}
+
+// UnsafeTrustixKVServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TrustixKVServer will
+// result in compilation errors.
+type UnsafeTrustixKVServer interface {
+	mustEmbedUnimplementedTrustixKVServer()
+}
+
+func RegisterTrustixKVServer(s *grpc.Server, srv TrustixKVServer) {
+	s.RegisterService(&_TrustixKV_serviceDesc, srv)
+}
+
+func _TrustixKV_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(KVRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixKVServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixKV/Get",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixKVServer).Get(ctx, req.(*KVRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _TrustixKV_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "trustix.TrustixKV",
+	HandlerType: (*TrustixKVServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Get",
+			Handler:    _TrustixKV_Get_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "trustix.proto",
+}

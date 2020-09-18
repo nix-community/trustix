@@ -53,6 +53,24 @@ func (s *pbServer) QueryMapping(ctx context.Context, in *pb.QueryRequest) (*pb.Q
 	}, nil
 }
 
+type kvServer struct {
+	pb.UnimplementedTrustixKVServer
+	core *core.TrustixCore
+}
+
+func (s *kvServer) GetKey(ctx context.Context, in *pb.KVRequest) (*pb.KVResponse, error) {
+	fmt.Println(fmt.Sprintf("Received KV request for %s", hex.EncodeToString(in.Key)))
+
+	v, err := s.core.Get(in.Key)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.KVResponse{
+		Value: v,
+	}, nil
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "trustix",
 	Short: "Trustix",
@@ -90,6 +108,9 @@ var rootCmd = &cobra.Command{
 			}
 
 			pb.RegisterTrustixRPCServer(s, &pbServer{
+				core: c,
+			})
+			pb.RegisterTrustixKVServer(s, &kvServer{
 				core: c,
 			})
 		}
