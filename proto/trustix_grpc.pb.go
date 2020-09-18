@@ -13,123 +13,123 @@ import (
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion7
 
-// TrustixClient is the client API for Trustix service.
+// TrustixRPCClient is the client API for TrustixRPC service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type TrustixClient interface {
+type TrustixRPCClient interface {
 	// SubmitMapping - Submit an input/output mapping to the local log
 	SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error)
-	// SubmitMapping - Query a mapping from the local log
+	// QueryMapping - Query a mapping from the local log
 	QueryMapping(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error)
 }
 
-type trustixClient struct {
+type trustixRPCClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewTrustixClient(cc grpc.ClientConnInterface) TrustixClient {
-	return &trustixClient{cc}
+func NewTrustixRPCClient(cc grpc.ClientConnInterface) TrustixRPCClient {
+	return &trustixRPCClient{cc}
 }
 
-func (c *trustixClient) SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error) {
+func (c *trustixRPCClient) SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error) {
 	out := new(SubmitResponse)
-	err := c.cc.Invoke(ctx, "/trustix.Trustix/SubmitMapping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixRPC/SubmitMapping", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *trustixClient) QueryMapping(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error) {
+func (c *trustixRPCClient) QueryMapping(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error) {
 	out := new(QueryResponse)
-	err := c.cc.Invoke(ctx, "/trustix.Trustix/QueryMapping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixRPC/QueryMapping", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// TrustixServer is the server API for Trustix service.
-// All implementations must embed UnimplementedTrustixServer
+// TrustixRPCServer is the server API for TrustixRPC service.
+// All implementations must embed UnimplementedTrustixRPCServer
 // for forward compatibility
-type TrustixServer interface {
+type TrustixRPCServer interface {
 	// SubmitMapping - Submit an input/output mapping to the local log
 	SubmitMapping(context.Context, *SubmitRequest) (*SubmitResponse, error)
-	// SubmitMapping - Query a mapping from the local log
+	// QueryMapping - Query a mapping from the local log
 	QueryMapping(context.Context, *QueryRequest) (*QueryResponse, error)
-	mustEmbedUnimplementedTrustixServer()
+	mustEmbedUnimplementedTrustixRPCServer()
 }
 
-// UnimplementedTrustixServer must be embedded to have forward compatible implementations.
-type UnimplementedTrustixServer struct {
+// UnimplementedTrustixRPCServer must be embedded to have forward compatible implementations.
+type UnimplementedTrustixRPCServer struct {
 }
 
-func (UnimplementedTrustixServer) SubmitMapping(context.Context, *SubmitRequest) (*SubmitResponse, error) {
+func (UnimplementedTrustixRPCServer) SubmitMapping(context.Context, *SubmitRequest) (*SubmitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitMapping not implemented")
 }
-func (UnimplementedTrustixServer) QueryMapping(context.Context, *QueryRequest) (*QueryResponse, error) {
+func (UnimplementedTrustixRPCServer) QueryMapping(context.Context, *QueryRequest) (*QueryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryMapping not implemented")
 }
-func (UnimplementedTrustixServer) mustEmbedUnimplementedTrustixServer() {}
+func (UnimplementedTrustixRPCServer) mustEmbedUnimplementedTrustixRPCServer() {}
 
-// UnsafeTrustixServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to TrustixServer will
+// UnsafeTrustixRPCServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TrustixRPCServer will
 // result in compilation errors.
-type UnsafeTrustixServer interface {
-	mustEmbedUnimplementedTrustixServer()
+type UnsafeTrustixRPCServer interface {
+	mustEmbedUnimplementedTrustixRPCServer()
 }
 
-func RegisterTrustixServer(s *grpc.Server, srv TrustixServer) {
-	s.RegisterService(&_Trustix_serviceDesc, srv)
+func RegisterTrustixRPCServer(s *grpc.Server, srv TrustixRPCServer) {
+	s.RegisterService(&_TrustixRPC_serviceDesc, srv)
 }
 
-func _Trustix_SubmitMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TrustixRPC_SubmitMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubmitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrustixServer).SubmitMapping(ctx, in)
+		return srv.(TrustixRPCServer).SubmitMapping(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.Trustix/SubmitMapping",
+		FullMethod: "/trustix.TrustixRPC/SubmitMapping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixServer).SubmitMapping(ctx, req.(*SubmitRequest))
+		return srv.(TrustixRPCServer).SubmitMapping(ctx, req.(*SubmitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Trustix_QueryMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TrustixRPC_QueryMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrustixServer).QueryMapping(ctx, in)
+		return srv.(TrustixRPCServer).QueryMapping(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.Trustix/QueryMapping",
+		FullMethod: "/trustix.TrustixRPC/QueryMapping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixServer).QueryMapping(ctx, req.(*QueryRequest))
+		return srv.(TrustixRPCServer).QueryMapping(ctx, req.(*QueryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Trustix_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "trustix.Trustix",
-	HandlerType: (*TrustixServer)(nil),
+var _TrustixRPC_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "trustix.TrustixRPC",
+	HandlerType: (*TrustixRPCServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "SubmitMapping",
-			Handler:    _Trustix_SubmitMapping_Handler,
+			Handler:    _TrustixRPC_SubmitMapping_Handler,
 		},
 		{
 			MethodName: "QueryMapping",
-			Handler:    _Trustix_QueryMapping_Handler,
+			Handler:    _TrustixRPC_QueryMapping_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

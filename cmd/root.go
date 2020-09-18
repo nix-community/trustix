@@ -23,7 +23,7 @@ var stateDirectory string
 var dialAddress string
 
 type pbServer struct {
-	pb.UnimplementedTrustixServer
+	pb.UnimplementedTrustixRPCServer
 	core *core.TrustixCore
 }
 
@@ -89,7 +89,7 @@ var rootCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 
-			pb.RegisterTrustixServer(s, &pbServer{
+			pb.RegisterTrustixRPCServer(s, &pbServer{
 				core: c,
 			})
 		}

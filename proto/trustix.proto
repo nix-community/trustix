@@ -4,7 +4,8 @@ option go_package = "github.com/tweag/trustix/proto";
 
 package trustix;
 
-service Trustix {
+// TrustixRPC - (Mainly) Local RPC
+service TrustixRPC {
   // SubmitMapping - Submit an input/output mapping to the local log
   rpc SubmitMapping (SubmitRequest) returns (SubmitResponse) {}
 

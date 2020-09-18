@@ -37,7 +37,7 @@ var submitCommand = &cobra.Command{
 			log.Fatalf("did not connect: %v", err)
 		}
 		defer conn.Close()
-		c := pb.NewTrustixClient(conn)
+		c := pb.NewTrustixRPCClient(conn)
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
