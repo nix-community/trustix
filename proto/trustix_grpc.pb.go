@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TrustixClient interface {
 	// SubmitMapping - Submit an input/output mapping to the local log
-	SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitReply, error)
+	SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error)
 	// SubmitMapping - Query a mapping from the local log
 	QueryMapping(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error)
 }
@@ -31,8 +31,8 @@ func NewTrustixClient(cc grpc.ClientConnInterface) TrustixClient {
 	return &trustixClient{cc}
 }
 
-func (c *trustixClient) SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitReply, error) {
-	out := new(SubmitReply)
+func (c *trustixClient) SubmitMapping(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error) {
+	out := new(SubmitResponse)
 	err := c.cc.Invoke(ctx, "/trustix.Trustix/SubmitMapping", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (c *trustixClient) QueryMapping(ctx context.Context, in *QueryRequest, opts
 // for forward compatibility
 type TrustixServer interface {
 	// SubmitMapping - Submit an input/output mapping to the local log
-	SubmitMapping(context.Context, *SubmitRequest) (*SubmitReply, error)
+	SubmitMapping(context.Context, *SubmitRequest) (*SubmitResponse, error)
 	// SubmitMapping - Query a mapping from the local log
 	QueryMapping(context.Context, *QueryRequest) (*QueryResponse, error)
 	mustEmbedUnimplementedTrustixServer()
@@ -64,7 +64,7 @@ type TrustixServer interface {
 type UnimplementedTrustixServer struct {
 }
 
-func (UnimplementedTrustixServer) SubmitMapping(context.Context, *SubmitRequest) (*SubmitReply, error) {
+func (UnimplementedTrustixServer) SubmitMapping(context.Context, *SubmitRequest) (*SubmitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitMapping not implemented")
 }
 func (UnimplementedTrustixServer) QueryMapping(context.Context, *QueryRequest) (*QueryResponse, error) {

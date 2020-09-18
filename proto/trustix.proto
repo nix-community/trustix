@@ -6,9 +6,9 @@ package trustix;
 
 service Trustix {
   // SubmitMapping - Submit an input/output mapping to the local log
-  rpc SubmitMapping (SubmitRequest) returns (SubmitReply) {}
+  rpc SubmitMapping (SubmitRequest) returns (SubmitResponse) {}
 
-  // SubmitMapping - Query a mapping from the local log
+  // QueryMapping - Query a mapping from the local log
   rpc QueryMapping (QueryRequest) returns (QueryResponse) {}
 }
 
@@ -17,7 +17,7 @@ message SubmitRequest {
   bytes OutputHash = 2;
 }
 
-message SubmitReply {
+message SubmitResponse {
   enum Status {
     OK = 0;
   }

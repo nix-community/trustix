@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/config"
@@ -24,16 +25,29 @@ type pbServer struct {
 	core *core.TrustixCore
 }
 
-func (s *pbServer) SubmitMapping(ctx context.Context, in *pb.SubmitRequest) (*pb.SubmitReply, error) {
-	fmt.Println(fmt.Sprintf("Received input hash %s", in.InputHash))
+func (s *pbServer) SubmitMapping(ctx context.Context, in *pb.SubmitRequest) (*pb.SubmitResponse, error) {
+	fmt.Println(fmt.Sprintf("Received input hash %s -> %s", hex.EncodeToString(in.InputHash), hex.EncodeToString(in.OutputHash)))
 
 	err := s.core.Submit(in.InputHash, in.OutputHash)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.SubmitReply{
-		Status: pb.SubmitReply_OK,
+	return &pb.SubmitResponse{
+		Status: pb.SubmitResponse_OK,
+	}, nil
+}
+
+func (s *pbServer) QueryMapping(ctx context.Context, in *pb.QueryRequest) (*pb.QueryResponse, error) {
+	fmt.Println(fmt.Sprintf("Received input hash query for %s", hex.EncodeToString(in.InputHash)))
+
+	h, err := s.core.Query(in.InputHash)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.QueryResponse{
+		OutputHash: h,
 	}, nil
 }
 
@@ -87,6 +101,9 @@ func initCommands() {
 
 	rootCmd.AddCommand(submitCommand)
 	initSubmit()
+
+	rootCmd.AddCommand(queryCommand)
+	initQuery()
 }
 
 func Execute() {

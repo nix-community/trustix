@@ -14,14 +14,35 @@ type TrustixCore struct {
 	store      storage.TrustixStorage
 	tree       *smt.SparseMerkleTree
 	sthManager *sth.STHManager
+	mapStore   *smtMapStore
+}
+
+func (s *TrustixCore) Query(key []byte) ([]byte, error) {
+	var buf []byte
+
+	err := s.store.Update(func(txn storage.Transaction) error {
+		s.mapStore.setTxn(txn)
+		defer s.mapStore.unsetTxn()
+
+		v, err := s.tree.Get(key)
+		if err != nil {
+			return err
+		}
+		buf = v
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return buf, nil
 }
 
 func (s *TrustixCore) Submit(key []byte, value []byte) error {
-	mapStore := newMapStore()
-
 	return s.store.Update(func(txn storage.Transaction) error {
-		mapStore.setTxn(txn)
-		defer mapStore.unsetTxn()
+		s.mapStore.setTxn(txn)
+		defer s.mapStore.unsetTxn()
 
 		s.tree.Update(key, value)
 
@@ -39,7 +60,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 		// 	return fmt.Errorf("Proof verification failed.")
 		// }
 
-		return mapStore.Set([]byte("HEAD"), sth)
+		return s.mapStore.Set([]byte("HEAD"), sth)
 	})
 
 }
@@ -102,5 +123,6 @@ func CoreFromConfig(conf *config.LogConfig) (*TrustixCore, error) {
 		store:      store,
 		tree:       tree,
 		sthManager: sthManager,
+		mapStore:   mapStore,
 	}, nil
 }
