@@ -101,6 +101,16 @@ var rootCmd = &cobra.Command{
 			StateDirectory: stateDirectory,
 		}
 
+		// Check if any names are non-unique
+		seenNames := make(map[string]struct{})
+		for _, logConfig := range config.Logs {
+			_, ok := seenNames[logConfig.Name]
+			if ok {
+				log.Fatalf("Found non-unique log name: %s", logConfig.Name)
+			}
+			seenNames[logConfig.Name] = struct{}{}
+		}
+
 		for _, logConfig := range config.Logs {
 			c, err := core.CoreFromConfig(logConfig, flagConfig)
 			if err != nil {
