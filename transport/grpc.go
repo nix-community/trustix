@@ -3,6 +3,7 @@ package transport
 import (
 	"context"
 	"fmt"
+	"github.com/tweag/trustix/config"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/storage"
 	"google.golang.org/grpc"
@@ -35,13 +36,11 @@ func (t *grpcTxn) Set(key []byte, value []byte) error {
 	return fmt.Errorf("Cannot Set on remote")
 }
 
-func NewGRPCTransport() (*grpcTransport, error) {
-	dialAddress := ":8080"
-	conn, err := grpc.Dial(dialAddress, grpc.WithInsecure(), grpc.WithBlock())
+func NewGRPCTransport(t *config.GRPCTransportConfig) (*grpcTransport, error) {
+	conn, err := grpc.Dial(t.Remote, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		return nil, err
 	}
-	// defer conn.Close()
 	c := pb.NewTrustixKVClient(conn)
 
 	return &grpcTransport{

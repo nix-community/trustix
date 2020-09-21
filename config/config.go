@@ -19,6 +19,15 @@ type StorageConfig struct {
 	Native *NativeStorageConfig `toml:"native"`
 }
 
+type GRPCTransportConfig struct {
+	Remote string `toml:"remote"`
+}
+
+type TransportConfig struct {
+	Type string               `toml:"type"`
+	GRPC *GRPCTransportConfig `toml:"grpc"`
+}
+
 type ED25519SignerConfig struct {
 	PrivateKeyPath string `toml:"private-key-path"`
 }
@@ -31,10 +40,11 @@ type SignerConfig struct {
 }
 
 type LogConfig struct {
-	Name    string         `toml:"name"`
-	Mode    string         `toml:"mode"`
-	Storage *StorageConfig `toml:"storage"`
-	Signer  *SignerConfig  `toml:"signer"`
+	Name      string           `toml:"name"`
+	Mode      string           `toml:"mode"`
+	Storage   *StorageConfig   `toml:"storage"`
+	Transport *TransportConfig `toml:"transport"`
+	Signer    *SignerConfig    `toml:"signer"`
 }
 
 type Config struct {
