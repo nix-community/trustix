@@ -220,3 +220,88 @@ var _TrustixKV_serviceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "trustix.proto",
 }
+
+// TrustixLogClient is the client API for TrustixLog service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type TrustixLogClient interface {
+	// Get map[LogName]OutputHash
+	HashMap(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashMapResponse, error)
+}
+
+type trustixLogClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTrustixLogClient(cc grpc.ClientConnInterface) TrustixLogClient {
+	return &trustixLogClient{cc}
+}
+
+func (c *trustixLogClient) HashMap(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashMapResponse, error) {
+	out := new(HashMapResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixLog/HashMap", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TrustixLogServer is the server API for TrustixLog service.
+// All implementations must embed UnimplementedTrustixLogServer
+// for forward compatibility
+type TrustixLogServer interface {
+	// Get map[LogName]OutputHash
+	HashMap(context.Context, *HashRequest) (*HashMapResponse, error)
+	mustEmbedUnimplementedTrustixLogServer()
+}
+
+// UnimplementedTrustixLogServer must be embedded to have forward compatible implementations.
+type UnimplementedTrustixLogServer struct {
+}
+
+func (UnimplementedTrustixLogServer) HashMap(context.Context, *HashRequest) (*HashMapResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HashMap not implemented")
+}
+func (UnimplementedTrustixLogServer) mustEmbedUnimplementedTrustixLogServer() {}
+
+// UnsafeTrustixLogServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TrustixLogServer will
+// result in compilation errors.
+type UnsafeTrustixLogServer interface {
+	mustEmbedUnimplementedTrustixLogServer()
+}
+
+func RegisterTrustixLogServer(s *grpc.Server, srv TrustixLogServer) {
+	s.RegisterService(&_TrustixLog_serviceDesc, srv)
+}
+
+func _TrustixLog_HashMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HashRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixLogServer).HashMap(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixLog/HashMap",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixLogServer).HashMap(ctx, req.(*HashRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _TrustixLog_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "trustix.TrustixLog",
+	HandlerType: (*TrustixLogServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "HashMap",
+			Handler:    _TrustixLog_HashMap_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "trustix.proto",
+}

@@ -71,6 +71,29 @@ func (s *kvServer) GetKey(ctx context.Context, in *pb.KVRequest) (*pb.KVResponse
 	}, nil
 }
 
+type logServer struct {
+	pb.UnimplementedTrustixLogServer
+	m map[string]*core.TrustixCore
+}
+
+func (l *logServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMapResponse, error) {
+
+	responses := make(map[string][]byte)
+
+	for name, l := range l.m {
+		h, err := l.Query(in.InputHash)
+		if err != nil {
+			continue
+		}
+		responses[name] = h
+	}
+
+	return &pb.HashMapResponse{
+		Hashes: responses,
+	}, nil
+
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "trustix",
 	Short: "Trustix",
@@ -120,13 +143,17 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		logMap := make(map[string]*core.TrustixCore)
 		for _, logConfig := range config.Logs {
 			c, err := core.CoreFromConfig(logConfig, flagConfig)
 			if err != nil {
 				log.Fatal(err)
 			}
 
+			logMap[logConfig.Name] = c
+
 			if logConfig.Mode == "trustix-log" {
+				// Authoritive APIs
 				pb.RegisterTrustixRPCServer(s, &pbServer{
 					core: c,
 				})
@@ -134,8 +161,11 @@ var rootCmd = &cobra.Command{
 					core: c,
 				})
 			}
-
 		}
+
+		pb.RegisterTrustixLogServer(s, &logServer{
+			m: logMap,
+		})
 
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
@@ -162,6 +192,9 @@ func initCommands() {
 
 	rootCmd.AddCommand(queryCommand)
 	initQuery()
+
+	rootCmd.AddCommand(queryMap)
+	initMapQuery()
 }
 
 func Execute() {
