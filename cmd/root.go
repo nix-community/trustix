@@ -103,12 +103,21 @@ var rootCmd = &cobra.Command{
 
 		// Check if any names are non-unique
 		seenNames := make(map[string]struct{})
+		// The number of authoritive logs, can't exceed 1
+		numLogs := 0
 		for _, logConfig := range config.Logs {
 			_, ok := seenNames[logConfig.Name]
 			if ok {
 				log.Fatalf("Found non-unique log name: %s", logConfig.Name)
 			}
 			seenNames[logConfig.Name] = struct{}{}
+
+			if logConfig.Mode == "trustix-log" {
+				numLogs += 1
+				if numLogs > 1 {
+					log.Fatal("More than 1 authoritive logs is not supported.")
+				}
+			}
 		}
 
 		for _, logConfig := range config.Logs {
@@ -117,12 +126,15 @@ var rootCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 
-			pb.RegisterTrustixRPCServer(s, &pbServer{
-				core: c,
-			})
-			pb.RegisterTrustixKVServer(s, &kvServer{
-				core: c,
-			})
+			if logConfig.Mode == "trustix-log" {
+				pb.RegisterTrustixRPCServer(s, &pbServer{
+					core: c,
+				})
+				pb.RegisterTrustixKVServer(s, &kvServer{
+					core: c,
+				})
+			}
+
 		}
 
 		if err := s.Serve(lis); err != nil {

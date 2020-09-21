@@ -8,6 +8,7 @@ import (
 	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
+	"github.com/tweag/trustix/transport"
 )
 
 type FlagConfig struct {
@@ -97,13 +98,33 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		return nil, err
 	}
 
-	if !sig.CanSign() {
-		return nil, fmt.Errorf("Cannot sign using the current configuration, aborting.")
+	if conf.Mode == "trustix-log" {
+		if !sig.CanSign() {
+			return nil, fmt.Errorf("Cannot sign using the current configuration, aborting.")
+		}
 	}
 
-	store, err := storage.FromConfig(conf.Name, flags.StateDirectory, conf.Storage)
-	if err != nil {
-		return nil, err
+	var store storage.TrustixStorage
+	switch conf.Mode {
+	case "trustix-log":
+		store, err = storage.FromConfig(conf.Name, flags.StateDirectory, conf.Storage)
+		if err != nil {
+			return nil, err
+		}
+	case "trustix-follower":
+		// // Followers have a local store for storing proofs
+		// backingStore, err := storage.NativeStorageFromConfig(conf.Name, flags.StateDirectory, nil)
+		// if err != nil {
+		// 	return nil, err
+		// }
+
+		store, err = transport.NewGRPCTransport()
+		if err != nil {
+			return nil, err
+		}
+
+	default:
+		return nil, fmt.Errorf("Mode '%s' unhandled", conf.Mode)
 	}
 
 	var tree *smt.SparseMerkleTree

@@ -41,9 +41,9 @@ service TrustixKV {
 }
 
 message KVRequest {
-  bytes key = 1;
+  bytes Key = 1;
 }
 
 message KVResponse {
-  bytes value = 1;
+  bytes Value = 1;
 }
