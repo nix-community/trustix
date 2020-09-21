@@ -35,6 +35,19 @@ func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 		}
 		buf = v
 
+		hasher := sha256.New()
+
+		// Check inclusion proof
+		proof, err := s.tree.Prove(key)
+		if err != nil {
+			return err
+		}
+		root := s.tree.Root()
+
+		if !smt.VerifyProof(proof, root, key, v, hasher) {
+			return fmt.Errorf("Proof verification failed")
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -74,15 +87,6 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 		if err != nil {
 			return err
 		}
-
-		// // Generate a Merkle proof for foo=bar
-		// proof, _ := tree.Prove(a)
-		// root := tree.Root() // We also need the current tree root for the proof
-
-		// // Verify the Merkle proof for foo=bar
-		// if !smt.VerifyProof(proof, root, a, b, hasher) {
-		// 	return fmt.Errorf("Proof verification failed.")
-		// }
 
 		return s.mapStore.Set([]byte("HEAD"), sth)
 	})
