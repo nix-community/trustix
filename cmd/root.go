@@ -58,7 +58,7 @@ type kvServer struct {
 	core *core.TrustixCore
 }
 
-func (s *kvServer) GetKey(ctx context.Context, in *pb.KVRequest) (*pb.KVResponse, error) {
+func (s *kvServer) Get(ctx context.Context, in *pb.KVRequest) (*pb.KVResponse, error) {
 	fmt.Println(fmt.Sprintf("Received KV request for %s", hex.EncodeToString(in.Key)))
 
 	v, err := s.core.Get(in.Key)

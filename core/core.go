@@ -117,7 +117,6 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		// if err != nil {
 		// 	return nil, err
 		// }
-
 		store, err = transport.NewGRPCTransport(conf.Transport.GRPC)
 		if err != nil {
 			return nil, err
