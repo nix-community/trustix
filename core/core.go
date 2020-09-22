@@ -24,6 +24,7 @@ type TrustixCore struct {
 	sthManager *sth.STHManager
 	mapStore   *smtMapStore
 	hasher     hash.Hash
+	signer     signer.TrustixSigner
 }
 
 func (s *TrustixCore) Query(key []byte) ([]byte, error) {
@@ -114,6 +115,15 @@ func (s *TrustixCore) updateRoot() error {
 				return err
 			}
 
+			sigBytes, err := oldSTH.UnmarshalSignature()
+			if err != nil {
+				return err
+			}
+
+			if !s.signer.Verify(rootBytes, sigBytes) {
+				return fmt.Errorf("STH signature verification failed")
+			}
+
 			if bytes.Compare(rootBytes, s.tree.Root()) != 0 {
 				s.tree.SetRoot(rootBytes)
 				fmt.Println("Updated root")
@@ -172,6 +182,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		oldHead, err := txn.Get([]byte("HEAD"))
 		if err != nil {
 			// No STH yet, new tree
+			// TODO: Create a completely separate command for new tree, no magic should happen at startup
 			if err == storage.ObjectNotFoundError {
 				tree = smt.NewSparseMerkleTree(mapStore, hasher)
 			} else {
@@ -187,6 +198,15 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 			rootBytes, err := oldSTH.UnmarshalRoot()
 			if err != nil {
 				return err
+			}
+
+			sigBytes, err := oldSTH.UnmarshalSignature()
+			if err != nil {
+				return err
+			}
+
+			if !sig.Verify(rootBytes, sigBytes) {
+				return fmt.Errorf("STH signature verification failed")
 			}
 
 			tree = smt.ImportSparseMerkleTree(mapStore, hasher, rootBytes)
@@ -206,6 +226,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		sthManager: sthManager,
 		mapStore:   mapStore,
 		hasher:     hasher,
+		signer:     sig,
 	}
 
 	switch conf.Mode {

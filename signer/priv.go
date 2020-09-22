@@ -6,7 +6,8 @@ import (
 )
 
 type privkeySigner struct {
-	signer crypto.Signer // Underlying signer
+	signer   crypto.Signer // Underlying signer
+	verifier func(message, sig []byte) bool
 }
 
 func (s *privkeySigner) Public() crypto.PublicKey {
@@ -19,4 +20,8 @@ func (s *privkeySigner) Sign(rand io.Reader, digest []byte, opts crypto.SignerOp
 
 func (s *privkeySigner) CanSign() bool {
 	return true
+}
+
+func (s *privkeySigner) Verify(message, sig []byte) bool {
+	return s.verifier(message, sig)
 }

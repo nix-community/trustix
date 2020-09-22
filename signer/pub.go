@@ -7,7 +7,8 @@ import (
 )
 
 type pubkeySigner struct {
-	pub crypto.PublicKey
+	pub      crypto.PublicKey
+	verifier func(message, sig []byte) bool
 }
 
 func (s *pubkeySigner) Public() crypto.PublicKey {
@@ -20,4 +21,8 @@ func (s *pubkeySigner) Sign(rand io.Reader, digest []byte, opts crypto.SignerOpt
 
 func (s *pubkeySigner) CanSign() bool {
 	return false
+}
+
+func (s *pubkeySigner) Verify(message, sig []byte) bool {
+	return s.verifier(message, sig)
 }
