@@ -1,6 +1,7 @@
 package core
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"fmt"
 	"github.com/lazyledger/smt"
@@ -9,6 +10,8 @@ import (
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
 	"github.com/tweag/trustix/transport"
+	"hash"
+	"time"
 )
 
 type FlagConfig struct {
@@ -20,6 +23,7 @@ type TrustixCore struct {
 	tree       *smt.SparseMerkleTree
 	sthManager *sth.STHManager
 	mapStore   *smtMapStore
+	hasher     hash.Hash
 }
 
 func (s *TrustixCore) Query(key []byte) ([]byte, error) {
@@ -35,8 +39,6 @@ func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 		}
 		buf = v
 
-		hasher := sha256.New()
-
 		// Check inclusion proof
 		proof, err := s.tree.Prove(key)
 		if err != nil {
@@ -44,7 +46,7 @@ func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 		}
 		root := s.tree.Root()
 
-		if !smt.VerifyProof(proof, root, key, v, hasher) {
+		if !smt.VerifyProof(proof, root, key, v, s.hasher) {
 			return fmt.Errorf("Proof verification failed")
 		}
 
@@ -90,7 +92,36 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 
 		return s.mapStore.Set([]byte("HEAD"), sth)
 	})
+}
 
+func (s *TrustixCore) updateRoot() error {
+	return s.store.View(func(txn storage.Transaction) error {
+		s.mapStore.setTxn(txn)
+		defer s.mapStore.unsetTxn()
+
+		oldHead, err := txn.Get([]byte("HEAD"))
+		if err != nil {
+			return err
+		} else {
+			oldSTH := &sth.STH{}
+			err = oldSTH.FromJSON(oldHead)
+			if err != nil {
+				return err
+			}
+
+			rootBytes, err := oldSTH.UnmarshalRoot()
+			if err != nil {
+				return err
+			}
+
+			if bytes.Compare(rootBytes, s.tree.Root()) != 0 {
+				s.tree.SetRoot(rootBytes)
+				fmt.Println("Updated root")
+			}
+		}
+
+		return nil
+	})
 }
 
 func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, error) {
@@ -163,13 +194,34 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	sthManager := sth.NewSTHManager(tree, sig)
 
-	return &TrustixCore{
+	core := &TrustixCore{
 		store:      store,
 		tree:       tree,
 		sthManager: sthManager,
 		mapStore:   mapStore,
-	}, nil
+		hasher:     hasher,
+	}
+
+	switch conf.Mode {
+	case "trustix-follower":
+		go func() {
+			for {
+				// TODO: This is just an arbitrary interval for testing, not particularly intelligent
+				time.Sleep(10 * time.Second)
+				err := core.updateRoot()
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+		}()
+	default:
+	}
+
+	return core, nil
 }
