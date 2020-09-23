@@ -9,10 +9,10 @@ type minimumPercent struct {
 	minimumPct int
 }
 
-func NewMinimumPercentCorrelator(minimumPct int) LogCorrelator {
+func NewMinimumPercentCorrelator(minimumPct int) (LogCorrelator, error) {
 	return &minimumPercent{
 		minimumPct: minimumPct,
-	}
+	}, nil
 }
 
 func (q *minimumPercent) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOutput, error) {

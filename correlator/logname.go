@@ -10,10 +10,10 @@ type lognameCorrelator struct {
 
 // NewLogNameCorrelator - Matches a single name of a log
 // This mode is meant to be used as a fallback for e.g. cache.nixos.org
-func NewLogNameCorrelator(logName string) LogCorrelator {
+func NewLogNameCorrelator(logName string) (LogCorrelator, error) {
 	return &lognameCorrelator{
 		logName: logName,
-	}
+	}, nil
 }
 
 func (l *lognameCorrelator) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOutput, error) {
