@@ -79,13 +79,26 @@ type logServer struct {
 func (l *logServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMapResponse, error) {
 	responses := make(map[string][]byte)
 
-	for name, l := range l.m {
-		h, err := l.Query(in.InputHash)
-		if err != nil {
-			continue
-		}
-		responses[name] = h
+	var wg sync.WaitGroup
+
+	for name, log := range l.m {
+		// Create copies for goroutine
+		name := name
+		log := log
+
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			h, err := log.Query(in.InputHash)
+			if err != nil {
+				fmt.Println(err)
+			}
+			responses[name] = h
+		}()
 	}
+
+	wg.Wait()
 
 	return &pb.HashMapResponse{
 		Hashes: responses,
