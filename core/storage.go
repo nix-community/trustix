@@ -5,41 +5,22 @@ import (
 	"github.com/tweag/trustix/storage"
 )
 
-var noCurrentTransaction = fmt.Errorf("No current transaction")
-
 type smtMapStore struct {
-	txn   storage.Transaction
-	inTxn bool
+	txn storage.Transaction
 }
 
 // Implement MapStore for SMT lib
-func newMapStore() *smtMapStore {
-	return &smtMapStore{}
-}
-
-func (s *smtMapStore) setTxn(txn storage.Transaction) {
-	s.txn = txn
-	s.inTxn = true
-}
-
-func (s *smtMapStore) unsetTxn() {
-	s.txn = nil
-	s.inTxn = false
+func newMapStore(txn storage.Transaction) *smtMapStore {
+	return &smtMapStore{
+		txn: txn,
+	}
 }
 
 func (s *smtMapStore) Get(key []byte) ([]byte, error) {
-	if !s.inTxn {
-		return nil, noCurrentTransaction
-	}
-
 	return s.txn.Get(key)
 }
 
 func (s *smtMapStore) Set(key []byte, value []byte) error {
-	if !s.inTxn {
-		return noCurrentTransaction
-	}
-
 	return s.txn.Set(key, value)
 }
 

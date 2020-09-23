@@ -77,7 +77,6 @@ type logServer struct {
 }
 
 func (l *logServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMapResponse, error) {
-
 	responses := make(map[string][]byte)
 
 	for name, l := range l.m {

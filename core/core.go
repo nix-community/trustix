@@ -21,35 +21,31 @@ type FlagConfig struct {
 
 type TrustixCore struct {
 	store      storage.TrustixStorage
-	tree       *smt.SparseMerkleTree
-	sthManager *sth.STHManager
-	mapStore   *smtMapStore
 	hasher     hash.Hash
 	signer     signer.TrustixSigner
 	correlator correlator.LogCorrelator
+	root       []byte
 }
 
 func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 	var buf []byte
 
 	err := s.store.View(func(txn storage.Transaction) error {
-		s.mapStore.setTxn(txn)
-		defer s.mapStore.unsetTxn()
+		tree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.root)
 
-		v, err := s.tree.Get(key)
+		v, err := tree.Get(key)
 		if err != nil {
 			return err
 		}
 		buf = v
 
 		// Check inclusion proof
-		proof, err := s.tree.Prove(key)
+		proof, err := tree.Prove(key)
 		if err != nil {
 			return err
 		}
-		root := s.tree.Root()
 
-		if !smt.VerifyProof(proof, root, key, v, s.hasher) {
+		if !smt.VerifyProof(proof, tree.Root(), key, v, s.hasher) {
 			return fmt.Errorf("Proof verification failed")
 		}
 
@@ -83,24 +79,28 @@ func (s *TrustixCore) Get(key []byte) ([]byte, error) {
 
 func (s *TrustixCore) Submit(key []byte, value []byte) error {
 	return s.store.Update(func(txn storage.Transaction) error {
-		s.mapStore.setTxn(txn)
-		defer s.mapStore.unsetTxn()
+		mapStore := newMapStore(txn)
+		tree := smt.ImportSparseMerkleTree(mapStore, s.hasher, s.root)
 
-		s.tree.Update(key, value)
+		sthManager := sth.NewSTHManager(tree, s.signer)
 
-		sth, err := s.sthManager.Sign()
+		tree.Update(key, value)
+
+		sth, err := sthManager.Sign()
 		if err != nil {
 			return err
 		}
 
-		return s.mapStore.Set([]byte("HEAD"), sth)
+		s.root = tree.Root()
+
+		return mapStore.Set([]byte("HEAD"), sth)
 	})
 }
 
 func (s *TrustixCore) updateRoot() error {
 	return s.store.View(func(txn storage.Transaction) error {
-		s.mapStore.setTxn(txn)
-		defer s.mapStore.unsetTxn()
+		mapStore := newMapStore(txn)
+		tree := smt.ImportSparseMerkleTree(mapStore, s.hasher, s.root)
 
 		oldHead, err := txn.Get([]byte("HEAD"))
 		if err != nil {
@@ -126,8 +126,8 @@ func (s *TrustixCore) updateRoot() error {
 				return fmt.Errorf("STH signature verification failed")
 			}
 
-			if bytes.Compare(rootBytes, s.tree.Root()) != 0 {
-				s.tree.SetRoot(rootBytes)
+			if bytes.Compare(rootBytes, tree.Root()) != 0 {
+				s.root = rootBytes
 				fmt.Println("Updated root")
 			}
 		}
@@ -159,11 +159,6 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 			return nil, err
 		}
 	case "trustix-follower":
-		// // Followers have a local store for storing proofs
-		// backingStore, err := storage.NativeStorageFromConfig(conf.Name, flags.StateDirectory, nil)
-		// if err != nil {
-		// 	return nil, err
-		// }
 		store, err = transport.NewGRPCTransport(conf.Transport.GRPC)
 		if err != nil {
 			return nil, err
@@ -180,11 +175,9 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		return nil, err
 	}
 
-	mapStore := newMapStore()
-
+	var root []byte
 	err = store.View(func(txn storage.Transaction) error {
-		mapStore.setTxn(txn)
-		defer mapStore.unsetTxn()
+		mapStore := newMapStore(txn)
 
 		oldHead, err := txn.Get([]byte("HEAD"))
 		if err != nil {
@@ -195,6 +188,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 			} else {
 				return err
 			}
+			root = tree.Root()
 		} else {
 			oldSTH := &sth.STH{}
 			err = oldSTH.FromJSON(oldHead)
@@ -206,6 +200,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 			if err != nil {
 				return err
 			}
+			root = rootBytes
 
 			sigBytes, err := oldSTH.UnmarshalSignature()
 			if err != nil {
@@ -216,7 +211,6 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 				return fmt.Errorf("STH signature verification failed")
 			}
 
-			tree = smt.ImportSparseMerkleTree(mapStore, hasher, rootBytes)
 		}
 
 		return nil
@@ -225,16 +219,12 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		return nil, err
 	}
 
-	sthManager := sth.NewSTHManager(tree, sig)
-
 	core := &TrustixCore{
 		store:      store,
-		tree:       tree,
-		sthManager: sthManager,
-		mapStore:   mapStore,
 		hasher:     hasher,
 		signer:     sig,
 		correlator: corr,
+		root:       root,
 	}
 
 	switch conf.Mode {
