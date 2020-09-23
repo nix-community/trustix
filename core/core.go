@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/lazyledger/smt"
 	"github.com/tweag/trustix/config"
+	"github.com/tweag/trustix/correlator"
 	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
@@ -25,6 +26,7 @@ type TrustixCore struct {
 	mapStore   *smtMapStore
 	hasher     hash.Hash
 	signer     signer.TrustixSigner
+	correlator correlator.LogCorrelator
 }
 
 func (s *TrustixCore) Query(key []byte) ([]byte, error) {
@@ -173,6 +175,11 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 
 	var tree *smt.SparseMerkleTree
 
+	corr, err := correlator.NewMinimumPercentCorrelator(100)
+	if err != nil {
+		return nil, err
+	}
+
 	mapStore := newMapStore()
 
 	err = store.View(func(txn storage.Transaction) error {
@@ -227,6 +234,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		mapStore:   mapStore,
 		hasher:     hasher,
 		signer:     sig,
+		correlator: corr,
 	}
 
 	switch conf.Mode {
