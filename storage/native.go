@@ -1,64 +1,66 @@
 package storage
 
 import (
-	badger "github.com/dgraph-io/badger/v2"
 	"github.com/tweag/trustix/config"
+	bolt "go.etcd.io/bbolt"
 	"path"
 )
 
+type nativeStorage struct {
+	db *bolt.DB
+}
+
 type nativeTxn struct {
-	txn *badger.Txn
+	txn *bolt.Tx
 }
 
 func (t *nativeTxn) Get(key []byte) ([]byte, error) {
-	val, err := t.txn.Get(key)
-	if err != nil {
-		// Normalise error
-		if err == badger.ErrKeyNotFound {
-			return nil, ObjectNotFoundError
-		}
-		return nil, err
+	bucket := t.txn.Bucket([]byte("somebucket"))
+	if bucket == nil {
+		return nil, ObjectNotFoundError
 	}
 
-	return val.ValueCopy(nil)
+	val := bucket.Get(key)
+	if val == nil {
+		return nil, ObjectNotFoundError
+	}
+
+	return val, nil
 }
 
 func (t *nativeTxn) Set(key []byte, value []byte) error {
-	return t.txn.Set(key, value)
+	bucket, err := t.txn.CreateBucketIfNotExists([]byte("somebucket"))
+	if err != nil {
+		return err
+	}
+
+	return bucket.Put(key, value)
 }
 
-func newNativeTXN() *nativeTxn {
-	return &nativeTxn{}
-}
+func NativeStorageFromConfig(name string, stateDirectory string, conf *config.NativeStorageConfig) (*nativeStorage, error) {
+	path := path.Join(stateDirectory, name+".db")
 
-type NativeStorage struct {
-	db *badger.DB
-}
-
-func NativeStorageFromConfig(name string, stateDirectory string, conf *config.NativeStorageConfig) (*NativeStorage, error) {
-	path := path.Join(stateDirectory, name)
-
-	db, err := badger.Open(badger.DefaultOptions(path))
+	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return &NativeStorage{
+	return &nativeStorage{
 		db: db,
 	}, nil
 }
 
-func (s *NativeStorage) runTX(readWrite bool, fn func(Transaction) error) error {
-	txn := s.db.NewTransaction(readWrite)
-	if readWrite {
-		defer txn.Discard()
+func (s *nativeStorage) runTX(readWrite bool, fn func(Transaction) error) error {
+	txn, err := s.db.Begin(readWrite)
+	if err != nil {
+		return err
 	}
+	defer txn.Rollback()
 
 	t := &nativeTxn{
 		txn: txn,
 	}
-
-	err := fn(t)
+	err = fn(t)
 	if err != nil {
 		return err
 	} else {
@@ -70,14 +72,14 @@ func (s *NativeStorage) runTX(readWrite bool, fn func(Transaction) error) error 
 	return err
 }
 
-func (s *NativeStorage) View(fn func(Transaction) error) error {
+func (s *nativeStorage) View(fn func(Transaction) error) error {
 	return s.runTX(false, fn)
 }
 
-func (s *NativeStorage) Update(fn func(Transaction) error) error {
+func (s *nativeStorage) Update(fn func(Transaction) error) error {
 	return s.runTX(true, fn)
 }
 
-func (s *NativeStorage) Close() {
+func (s *nativeStorage) Close() {
 	s.db.Close()
 }
