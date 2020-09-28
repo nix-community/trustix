@@ -93,25 +93,38 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 
 		// The sparse merkle tree
 		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.mapRoot)
-		sthManager := sth.NewSTHManager(smTree, vLog, s.signer)
 
 		// Append value to both verifiable log & sparse indexed tree
 		vLog.Append(value)
 		smTree.Update(key, value)
 
-		// Stores new STH as side effect
-		sth, err := sthManager.Sign()
+		sth, err := sth.SignHead(smTree, vLog, s.signer)
 		if err != nil {
 			return err
 		}
 
-		err = txn.Set([]byte("META"), []byte("HEAD"), sth)
+		smhBytes, err := sth.Marshal()
 		if err != nil {
 			return err
 		}
 
-		s.mapRoot = smTree.Root()
-		s.logRoot = vLog.Root()
+		mapRoot, err := sth.UnmarshalSMHRoot()
+		if err != nil {
+			return err
+		}
+
+		logRoot, err := sth.UnmarshalSTHRoot()
+		if err != nil {
+			return err
+		}
+
+		err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
+		if err != nil {
+			return err
+		}
+
+		s.mapRoot = mapRoot
+		s.logRoot = logRoot
 
 		return nil
 	})

@@ -1,8 +1,12 @@
 package sth
 
 import (
+	"crypto"
+	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/lazyledger/smt"
+	vlog "github.com/tweag/trustix/log"
 	"github.com/tweag/trustix/signer"
 )
 
@@ -18,16 +22,31 @@ type SMH struct {
 	LogSth    *STH   `json:"log_sth"`
 }
 
-func newSMH(sthSize int, sthRoot []byte, sthSig []byte, smhRoot []byte, smhSig []byte) *SMH {
+func SignHead(smTree *smt.SparseMerkleTree, vLog *vlog.VerifiableLog, signer crypto.Signer) (*SMH, error) {
+
+	opts := crypto.SignerOpts(crypto.Hash(0))
+
+	smTreeRoot := smTree.Root()
+	smTreeSig, err := signer.Sign(rand.Reader, smTreeRoot, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	vLogRoot := vLog.Root()
+	sthSig, err := signer.Sign(rand.Reader, vLogRoot, opts)
+	if err != nil {
+		return nil, err
+	}
+
 	return &SMH{
-		Signature: base64.StdEncoding.EncodeToString(smhSig),
-		Root:      base64.StdEncoding.EncodeToString(smhRoot),
+		Signature: base64.StdEncoding.EncodeToString(smTreeSig),
+		Root:      base64.StdEncoding.EncodeToString(smTreeRoot),
 		LogSth: &STH{
 			Signature: base64.StdEncoding.EncodeToString(sthSig),
-			Root:      base64.StdEncoding.EncodeToString(sthRoot),
-			Size:      sthSize,
+			Root:      base64.StdEncoding.EncodeToString(vLogRoot),
+			Size:      vLog.Size(),
 		},
-	}
+	}, nil
 }
 
 func NewSMHFromJSON(j []byte) (*SMH, error) {
