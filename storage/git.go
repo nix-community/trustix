@@ -38,7 +38,9 @@ func (t *gitTxn) shardKey(key []byte) []string {
 	return ret
 }
 
-func (t *gitTxn) Get(key []byte) ([]byte, error) {
+func (t *gitTxn) Get(bucket []byte, key []byte) ([]byte, error) {
+	panic("Bucket namespacing not implemented")
+
 	path := t.shardKey(key)
 
 	tree := t.tree
@@ -67,7 +69,9 @@ func (t *gitTxn) Get(key []byte) ([]byte, error) {
 	return nil, errors.ObjectNotFoundError
 }
 
-func (t *gitTxn) Set(key []byte, value []byte) error {
+func (t *gitTxn) Set(bucket []byte, key []byte, value []byte) error {
+	panic("Bucket namespacing not implemented")
+
 	path := t.shardKey(key)
 
 	builder, err := t.repo.TreeBuilderFromTree(t.tree)

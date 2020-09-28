@@ -14,13 +14,13 @@ type nativeTxn struct {
 	txn *bolt.Tx
 }
 
-func (t *nativeTxn) Get(key []byte) ([]byte, error) {
-	bucket := t.txn.Bucket([]byte("somebucket"))
-	if bucket == nil {
+func (t *nativeTxn) Get(bucket []byte, key []byte) ([]byte, error) {
+	b := t.txn.Bucket(bucket)
+	if b == nil {
 		return nil, ObjectNotFoundError
 	}
 
-	val := bucket.Get(key)
+	val := b.Get(key)
 	if val == nil {
 		return nil, ObjectNotFoundError
 	}
@@ -28,13 +28,13 @@ func (t *nativeTxn) Get(key []byte) ([]byte, error) {
 	return val, nil
 }
 
-func (t *nativeTxn) Set(key []byte, value []byte) error {
-	bucket, err := t.txn.CreateBucketIfNotExists([]byte("somebucket"))
+func (t *nativeTxn) Set(bucket []byte, key []byte, value []byte) error {
+	b, err := t.txn.CreateBucketIfNotExists(bucket)
 	if err != nil {
 		return err
 	}
 
-	return bucket.Put(key, value)
+	return b.Put(key, value)
 }
 
 func NativeStorageFromConfig(name string, stateDirectory string, conf *config.NativeStorageConfig) (*nativeStorage, error) {

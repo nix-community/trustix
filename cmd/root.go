@@ -61,7 +61,7 @@ type kvServer struct {
 func (s *kvServer) Get(ctx context.Context, in *pb.KVRequest) (*pb.KVResponse, error) {
 	fmt.Println(fmt.Sprintf("Received KV request for %s", hex.EncodeToString(in.Key)))
 
-	v, err := s.core.Get(in.Key)
+	v, err := s.core.Get(in.Bucket, in.Key)
 	if err != nil {
 		return nil, err
 	}

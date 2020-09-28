@@ -18,12 +18,13 @@ type grpcTxn struct {
 	c pb.TrustixKVClient
 }
 
-func (t *grpcTxn) Get(key []byte) ([]byte, error) {
+func (t *grpcTxn) Get(bucket []byte, key []byte) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	r, err := t.c.Get(ctx, &pb.KVRequest{
-		Key: key,
+		Bucket: bucket,
+		Key:    key,
 	})
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func (t *grpcTxn) Get(key []byte) ([]byte, error) {
 	return r.Value, nil
 }
 
-func (t *grpcTxn) Set(key []byte, value []byte) error {
+func (t *grpcTxn) Set(bucket []byte, key []byte, value []byte) error {
 	return fmt.Errorf("Cannot Set on remote")
 }
 

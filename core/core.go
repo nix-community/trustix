@@ -58,11 +58,11 @@ func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 	return buf, nil
 }
 
-func (s *TrustixCore) Get(key []byte) ([]byte, error) {
+func (s *TrustixCore) Get(bucket []byte, key []byte) ([]byte, error) {
 	var buf []byte
 
 	err := s.store.View(func(txn storage.Transaction) error {
-		v, err := txn.Get(key)
+		v, err := txn.Get(bucket, key)
 		if err != nil {
 			return err
 		}
@@ -102,7 +102,7 @@ func (s *TrustixCore) updateRoot() error {
 		mapStore := newMapStore(txn)
 		tree := smt.ImportSparseMerkleTree(mapStore, s.hasher, s.root)
 
-		oldHead, err := txn.Get([]byte("HEAD"))
+		oldHead, err := txn.Get([]byte("META"), []byte("HEAD"))
 		if err != nil {
 			return err
 		} else {
@@ -179,7 +179,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 	err = store.View(func(txn storage.Transaction) error {
 		mapStore := newMapStore(txn)
 
-		oldHead, err := txn.Get([]byte("HEAD"))
+		oldHead, err := txn.Get([]byte("META"), []byte("HEAD"))
 		if err != nil {
 			// No STH yet, new tree
 			// TODO: Create a completely separate command for new tree, no magic should happen at startup

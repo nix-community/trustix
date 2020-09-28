@@ -17,11 +17,11 @@ func newMapStore(txn storage.Transaction) *smtMapStore {
 }
 
 func (s *smtMapStore) Get(key []byte) ([]byte, error) {
-	return s.txn.Get(key)
+	return s.txn.Get([]byte("SMT"), key)
 }
 
 func (s *smtMapStore) Set(key []byte, value []byte) error {
-	return s.txn.Set(key, value)
+	return s.txn.Set([]byte("SMT"), key, value)
 }
 
 func (s *smtMapStore) Delete(key []byte) error {

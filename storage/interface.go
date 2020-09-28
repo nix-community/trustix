@@ -1,8 +1,8 @@
 package storage
 
 type Transaction interface {
-	Get(key []byte) ([]byte, error)
-	Set(key []byte, value []byte) error
+	Get(bucket []byte, key []byte) ([]byte, error)
+	Set(bucket []byte, key []byte, value []byte) error
 }
 
 type TrustixStorage interface {
