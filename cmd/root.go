@@ -80,6 +80,7 @@ func (l *logServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMa
 	responses := make(map[string][]byte)
 
 	var wg sync.WaitGroup
+	var mux sync.Mutex
 
 	for name, log := range l.m {
 		// Create copies for goroutine
@@ -90,11 +91,15 @@ func (l *logServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMa
 
 		go func() {
 			defer wg.Done()
+
 			h, err := log.Query(in.InputHash)
 			if err != nil {
 				fmt.Println(err)
 			}
+
+			mux.Lock()
 			responses[name] = h
+			mux.Unlock()
 		}()
 	}
 
