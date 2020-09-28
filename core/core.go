@@ -1,12 +1,12 @@
 package core
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"fmt"
 	"github.com/lazyledger/smt"
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/correlator"
+	vlog "github.com/tweag/trustix/log"
 	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
@@ -24,14 +24,19 @@ type TrustixCore struct {
 	hasher     hash.Hash
 	signer     signer.TrustixSigner
 	correlator correlator.LogCorrelator
-	root       []byte
+
+	mapRoot  []byte
+	logRoot  []byte
+	treeSize int
 }
 
 func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 	var buf []byte
 
 	err := s.store.View(func(txn storage.Transaction) error {
-		tree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.root)
+		tree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.mapRoot)
+
+		// TODO: Log verification (but optional?)
 
 		v, err := tree.Get(key)
 		if err != nil {
@@ -79,57 +84,70 @@ func (s *TrustixCore) Get(bucket []byte, key []byte) ([]byte, error) {
 
 func (s *TrustixCore) Submit(key []byte, value []byte) error {
 	return s.store.Update(func(txn storage.Transaction) error {
-		mapStore := newMapStore(txn)
-		tree := smt.ImportSparseMerkleTree(mapStore, s.hasher, s.root)
 
-		sthManager := sth.NewSTHManager(tree, s.signer)
+		// The append-only log
+		vLog, err := vlog.NewVerifiableLog()
+		if err != nil {
+			return err
+		}
 
-		tree.Update(key, value)
+		// The sparse merkle tree
+		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.mapRoot)
+		sthManager := sth.NewSTHManager(smTree, vLog, s.signer)
 
+		// Append value to both verifiable log & sparse indexed tree
+		vLog.Append(value)
+		smTree.Update(key, value)
+
+		// Stores new STH as side effect
 		sth, err := sthManager.Sign()
 		if err != nil {
 			return err
 		}
 
-		s.root = tree.Root()
+		err = txn.Set([]byte("META"), []byte("HEAD"), sth)
+		if err != nil {
+			return err
+		}
 
-		return mapStore.Set([]byte("HEAD"), sth)
+		s.mapRoot = smTree.Root()
+		s.logRoot = vLog.Root()
+
+		return nil
 	})
 }
 
 func (s *TrustixCore) updateRoot() error {
 	return s.store.View(func(txn storage.Transaction) error {
-		mapStore := newMapStore(txn)
-		tree := smt.ImportSparseMerkleTree(mapStore, s.hasher, s.root)
 
 		oldHead, err := txn.Get([]byte("META"), []byte("HEAD"))
 		if err != nil {
 			return err
 		} else {
-			oldSTH := &sth.STH{}
-			err = oldSTH.FromJSON(oldHead)
+			oldSMH, err := sth.NewSMHFromJSON(oldHead)
+			if err != nil {
+				return err
+			}
+			sthRootBytes, err := oldSMH.UnmarshalSTHRoot()
 			if err != nil {
 				return err
 			}
 
-			rootBytes, err := oldSTH.UnmarshalRoot()
+			// Verify signed map head
+			smhRootBytes, err := oldSMH.UnmarshalSMHRoot()
 			if err != nil {
 				return err
 			}
 
-			sigBytes, err := oldSTH.UnmarshalSignature()
+			err = oldSMH.Verify(s.signer)
 			if err != nil {
 				return err
 			}
 
-			if !s.signer.Verify(rootBytes, sigBytes) {
-				return fmt.Errorf("STH signature verification failed")
-			}
+			s.mapRoot = smhRootBytes
+			s.logRoot = sthRootBytes
+			s.treeSize = oldSMH.LogSth.Size
 
-			if bytes.Compare(rootBytes, tree.Root()) != 0 {
-				s.root = rootBytes
-				fmt.Println("Updated root")
-			}
 		}
 
 		return nil
@@ -175,11 +193,19 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		return nil, err
 	}
 
-	var root []byte
+	core := &TrustixCore{
+		store:      store,
+		hasher:     hasher,
+		signer:     sig,
+		correlator: corr,
+		// TODO: Log root
+	}
+
+	var mapRoot []byte
 	err = store.View(func(txn storage.Transaction) error {
 		mapStore := newMapStore(txn)
 
-		oldHead, err := txn.Get([]byte("META"), []byte("HEAD"))
+		// oldHead, err := txn.Get([]byte("META"), []byte("HEAD"))
 		if err != nil {
 			// No STH yet, new tree
 			// TODO: Create a completely separate command for new tree, no magic should happen at startup
@@ -188,43 +214,17 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 			} else {
 				return err
 			}
-			root = tree.Root()
+			mapRoot = tree.Root()
 		} else {
-			oldSTH := &sth.STH{}
-			err = oldSTH.FromJSON(oldHead)
-			if err != nil {
-				return err
-			}
-
-			rootBytes, err := oldSTH.UnmarshalRoot()
-			if err != nil {
-				return err
-			}
-			root = rootBytes
-
-			sigBytes, err := oldSTH.UnmarshalSignature()
-			if err != nil {
-				return err
-			}
-
-			if !sig.Verify(rootBytes, sigBytes) {
-				return fmt.Errorf("STH signature verification failed")
-			}
-
+			// TODO: Implement local cache and set to old values so we can verify consistency between last known good HEAD
+			// and the newest HEAD
+			return core.updateRoot()
 		}
 
 		return nil
 	})
 	if err != nil {
 		return nil, err
-	}
-
-	core := &TrustixCore{
-		store:      store,
-		hasher:     hasher,
-		signer:     sig,
-		correlator: corr,
-		root:       root,
 	}
 
 	switch conf.Mode {

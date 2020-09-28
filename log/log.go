@@ -17,6 +17,10 @@ func NewVerifiableLog() (*VerifiableLog, error) {
 	}, nil
 }
 
+func (l *VerifiableLog) Size() int {
+	return l.treeSize
+}
+
 func (l *VerifiableLog) Root() []byte {
 	if l.treeSize == 0 {
 		h := sha256.New()
