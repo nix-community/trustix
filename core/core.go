@@ -86,18 +86,8 @@ func (s *TrustixCore) Get(bucket []byte, key []byte) ([]byte, error) {
 func (s *TrustixCore) Submit(key []byte, value []byte) error {
 	return s.store.Update(func(txn storage.Transaction) error {
 
-		oldHead, err := txn.Get([]byte("META"), []byte("HEAD"))
-		if err != nil {
-			panic(err)
-		}
-
-		oldSMH, err := sth.NewSMHFromJSON(oldHead)
-		if err != nil {
-			panic(err)
-		}
-
 		// The append-only log
-		vLog, err := vlog.NewVerifiableLog(txn, oldSMH.LogSth.Size)
+		vLog, err := vlog.NewVerifiableLog(txn, s.treeSize)
 		if err != nil {
 			return err
 		}
@@ -136,6 +126,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 
 		s.mapRoot = mapRoot
 		s.logRoot = logRoot
+		s.treeSize = vLog.Size()
 
 		return nil
 	})
