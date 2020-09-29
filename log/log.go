@@ -35,10 +35,11 @@ func (l *VerifiableLog) Root() []byte {
 	lastIndex := l.storage.LevelSize(level) - 1
 	hash := l.storage.Get(level, lastIndex).Digest
 
-	for _, hashes := range l.storage.SliceStart(level + 1) {
-		if len(hashes)%2 == 1 {
-			idx := len(hashes) - 1
-			hash = branchHash(hashes[idx].Digest, hash)
+	storageSize := l.storage.Size()
+	for i := level + 1; i < storageSize; i++ {
+		levelSize := l.storage.LevelSize(i)
+		if levelSize%2 == 1 {
+			hash = branchHash(l.storage.Get(i, levelSize-1).Digest, hash)
 		}
 	}
 
@@ -87,9 +88,9 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapsh
 	last_node := snapshot - 1
 	last_hash := l.storage.Get(0, last_node).Digest
 
-	for _, row := range l.storage.SliceEnd(level) {
+	for i := 0; i < level; i++ {
 		if isRightChild(last_node) {
-			last_hash = branchHash(row[last_node-1].Digest, last_hash)
+			last_hash = branchHash(l.storage.Get(i, last_node-1).Digest, last_hash)
 		}
 		last_node = parent(last_node)
 	}

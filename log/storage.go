@@ -13,14 +13,6 @@ func (s *logStorage) Get(level int, index int) *Leaf {
 	return s.hashes[level][index]
 }
 
-func (s *logStorage) SliceStart(level int) [][]*Leaf {
-	return s.hashes[level:]
-}
-
-func (s *logStorage) SliceEnd(level int) [][]*Leaf {
-	return s.hashes[:level]
-}
-
 func (s *logStorage) Size() int {
 	return len(s.hashes)
 }
