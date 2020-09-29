@@ -39,7 +39,7 @@ var submitCommand = &cobra.Command{
 		defer conn.Close()
 		c := pb.NewTrustixRPCClient(conn)
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 
 		r, err := c.SubmitMapping(ctx, &pb.SubmitRequest{

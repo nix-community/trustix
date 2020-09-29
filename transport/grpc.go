@@ -37,6 +37,10 @@ func (t *grpcTxn) Set(bucket []byte, key []byte, value []byte) error {
 	return fmt.Errorf("Cannot Set on remote")
 }
 
+func (t *grpcTxn) Size(bucket []byte) (int, error) {
+	return 0, fmt.Errorf("Cannot Size on remote")
+}
+
 func NewGRPCTransport(t *config.GRPCTransportConfig) (*grpcTransport, error) {
 	conn, err := grpc.Dial(t.Remote, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {

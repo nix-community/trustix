@@ -14,6 +14,16 @@ type nativeTxn struct {
 	txn *bolt.Tx
 }
 
+func (t *nativeTxn) Size(bucket []byte) (int, error) {
+	b := t.txn.Bucket(bucket)
+	if b == nil {
+		return 0, ObjectNotFoundError
+	}
+
+	stats := b.Stats()
+	return stats.KeyN, nil
+}
+
 func (t *nativeTxn) Get(bucket []byte, key []byte) ([]byte, error) {
 	b := t.txn.Bucket(bucket)
 	if b == nil {

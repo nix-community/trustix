@@ -1,30 +1,76 @@
 package log
 
+import (
+	"fmt"
+	"github.com/tweag/trustix/storage"
+)
+
 type logStorage struct {
-	// TODO: Implement persistent storage
-	hashes [][]*Leaf
+	txn storage.Transaction
 }
 
 func (s *logStorage) LevelSize(level int) int {
-	return len(s.hashes[level])
-}
+	n, err := s.txn.Size([]byte(fmt.Sprintf("log-%d")))
+	if err != nil {
+		if err == storage.ObjectNotFoundError {
+			return 1
+		}
+		panic(err)
+	}
 
-func (s *logStorage) Get(level int, index int) *Leaf {
-	return s.hashes[level][index]
+	return n
 }
 
 func (s *logStorage) Size() int {
-	return len(s.hashes)
+	n, err := s.txn.Size([]byte("log-root"))
+	if err != nil {
+		if err == storage.ObjectNotFoundError {
+			return 1
+		}
+		panic(err)
+	}
+	return n
+}
+
+func (s *logStorage) Get(level int, idx int) *Leaf {
+	bucket := []byte(fmt.Sprintf("log-%d", level))
+	key := []byte(fmt.Sprintf("%d", idx))
+
+	v, err := s.txn.Get(bucket, key)
+	if err != nil {
+		panic(err)
+	}
+
+	l, err := LeafFromBytes(v)
+	if err != nil {
+		panic(err)
+	}
+
+	return l
 }
 
 func (s *logStorage) Append(level int, leaf *Leaf) {
 	if s.Size() == level {
-		// TODO: Figure out level "growth"
-		h := []*Leaf{}
-		s.hashes = append(s.hashes, h)
+		// "Grow" root level by adding another "level"
+		err := s.txn.Set([]byte("log-root"), []byte(fmt.Sprintf("%d", s.Size())), []byte(""))
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	hashes := s.hashes[level]
-	hashes = append(hashes, leaf)
-	s.hashes[level] = hashes
+	v, err := leaf.Marshal()
+	if err != nil {
+		panic(err)
+	}
+
+	idx := s.LevelSize(level) - 1
+
+	bucket := []byte(fmt.Sprintf("log-%d", level))
+	key := []byte(fmt.Sprintf("%d", idx))
+
+	err = s.txn.Set(bucket, key, v)
+	if err != nil {
+		panic(err)
+	}
+
 }

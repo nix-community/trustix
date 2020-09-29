@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"github.com/libgit2/git2go/v30"
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/storage/errors"
@@ -36,6 +37,10 @@ func (t *gitTxn) shardKey(key []byte) []string {
 	ret = append(ret, hash[tokenLength*treeDepth:])
 
 	return ret
+}
+
+func (t *gitTxn) Size(bucket []byte) (int, error) {
+	return 0, fmt.Errorf("Not implemented")
 }
 
 func (t *gitTxn) Get(bucket []byte, key []byte) ([]byte, error) {

@@ -86,7 +86,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 	return s.store.Update(func(txn storage.Transaction) error {
 
 		// The append-only log
-		vLog, err := vlog.NewVerifiableLog()
+		vLog, err := vlog.NewVerifiableLog(txn)
 		if err != nil {
 			return err
 		}
@@ -227,6 +227,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 			} else {
 				return err
 			}
+			fmt.Println("Creating tree")
 			mapRoot = tree.Root()
 		} else {
 			// TODO: Implement local cache and set to old values so we can verify consistency between last known good HEAD

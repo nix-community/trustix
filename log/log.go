@@ -2,6 +2,8 @@ package log
 
 import (
 	"crypto/sha256"
+	// "fmt"
+	"github.com/tweag/trustix/storage"
 )
 
 type VerifiableLog struct {
@@ -9,8 +11,10 @@ type VerifiableLog struct {
 	storage  *logStorage
 }
 
-func NewVerifiableLog() (*VerifiableLog, error) {
-	storage := &logStorage{}
+func NewVerifiableLog(transaction storage.Transaction) (*VerifiableLog, error) {
+	storage := &logStorage{
+		txn: transaction,
+	}
 	return &VerifiableLog{
 		storage:  storage,
 		treeSize: 0,
@@ -62,6 +66,7 @@ func (l *VerifiableLog) Append(data []byte) {
 
 func (l *VerifiableLog) addNodeToLevel(level int, leaf *Leaf) {
 	l.storage.Append(level, leaf)
+
 	levelSize := l.storage.LevelSize(level)
 	if levelSize%2 == 0 {
 		li := levelSize - 2
