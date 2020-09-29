@@ -218,7 +218,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 	err = store.View(func(txn storage.Transaction) error {
 		mapStore := newMapStore(txn)
 
-		// oldHead, err := txn.Get([]byte("META"), []byte("HEAD"))
+		_, err := txn.Get([]byte("META"), []byte("HEAD"))
 		if err != nil {
 			// No STH yet, new tree
 			// TODO: Create a completely separate command for new tree, no magic should happen at startup
