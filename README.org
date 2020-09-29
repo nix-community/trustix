@@ -11,7 +11,7 @@ This means that a key compromise would realistically mean that _all_ packages wo
 - The NixOS Hydra _hardware_ may not be considered trustworthy by some more security conscious users.
 
 ** Trustix design
-=Trustix= aims to solve this problem by allowing distributed trust & trust agility, much in the same way [[https://en.wikipedia.org/wiki/Convergence_(SSL)][Convergence]] attempted to do for TLS.
+=Trustix= aims to solve this problem by allowing distributed trust & trust agility.
 
 This is achieved through the following methodology:
 *** Each builder is associated with public-private key pair
@@ -35,50 +35,3 @@ We can now identify that =Chuck= is up to no good and may decide to distrust thi
 
 - Track build reproducability across a large number of builders
 As a nice side-effect of the systems general design we can now track reproducability across all builders participating in the global namespace.
-
-** Implementation details
-*** Built on Google Trillian
-Google Trillian is a cryptographically verifiable data store that uses a RDBMS for it's backing store.
-The data structure is a merkle tree.
-This also means that a log is immutable.
-
-** Notes on non-reproducible builds
-Non-reproducible builds will have a large degree of hash mismatches and will never be substituted.
-
-** Hacking
-
-*** Dependencies
-All dependencies for the project are in [[./shell.nix][shell.nix]].
-All you need to do to start hacking is:
-#+begin_src bash
-nix-shell
-#+end_src
-Or use [[https://direnv.net/][direnv]] to load the Nix environment.
-
-*** Running the project
-We are using a [[https://heroku.com][Heroku]] style =Procfile= for local development.
-Simply run:
-#+begin_src bash
-hivemind
-#+end_src
-to run the project in watch-mode.
-
-** Components
-*** Daemon
-- Receives hashes over a UNIX domain socket
-- Publishes said hashes on the chain
-- Reacts to blockchain events and populate local database
-- Provides an API for querying the state of the network
-
-*** Binary cache frontend
-- Queries daemon for concencus
-- Re-signs narinfo Sig using digest from chain
-- Races upstream binary caches to fetch NAR
-
-*** CLI
-- Push built hashes to the chain
-- Possible query the daemon for concencus
-
-*** Reproducability observatory
-An added bonus of this moadel is that we can track reproducability over _all_ of Nixpkgs in a way that outsources verification to the community.
-This is an improvement over https://r13y.com/ in that we can track a larger set of packages more easily over time (and run on a much more diverse set of hardware).
