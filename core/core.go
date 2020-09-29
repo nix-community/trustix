@@ -34,7 +34,8 @@ func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 	var buf []byte
 
 	err := s.store.View(func(txn storage.Transaction) error {
-		tree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.mapRoot)
+		hasher := sha256.New()
+		tree := smt.ImportSparseMerkleTree(newMapStore(txn), hasher, s.mapRoot)
 
 		// TODO: Log verification (but optional?)
 
@@ -199,8 +200,6 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		return nil, fmt.Errorf("Mode '%s' unhandled", conf.Mode)
 	}
 
-	var tree *smt.SparseMerkleTree
-
 	corr, err := correlator.NewMinimumPercentCorrelator(100)
 	if err != nil {
 		return nil, err
@@ -214,21 +213,18 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		// TODO: Log root
 	}
 
-	var mapRoot []byte
 	err = store.View(func(txn storage.Transaction) error {
-		mapStore := newMapStore(txn)
-
 		_, err := txn.Get([]byte("META"), []byte("HEAD"))
 		if err != nil {
+
 			// No STH yet, new tree
 			// TODO: Create a completely separate command for new tree, no magic should happen at startup
 			if err == storage.ObjectNotFoundError {
-				tree = smt.NewSparseMerkleTree(mapStore, hasher)
-			} else {
-				return err
+				tree := smt.NewSparseMerkleTree(newMapStore(txn), hasher)
+				core.mapRoot = tree.Root()
+				return nil
 			}
-			fmt.Println("Creating tree")
-			mapRoot = tree.Root()
+			return err
 		} else {
 			// TODO: Implement local cache and set to old values so we can verify consistency between last known good HEAD
 			// and the newest HEAD
