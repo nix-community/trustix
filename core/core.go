@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/lazyledger/smt"
+	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/correlator"
 	vlog "github.com/tweag/trustix/log"
@@ -88,9 +89,11 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 	return s.store.Update(func(txn storage.Transaction) error {
 
 		// The sparse merkle tree
+		log.Debug("Creating sparse merkle tree from persisted data")
 		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.mapRoot)
 
 		// Get the old value and check it against new submitted value
+		log.Debug("Checking if newly submitted value is already set")
 		oldValue, err := smTree.Get(key)
 		if err != nil {
 			return err
@@ -100,12 +103,14 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 		}
 
 		// The append-only log
+		log.WithField("size", s.treeSize).Debug("Creating log tree from persisted data")
 		vLog, err := vlog.NewVerifiableLog(txn, s.treeSize)
 		if err != nil {
 			return err
 		}
 
 		// Append value to both verifiable log & sparse indexed tree
+		log.Debug("Appending value to log")
 		vLog.Append(value)
 		smTree.Update(key, value)
 
@@ -114,6 +119,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 			return err
 		}
 
+		log.Debug("Signing tree heads")
 		smhBytes, err := sth.Marshal()
 		if err != nil {
 			return err
@@ -129,6 +135,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 			return err
 		}
 
+		log.Debug("Setting new signed tree heads")
 		err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
 		if err != nil {
 			return err
@@ -144,6 +151,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 
 func (s *TrustixCore) updateRoot() error {
 	return s.store.View(func(txn storage.Transaction) error {
+		log.Debug("Updating tree root")
 
 		oldHead, err := txn.Get([]byte("META"), []byte("HEAD"))
 		if err != nil {

@@ -3,7 +3,7 @@ package rpc
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/core"
 	pb "github.com/tweag/trustix/proto"
 )
@@ -18,7 +18,11 @@ func NewTrustixRPCServer(core *core.TrustixCore) *TrustixRPCServer {
 }
 
 func (s *TrustixRPCServer) SubmitMapping(ctx context.Context, in *pb.SubmitRequest) (*pb.SubmitResponse, error) {
-	fmt.Println(fmt.Sprintf("Received input hash %s -> %s", hex.EncodeToString(in.InputHash), hex.EncodeToString(in.OutputHash)))
+
+	log.WithFields(log.Fields{
+		"inputHash":  hex.EncodeToString(in.InputHash),
+		"outputHash": hex.EncodeToString(in.OutputHash),
+	}).Info("Received input hash")
 
 	err := s.core.Submit(in.InputHash, in.OutputHash)
 	if err != nil {
@@ -31,7 +35,10 @@ func (s *TrustixRPCServer) SubmitMapping(ctx context.Context, in *pb.SubmitReque
 }
 
 func (s *TrustixRPCServer) QueryMapping(ctx context.Context, in *pb.QueryRequest) (*pb.QueryResponse, error) {
-	fmt.Println(fmt.Sprintf("Received input hash query for %s", hex.EncodeToString(in.InputHash)))
+
+	log.WithFields(log.Fields{
+		"inputHash": hex.EncodeToString(in.InputHash),
+	}).Info("Received input hash query")
 
 	h, err := s.core.Query(in.InputHash)
 	if err != nil {

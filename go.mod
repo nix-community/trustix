@@ -9,6 +9,7 @@ require (
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/lazyledger/smt v0.0.0-20200827143353-42131aab296f
 	github.com/libgit2/git2go/v30 v30.0.13
+	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.etcd.io/bbolt v1.3.4

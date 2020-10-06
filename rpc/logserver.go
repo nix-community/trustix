@@ -2,7 +2,9 @@ package rpc
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/core"
 	pb "github.com/tweag/trustix/proto"
 	"sync"
@@ -23,17 +25,25 @@ func (l *TrustixLogServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb
 	var wg sync.WaitGroup
 	var mux sync.Mutex
 
-	for name, log := range l.logMap {
+	hexInput := hex.EncodeToString(in.InputHash)
+	log.WithField("inputHash", hexInput).Info("Received HashMap request")
+
+	for name, l := range l.logMap {
 		// Create copies for goroutine
 		name := name
-		log := log
+		l := l
 
 		wg.Add(1)
 
 		go func() {
 			defer wg.Done()
 
-			h, err := log.Query(in.InputHash)
+			log.WithFields(log.Fields{
+				"inputHash": hexInput,
+				"logName":   name,
+			}).Info("Querying log")
+
+			h, err := l.Query(in.InputHash)
 			if err != nil {
 				fmt.Println(err)
 			}

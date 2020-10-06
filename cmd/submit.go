@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	pb "github.com/tweag/trustix/proto"
 	"google.golang.org/grpc"
-	"log"
 	"time"
 )
 
@@ -32,6 +32,9 @@ var submitCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		log.WithFields(log.Fields{
+			"address": dialAddress,
+		}).Debug("Dialing gRPC")
 		conn, err := grpc.Dial(dialAddress, grpc.WithInsecure(), grpc.WithBlock())
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
@@ -42,6 +45,10 @@ var submitCommand = &cobra.Command{
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 
+		log.WithFields(log.Fields{
+			"inputHash":  inputHashHex,
+			"outputHash": outputHashHex,
+		}).Debug("Submitting mapping")
 		r, err := c.SubmitMapping(ctx, &pb.SubmitRequest{
 			OutputHash: outputBytes,
 			InputHash:  inputBytes,

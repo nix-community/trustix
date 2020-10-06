@@ -3,7 +3,7 @@ package rpc
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/core"
 	pb "github.com/tweag/trustix/proto"
 )
@@ -18,7 +18,7 @@ func NewTrustixKVServer(core *core.TrustixCore) *TrustixKVServer {
 }
 
 func (s *TrustixKVServer) Get(ctx context.Context, in *pb.KVRequest) (*pb.KVResponse, error) {
-	fmt.Println(fmt.Sprintf("Received KV request for %s", hex.EncodeToString(in.Key)))
+	log.WithField("key", hex.EncodeToString(in.Key)).Info("Received KV request")
 
 	v, err := s.core.Get(in.Bucket, in.Key)
 	if err != nil {

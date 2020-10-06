@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/core"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/rpc"
 	"google.golang.org/grpc"
-	"log"
 	"net"
 	"os"
 	"path"
@@ -36,12 +36,20 @@ var rootCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		log.WithFields(log.Fields{
+			"address": dialAddress,
+		}).Info("Listening to address")
 		lis, err := net.Listen("tcp", dialAddress)
 		if err != nil {
 			log.Fatalf("failed to listen: %v", err)
 		}
+
+		log.Debug("Creating gRPC server")
 		s := grpc.NewServer()
 
+		log.WithFields(log.Fields{
+			"directory": stateDirectory,
+		}).Info("Creating state directory")
 		err = os.MkdirAll(stateDirectory, 0700)
 		if err != nil {
 			log.Fatalf("Could not create state directory: %v")
@@ -65,13 +73,18 @@ var rootCmd = &cobra.Command{
 			if logConfig.Mode == "trustix-log" {
 				numLogs += 1
 				if numLogs > 1 {
-					log.Fatal("More than 1 authoritive logs is not supported.")
+					log.Fatal("More than 1 authoritive logs in the same instance is not supported.")
 				}
 			}
 		}
 
 		logMap := make(map[string]*core.TrustixCore)
 		for _, logConfig := range config.Logs {
+			log.WithFields(log.Fields{
+				"name":   logConfig.Name,
+				"pubkey": logConfig.Signer.PublicKey,
+				"mode":   logConfig.Mode,
+			}).Info("Adding log")
 			c, err := core.CoreFromConfig(logConfig, flagConfig)
 			if err != nil {
 				log.Fatal(err)
@@ -80,12 +93,18 @@ var rootCmd = &cobra.Command{
 			logMap[logConfig.Name] = c
 
 			if logConfig.Mode == "trustix-log" {
+				log.WithFields(log.Fields{
+					"name": logConfig.Name,
+					"mode": logConfig.Mode,
+				}).Info("Adding authoritive log to gRPC")
+
 				// Authoritive APIs
 				pb.RegisterTrustixRPCServer(s, rpc.NewTrustixRPCServer(c))
 				pb.RegisterTrustixKVServer(s, rpc.NewTrustixKVServer(c))
 			}
 		}
 
+		log.Info("Creating combined gRPC instance")
 		pb.RegisterTrustixLogServer(s, rpc.NewTrustixLogServer(logMap))
 
 		if err := s.Serve(lis); err != nil {
@@ -100,6 +119,8 @@ func initCommands() {
 	rootCmd.Flags().StringVar(&configPath, "config", "", "Path to config.toml")
 
 	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", ":8080", "Path to config.toml")
+
+	log.SetLevel(log.DebugLevel)
 
 	homeDir, _ := os.UserHomeDir()
 	defaultStateDir := path.Join(homeDir, ".local/share/trustix")
