@@ -34,5 +34,5 @@ type TrustixSigner interface {
 	Public() crypto.PublicKey
 	Sign(rand io.Reader, digest []byte, opts crypto.SignerOpts) (signature []byte, err error)
 	CanSign() bool
-	Verify(messag, sig []byte) bool
+	Verify(message, sig []byte) bool
 }

@@ -24,41 +24,47 @@
 package signer
 
 import (
-	"crypto/ed25519"
+	"crypto"
+	"crypto/rand"
+	"github.com/stretchr/testify/assert"
 	"github.com/tweag/trustix/config"
+	"os"
+	"path"
+	"testing"
 )
 
-func newED25519Verifier(pubkey ed25519.PublicKey) func(message, sig []byte) bool {
-	return func(message, sig []byte) bool {
-		return ed25519.Verify(pubkey, message, sig)
-	}
+func fixturePath(name string) string {
+	wd, _ := os.Getwd()
+	return path.Join(wd, "fixtures", name)
 }
 
-func genED25519Signer(signerConfig *config.SignerConfig) (TrustixSigner, error) {
-	pubBytes, err := decodeKey(signerConfig.PublicKey)
-	if err != nil {
-		return nil, err
+func mkSnakeOil(t *testing.T) TrustixSigner {
+	config := &config.SignerConfig{
+		Type:    "ed25519",
+		KeyType: "ed25519",
+		ED25519: &config.ED25519SignerConfig{
+			PrivateKeyPath: fixturePath("priv"),
+		},
 	}
-	pub := ed25519.PublicKey(pubBytes)
+	signer, err := genED25519Signer(config)
+	assert.Nil(t, err)
+	return signer
+}
 
-	// Public key is derived from private key for ed25519
-	if signerConfig.ED25519 != nil && signerConfig.ED25519.PrivateKeyPath != "" {
-		privBytes, err := readKey(signerConfig.ED25519.PrivateKeyPath)
-		if err != nil {
-			return nil, err
-		}
+func TestCanSign(t *testing.T) {
+	signer := mkSnakeOil(t)
+	assert.Equal(t, signer.CanSign(), true, "Signer can sign")
+}
 
-		key := ed25519.NewKeyFromSeed(privBytes[:32])
+func TestSign(t *testing.T) {
+	signer := mkSnakeOil(t)
 
-		return &privkeySigner{
-			signer:   key,
-			verifier: newED25519Verifier(key.Public().(ed25519.PublicKey)),
-		}, nil
+	message := []byte("somepayload")
+	opts := crypto.SignerOpts(crypto.Hash(0))
 
-	} else {
-		return &pubkeySigner{
-			pub:      pub,
-			verifier: newED25519Verifier(pub),
-		}, nil
-	}
+	sig, err := signer.Sign(rand.Reader, message, opts)
+	assert.Nil(t, err)
+
+	valid := signer.Verify(message, sig)
+	assert.Equal(t, valid, true, "Signature valid")
 }
