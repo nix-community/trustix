@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"context"
-	"encoding/hex"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/core"
 	pb "github.com/tweag/trustix/proto"
+	"github.com/tweag/trustix/rpc"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -21,95 +20,6 @@ var configPath string
 var stateDirectory string
 
 var dialAddress string
-
-type pbServer struct {
-	pb.UnimplementedTrustixRPCServer
-	core *core.TrustixCore
-}
-
-func (s *pbServer) SubmitMapping(ctx context.Context, in *pb.SubmitRequest) (*pb.SubmitResponse, error) {
-	fmt.Println(fmt.Sprintf("Received input hash %s -> %s", hex.EncodeToString(in.InputHash), hex.EncodeToString(in.OutputHash)))
-
-	err := s.core.Submit(in.InputHash, in.OutputHash)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.SubmitResponse{
-		Status: pb.SubmitResponse_OK,
-	}, nil
-}
-
-func (s *pbServer) QueryMapping(ctx context.Context, in *pb.QueryRequest) (*pb.QueryResponse, error) {
-	fmt.Println(fmt.Sprintf("Received input hash query for %s", hex.EncodeToString(in.InputHash)))
-
-	h, err := s.core.Query(in.InputHash)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.QueryResponse{
-		OutputHash: h,
-	}, nil
-}
-
-type kvServer struct {
-	pb.UnimplementedTrustixKVServer
-	core *core.TrustixCore
-}
-
-func (s *kvServer) Get(ctx context.Context, in *pb.KVRequest) (*pb.KVResponse, error) {
-	fmt.Println(fmt.Sprintf("Received KV request for %s", hex.EncodeToString(in.Key)))
-
-	v, err := s.core.Get(in.Bucket, in.Key)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.KVResponse{
-		Value: v,
-	}, nil
-}
-
-type logServer struct {
-	pb.UnimplementedTrustixLogServer
-	m map[string]*core.TrustixCore
-}
-
-func (l *logServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMapResponse, error) {
-	responses := make(map[string][]byte)
-
-	var wg sync.WaitGroup
-	var mux sync.Mutex
-
-	for name, log := range l.m {
-		// Create copies for goroutine
-		name := name
-		log := log
-
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
-			h, err := log.Query(in.InputHash)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			mux.Lock()
-			responses[name] = h
-			mux.Unlock()
-		}()
-	}
-
-	wg.Wait()
-
-	return &pb.HashMapResponse{
-		Hashes: responses,
-	}, nil
-
-}
 
 var rootCmd = &cobra.Command{
 	Use:   "trustix",
@@ -171,18 +81,12 @@ var rootCmd = &cobra.Command{
 
 			if logConfig.Mode == "trustix-log" {
 				// Authoritive APIs
-				pb.RegisterTrustixRPCServer(s, &pbServer{
-					core: c,
-				})
-				pb.RegisterTrustixKVServer(s, &kvServer{
-					core: c,
-				})
+				pb.RegisterTrustixRPCServer(s, rpc.NewTrustixRPCServer(c))
+				pb.RegisterTrustixKVServer(s, rpc.NewTrustixKVServer(c))
 			}
 		}
 
-		pb.RegisterTrustixLogServer(s, &logServer{
-			m: logMap,
-		})
+		pb.RegisterTrustixLogServer(s, rpc.NewTrustixLogServer(logMap))
 
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
