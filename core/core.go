@@ -2,6 +2,7 @@ package core
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"github.com/lazyledger/smt"
 	"github.com/tweag/trustix/config"
@@ -86,14 +87,23 @@ func (s *TrustixCore) Get(bucket []byte, key []byte) ([]byte, error) {
 func (s *TrustixCore) Submit(key []byte, value []byte) error {
 	return s.store.Update(func(txn storage.Transaction) error {
 
+		// The sparse merkle tree
+		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.mapRoot)
+
+		// Get the old value and check it against new submitted value
+		oldValue, err := smTree.Get(key)
+		if err != nil {
+			return err
+		}
+		if len(oldValue) > 0 {
+			return fmt.Errorf("'%s' already exists in log", hex.EncodeToString(key))
+		}
+
 		// The append-only log
 		vLog, err := vlog.NewVerifiableLog(txn, s.treeSize)
 		if err != nil {
 			return err
 		}
-
-		// The sparse merkle tree
-		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.mapRoot)
 
 		// Append value to both verifiable log & sparse indexed tree
 		vLog.Append(value)
