@@ -75,7 +75,7 @@ var rootCmd = &cobra.Command{
 		}).Info("Creating state directory")
 		err = os.MkdirAll(stateDirectory, 0700)
 		if err != nil {
-			log.Fatalf("Could not create state directory: %v")
+			log.Fatalf("Could not create state directory: %s", stateDirectory)
 		}
 
 		flagConfig := &core.FlagConfig{

@@ -73,11 +73,11 @@ func (l *Leaf) Marshal() ([]byte, error) {
 		num := uint16(len(value))
 		err := binary.Write(buf, binary.LittleEndian, num)
 		if err != nil {
-			return nil, fmt.Errorf("binary.Write failed:", err)
+			return nil, fmt.Errorf("binary.Write failed: %v", err)
 		}
 		err = binary.Write(buf, binary.LittleEndian, value)
 		if err != nil {
-			return nil, fmt.Errorf("binary.Write failed:", err)
+			return nil, fmt.Errorf("binary.Write failed: %v", err)
 		}
 	}
 

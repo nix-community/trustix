@@ -33,7 +33,7 @@ type logStorage struct {
 }
 
 func (s *logStorage) LevelSize(level int) int {
-	n, err := s.txn.Size([]byte(fmt.Sprintf("log-%d")))
+	n, err := s.txn.Size([]byte(fmt.Sprintf("log-%d", level)))
 	if err != nil {
 		if err == storage.ObjectNotFoundError {
 			return 1

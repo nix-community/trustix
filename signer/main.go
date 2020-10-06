@@ -32,7 +32,7 @@ import (
 func FromConfig(signerConfig *config.SignerConfig) (TrustixSigner, error) {
 
 	if signerConfig.Type == "" {
-		fmt.Errorf("Missing signer config field 'type'.", signerConfig.Type)
+		fmt.Errorf("Missing signer config field 'type'.")
 	}
 
 	log.WithField("type", signerConfig.Type).Info("Creating signer")
