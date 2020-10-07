@@ -121,5 +121,7 @@ func (l *luaCorrelator) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOutp
 		ret.LogNames = append(ret.LogNames, value)
 	}
 
+	ret.Confidence = 1
+
 	return ret, nil
 }

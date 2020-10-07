@@ -24,32 +24,47 @@
 package correlator
 
 import (
-	"fmt"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-type lognameCorrelator struct {
-	logName string
-}
+func TestLuaScript(t *testing.T) {
 
-// NewLogNameCorrelator - Matches a single name of a log
-// This mode is meant to be used as a fallback for e.g. cache.nixos.org
-func NewLogNameCorrelator(logName string) (LogCorrelator, error) {
-	return &lognameCorrelator{
-		logName: logName,
-	}, nil
-}
+	script := `
+      function(inputs)
+        t = {}
+        t["LogNames"] = {"DummyLogName"}
+        t["OutputHash"] = "DummyReturn"
+        return t
+      end
+    `
 
-func (l *lognameCorrelator) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOutput, error) {
-	for i := range inputs {
-		input := inputs[i]
-		if input.LogName == l.logName {
-			return &LogCorrelatorOutput{
-				LogNames:   []string{input.LogName},
-				OutputHash: input.OutputHash,
-				Confidence: 100,
-			}, nil
-		}
+	assert := assert.New(t)
+
+	inputs := []*LogCorrelatorInput{
+		&LogCorrelatorInput{
+			LogName:    "test1",
+			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
+		},
+		&LogCorrelatorInput{
+			LogName:    "test2",
+			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
+		},
+		&LogCorrelatorInput{
+			LogName:    "test3",
+			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
+		},
+		&LogCorrelatorInput{
+			LogName:    "test4",
+			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
+		},
 	}
 
-	return nil, fmt.Errorf("Could not find any match for log name %s", l.logName)
+	correlator, err := NewLuaCorrelator(script)
+	assert.Nil(err)
+
+	output, err := correlator.Decide(inputs)
+	assert.Nil(err)
+	assert.NotNil(output)
+
 }

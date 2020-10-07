@@ -59,6 +59,7 @@ func (q *minimumPercent) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOut
 	makeReturn := func(m *sortStruct) (*LogCorrelatorOutput, error) {
 		ret := &LogCorrelatorOutput{
 			OutputHash: m.key,
+			Confidence: m.pct,
 		}
 		for _, v := range entries[m.key] {
 			ret.LogNames = append(ret.LogNames, v.LogName)

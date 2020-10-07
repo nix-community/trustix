@@ -34,6 +34,8 @@ type LogCorrelatorOutput struct {
 	LogNames []string
 	// The decided OutputHash
 	OutputHash string
+	// An arbitrary number conveying the underlying engines confidence in the result
+	Confidence int
 }
 
 type LogCorrelator interface {
