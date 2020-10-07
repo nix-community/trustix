@@ -36,7 +36,7 @@ func (s *logStorage) LevelSize(level int) int {
 	n, err := s.txn.Size([]byte(fmt.Sprintf("log-%d", level)))
 	if err != nil {
 		if err == storage.ObjectNotFoundError {
-			return 1
+			return 0
 		}
 		panic(err)
 	}
@@ -48,7 +48,7 @@ func (s *logStorage) Size() int {
 	n, err := s.txn.Size([]byte("log-root"))
 	if err != nil {
 		if err == storage.ObjectNotFoundError {
-			return 1
+			return 0
 		}
 		panic(err)
 	}
@@ -86,7 +86,7 @@ func (s *logStorage) Append(level int, leaf *Leaf) {
 		panic(err)
 	}
 
-	idx := s.LevelSize(level) - 1
+	idx := s.LevelSize(level)
 
 	bucket := []byte(fmt.Sprintf("log-%d", level))
 	key := []byte(fmt.Sprintf("%d", idx))

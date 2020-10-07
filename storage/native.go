@@ -35,9 +35,23 @@ type nativeStorage struct {
 
 type nativeTxn struct {
 	txn *bolt.Tx
+
+	// Apparently Bolt (and by extension Bbolt) "lies" when it comes to counting
+	// keys in a bucket.
+	//
+	// The count doesn't take uncommitted changes into account
+	// So for the duration of the transaction we'll cache any keys we've updated
+	// and assume an updated key means bucket growth, which is fine for now but
+	// should really be fixed in bbolt..
+	realSizes map[string]int
 }
 
 func (t *nativeTxn) Size(bucket []byte) (int, error) {
+	v, ok := t.realSizes[string(bucket)]
+	if ok {
+		return v, nil
+	}
+
 	b := t.txn.Bucket(bucket)
 	if b == nil {
 		return 0, ObjectNotFoundError
@@ -67,7 +81,19 @@ func (t *nativeTxn) Set(bucket []byte, key []byte, value []byte) error {
 		return err
 	}
 
-	return b.Put(key, value)
+	err = b.Put(key, value)
+	if err != nil {
+		return err
+	}
+
+	// HACK: Set()ing a key doesn't mean it's actually grown
+	size, err := t.Size(bucket)
+	if err != nil {
+		return err
+	}
+	t.realSizes[string(bucket)] = size + 1
+
+	return nil
 }
 
 func NativeStorageFromConfig(name string, stateDirectory string, conf *config.NativeStorageConfig) (*nativeStorage, error) {
@@ -91,7 +117,8 @@ func (s *nativeStorage) runTX(readWrite bool, fn func(Transaction) error) error 
 	defer txn.Rollback()
 
 	t := &nativeTxn{
-		txn: txn,
+		realSizes: make(map[string]int),
+		txn:       txn,
 	}
 	err = fn(t)
 	if err != nil {
