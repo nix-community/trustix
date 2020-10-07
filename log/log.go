@@ -111,17 +111,17 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapsh
 		return path
 	}
 
-	last_node := snapshot - 1
-	last_hash := l.storage.Get(0, last_node).Digest
+	lastNode := snapshot - 1
+	lastHash := l.storage.Get(0, lastNode).Digest
 
 	for i := 0; i < level; i++ {
-		if isRightChild(last_node) {
-			last_hash = branchHash(l.storage.Get(i, last_node-1).Digest, last_hash)
+		if isRightChild(lastNode) {
+			lastHash = branchHash(l.storage.Get(i, lastNode-1).Digest, lastHash)
 		}
-		last_node = parent(last_node)
+		lastNode = parent(lastNode)
 	}
 
-	for last_node > 0 {
+	for lastNode > 0 {
 		var sibling int
 		if isRightChild(node) {
 			sibling = node - 1
@@ -129,18 +129,18 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapsh
 			sibling = node + 1
 		}
 
-		if sibling < last_node {
+		if sibling < lastNode {
 			path = append(path, l.storage.Get(level, sibling).Digest)
-		} else if sibling == last_node {
-			path = append(path, last_hash)
+		} else if sibling == lastNode {
+			path = append(path, lastHash)
 		}
 
-		if isRightChild(last_node) {
-			last_hash = branchHash(l.storage.Get(level, last_node-1).Digest, last_hash)
+		if isRightChild(lastNode) {
+			lastHash = branchHash(l.storage.Get(level, lastNode-1).Digest, lastHash)
 		}
 		level += 1
 		node = parent(node)
-		last_node = parent(last_node)
+		lastNode = parent(lastNode)
 	}
 
 	return path
