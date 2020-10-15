@@ -52,6 +52,8 @@ message KVResponse {
 service TrustixLog {
   // Get map[LogName]OutputHash
   rpc HashMap (HashRequest) returns (HashMapResponse) {}
+  // Compare(inputHash)
+  rpc Compare (HashRequest) returns (CompareResponse) {}
 
 }
 
@@ -61,4 +63,10 @@ message HashRequest {
 
 message HashMapResponse {
   map<string, bytes> hashes = 1;
+}
+
+message CompareResponse {
+  repeated string LogNames = 1;
+  bytes OutputHash = 2;
+  int32 Confidence = 3;
 }
