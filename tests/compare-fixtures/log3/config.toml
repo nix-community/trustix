@@ -1,0 +1,17 @@
+[[log]]
+mode = "trustix-log"
+name = "trustix-test3"
+
+[log.storage]
+type = "native"
+
+[log.storage.native]
+
+[log.signer]
+type = "ed25519"
+key-type = "ed25519"
+public-key = "BneDQe44Wmeypis3B1KfLmipzd+B38UAzmuoH2Nvmso="
+
+# Implementation dependent
+[log.signer.ed25519]
+private-key-path = "./priv"
