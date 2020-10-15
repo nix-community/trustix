@@ -128,7 +128,7 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		corr, err := correlator.NewMinimumPercentCorrelator(100)
+		corr, err := correlator.NewMinimumPercentCorrelator(50)
 		if err != nil {
 			log.Fatalf("Failed to create correlator: %v", err)
 		}
