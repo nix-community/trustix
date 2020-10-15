@@ -166,6 +166,9 @@ func initCommands() {
 
 	rootCmd.AddCommand(queryMap)
 	initMapQuery()
+
+	rootCmd.AddCommand(decideCommand)
+	initDecide()
 }
 
 func Execute() {
