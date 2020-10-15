@@ -29,6 +29,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/core"
+	"github.com/tweag/trustix/correlator"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/rpc"
 	"google.golang.org/grpc"
@@ -127,8 +128,13 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		corr, err := correlator.NewMinimumPercentCorrelator(100)
+		if err != nil {
+			log.Fatalf("Failed to create correlator: %v", err)
+		}
+
 		log.Info("Creating combined gRPC instance")
-		pb.RegisterTrustixLogServer(s, rpc.NewTrustixLogServer(logMap))
+		pb.RegisterTrustixLogServer(s, rpc.NewTrustixLogServer(logMap, corr))
 
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)

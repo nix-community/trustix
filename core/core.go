@@ -30,7 +30,6 @@ import (
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/config"
-	"github.com/tweag/trustix/correlator"
 	vlog "github.com/tweag/trustix/log"
 	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/sth"
@@ -48,7 +47,6 @@ type TrustixCore struct {
 	store      storage.TrustixStorage
 	hasher     hash.Hash
 	signer     signer.TrustixSigner
-	correlator correlator.LogCorrelator
 
 	mapRoot  []byte
 	logRoot  []byte
@@ -242,16 +240,10 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		return nil, fmt.Errorf("Mode '%s' unhandled", conf.Mode)
 	}
 
-	corr, err := correlator.NewMinimumPercentCorrelator(100)
-	if err != nil {
-		return nil, err
-	}
-
 	core := &TrustixCore{
 		store:      store,
 		hasher:     hasher,
 		signer:     sig,
-		correlator: corr,
 		// TODO: Log root
 	}
 

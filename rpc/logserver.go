@@ -29,17 +29,22 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/core"
+	"github.com/tweag/trustix/correlator"
 	pb "github.com/tweag/trustix/proto"
 	"sync"
 )
 
 type TrustixLogServer struct {
 	pb.UnimplementedTrustixLogServer
-	logMap map[string]*core.TrustixCore
+	logMap     map[string]*core.TrustixCore
+	correlator correlator.LogCorrelator
 }
 
-func NewTrustixLogServer(logMap map[string]*core.TrustixCore) *TrustixLogServer {
-	return &TrustixLogServer{logMap: logMap}
+func NewTrustixLogServer(logMap map[string]*core.TrustixCore, correlator correlator.LogCorrelator) *TrustixLogServer {
+	return &TrustixLogServer{
+		logMap:     logMap,
+		correlator: correlator,
+	}
 }
 
 func (l *TrustixLogServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMapResponse, error) {
@@ -81,6 +86,64 @@ func (l *TrustixLogServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb
 
 	return &pb.HashMapResponse{
 		Hashes: responses,
+	}, nil
+
+}
+
+func (l *TrustixLogServer) Compare(ctx context.Context, in *pb.HashRequest) (*pb.CompareResponse, error) {
+
+	hexInput := hex.EncodeToString(in.InputHash)
+	log.WithField("inputHash", hexInput).Info("Received Compare request")
+
+	var wg sync.WaitGroup
+	var mux sync.Mutex
+	var inputs []*correlator.LogCorrelatorInput
+
+	for name, l := range l.logMap {
+		// Create copies for goroutine
+		name := name
+		l := l
+
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			log.WithFields(log.Fields{
+				"inputHash": hexInput,
+				"logName":   name,
+			}).Info("Querying log")
+
+			h, err := l.Query(in.InputHash)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			mux.Lock()
+			inputs = append(inputs, &correlator.LogCorrelatorInput{
+				LogName:    name,
+				OutputHash: hex.EncodeToString(h),
+			})
+			mux.Unlock()
+		}()
+	}
+
+	wg.Wait()
+
+	decision, err := l.correlator.Decide(inputs)
+	if err != nil {
+		return nil, err
+	}
+
+	outputHash, err := hex.DecodeString(decision.OutputHash)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CompareResponse{
+		LogNames:   decision.LogNames,
+		OutputHash: outputHash,
+		Confidence: int32(decision.Confidence),
 	}, nil
 
 }
