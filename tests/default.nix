@@ -18,6 +18,8 @@ let
 
 in {
 
+  inherit trustix;
+
   # A simple submit/get test
   submission = mkTest "submit" ''
     input_hash="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
@@ -42,8 +44,6 @@ in {
     (cd ${compare-fixtures/log2}; trustix --state $TMPDIR/log1-state --config ./config.toml --address ":8082") &
     (cd ${compare-fixtures/log3}; trustix --state $TMPDIR/log1-state --config ./config.toml --address ":8083") &
 
-    sleep 2
-
     # Submit hashes
     trustix submit --input-hash "$input_hash" --output-hash "$output_hash" --address ":8081"
     trustix submit --input-hash "$input_hash" --output-hash "$output_hash" --address ":8082"
@@ -51,7 +51,11 @@ in {
 
     (cd ${compare-fixtures/log-agg}; trustix --state $TMPDIR/log-agg-state --config ./config.toml --address ":8080") &
 
-    trustix decide --input-hash "$input_hash" --address ":8080"
+    trustix decide --input-hash "$input_hash" --address ":8080" > output
+
+    # Assert correct output
+    grep "Found mismatched hash '053e399dbbdd74b10ad6d2cfa28ab4aab7e342d613a731c7dc4b66c2283e0757' in log 'trustix-test-follower3'" output > /dev/null
+    grep "Decided on output hash '28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321' with confidence 66" output > /dev/null
   '';
 
 }

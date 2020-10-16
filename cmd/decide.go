@@ -70,6 +70,14 @@ var decideCommand = &cobra.Command{
 			log.Fatalf("could not query: %v", err)
 		}
 
+		for _, miss := range r.Misses {
+			fmt.Println(fmt.Sprintf("Did not find hash in log '%s'", miss))
+		}
+
+		for _, unmatched := range r.Unmatched {
+			fmt.Println(fmt.Sprintf("Found mismatched hash '%s' in log '%s'", hex.EncodeToString(unmatched.OutputHash), unmatched.LogName))
+		}
+
 		fmt.Println(fmt.Sprintf("Decided on output hash '%s' with confidence %d", hex.EncodeToString(r.OutputHash), r.Confidence))
 
 		return nil

@@ -98,6 +98,7 @@ func (l *TrustixLogServer) Compare(ctx context.Context, in *pb.HashRequest) (*pb
 	var wg sync.WaitGroup
 	var mux sync.Mutex
 	var inputs []*correlator.LogCorrelatorInput
+	var misses []string
 
 	for name, l := range l.logMap {
 		// Create copies for goroutine
@@ -115,16 +116,19 @@ func (l *TrustixLogServer) Compare(ctx context.Context, in *pb.HashRequest) (*pb
 			}).Info("Querying log")
 
 			h, err := l.Query(in.InputHash)
+			mux.Lock()
+			defer mux.Unlock()
+
 			if err != nil {
-				fmt.Println(err)
+				misses = append(misses, name)
+				return
 			}
 
-			mux.Lock()
 			inputs = append(inputs, &correlator.LogCorrelatorInput{
 				LogName:    name,
 				OutputHash: hex.EncodeToString(h),
 			})
-			mux.Unlock()
+
 		}()
 	}
 
@@ -140,10 +144,30 @@ func (l *TrustixLogServer) Compare(ctx context.Context, in *pb.HashRequest) (*pb
 		return nil, err
 	}
 
-	return &pb.CompareResponse{
+	resp := &pb.CompareResponse{
 		LogNames:   decision.LogNames,
 		OutputHash: outputHash,
 		Confidence: int32(decision.Confidence),
-	}, nil
+		Misses:     misses,
+	}
+
+	// inputMap := make(map[string][]byte)
+	for _, input := range inputs {
+		if input.OutputHash == decision.OutputHash {
+			continue
+		}
+
+		h, err := hex.DecodeString(input.OutputHash)
+		if err != nil {
+			return nil, err
+		}
+
+		resp.Unmatched = append(resp.Unmatched, &pb.CompareResponseUnmatched{
+			LogName:    input.LogName,
+			OutputHash: h,
+		})
+	}
+
+	return resp, nil
 
 }

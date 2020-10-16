@@ -65,8 +65,19 @@ message HashMapResponse {
   map<string, bytes> hashes = 1;
 }
 
+message CompareResponseUnmatched {
+  string LogName = 1;
+  bytes OutputHash = 2;
+}
+
 message CompareResponse {
   repeated string LogNames = 1;
   bytes OutputHash = 2;
   int32 Confidence = 3;
+
+  // Non-matches (hash mismatch)
+  repeated CompareResponseUnmatched Unmatched = 4;
+
+  // Full misses (missing log entry)
+  repeated string Misses = 5;
 }

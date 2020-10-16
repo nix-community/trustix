@@ -460,6 +460,61 @@ func (x *HashMapResponse) GetHashes() map[string][]byte {
 	return nil
 }
 
+type CompareResponseUnmatched struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	LogName    string `protobuf:"bytes,1,opt,name=LogName,proto3" json:"LogName,omitempty"`
+	OutputHash []byte `protobuf:"bytes,2,opt,name=OutputHash,proto3" json:"OutputHash,omitempty"`
+}
+
+func (x *CompareResponseUnmatched) Reset() {
+	*x = CompareResponseUnmatched{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_trustix_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CompareResponseUnmatched) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompareResponseUnmatched) ProtoMessage() {}
+
+func (x *CompareResponseUnmatched) ProtoReflect() protoreflect.Message {
+	mi := &file_trustix_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompareResponseUnmatched.ProtoReflect.Descriptor instead.
+func (*CompareResponseUnmatched) Descriptor() ([]byte, []int) {
+	return file_trustix_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *CompareResponseUnmatched) GetLogName() string {
+	if x != nil {
+		return x.LogName
+	}
+	return ""
+}
+
+func (x *CompareResponseUnmatched) GetOutputHash() []byte {
+	if x != nil {
+		return x.OutputHash
+	}
+	return nil
+}
+
 type CompareResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -468,12 +523,16 @@ type CompareResponse struct {
 	LogNames   []string `protobuf:"bytes,1,rep,name=LogNames,proto3" json:"LogNames,omitempty"`
 	OutputHash []byte   `protobuf:"bytes,2,opt,name=OutputHash,proto3" json:"OutputHash,omitempty"`
 	Confidence int32    `protobuf:"varint,3,opt,name=Confidence,proto3" json:"Confidence,omitempty"`
+	// Non-matches (hash mismatch)
+	Unmatched []*CompareResponseUnmatched `protobuf:"bytes,4,rep,name=Unmatched,proto3" json:"Unmatched,omitempty"`
+	// Full misses (missing log entry)
+	Misses []string `protobuf:"bytes,5,rep,name=Misses,proto3" json:"Misses,omitempty"`
 }
 
 func (x *CompareResponse) Reset() {
 	*x = CompareResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_trustix_proto_msgTypes[8]
+		mi := &file_trustix_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -486,7 +545,7 @@ func (x *CompareResponse) String() string {
 func (*CompareResponse) ProtoMessage() {}
 
 func (x *CompareResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_trustix_proto_msgTypes[8]
+	mi := &file_trustix_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +558,7 @@ func (x *CompareResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompareResponse.ProtoReflect.Descriptor instead.
 func (*CompareResponse) Descriptor() ([]byte, []int) {
-	return file_trustix_proto_rawDescGZIP(), []int{8}
+	return file_trustix_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CompareResponse) GetLogNames() []string {
@@ -521,6 +580,20 @@ func (x *CompareResponse) GetConfidence() int32 {
 		return x.Confidence
 	}
 	return 0
+}
+
+func (x *CompareResponse) GetUnmatched() []*CompareResponseUnmatched {
+	if x != nil {
+		return x.Unmatched
+	}
+	return nil
+}
+
+func (x *CompareResponse) GetMisses() []string {
+	if x != nil {
+		return x.Misses
+	}
+	return nil
 }
 
 var File_trustix_proto protoreflect.FileDescriptor
@@ -561,14 +634,25 @@ var file_trustix_proto_rawDesc = []byte{
 	0x48, 0x61, 0x73, 0x68, 0x65, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b,
 	0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a,
 	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x76, 0x61,
-	0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x6d, 0x0a, 0x0f, 0x43, 0x6f, 0x6d, 0x70, 0x61,
-	0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x4c, 0x6f,
-	0x67, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x4c, 0x6f,
-	0x67, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x12, 0x1e, 0x0a, 0x0a, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74,
-	0x48, 0x61, 0x73, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x0a, 0x4f, 0x75, 0x74, 0x70,
-	0x75, 0x74, 0x48, 0x61, 0x73, 0x68, 0x12, 0x1e, 0x0a, 0x0a, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x64,
-	0x65, 0x6e, 0x63, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0a, 0x43, 0x6f, 0x6e, 0x66,
-	0x69, 0x64, 0x65, 0x6e, 0x63, 0x65, 0x32, 0x91, 0x01, 0x0a, 0x0a, 0x54, 0x72, 0x75, 0x73, 0x74,
+	0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x54, 0x0a, 0x18, 0x43, 0x6f, 0x6d, 0x70, 0x61,
+	0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x55, 0x6e, 0x6d, 0x61, 0x74, 0x63,
+	0x68, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x4c, 0x6f, 0x67, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x4c, 0x6f, 0x67, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1e, 0x0a,
+	0x0a, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x48, 0x61, 0x73, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0c, 0x52, 0x0a, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x48, 0x61, 0x73, 0x68, 0x22, 0xc6, 0x01,
+	0x0a, 0x0f, 0x43, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x1a, 0x0a, 0x08, 0x4c, 0x6f, 0x67, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x01, 0x20,
+	0x03, 0x28, 0x09, 0x52, 0x08, 0x4c, 0x6f, 0x67, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x12, 0x1e, 0x0a,
+	0x0a, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x48, 0x61, 0x73, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0c, 0x52, 0x0a, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x48, 0x61, 0x73, 0x68, 0x12, 0x1e, 0x0a,
+	0x0a, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x64, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x0a, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x64, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x3f, 0x0a,
+	0x09, 0x55, 0x6e, 0x6d, 0x61, 0x74, 0x63, 0x68, 0x65, 0x64, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x21, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x43, 0x6f, 0x6d, 0x70, 0x61,
+	0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x55, 0x6e, 0x6d, 0x61, 0x74, 0x63,
+	0x68, 0x65, 0x64, 0x52, 0x09, 0x55, 0x6e, 0x6d, 0x61, 0x74, 0x63, 0x68, 0x65, 0x64, 0x12, 0x16,
+	0x0a, 0x06, 0x4d, 0x69, 0x73, 0x73, 0x65, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x09, 0x52, 0x06,
+	0x4d, 0x69, 0x73, 0x73, 0x65, 0x73, 0x32, 0x91, 0x01, 0x0a, 0x0a, 0x54, 0x72, 0x75, 0x73, 0x74,
 	0x69, 0x78, 0x52, 0x50, 0x43, 0x12, 0x42, 0x0a, 0x0d, 0x53, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x4d,
 	0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x12, 0x16, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78,
 	0x2e, 0x53, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17,
@@ -608,38 +692,40 @@ func file_trustix_proto_rawDescGZIP() []byte {
 }
 
 var file_trustix_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_trustix_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_trustix_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_trustix_proto_goTypes = []interface{}{
-	(SubmitResponse_Status)(0), // 0: trustix.SubmitResponse.Status
-	(*SubmitRequest)(nil),      // 1: trustix.SubmitRequest
-	(*SubmitResponse)(nil),     // 2: trustix.SubmitResponse
-	(*QueryRequest)(nil),       // 3: trustix.QueryRequest
-	(*QueryResponse)(nil),      // 4: trustix.QueryResponse
-	(*KVRequest)(nil),          // 5: trustix.KVRequest
-	(*KVResponse)(nil),         // 6: trustix.KVResponse
-	(*HashRequest)(nil),        // 7: trustix.HashRequest
-	(*HashMapResponse)(nil),    // 8: trustix.HashMapResponse
-	(*CompareResponse)(nil),    // 9: trustix.CompareResponse
-	nil,                        // 10: trustix.HashMapResponse.HashesEntry
+	(SubmitResponse_Status)(0),       // 0: trustix.SubmitResponse.Status
+	(*SubmitRequest)(nil),            // 1: trustix.SubmitRequest
+	(*SubmitResponse)(nil),           // 2: trustix.SubmitResponse
+	(*QueryRequest)(nil),             // 3: trustix.QueryRequest
+	(*QueryResponse)(nil),            // 4: trustix.QueryResponse
+	(*KVRequest)(nil),                // 5: trustix.KVRequest
+	(*KVResponse)(nil),               // 6: trustix.KVResponse
+	(*HashRequest)(nil),              // 7: trustix.HashRequest
+	(*HashMapResponse)(nil),          // 8: trustix.HashMapResponse
+	(*CompareResponseUnmatched)(nil), // 9: trustix.CompareResponseUnmatched
+	(*CompareResponse)(nil),          // 10: trustix.CompareResponse
+	nil,                              // 11: trustix.HashMapResponse.HashesEntry
 }
 var file_trustix_proto_depIdxs = []int32{
 	0,  // 0: trustix.SubmitResponse.status:type_name -> trustix.SubmitResponse.Status
-	10, // 1: trustix.HashMapResponse.hashes:type_name -> trustix.HashMapResponse.HashesEntry
-	1,  // 2: trustix.TrustixRPC.SubmitMapping:input_type -> trustix.SubmitRequest
-	3,  // 3: trustix.TrustixRPC.QueryMapping:input_type -> trustix.QueryRequest
-	5,  // 4: trustix.TrustixKV.Get:input_type -> trustix.KVRequest
-	7,  // 5: trustix.TrustixLog.HashMap:input_type -> trustix.HashRequest
-	7,  // 6: trustix.TrustixLog.Compare:input_type -> trustix.HashRequest
-	2,  // 7: trustix.TrustixRPC.SubmitMapping:output_type -> trustix.SubmitResponse
-	4,  // 8: trustix.TrustixRPC.QueryMapping:output_type -> trustix.QueryResponse
-	6,  // 9: trustix.TrustixKV.Get:output_type -> trustix.KVResponse
-	8,  // 10: trustix.TrustixLog.HashMap:output_type -> trustix.HashMapResponse
-	9,  // 11: trustix.TrustixLog.Compare:output_type -> trustix.CompareResponse
-	7,  // [7:12] is the sub-list for method output_type
-	2,  // [2:7] is the sub-list for method input_type
-	2,  // [2:2] is the sub-list for extension type_name
-	2,  // [2:2] is the sub-list for extension extendee
-	0,  // [0:2] is the sub-list for field type_name
+	11, // 1: trustix.HashMapResponse.hashes:type_name -> trustix.HashMapResponse.HashesEntry
+	9,  // 2: trustix.CompareResponse.Unmatched:type_name -> trustix.CompareResponseUnmatched
+	1,  // 3: trustix.TrustixRPC.SubmitMapping:input_type -> trustix.SubmitRequest
+	3,  // 4: trustix.TrustixRPC.QueryMapping:input_type -> trustix.QueryRequest
+	5,  // 5: trustix.TrustixKV.Get:input_type -> trustix.KVRequest
+	7,  // 6: trustix.TrustixLog.HashMap:input_type -> trustix.HashRequest
+	7,  // 7: trustix.TrustixLog.Compare:input_type -> trustix.HashRequest
+	2,  // 8: trustix.TrustixRPC.SubmitMapping:output_type -> trustix.SubmitResponse
+	4,  // 9: trustix.TrustixRPC.QueryMapping:output_type -> trustix.QueryResponse
+	6,  // 10: trustix.TrustixKV.Get:output_type -> trustix.KVResponse
+	8,  // 11: trustix.TrustixLog.HashMap:output_type -> trustix.HashMapResponse
+	10, // 12: trustix.TrustixLog.Compare:output_type -> trustix.CompareResponse
+	8,  // [8:13] is the sub-list for method output_type
+	3,  // [3:8] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_trustix_proto_init() }
@@ -745,6 +831,18 @@ func file_trustix_proto_init() {
 			}
 		}
 		file_trustix_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CompareResponseUnmatched); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_trustix_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CompareResponse); i {
 			case 0:
 				return &v.state
@@ -763,7 +861,7 @@ func file_trustix_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_trustix_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   3,
 		},
