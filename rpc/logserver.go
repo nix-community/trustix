@@ -90,10 +90,10 @@ func (l *TrustixLogServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb
 
 }
 
-func (l *TrustixLogServer) Compare(ctx context.Context, in *pb.HashRequest) (*pb.CompareResponse, error) {
+func (l *TrustixLogServer) Decide(ctx context.Context, in *pb.HashRequest) (*pb.DecisionResponse, error) {
 
 	hexInput := hex.EncodeToString(in.InputHash)
-	log.WithField("inputHash", hexInput).Info("Received Compare request")
+	log.WithField("inputHash", hexInput).Info("Received Decide request")
 
 	var wg sync.WaitGroup
 	var mux sync.Mutex
@@ -120,6 +120,12 @@ func (l *TrustixLogServer) Compare(ctx context.Context, in *pb.HashRequest) (*pb
 			defer mux.Unlock()
 
 			if err != nil {
+				fmt.Println(err)
+				misses = append(misses, name)
+				return
+			}
+
+			if len(h) == 0 {
 				misses = append(misses, name)
 				return
 			}
@@ -134,21 +140,31 @@ func (l *TrustixLogServer) Compare(ctx context.Context, in *pb.HashRequest) (*pb
 
 	wg.Wait()
 
-	decision, err := l.correlator.Decide(inputs)
-	if err != nil {
-		return nil, err
+	resp := &pb.DecisionResponse{
+		Misses: misses,
 	}
 
-	outputHash, err := hex.DecodeString(decision.OutputHash)
-	if err != nil {
-		return nil, err
-	}
+	var decision *correlator.LogCorrelatorOutput
+	if len(inputs) > 0 {
 
-	resp := &pb.CompareResponse{
-		LogNames:   decision.LogNames,
-		OutputHash: outputHash,
-		Confidence: int32(decision.Confidence),
-		Misses:     misses,
+		var err error
+		decision, err = l.correlator.Decide(inputs)
+		if err != nil {
+			return nil, err
+		}
+
+		outputHash, err := hex.DecodeString(decision.OutputHash)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(decision.LogNames) > 0 {
+			resp.Decision = &pb.OutputHashDecision{
+				LogNames:   decision.LogNames,
+				OutputHash: outputHash,
+				Confidence: int32(decision.Confidence),
+			}
+		}
 	}
 
 	// inputMap := make(map[string][]byte)
@@ -162,7 +178,7 @@ func (l *TrustixLogServer) Compare(ctx context.Context, in *pb.HashRequest) (*pb
 			return nil, err
 		}
 
-		resp.Unmatched = append(resp.Unmatched, &pb.CompareResponseUnmatched{
+		resp.Mismatches = append(resp.Mismatches, &pb.OutputHashResponse{
 			LogName:    input.LogName,
 			OutputHash: h,
 		})

@@ -228,7 +228,7 @@ type TrustixLogClient interface {
 	// Get map[LogName]OutputHash
 	HashMap(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashMapResponse, error)
 	// Compare(inputHash)
-	Compare(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*CompareResponse, error)
+	Decide(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
 }
 
 type trustixLogClient struct {
@@ -248,9 +248,9 @@ func (c *trustixLogClient) HashMap(ctx context.Context, in *HashRequest, opts ..
 	return out, nil
 }
 
-func (c *trustixLogClient) Compare(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*CompareResponse, error) {
-	out := new(CompareResponse)
-	err := c.cc.Invoke(ctx, "/trustix.TrustixLog/Compare", in, out, opts...)
+func (c *trustixLogClient) Decide(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*DecisionResponse, error) {
+	out := new(DecisionResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixLog/Decide", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -264,7 +264,7 @@ type TrustixLogServer interface {
 	// Get map[LogName]OutputHash
 	HashMap(context.Context, *HashRequest) (*HashMapResponse, error)
 	// Compare(inputHash)
-	Compare(context.Context, *HashRequest) (*CompareResponse, error)
+	Decide(context.Context, *HashRequest) (*DecisionResponse, error)
 	mustEmbedUnimplementedTrustixLogServer()
 }
 
@@ -275,8 +275,8 @@ type UnimplementedTrustixLogServer struct {
 func (UnimplementedTrustixLogServer) HashMap(context.Context, *HashRequest) (*HashMapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HashMap not implemented")
 }
-func (UnimplementedTrustixLogServer) Compare(context.Context, *HashRequest) (*CompareResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Compare not implemented")
+func (UnimplementedTrustixLogServer) Decide(context.Context, *HashRequest) (*DecisionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Decide not implemented")
 }
 func (UnimplementedTrustixLogServer) mustEmbedUnimplementedTrustixLogServer() {}
 
@@ -309,20 +309,20 @@ func _TrustixLog_HashMap_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TrustixLog_Compare_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TrustixLog_Decide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HashRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrustixLogServer).Compare(ctx, in)
+		return srv.(TrustixLogServer).Decide(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.TrustixLog/Compare",
+		FullMethod: "/trustix.TrustixLog/Decide",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixLogServer).Compare(ctx, req.(*HashRequest))
+		return srv.(TrustixLogServer).Decide(ctx, req.(*HashRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -336,8 +336,8 @@ var _TrustixLog_serviceDesc = grpc.ServiceDesc{
 			Handler:    _TrustixLog_HashMap_Handler,
 		},
 		{
-			MethodName: "Compare",
-			Handler:    _TrustixLog_Compare_Handler,
+			MethodName: "Decide",
+			Handler:    _TrustixLog_Decide_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

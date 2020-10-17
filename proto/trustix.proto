@@ -53,7 +53,7 @@ service TrustixLog {
   // Get map[LogName]OutputHash
   rpc HashMap (HashRequest) returns (HashMapResponse) {}
   // Compare(inputHash)
-  rpc Compare (HashRequest) returns (CompareResponse) {}
+  rpc Decide (HashRequest) returns (DecisionResponse) {}
 
 }
 
@@ -65,19 +65,23 @@ message HashMapResponse {
   map<string, bytes> hashes = 1;
 }
 
-message CompareResponseUnmatched {
+message OutputHashResponse {
   string LogName = 1;
   bytes OutputHash = 2;
 }
 
-message CompareResponse {
+message OutputHashDecision {
   repeated string LogNames = 1;
   bytes OutputHash = 2;
   int32 Confidence = 3;
+}
+
+message DecisionResponse {
+  OutputHashDecision Decision = 1;
 
   // Non-matches (hash mismatch)
-  repeated CompareResponseUnmatched Unmatched = 4;
+  repeated OutputHashResponse Mismatches = 2;
 
   // Full misses (missing log entry)
-  repeated string Misses = 5;
+  repeated string Misses = 3;
 }
