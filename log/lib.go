@@ -50,3 +50,25 @@ func branchHash(left []byte, right []byte) []byte {
 	h.Write(right)
 	return h.Sum(nil)
 }
+
+func levelSize(treeSize int, level int) int {
+	size := treeSize
+	for i := 0; i <= level-1; i++ {
+		size = size / 2
+	}
+	return size
+}
+
+// How many "buckets" are in the root level for a given tree size
+func rootSize(treeSize int) int {
+	size := treeSize
+	i := 1
+	for {
+		size = size / 2
+		if size == 0 {
+			break
+		}
+		i++
+	}
+	return i
+}

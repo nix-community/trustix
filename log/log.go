@@ -53,16 +53,16 @@ func (l *VerifiableLog) Root() []byte {
 	}
 
 	level := 0
-	for l.storage.LevelSize(level)%2 == 0 {
+	for levelSize(l.treeSize, level)%2 == 0 {
 		level = level + 1
 	}
 
-	lastIndex := l.storage.LevelSize(level) - 1
+	lastIndex := levelSize(l.treeSize, level) - 1
 	hash := l.storage.Get(level, lastIndex).Digest
 
-	storageSize := l.storage.Size()
+	storageSize := rootSize(l.treeSize)
 	for i := level + 1; i < storageSize; i++ {
-		levelSize := l.storage.LevelSize(i)
+		levelSize := levelSize(l.treeSize, i)
 		if levelSize%2 == 1 {
 			hash = branchHash(l.storage.Get(i, levelSize-1).Digest, hash)
 		}
@@ -86,9 +86,9 @@ func (l *VerifiableLog) Append(data []byte) {
 }
 
 func (l *VerifiableLog) addNodeToLevel(level int, leaf *Leaf) {
-	l.storage.Append(level, leaf)
+	l.storage.Append(l.treeSize, level, leaf)
 
-	levelSize := l.storage.LevelSize(level)
+	levelSize := levelSize(l.treeSize, level)
 	if levelSize%2 == 0 {
 		li := levelSize - 2
 		ri := levelSize - 1

@@ -32,29 +32,6 @@ type logStorage struct {
 	txn storage.Transaction
 }
 
-func (s *logStorage) LevelSize(level int) int {
-	n, err := s.txn.Size([]byte(fmt.Sprintf("log-%d", level)))
-	if err != nil {
-		if err == storage.ObjectNotFoundError {
-			return 0
-		}
-		panic(err)
-	}
-
-	return n
-}
-
-func (s *logStorage) Size() int {
-	n, err := s.txn.Size([]byte("log-root"))
-	if err != nil {
-		if err == storage.ObjectNotFoundError {
-			return 0
-		}
-		panic(err)
-	}
-	return n
-}
-
 func (s *logStorage) Get(level int, idx int) *Leaf {
 	bucket := []byte(fmt.Sprintf("log-%d", level))
 	key := []byte(fmt.Sprintf("%d", idx))
@@ -72,21 +49,13 @@ func (s *logStorage) Get(level int, idx int) *Leaf {
 	return l
 }
 
-func (s *logStorage) Append(level int, leaf *Leaf) {
-	if s.Size() == level {
-		// "Grow" root level by adding another "level"
-		err := s.txn.Set([]byte("log-root"), []byte(fmt.Sprintf("%d", s.Size())), []byte(""))
-		if err != nil {
-			panic(err)
-		}
-	}
-
+func (s *logStorage) Append(treeSize int, level int, leaf *Leaf) {
 	v, err := leaf.Marshal()
 	if err != nil {
 		panic(err)
 	}
 
-	idx := s.LevelSize(level)
+	idx := levelSize(treeSize, level) - 1
 
 	bucket := []byte(fmt.Sprintf("log-%d", level))
 	key := []byte(fmt.Sprintf("%d", idx))

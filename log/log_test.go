@@ -62,14 +62,6 @@ func (s *testStorageTxn) Set(bucket []byte, key []byte, value []byte) error {
 	s.kv[string(bucket)][string(key)] = value
 	return nil
 }
-func (s *testStorageTxn) Size(bucket []byte) (int, error) {
-	v, ok := s.kv[string(bucket)]
-	if !ok {
-		return 0, storage.ObjectNotFoundError
-	}
-
-	return len(v), nil
-}
 
 func mkInputs() []*testInput {
 

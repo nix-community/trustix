@@ -26,7 +26,6 @@ package storage
 type Transaction interface {
 	Get(bucket []byte, key []byte) ([]byte, error)
 	Set(bucket []byte, key []byte, value []byte) error
-	Size(bucket []byte) (int, error)
 }
 
 type TrustixStorage interface {
