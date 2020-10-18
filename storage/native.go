@@ -24,71 +24,79 @@
 package storage
 
 import (
+	badger "github.com/dgraph-io/badger/v2"
 	"github.com/tweag/trustix/config"
-	bolt "go.etcd.io/bbolt"
 	"path"
+	"sync"
 )
 
 type nativeStorage struct {
-	db *bolt.DB
+	db       *badger.DB
+	txnMutex *sync.RWMutex
 }
 
 type nativeTxn struct {
-	txn *bolt.Tx
+	txn *badger.Txn
+}
+
+func createCompoundNativeKey(bucket []byte, key []byte) []byte {
+	cKey := []byte{}
+	cKey = append(cKey, bucket...)
+	cKey = append(cKey, 0x2f)
+	cKey = append(cKey, key...)
+	return cKey
 }
 
 func (t *nativeTxn) Get(bucket []byte, key []byte) ([]byte, error) {
-	b := t.txn.Bucket(bucket)
-	if b == nil {
-		return nil, ObjectNotFoundError
+	val, err := t.txn.Get(createCompoundNativeKey(bucket, key))
+	if err != nil {
+		// Normalise error
+		if err == badger.ErrKeyNotFound {
+			return nil, ObjectNotFoundError
+		}
+		return nil, err
 	}
 
-	val := b.Get(key)
-	if val == nil {
-		return nil, ObjectNotFoundError
-	}
-
-	return val, nil
+	return val.ValueCopy(nil)
 }
 
 func (t *nativeTxn) Set(bucket []byte, key []byte, value []byte) error {
-	b, err := t.txn.CreateBucketIfNotExists(bucket)
-	if err != nil {
-		return err
-	}
-
-	err = b.Put(key, value)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return t.txn.Set(createCompoundNativeKey(bucket, key), value)
 }
 
 func NativeStorageFromConfig(name string, stateDirectory string, conf *config.NativeStorageConfig) (*nativeStorage, error) {
 	path := path.Join(stateDirectory, name+".db")
-
-	db, err := bolt.Open(path, 0600, nil)
+	db, err := badger.Open(badger.DefaultOptions(path))
 	if err != nil {
 		return nil, err
 	}
 
 	return &nativeStorage{
-		db: db,
+		db:       db,
+		txnMutex: &sync.RWMutex{},
 	}, nil
+
 }
 
 func (s *nativeStorage) runTX(readWrite bool, fn func(Transaction) error) error {
-	txn, err := s.db.Begin(readWrite)
-	if err != nil {
-		return err
+	if readWrite {
+		s.txnMutex.Lock()
+		defer s.txnMutex.Unlock()
+	} else {
+		s.txnMutex.RLock()
+		defer s.txnMutex.RUnlock()
 	}
-	defer txn.Rollback()
+
+	txn := s.db.NewTransaction(readWrite)
+	if readWrite {
+		defer txn.Discard()
+	}
 
 	t := &nativeTxn{
 		txn: txn,
 	}
-	err = fn(t)
+
+	err := fn(t)
 	if err != nil {
 		return err
 	} else {

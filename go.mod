@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Shopify/go-lua v0.0.0-20191113154418-05ce435a9edd
+	github.com/dgraph-io/badger/v2 v2.2007.2
 	github.com/golang/protobuf v1.4.3
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/lazyledger/smt v0.0.0-20200827143353-42131aab296f
@@ -12,7 +13,7 @@ require (
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.2.2
+	github.com/stretchr/testify v1.4.0
 	go.etcd.io/bbolt v1.3.4
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344 // indirect
 	golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1 // indirect
