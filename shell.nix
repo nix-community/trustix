@@ -1,7 +1,7 @@
 let
   pkgs = import ./nix;
 
-  pythonEnv = pkgs.python3.withPackages(ps: []);
+  pythonEnv = pkgs.python3.withPackages(ps: [ ps.grpcio ps.grpcio-tools ps.setuptools ]);
 
 in pkgs.mkShell {
 
