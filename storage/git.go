@@ -40,17 +40,20 @@ type gitTxn struct {
 	repo *git.Repository
 }
 
-func (t *gitTxn) shardKey(key []byte) []string {
+func (t *gitTxn) shardKey(bucket []byte, key []byte) []string {
 	// HACK: Special handling of HEAD (cheaper lookup)
-	if bytes.Compare(key, []byte("HEAD")) == 0 {
-		return []string{"HEAD"}
+	if bytes.Equal(bucket, []byte("META")) {
+		return []string{"META", string(key)}
 	}
 
 	treeDepth := 5
 	tokenLength := 2
 
 	var ret []string
-	bH := sha256.Sum256(key)
+	h := sha256.New()
+	h.Write(bucket)
+	h.Write(key)
+	bH := h.Sum(nil)
 	hash := hex.EncodeToString(bH[:])
 
 	for i := 0; i < treeDepth; i++ {
@@ -62,9 +65,7 @@ func (t *gitTxn) shardKey(key []byte) []string {
 }
 
 func (t *gitTxn) Get(bucket []byte, key []byte) ([]byte, error) {
-	panic("Bucket namespacing not implemented")
-
-	path := t.shardKey(key)
+	path := t.shardKey(bucket, key)
 
 	tree := t.tree
 	for i, p := range path {
@@ -93,9 +94,7 @@ func (t *gitTxn) Get(bucket []byte, key []byte) ([]byte, error) {
 }
 
 func (t *gitTxn) Set(bucket []byte, key []byte, value []byte) error {
-	panic("Bucket namespacing not implemented")
-
-	path := t.shardKey(key)
+	path := t.shardKey(bucket, key)
 
 	builder, err := t.repo.TreeBuilderFromTree(t.tree)
 	if err != nil {
