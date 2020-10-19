@@ -38,6 +38,8 @@ func FromConfig(name string, stateDirectory string, conf *config.StorageConfig) 
 		return GitStorageFromConfig(name, stateDirectory, conf.Git)
 	case "native":
 		return NativeStorageFromConfig(name, stateDirectory, conf.Native)
+	case "memory":
+		return MemoryStorageFromConfig()
 	}
 
 	return nil, fmt.Errorf("Storage type '%s' is not supported.", conf.Type)

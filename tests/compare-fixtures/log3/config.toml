@@ -3,7 +3,7 @@ mode = "trustix-log"
 name = "trustix-test3"
 
 [log.storage]
-type = "native"
+type = "memory"
 
 [log.storage.native]
 

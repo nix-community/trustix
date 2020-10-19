@@ -8,6 +8,7 @@ require (
 	github.com/dgraph-io/badger/v2 v2.2007.2
 	github.com/golang/protobuf v1.4.3
 	github.com/google/go-cmp v0.5.2 // indirect
+	github.com/hashicorp/go-memdb v1.3.0
 	github.com/lazyledger/smt v0.0.0-20200827143353-42131aab296f
 	github.com/libgit2/git2go/v30 v30.0.13
 	github.com/sirupsen/logrus v1.2.0
