@@ -35,7 +35,6 @@ import (
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
 	"github.com/tweag/trustix/transport"
-	"hash"
 	"time"
 )
 
@@ -44,9 +43,8 @@ type FlagConfig struct {
 }
 
 type TrustixCore struct {
-	store      storage.TrustixStorage
-	hasher     hash.Hash
-	signer     signer.TrustixSigner
+	store  storage.TrustixStorage
+	signer signer.TrustixSigner
 
 	mapRoot  []byte
 	logRoot  []byte
@@ -57,8 +55,7 @@ func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 	var buf []byte
 
 	err := s.store.View(func(txn storage.Transaction) error {
-		hasher := sha256.New()
-		tree := smt.ImportSparseMerkleTree(newMapStore(txn), hasher, s.mapRoot)
+		tree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), s.mapRoot)
 
 		// TODO: Log verification (but optional?)
 
@@ -74,7 +71,7 @@ func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 			return err
 		}
 
-		if !smt.VerifyProof(proof, tree.Root(), key, v, s.hasher) {
+		if !smt.VerifyProof(proof, tree.Root(), key, v, sha256.New()) {
 			return fmt.Errorf("Proof verification failed")
 		}
 
@@ -111,7 +108,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 
 		// The sparse merkle tree
 		log.Debug("Creating sparse merkle tree from persisted data")
-		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), s.hasher, s.mapRoot)
+		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), s.mapRoot)
 
 		// Get the old value and check it against new submitted value
 		log.Debug("Checking if newly submitted value is already set")
@@ -210,8 +207,6 @@ func (s *TrustixCore) updateRoot() error {
 
 func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, error) {
 
-	hasher := sha256.New()
-
 	sig, err := signer.FromConfig(conf.Signer)
 	if err != nil {
 		return nil, err
@@ -241,9 +236,8 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 	}
 
 	core := &TrustixCore{
-		store:      store,
-		hasher:     hasher,
-		signer:     sig,
+		store:  store,
+		signer: sig,
 		// TODO: Log root
 	}
 
@@ -254,6 +248,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 			// No STH yet, new tree
 			// TODO: Create a completely separate command for new tree, no magic should happen at startup
 			if err == storage.ObjectNotFoundError {
+				hasher := sha256.New()
 				tree := smt.NewSparseMerkleTree(newMapStore(txn), hasher)
 				core.mapRoot = tree.Root()
 				return nil
