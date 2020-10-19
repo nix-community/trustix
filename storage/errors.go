@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-package errors
+package storage
 
 import (
 	"fmt"

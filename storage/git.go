@@ -29,7 +29,6 @@ import (
 	"encoding/hex"
 	"github.com/libgit2/git2go/v30"
 	"github.com/tweag/trustix/config"
-	"github.com/tweag/trustix/storage/errors"
 	"os"
 	"path"
 	"time"
@@ -72,7 +71,7 @@ func (t *gitTxn) Get(bucket []byte, key []byte) ([]byte, error) {
 		var err error
 		entry := tree.EntryByName(p)
 		if entry == nil {
-			return nil, errors.ObjectNotFoundError
+			return nil, ObjectNotFoundError
 		}
 
 		if i+1 == len(path) {
@@ -90,7 +89,7 @@ func (t *gitTxn) Get(bucket []byte, key []byte) ([]byte, error) {
 		}
 	}
 
-	return nil, errors.ObjectNotFoundError
+	return nil, ObjectNotFoundError
 }
 
 func (t *gitTxn) Set(bucket []byte, key []byte, value []byte) error {
