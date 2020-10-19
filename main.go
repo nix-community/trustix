@@ -25,8 +25,12 @@ package main // import "github.com/tweag/trustix"
 
 import (
 	"github.com/tweag/trustix/cmd"
+	"runtime"
 )
 
 func main() {
+	runtime.SetBlockProfileRate(100)
+	runtime.GOMAXPROCS(128)
+
 	cmd.Execute()
 }
