@@ -62,19 +62,6 @@ var rootCmd = &cobra.Command{
 		}
 
 		log.WithFields(log.Fields{
-			"address": dialAddress,
-		}).Info("Listening to address")
-		lis, err := net.Listen("unix", dialAddress)
-		if err != nil {
-			log.Fatalf("failed to listen: %v", err)
-		}
-
-		log.Debug("Creating gRPC server")
-		s := grpc.NewServer(
-			grpc.Creds(&auth.SoPeercred{}), // Attach SO_PEERCRED auth to UNIX sockets
-		)
-
-		log.WithFields(log.Fields{
 			"directory": stateDirectory,
 		}).Info("Creating state directory")
 		err = os.MkdirAll(stateDirectory, 0700)
@@ -105,6 +92,9 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		var rpcServer *rpc.TrustixRPCServer
+		var kvServer *rpc.TrustixKVServer
+
 		logMap := make(map[string]*core.TrustixCore)
 		for _, logConfig := range config.Logs {
 			log.WithFields(log.Fields{
@@ -125,9 +115,8 @@ var rootCmd = &cobra.Command{
 					"mode": logConfig.Mode,
 				}).Info("Adding authoritive log to gRPC")
 
-				// Authoritive APIs
-				pb.RegisterTrustixRPCServer(s, rpc.NewTrustixRPCServer(c))
-				pb.RegisterTrustixKVServer(s, rpc.NewTrustixKVServer(c))
+				rpcServer = rpc.NewTrustixRPCServer(c)
+				kvServer = rpc.NewTrustixKVServer(c)
 			}
 		}
 
@@ -136,12 +125,58 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Failed to create correlator: %v", err)
 		}
 
-		log.Info("Creating combined gRPC instance")
-		pb.RegisterTrustixLogServer(s, rpc.NewTrustixLogServer(logMap, corr))
+		logServer := rpc.NewTrustixLogServer(logMap, corr)
 
-		if err := s.Serve(lis); err != nil {
-			log.Fatalf("failed to serve: %v", err)
+		log.Debug("Creating gRPC servers")
+
+		errChan := make(chan error)
+
+		createServer := func(lis net.Listener) {
+			var s *grpc.Server
+
+			_, isUnix := lis.(*net.UnixListener)
+
+			if isUnix {
+				s = grpc.NewServer(
+					grpc.Creds(&auth.SoPeercred{}), // Attach SO_PEERCRED auth to UNIX sockets
+				)
+
+				pb.RegisterTrustixLogServer(s, logServer)
+
+				if rpcServer != nil {
+					pb.RegisterTrustixRPCServer(s, rpcServer)
+				}
+			} else {
+				s = grpc.NewServer()
+			}
+
+			if kvServer != nil {
+				pb.RegisterTrustixKVServer(s, kvServer)
+			}
+
+			err := s.Serve(lis)
+			if err != nil {
+				errChan <- fmt.Errorf("failed to serve: %v", err)
+			}
 		}
+
+		for _, addr := range []string{dialAddress} {
+
+			log.WithFields(log.Fields{
+				"address": dialAddress,
+			}).Info("Listening to address")
+
+			lis, err := net.Listen("tcp", addr)
+			if err != nil {
+				log.Fatalf("failed to listen: %v", err)
+			}
+
+			go createServer(lis)
+
+		}
+
+		err = <-errChan
+		log.Fatal(err)
 
 		return nil
 	},
