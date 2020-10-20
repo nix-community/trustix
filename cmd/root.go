@@ -37,8 +37,10 @@ import (
 	"google.golang.org/grpc"
 	"net"
 	"os"
+	"os/signal"
 	"path"
 	"sync"
+	"syscall"
 )
 
 var once sync.Once
@@ -133,9 +135,7 @@ var rootCmd = &cobra.Command{
 
 		errChan := make(chan error)
 
-		createServer := func(lis net.Listener) {
-			var s *grpc.Server
-
+		createServer := func(lis net.Listener) (s *grpc.Server) {
 			_, isUnix := lis.(*net.UnixListener)
 
 			if isUnix {
@@ -156,28 +156,29 @@ var rootCmd = &cobra.Command{
 				pb.RegisterTrustixKVServer(s, kvServer)
 			}
 
-			err := s.Serve(lis)
-			if err != nil {
-				errChan <- fmt.Errorf("failed to serve: %v", err)
-			}
+			go func() {
+				err := s.Serve(lis)
+				if err != nil {
+					errChan <- fmt.Errorf("failed to serve: %v", err)
+				}
+			}()
+
+			return s
 		}
+
+		var servers []*grpc.Server
 
 		// Systemd socket activation
 		listeners, err := activation.Listeners()
 		if err != nil {
 			log.Fatalf("cannot retrieve listeners: %s", err)
 		}
-
-		created := false
-
 		for _, lis := range listeners {
 			log.WithFields(log.Fields{
 				"address": lis.Addr(),
 			}).Info("Using socket activated listener")
 
-			go createServer(lis)
-
-			created = true
+			servers = append(servers, createServer(lis))
 		}
 
 		// Create sockets
@@ -196,17 +197,36 @@ var rootCmd = &cobra.Command{
 				log.Fatalf("failed to listen: %v", err)
 			}
 
-			go createServer(lis)
-
-			created = true
+			servers = append(servers, createServer(lis))
 		}
 
-		if !created {
+		if len(servers) <= 0 {
 			log.Fatal("No listeners configured!")
 		}
 
-		err = <-errChan
-		log.Fatal(err)
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+		go func() {
+			<-quit
+			var wg *sync.WaitGroup
+
+			for _, server := range servers {
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+					server.GracefulStop()
+				}()
+			}
+
+			wg.Wait()
+
+			close(errChan)
+		}()
+
+		for err := range errChan {
+			log.Fatal(err)
+		}
 
 		return nil
 	},
