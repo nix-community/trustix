@@ -20,61 +20,67 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-
-package rpc
+package auth
 
 import (
 	"context"
-	"encoding/hex"
-	log "github.com/sirupsen/logrus"
-	"github.com/tweag/trustix/core"
-	pb "github.com/tweag/trustix/proto"
-	"github.com/tweag/trustix/rpc/auth"
+	"fmt"
+	"google.golang.org/grpc/peer"
+	"os/user"
+	"strconv"
+	"syscall"
 )
 
-type TrustixRPCServer struct {
-	pb.UnimplementedTrustixRPCServer
-	core *core.TrustixCore
+type AuthInfo struct {
+	Ucred syscall.Ucred
 }
 
-func NewTrustixRPCServer(core *core.TrustixCore) *TrustixRPCServer {
-	return &TrustixRPCServer{core: core}
+func (AuthInfo) AuthType() string {
+	return "ucred"
 }
 
-func (s *TrustixRPCServer) SubmitMapping(ctx context.Context, in *pb.SubmitRequest) (*pb.SubmitResponse, error) {
-
-	err := auth.CanWrite(ctx)
-	if err != nil {
-		return nil, err
+func AuthInfoFromContext(ctx context.Context) (*AuthInfo, bool) {
+	pr, ok := peer.FromContext(ctx)
+	if !ok {
+		return nil, false
 	}
-
-	log.WithFields(log.Fields{
-		"inputHash":  hex.EncodeToString(in.InputHash),
-		"outputHash": hex.EncodeToString(in.OutputHash),
-	}).Info("Received input hash")
-
-	err = s.core.Submit(in.InputHash, in.OutputHash)
-	if err != nil {
-		return nil, err
+	info, ok := pr.AuthInfo.(AuthInfo)
+	if !ok {
+		return nil, false
 	}
-
-	return &pb.SubmitResponse{
-		Status: pb.SubmitResponse_OK,
-	}, nil
+	return &info, true
 }
 
-func (s *TrustixRPCServer) QueryMapping(ctx context.Context, in *pb.QueryRequest) (*pb.QueryResponse, error) {
+func CanWrite(ctx context.Context) error {
 
-	log.WithFields(log.Fields{
-		"inputHash": hex.EncodeToString(in.InputHash),
-	}).Info("Received input hash query")
-
-	h, err := s.core.Query(in.InputHash)
+	u, err := user.Current()
 	if err != nil {
-		return nil, err
+		return fmt.Errorf("failed to get current user: %v", err)
 	}
 
-	return &pb.QueryResponse{
-		OutputHash: h,
-	}, nil
+	uid, err := strconv.Atoi(u.Uid)
+	if err != nil {
+		return fmt.Errorf("failed to get current user uid: %v", err)
+	}
+
+	pr, ok := peer.FromContext(ctx)
+	if !ok {
+		return fmt.Errorf("Could not get peer from context")
+	}
+
+	if pr.Addr.Network() != "unix" {
+		return fmt.Errorf("Write only allowed over UNIX socket")
+	}
+
+	info, ok := pr.AuthInfo.(AuthInfo)
+	if !ok {
+		return fmt.Errorf("Could not get peer creds for socket")
+	}
+
+	// Deny connection from other than root and self
+	if info.Ucred.Uid == 0 || info.Ucred.Uid == uint32(uid) {
+		return nil
+	}
+
+	return fmt.Errorf("Denied peer creds")
 }

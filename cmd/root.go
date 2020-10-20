@@ -32,6 +32,7 @@ import (
 	"github.com/tweag/trustix/correlator"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/rpc"
+	"github.com/tweag/trustix/rpc/auth"
 	"google.golang.org/grpc"
 	"net"
 	"os"
@@ -63,13 +64,15 @@ var rootCmd = &cobra.Command{
 		log.WithFields(log.Fields{
 			"address": dialAddress,
 		}).Info("Listening to address")
-		lis, err := net.Listen("tcp", dialAddress)
+		lis, err := net.Listen("unix", dialAddress)
 		if err != nil {
 			log.Fatalf("failed to listen: %v", err)
 		}
 
 		log.Debug("Creating gRPC server")
-		s := grpc.NewServer()
+		s := grpc.NewServer(
+			grpc.Creds(&auth.SoPeercred{}), // Attach SO_PEERCRED auth to UNIX sockets
+		)
 
 		log.WithFields(log.Fields{
 			"directory": stateDirectory,
