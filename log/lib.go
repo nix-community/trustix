@@ -61,6 +61,10 @@ func levelSize(treeSize int, level int) int {
 
 // How many "buckets" are in the root level for a given tree size
 func rootSize(treeSize int) int {
+	if treeSize == 0 {
+		return 0
+	}
+
 	size := treeSize
 	i := 1
 	for {
