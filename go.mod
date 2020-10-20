@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Shopify/go-lua v0.0.0-20191113154418-05ce435a9edd
+	github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e
 	github.com/dgraph-io/badger/v2 v2.2007.2
 	github.com/golang/protobuf v1.4.3
 	github.com/google/go-cmp v0.5.2 // indirect

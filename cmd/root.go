@@ -25,6 +25,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/coreos/go-systemd/activation"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/config"
@@ -44,6 +45,7 @@ var once sync.Once
 var configPath string
 var stateDirectory string
 
+var listenAddress string
 var dialAddress string
 
 var rootCmd = &cobra.Command{
@@ -160,7 +162,30 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		for _, addr := range []string{dialAddress} {
+		// Systemd socket activation
+		listeners, err := activation.Listeners()
+		if err != nil {
+			log.Fatalf("cannot retrieve listeners: %s", err)
+		}
+
+		created := false
+
+		for _, lis := range listeners {
+			log.WithFields(log.Fields{
+				"address": lis.Addr(),
+			}).Info("Using socket activated listener")
+
+			go createServer(lis)
+
+			created = true
+		}
+
+		// Create sockets
+		for _, addr := range []string{listenAddress} {
+
+			if addr == "" {
+				continue
+			}
 
 			log.WithFields(log.Fields{
 				"address": dialAddress,
@@ -173,6 +198,11 @@ var rootCmd = &cobra.Command{
 
 			go createServer(lis)
 
+			created = true
+		}
+
+		if !created {
+			log.Fatal("No listeners configured!")
 		}
 
 		err = <-errChan
@@ -185,7 +215,9 @@ var rootCmd = &cobra.Command{
 func initCommands() {
 	rootCmd.Flags().StringVar(&configPath, "config", "", "Path to config.toml")
 
-	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", ":8080", "Path to config.toml")
+	rootCmd.PersistentFlags().StringVar(&listenAddress, "listen", "", "Listen to address")
+
+	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", ":8080", "Connect to address")
 
 	log.SetLevel(log.DebugLevel)
 

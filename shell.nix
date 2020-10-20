@@ -15,6 +15,8 @@ in pkgs.mkShell {
 
     pkgs.protobuf
 
+    pkgs.systemfd  # Socket activation testing
+
     # For development scripts
     pythonEnv
 
