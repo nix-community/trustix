@@ -24,52 +24,46 @@
 package cmd
 
 import (
-	"encoding/hex"
+	"context"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	pb "github.com/tweag/trustix/proto"
+	"google.golang.org/grpc"
+	"net"
+	"net/url"
+	"time"
 )
 
-var queryCommand = &cobra.Command{
-	Use:   "query",
-	Short: "Query hashes from the log",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if inputHashHex == "" {
-			return fmt.Errorf("Missing input/output hash")
-		}
+func createClientConn() (*grpc.ClientConn, error) {
 
-		inputBytes, err := hex.DecodeString(inputHashHex)
-		if err != nil {
-			log.Fatal(err)
-		}
+	u, err := url.Parse(dialAddress)
+	if err != nil {
+		return nil, err
+	}
 
-		conn, err := createClientConn()
-		if err != nil {
-			panic(err)
-		}
-		defer conn.Close()
+	if u.Scheme != "unix" {
+		return nil, fmt.Errorf("Only UNIX sockets are supported in the CLI for now")
+	}
 
-		c := pb.NewTrustixRPCClient(conn)
-		ctx, cancel := createContext()
-		defer cancel()
+	sockPath := u.Host + u.Path
 
-		log.WithFields(log.Fields{
-			"inputHash": inputHashHex,
-		}).Debug("Requesting output mapping for")
-		r, err := c.QueryMapping(ctx, &pb.QueryRequest{
-			InputHash: inputBytes,
-		})
-		if err != nil {
-			log.Fatalf("could not submit: %v", err)
-		}
+	log.WithFields(log.Fields{
+		"address": dialAddress,
+	}).Debug("Dialing gRPC")
 
-		fmt.Println(fmt.Sprintf("Output hash: %s", hex.EncodeToString(r.OutputHash)))
-
-		return nil
-	},
+	return grpc.Dial(
+		sockPath,
+		grpc.WithInsecure(),
+		grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+			unix_addr, err := net.ResolveUnixAddr("unix", addr)
+			if err != nil {
+				return nil, err
+			}
+			return net.DialUnix("unix", nil, unix_addr)
+		}),
+	)
 }
 
-func initQuery() {
-	queryCommand.Flags().StringVar(&inputHashHex, "input-hash", "", "Input hash in hex encoding")
+// Create a context with the default timeout set
+func createContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), time.Second)
 }

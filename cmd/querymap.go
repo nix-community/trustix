@@ -24,14 +24,11 @@
 package cmd
 
 import (
-	"context"
 	"encoding/hex"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	pb "github.com/tweag/trustix/proto"
-	"google.golang.org/grpc"
-	"time"
 )
 
 var queryMap = &cobra.Command{
@@ -47,17 +44,15 @@ var queryMap = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		log.WithFields(log.Fields{
-			"address": dialAddress,
-		}).Debug("Dialing gRPC")
-		conn, err := grpc.Dial(dialAddress, grpc.WithInsecure(), grpc.WithBlock())
+		conn, err := createClientConn()
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
 		defer conn.Close()
+
 		c := pb.NewTrustixLogClient(conn)
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		ctx, cancel := createContext()
 		defer cancel()
 
 		log.WithFields(log.Fields{

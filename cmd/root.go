@@ -243,6 +243,7 @@ func initCommands() {
 		tmpDir := "/tmp"
 		trustixSock = filepath.Join(tmpDir, "trustix.sock")
 	}
+	trustixSock = fmt.Sprintf("unix://%s", trustixSock)
 
 	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
 
