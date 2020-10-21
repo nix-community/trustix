@@ -210,7 +210,9 @@ var rootCmd = &cobra.Command{
 
 		go func() {
 			<-quit
-			var wg *sync.WaitGroup
+			wg := new(sync.WaitGroup)
+
+			log.Info("Received shutdown signal, closing down server gracefully")
 
 			for _, server := range servers {
 				wg.Add(1)
@@ -221,6 +223,8 @@ var rootCmd = &cobra.Command{
 			}
 
 			wg.Wait()
+
+			log.Info("Done closing down servers")
 
 			close(errChan)
 		}()
