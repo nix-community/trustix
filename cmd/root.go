@@ -36,6 +36,7 @@ import (
 	"github.com/tweag/trustix/rpc/auth"
 	"google.golang.org/grpc"
 	"net"
+	"net/url"
 	"os"
 	"os/signal"
 	"path"
@@ -189,14 +190,33 @@ var rootCmd = &cobra.Command{
 				continue
 			}
 
-			log.WithFields(log.Fields{
-				"address": dialAddress,
-			}).Info("Listening to address")
+			u, err := url.Parse(addr)
+			if err != nil {
+				log.Fatalf("Could not parse url: %v", err)
+			}
 
-			lis, err := net.Listen("tcp", addr)
+			family := ""
+			host := ""
+
+			switch u.Scheme {
+			case "unix":
+				family = "unix"
+				host = u.Host + u.Path
+			case "tcp":
+				family = "tcp"
+				host = u.Host
+			default:
+				log.Fatalf("Socket with scheme '%s' unsupported", u.Scheme)
+			}
+
+			lis, err := net.Listen(family, host)
 			if err != nil {
 				log.Fatalf("failed to listen: %v", err)
 			}
+
+			log.WithFields(log.Fields{
+				"address": addr,
+			}).Info("Listening to address")
 
 			servers = append(servers, createServer(lis))
 		}

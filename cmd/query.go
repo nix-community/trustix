@@ -46,7 +46,7 @@ var queryCommand = &cobra.Command{
 
 		conn, err := createClientConn()
 		if err != nil {
-			panic(err)
+			log.Fatalf("did not connect: %v", err)
 		}
 		defer conn.Close()
 
