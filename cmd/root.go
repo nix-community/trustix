@@ -39,6 +39,7 @@ import (
 	"os"
 	"os/signal"
 	"path"
+	"path/filepath"
 	"sync"
 	"syscall"
 )
@@ -237,7 +238,13 @@ func initCommands() {
 
 	rootCmd.PersistentFlags().StringVar(&listenAddress, "listen", "", "Listen to address")
 
-	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", ":8080", "Connect to address")
+	trustixSock := os.Getenv("TRUSTIX_SOCK")
+	if trustixSock == "" {
+		tmpDir := "/tmp"
+		trustixSock = filepath.Join(tmpDir, "trustix.sock")
+	}
+
+	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
 
 	log.SetLevel(log.DebugLevel)
 
