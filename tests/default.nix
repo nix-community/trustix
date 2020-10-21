@@ -6,7 +6,7 @@ let
   trustix = import ../default.nix { };
 
   mkTest = name: command: pkgs.runCommand "trustix-test-${name}" {
-    nativeBuildInputs = [ trustix ];
+    nativeBuildInputs = [ trustix pkgs.systemfd ];
   } (lib.concatStringsSep "\n" [
     ''
       export HOME=$(mktemp -d)
@@ -25,7 +25,9 @@ in {
     input_hash="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
     output_hash="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
 
-    trustix --config ${./config-simple.toml} &
+    export TRUSTIX_SOCK=./sock
+
+    systemfd -s ./sock -- trustix --config ${./config-simple.toml} &
 
     trustix submit --input-hash "$input_hash" --output-hash "$output_hash"
 
@@ -39,19 +41,21 @@ in {
     output_hash="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
     evil_hash="053e399dbbdd74b10ad6d2cfa28ab4aab7e342d613a731c7dc4b66c2283e0757"
 
+    build_dir=$(pwd)
+
     # Spin up 3 log instances
-    (cd ${compare-fixtures/log1}; trustix --state $TMPDIR/log1-state --config ./config.toml --address ":8081") &
-    (cd ${compare-fixtures/log2}; trustix --state $TMPDIR/log1-state --config ./config.toml --address ":8082") &
-    (cd ${compare-fixtures/log3}; trustix --state $TMPDIR/log1-state --config ./config.toml --address ":8083") &
+    (cd ${compare-fixtures/log1}; systemfd -s $build_dir/1.sock -- trustix --state $TMPDIR/log1-state --config ./config.toml --listen "tcp://:8081") &
+    (cd ${compare-fixtures/log2}; systemfd -s $build_dir/2.sock -- trustix --state $TMPDIR/log2-state --config ./config.toml --listen "tcp://:8082") &
+    (cd ${compare-fixtures/log3}; systemfd -s $build_dir/3.sock -- trustix --state $TMPDIR/log3-state --config ./config.toml --listen "tcp://:8083") &
 
     # Submit hashes
-    trustix submit --input-hash "$input_hash" --output-hash "$output_hash" --address ":8081"
-    trustix submit --input-hash "$input_hash" --output-hash "$output_hash" --address ":8082"
-    trustix submit --input-hash "$input_hash" --output-hash "$evil_hash" --address ":8083"
+    trustix submit --input-hash "$input_hash" --output-hash "$output_hash" --address "unix://./1.sock"
+    trustix submit --input-hash "$input_hash" --output-hash "$output_hash" --address "unix://./2.sock"
+    trustix submit --input-hash "$input_hash" --output-hash "$evil_hash" --address "unix://./3.sock"
 
-    (cd ${compare-fixtures/log-agg}; trustix --state $TMPDIR/log-agg-state --config ./config.toml --address ":8080") &
+    (cd ${compare-fixtures/log-agg}; systemfd -s $build_dir/agg.sock -- trustix --state $TMPDIR/log-agg-state --config ./config.toml) &
 
-    trustix decide --input-hash "$input_hash" --address ":8080" > output
+    trustix decide --input-hash "$input_hash" --address "unix://./agg.sock" > output
 
     # Assert correct output
     grep "Found mismatched hash '053e399dbbdd74b10ad6d2cfa28ab4aab7e342d613a731c7dc4b66c2283e0757' in log 'trustix-test-follower3'" output > /dev/null
@@ -85,7 +89,9 @@ in {
       input_hash="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
       output_hash="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
 
-      trustix --config ${config} &
+      systemfd -s ./log.sock -- trustix --config ${config} &
+
+      export TRUSTIX_SOCK=./log.sock
 
       trustix submit --input-hash "$input_hash" --output-hash "$output_hash"
 
