@@ -77,7 +77,7 @@ func (l *TrustixLogServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb
 			}
 
 			mux.Lock()
-			responses[name] = h
+			responses[name] = h.Value
 			mux.Unlock()
 		}()
 	}
@@ -125,14 +125,14 @@ func (l *TrustixLogServer) Decide(ctx context.Context, in *pb.HashRequest) (*pb.
 				return
 			}
 
-			if len(h) == 0 {
+			if len(h.Value) == 0 {
 				misses = append(misses, name)
 				return
 			}
 
 			inputs = append(inputs, &correlator.LogCorrelatorInput{
 				LogName:    name,
-				OutputHash: hex.EncodeToString(h),
+				OutputHash: hex.EncodeToString(h.Value),
 			})
 
 		}()

@@ -75,6 +75,6 @@ func (s *TrustixRPCServer) QueryMapping(ctx context.Context, in *pb.QueryRequest
 	}
 
 	return &pb.QueryResponse{
-		OutputHash: h,
+		OutputHash: h.Value,
 	}, nil
 }

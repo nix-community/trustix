@@ -27,10 +27,12 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/config"
 	vlog "github.com/tweag/trustix/log"
+	"github.com/tweag/trustix/schema"
 	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
@@ -51,7 +53,7 @@ type TrustixCore struct {
 	treeSize int
 }
 
-func (s *TrustixCore) Query(key []byte) ([]byte, error) {
+func (s *TrustixCore) Query(key []byte) (*schema.MapEntry, error) {
 	var buf []byte
 
 	err := s.store.View(func(txn storage.Transaction) error {
@@ -81,7 +83,13 @@ func (s *TrustixCore) Query(key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	return buf, nil
+	e := &schema.MapEntry{}
+	err = proto.Unmarshal(buf, e)
+	if err != nil {
+		return nil, err
+	}
+
+	return e, nil
 }
 
 func (s *TrustixCore) Get(bucket []byte, key []byte) ([]byte, error) {
@@ -130,7 +138,16 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 		// Append value to both verifiable log & sparse indexed tree
 		log.Debug("Appending value to log")
 		vLog.Append(value)
-		smTree.Update(key, value)
+
+		entry, err := proto.Marshal(&schema.MapEntry{
+			Value: value,
+			Index: uint64(vLog.Size() - 1),
+		})
+		if err != nil {
+			return err
+		}
+
+		smTree.Update(key, entry)
 
 		sth, err := sth.SignHead(smTree, vLog, s.signer)
 		if err != nil {

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option go_package = "github.com/tweag/trustix/schema";
+
+message MapEntry {
+  bytes Value = 1;
+  uint64 Index = 2;
+}
