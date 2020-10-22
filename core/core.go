@@ -155,29 +155,19 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 		}
 
 		log.Debug("Signing tree heads")
-		smhBytes, err := sth.Marshal()
+		smhBytes, err := proto.Marshal(sth)
 		if err != nil {
 			return err
 		}
 
-		mapRoot, err := sth.UnmarshalSMHRoot()
-		if err != nil {
-			return err
-		}
-
-		logRoot, err := sth.UnmarshalSTHRoot()
-		if err != nil {
-			return err
-		}
-
-		log.Debug("Setting new signed tree heads")
+		log.WithField("size", sth.TreeSize).Debug("Setting new signed tree heads")
 		err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
 		if err != nil {
 			return err
 		}
 
-		s.mapRoot = mapRoot
-		s.logRoot = logRoot
+		s.mapRoot = sth.MapRoot
+		s.logRoot = sth.LogRoot
 		s.treeSize = vLog.Size()
 
 		return nil
@@ -192,29 +182,20 @@ func (s *TrustixCore) updateRoot() error {
 		if err != nil {
 			return err
 		} else {
-			oldSMH, err := sth.NewSMHFromJSON(oldHead)
-			if err != nil {
-				return err
-			}
-			sthRootBytes, err := oldSMH.UnmarshalSTHRoot()
-			if err != nil {
-				return err
-			}
-
-			// Verify signed map head
-			smhRootBytes, err := oldSMH.UnmarshalSMHRoot()
+			oldSTH := &schema.STH{}
+			err = proto.Unmarshal(oldHead, oldSTH)
 			if err != nil {
 				return err
 			}
 
-			err = oldSMH.Verify(s.signer)
+			err = sth.VerifySTHSig(s.signer, oldSTH)
 			if err != nil {
 				return err
 			}
 
-			s.mapRoot = smhRootBytes
-			s.logRoot = sthRootBytes
-			s.treeSize = oldSMH.LogSth.Size
+			s.mapRoot = oldSTH.MapRoot
+			s.logRoot = oldSTH.LogRoot
+			s.treeSize = int(oldSTH.TreeSize)
 
 		}
 
