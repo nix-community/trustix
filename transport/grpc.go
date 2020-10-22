@@ -25,11 +25,15 @@ package transport
 
 import (
 	"context"
+	"crypto/ed25519"
+	"crypto/tls"
 	"fmt"
 	"github.com/tweag/trustix/config"
 	pb "github.com/tweag/trustix/proto"
+	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/storage"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"time"
 )
 
@@ -64,8 +68,39 @@ func (t *grpcTxn) Size(bucket []byte) (int, error) {
 	return 0, fmt.Errorf("Cannot Size on remote")
 }
 
-func NewGRPCTransport(t *config.GRPCTransportConfig) (*grpcTransport, error) {
-	conn, err := grpc.Dial(t.Remote, grpc.WithInsecure(), grpc.WithBlock())
+func NewGRPCTransport(t *config.GRPCTransportConfig, s signer.TrustixSigner) (*grpcTransport, error) {
+
+	config := &tls.Config{
+		InsecureSkipVerify: true,
+		VerifyConnection: func(state tls.ConnectionState) error {
+			if len(state.PeerCertificates) != 1 {
+				return fmt.Errorf("Dont know how to handle %d certs", len(state.PeerCertificates))
+			}
+
+			cert := state.PeerCertificates[0]
+
+			edPub, ok := cert.PublicKey.(ed25519.PublicKey)
+			if !ok {
+				return fmt.Errorf("Key not ed25519")
+			}
+
+			if !edPub.Equal(s.Public()) {
+				return fmt.Errorf("Expected key mismatch")
+			}
+
+			err := cert.CheckSignature(cert.SignatureAlgorithm, cert.RawTBSCertificate, cert.Signature)
+			if err != nil {
+				fmt.Errorf("Signature check failed %d certs", len(state.PeerCertificates))
+				return err
+			}
+
+			return nil
+		},
+	}
+
+	creds := credentials.NewTLS(config)
+
+	conn, err := grpc.Dial(t.Remote, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return nil, err
 	}

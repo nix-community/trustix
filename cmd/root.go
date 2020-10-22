@@ -24,6 +24,7 @@
 package cmd
 
 import (
+	"crypto/tls"
 	"fmt"
 	"github.com/coreos/go-systemd/activation"
 	log "github.com/sirupsen/logrus"
@@ -35,6 +36,7 @@ import (
 	"github.com/tweag/trustix/rpc"
 	"github.com/tweag/trustix/rpc/auth"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"net"
 	"net/url"
 	"os"
@@ -151,7 +153,18 @@ var rootCmd = &cobra.Command{
 					pb.RegisterTrustixRPCServer(s, rpcServer)
 				}
 			} else {
-				s = grpc.NewServer()
+
+				cert, err := generateCert()
+				if err != nil {
+					log.Fatalf("Could not create cert")
+				}
+
+				config := &tls.Config{
+					Certificates: []tls.Certificate{*cert},
+					ClientAuth:   tls.NoClientCert,
+				}
+
+				s = grpc.NewServer(grpc.Creds(credentials.NewTLS(config)))
 			}
 
 			if kvServer != nil {

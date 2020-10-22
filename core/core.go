@@ -226,7 +226,7 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 			return nil, err
 		}
 	case "trustix-follower":
-		store, err = transport.NewGRPCTransport(conf.Transport.GRPC)
+		store, err = transport.NewGRPCTransport(conf.Transport.GRPC, sig)
 		if err != nil {
 			return nil, err
 		}
