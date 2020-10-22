@@ -34,6 +34,8 @@ import (
 	"github.com/tweag/trustix/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"net"
+	"net/url"
 	"time"
 )
 
@@ -70,40 +72,70 @@ func (t *grpcTxn) Size(bucket []byte) (int, error) {
 
 func NewGRPCTransport(t *config.GRPCTransportConfig, s signer.TrustixSigner) (*grpcTransport, error) {
 
-	config := &tls.Config{
-		InsecureSkipVerify: true,
-		VerifyConnection: func(state tls.ConnectionState) error {
-			if len(state.PeerCertificates) != 1 {
-				return fmt.Errorf("Dont know how to handle %d certs", len(state.PeerCertificates))
-			}
-
-			cert := state.PeerCertificates[0]
-
-			edPub, ok := cert.PublicKey.(ed25519.PublicKey)
-			if !ok {
-				return fmt.Errorf("Key not ed25519")
-			}
-
-			if !edPub.Equal(s.Public()) {
-				return fmt.Errorf("Expected key mismatch")
-			}
-
-			err := cert.CheckSignature(cert.SignatureAlgorithm, cert.RawTBSCertificate, cert.Signature)
-			if err != nil {
-				fmt.Errorf("Signature check failed %d certs", len(state.PeerCertificates))
-				return err
-			}
-
-			return nil
-		},
-	}
-
-	creds := credentials.NewTLS(config)
-
-	conn, err := grpc.Dial(t.Remote, grpc.WithTransportCredentials(creds))
+	u, err := url.Parse(t.Remote)
 	if err != nil {
 		return nil, err
 	}
+
+	var conn *grpc.ClientConn
+
+	switch u.Scheme {
+	case "https":
+		config := &tls.Config{
+			InsecureSkipVerify: true,
+			VerifyConnection: func(state tls.ConnectionState) error {
+				if len(state.PeerCertificates) != 1 {
+					return fmt.Errorf("Dont know how to handle %d certs", len(state.PeerCertificates))
+				}
+
+				cert := state.PeerCertificates[0]
+
+				edPub, ok := cert.PublicKey.(ed25519.PublicKey)
+				if !ok {
+					return fmt.Errorf("Key not ed25519")
+				}
+
+				if !edPub.Equal(s.Public()) {
+					return fmt.Errorf("Expected key mismatch")
+				}
+
+				err := cert.CheckSignature(cert.SignatureAlgorithm, cert.RawTBSCertificate, cert.Signature)
+				if err != nil {
+					fmt.Errorf("Signature check failed %d certs", len(state.PeerCertificates))
+					return err
+				}
+
+				return nil
+			},
+		}
+
+		creds := credentials.NewTLS(config)
+
+		conn, err = grpc.Dial(t.Remote, grpc.WithTransportCredentials(creds))
+		if err != nil {
+			return nil, err
+		}
+
+	case "unix":
+		conn, err = grpc.Dial(
+			u.Host+u.Path,
+			grpc.WithInsecure(),
+			grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+				unix_addr, err := net.ResolveUnixAddr("unix", addr)
+				if err != nil {
+					return nil, err
+				}
+				return net.DialUnix("unix", nil, unix_addr)
+			}),
+		)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("URL scheme '%s' not supported", u.Scheme)
+
+	}
+
 	c := pb.NewTrustixKVClient(conn)
 
 	return &grpcTransport{

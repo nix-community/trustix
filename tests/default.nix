@@ -11,9 +11,10 @@ let
     ''
       export HOME=$(mktemp -d)
       ln -s ${./fixtures} fixtures
+      set -x
     ''
     command
-    "touch $out"
+    "set +x && touch $out"
   ]);
 
 in {
@@ -44,9 +45,9 @@ in {
     build_dir=$(pwd)
 
     # Spin up 3 log instances
-    (cd ${compare-fixtures/log1}; systemfd -s $build_dir/1.sock -- trustix --state $TMPDIR/log1-state --config ./config.toml --listen "tcp://:8081") &
-    (cd ${compare-fixtures/log2}; systemfd -s $build_dir/2.sock -- trustix --state $TMPDIR/log2-state --config ./config.toml --listen "tcp://:8082") &
-    (cd ${compare-fixtures/log3}; systemfd -s $build_dir/3.sock -- trustix --state $TMPDIR/log3-state --config ./config.toml --listen "tcp://:8083") &
+    (cd ${compare-fixtures/log1}; systemfd -s $build_dir/1.sock -- trustix --state $TMPDIR/log1-state --config ./config.toml) &
+    (cd ${compare-fixtures/log2}; systemfd -s $build_dir/2.sock -- trustix --state $TMPDIR/log2-state --config ./config.toml) &
+    (cd ${compare-fixtures/log3}; systemfd -s $build_dir/3.sock -- trustix --state $TMPDIR/log3-state --config ./config.toml) &
 
     # Submit hashes
     trustix submit --input-hash "$input_hash" --output-hash "$output_hash" --address "unix://./1.sock"

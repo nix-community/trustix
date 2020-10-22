@@ -6,7 +6,7 @@ mode = "trustix-follower"
 type = "grpc"
 
 [log.transport.grpc]
-remote = "localhost:8081"
+remote = "unix:///build/1.sock"
 
 [log.signer]
 type = "ed25519"
@@ -21,7 +21,7 @@ mode = "trustix-follower"
 type = "grpc"
 
 [log.transport.grpc]
-remote = "localhost:8082"
+remote = "unix:///build/2.sock"
 
 [log.signer]
 type = "ed25519"
@@ -36,7 +36,7 @@ mode = "trustix-follower"
 type = "grpc"
 
 [log.transport.grpc]
-remote = "localhost:8083"
+remote = "unix:///build/3.sock"
 
 [log.signer]
 type = "ed25519"
