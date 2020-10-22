@@ -25,6 +25,7 @@ package log
 
 import (
 	"fmt"
+	proto "github.com/golang/protobuf/proto"
 	"github.com/tweag/trustix/storage"
 )
 
@@ -32,7 +33,7 @@ type logStorage struct {
 	txn storage.Transaction
 }
 
-func (s *logStorage) Get(level int, idx int) *Leaf {
+func (s *logStorage) Get(level int, idx int) *LogLeaf {
 	bucket := []byte(fmt.Sprintf("log-%d", level))
 	key := []byte(fmt.Sprintf("%d", idx))
 
@@ -49,8 +50,8 @@ func (s *logStorage) Get(level int, idx int) *Leaf {
 	return l
 }
 
-func (s *logStorage) Append(treeSize int, level int, leaf *Leaf) {
-	v, err := leaf.Marshal()
+func (s *logStorage) Append(treeSize int, level int, leaf *LogLeaf) {
+	v, err := proto.Marshal(leaf)
 	if err != nil {
 		panic(err)
 	}

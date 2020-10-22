@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option go_package = "github.com/tweag/trustix/log";
+
+message LogLeaf {
+  bytes Digest = 1;
+  bytes Value = 2;
+}
