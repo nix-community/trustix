@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/tweag/trustix/log";
+option go_package = "github.com/tweag/trustix/schema";
 
 message LogLeaf {
   bytes Digest = 1;

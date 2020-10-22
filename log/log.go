@@ -25,6 +25,7 @@ package log
 
 import (
 	"crypto/sha256"
+	"github.com/tweag/trustix/schema"
 	"github.com/tweag/trustix/storage"
 )
 
@@ -77,7 +78,7 @@ func (l *VerifiableLog) Append(data []byte) {
 	h.Write([]byte{0}) // Write 0x00 prefix
 	h.Write(data)
 
-	leaf := &LogLeaf{
+	leaf := &schema.LogLeaf{
 		Value:  data,
 		Digest: h.Sum(nil),
 	}
@@ -85,7 +86,7 @@ func (l *VerifiableLog) Append(data []byte) {
 	l.addNodeToLevel(0, leaf)
 }
 
-func (l *VerifiableLog) addNodeToLevel(level int, leaf *LogLeaf) {
+func (l *VerifiableLog) addNodeToLevel(level int, leaf *schema.LogLeaf) {
 	l.storage.Append(l.treeSize, level, leaf)
 
 	levelSize := levelSize(l.treeSize, level)
@@ -93,7 +94,7 @@ func (l *VerifiableLog) addNodeToLevel(level int, leaf *LogLeaf) {
 		li := levelSize - 2
 		ri := levelSize - 1
 		newHash := branchHash(l.storage.Get(level, li).Digest, l.storage.Get(level, ri).Digest)
-		l.addNodeToLevel(level+1, &LogLeaf{
+		l.addNodeToLevel(level+1, &schema.LogLeaf{
 			// We don't save the raw value for a branch hash
 			Digest: newHash,
 		})

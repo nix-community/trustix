@@ -25,17 +25,18 @@ package log
 
 import (
 	proto "github.com/golang/protobuf/proto"
+	"github.com/tweag/trustix/schema"
 )
 
-func NewLeaf(digest []byte, value []byte) (*LogLeaf, error) {
-	return &LogLeaf{
+func NewLeaf(digest []byte, value []byte) (*schema.LogLeaf, error) {
+	return &schema.LogLeaf{
 		Digest: digest,
 		Value:  value,
 	}, nil
 }
 
-func LeafFromBytes(data []byte) (*LogLeaf, error) {
-	l := &LogLeaf{}
+func LeafFromBytes(data []byte) (*schema.LogLeaf, error) {
+	l := &schema.LogLeaf{}
 	err := proto.Unmarshal(data, l)
 	if err != nil {
 		return nil, err
