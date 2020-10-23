@@ -30,11 +30,17 @@ import (
 	"github.com/tweag/trustix/storage"
 )
 
-type logStorage struct {
+type LogStorage struct {
 	txn storage.Transaction
 }
 
-func (s *logStorage) Get(level int, idx int) *schema.LogLeaf {
+func NewLogStorage(txn storage.Transaction) *LogStorage {
+	return &LogStorage{
+		txn: txn,
+	}
+}
+
+func (s *LogStorage) Get(level int, idx int) *schema.LogLeaf {
 	bucket := []byte(fmt.Sprintf("log-%d", level))
 	key := []byte(fmt.Sprintf("%d", idx))
 
@@ -51,7 +57,7 @@ func (s *logStorage) Get(level int, idx int) *schema.LogLeaf {
 	return l
 }
 
-func (s *logStorage) Append(treeSize int, level int, leaf *schema.LogLeaf) {
+func (s *LogStorage) Append(treeSize int, level int, leaf *schema.LogLeaf) {
 	v, err := proto.Marshal(leaf)
 	if err != nil {
 		panic(err)

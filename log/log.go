@@ -31,12 +31,12 @@ import (
 
 type VerifiableLog struct {
 	treeSize int
-	storage  *logStorage
+	storage  *LogStorage
 }
 
 func NewVerifiableLog(transaction storage.Transaction, treeSize int) (*VerifiableLog, error) {
 	return &VerifiableLog{
-		storage: &logStorage{
+		storage: &LogStorage{
 			txn: transaction,
 		},
 		treeSize: treeSize,
