@@ -50,7 +50,7 @@ var decideCommand = &cobra.Command{
 		}
 		defer conn.Close()
 
-		c := pb.NewTrustixLogClient(conn)
+		c := pb.NewTrustixCombinedRPCClient(conn)
 
 		ctx, cancel := createContext()
 		defer cancel()

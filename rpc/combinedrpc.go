@@ -34,20 +34,20 @@ import (
 	"sync"
 )
 
-type TrustixLogServer struct {
-	pb.UnimplementedTrustixLogServer
+type TrustixCombinedRPCServer struct {
+	pb.UnimplementedTrustixCombinedRPCServer
 	logMap     map[string]*core.TrustixCore
 	correlator correlator.LogCorrelator
 }
 
-func NewTrustixLogServer(logMap map[string]*core.TrustixCore, correlator correlator.LogCorrelator) *TrustixLogServer {
-	return &TrustixLogServer{
+func NewTrustixCombinedRPCServer(logMap map[string]*core.TrustixCore, correlator correlator.LogCorrelator) *TrustixCombinedRPCServer {
+	return &TrustixCombinedRPCServer{
 		logMap:     logMap,
 		correlator: correlator,
 	}
 }
 
-func (l *TrustixLogServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMapResponse, error) {
+func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMapResponse, error) {
 	responses := make(map[string][]byte)
 
 	var wg sync.WaitGroup
@@ -90,7 +90,7 @@ func (l *TrustixLogServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb
 
 }
 
-func (l *TrustixLogServer) Decide(ctx context.Context, in *pb.HashRequest) (*pb.DecisionResponse, error) {
+func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashRequest) (*pb.DecisionResponse, error) {
 
 	hexInput := hex.EncodeToString(in.InputHash)
 	log.WithField("inputHash", hexInput).Info("Received Decide request")

@@ -48,8 +48,8 @@ message KVResponse {
   bytes Value = 1;
 }
 
-// TrustixLog
-service TrustixLog {
+// TrustixCombinedRPC
+service TrustixCombinedRPC {
   // Get map[LogName]OutputHash
   rpc HashMap (HashRequest) returns (HashMapResponse) {}
   // Compare(inputHash)

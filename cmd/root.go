@@ -133,7 +133,7 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Failed to create correlator: %v", err)
 		}
 
-		logServer := rpc.NewTrustixLogServer(logMap, corr)
+		logServer := rpc.NewTrustixCombinedRPCServer(logMap, corr)
 
 		log.Debug("Creating gRPC servers")
 
@@ -147,7 +147,7 @@ var rootCmd = &cobra.Command{
 					grpc.Creds(&auth.SoPeercred{}), // Attach SO_PEERCRED auth to UNIX sockets
 				)
 
-				pb.RegisterTrustixLogServer(s, logServer)
+				pb.RegisterTrustixCombinedRPCServer(s, logServer)
 
 				if rpcServer != nil {
 					pb.RegisterTrustixRPCServer(s, rpcServer)

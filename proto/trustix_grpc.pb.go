@@ -221,123 +221,123 @@ var _TrustixKV_serviceDesc = grpc.ServiceDesc{
 	Metadata: "trustix.proto",
 }
 
-// TrustixLogClient is the client API for TrustixLog service.
+// TrustixCombinedRPCClient is the client API for TrustixCombinedRPC service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type TrustixLogClient interface {
+type TrustixCombinedRPCClient interface {
 	// Get map[LogName]OutputHash
 	HashMap(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashMapResponse, error)
 	// Compare(inputHash)
 	Decide(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
 }
 
-type trustixLogClient struct {
+type trustixCombinedRPCClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewTrustixLogClient(cc grpc.ClientConnInterface) TrustixLogClient {
-	return &trustixLogClient{cc}
+func NewTrustixCombinedRPCClient(cc grpc.ClientConnInterface) TrustixCombinedRPCClient {
+	return &trustixCombinedRPCClient{cc}
 }
 
-func (c *trustixLogClient) HashMap(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashMapResponse, error) {
+func (c *trustixCombinedRPCClient) HashMap(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashMapResponse, error) {
 	out := new(HashMapResponse)
-	err := c.cc.Invoke(ctx, "/trustix.TrustixLog/HashMap", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/HashMap", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *trustixLogClient) Decide(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*DecisionResponse, error) {
+func (c *trustixCombinedRPCClient) Decide(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*DecisionResponse, error) {
 	out := new(DecisionResponse)
-	err := c.cc.Invoke(ctx, "/trustix.TrustixLog/Decide", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/Decide", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// TrustixLogServer is the server API for TrustixLog service.
-// All implementations must embed UnimplementedTrustixLogServer
+// TrustixCombinedRPCServer is the server API for TrustixCombinedRPC service.
+// All implementations must embed UnimplementedTrustixCombinedRPCServer
 // for forward compatibility
-type TrustixLogServer interface {
+type TrustixCombinedRPCServer interface {
 	// Get map[LogName]OutputHash
 	HashMap(context.Context, *HashRequest) (*HashMapResponse, error)
 	// Compare(inputHash)
 	Decide(context.Context, *HashRequest) (*DecisionResponse, error)
-	mustEmbedUnimplementedTrustixLogServer()
+	mustEmbedUnimplementedTrustixCombinedRPCServer()
 }
 
-// UnimplementedTrustixLogServer must be embedded to have forward compatible implementations.
-type UnimplementedTrustixLogServer struct {
+// UnimplementedTrustixCombinedRPCServer must be embedded to have forward compatible implementations.
+type UnimplementedTrustixCombinedRPCServer struct {
 }
 
-func (UnimplementedTrustixLogServer) HashMap(context.Context, *HashRequest) (*HashMapResponse, error) {
+func (UnimplementedTrustixCombinedRPCServer) HashMap(context.Context, *HashRequest) (*HashMapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HashMap not implemented")
 }
-func (UnimplementedTrustixLogServer) Decide(context.Context, *HashRequest) (*DecisionResponse, error) {
+func (UnimplementedTrustixCombinedRPCServer) Decide(context.Context, *HashRequest) (*DecisionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Decide not implemented")
 }
-func (UnimplementedTrustixLogServer) mustEmbedUnimplementedTrustixLogServer() {}
+func (UnimplementedTrustixCombinedRPCServer) mustEmbedUnimplementedTrustixCombinedRPCServer() {}
 
-// UnsafeTrustixLogServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to TrustixLogServer will
+// UnsafeTrustixCombinedRPCServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TrustixCombinedRPCServer will
 // result in compilation errors.
-type UnsafeTrustixLogServer interface {
-	mustEmbedUnimplementedTrustixLogServer()
+type UnsafeTrustixCombinedRPCServer interface {
+	mustEmbedUnimplementedTrustixCombinedRPCServer()
 }
 
-func RegisterTrustixLogServer(s grpc.ServiceRegistrar, srv TrustixLogServer) {
-	s.RegisterService(&_TrustixLog_serviceDesc, srv)
+func RegisterTrustixCombinedRPCServer(s grpc.ServiceRegistrar, srv TrustixCombinedRPCServer) {
+	s.RegisterService(&_TrustixCombinedRPC_serviceDesc, srv)
 }
 
-func _TrustixLog_HashMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TrustixCombinedRPC_HashMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HashRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrustixLogServer).HashMap(ctx, in)
+		return srv.(TrustixCombinedRPCServer).HashMap(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.TrustixLog/HashMap",
+		FullMethod: "/trustix.TrustixCombinedRPC/HashMap",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixLogServer).HashMap(ctx, req.(*HashRequest))
+		return srv.(TrustixCombinedRPCServer).HashMap(ctx, req.(*HashRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TrustixLog_Decide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TrustixCombinedRPC_Decide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HashRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrustixLogServer).Decide(ctx, in)
+		return srv.(TrustixCombinedRPCServer).Decide(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.TrustixLog/Decide",
+		FullMethod: "/trustix.TrustixCombinedRPC/Decide",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixLogServer).Decide(ctx, req.(*HashRequest))
+		return srv.(TrustixCombinedRPCServer).Decide(ctx, req.(*HashRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _TrustixLog_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "trustix.TrustixLog",
-	HandlerType: (*TrustixLogServer)(nil),
+var _TrustixCombinedRPC_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "trustix.TrustixCombinedRPC",
+	HandlerType: (*TrustixCombinedRPCServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "HashMap",
-			Handler:    _TrustixLog_HashMap_Handler,
+			Handler:    _TrustixCombinedRPC_HashMap_Handler,
 		},
 		{
 			MethodName: "Decide",
-			Handler:    _TrustixLog_Decide_Handler,
+			Handler:    _TrustixCombinedRPC_Decide_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
