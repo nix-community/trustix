@@ -57,10 +57,10 @@ func (s *LogStorage) Get(level int, idx int) *schema.LogLeaf {
 	return l
 }
 
-func (s *LogStorage) Append(treeSize int, level int, leaf *schema.LogLeaf) {
+func (s *LogStorage) Append(treeSize int, level int, leaf *schema.LogLeaf) error {
 	v, err := proto.Marshal(leaf)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	idx := levelSize(treeSize, level) - 1
@@ -70,7 +70,9 @@ func (s *LogStorage) Append(treeSize int, level int, leaf *schema.LogLeaf) {
 
 	err = s.txn.Set(bucket, key, v)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 
 }

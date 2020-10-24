@@ -72,7 +72,7 @@ func (l *VerifiableLog) Root() []byte {
 	return hash
 }
 
-func (l *VerifiableLog) Append(data []byte) {
+func (l *VerifiableLog) Append(data []byte) error {
 	l.treeSize += 1
 	h := sha256.New()
 	h.Write([]byte{0}) // Write 0x00 prefix
@@ -83,22 +83,30 @@ func (l *VerifiableLog) Append(data []byte) {
 		Digest: h.Sum(nil),
 	}
 
-	l.addNodeToLevel(0, leaf)
+	return l.addNodeToLevel(0, leaf)
 }
 
-func (l *VerifiableLog) addNodeToLevel(level int, leaf *schema.LogLeaf) {
-	l.storage.Append(l.treeSize, level, leaf)
+func (l *VerifiableLog) addNodeToLevel(level int, leaf *schema.LogLeaf) error {
+	err := l.storage.Append(l.treeSize, level, leaf)
+	if err != nil {
+		return err
+	}
 
 	levelSize := levelSize(l.treeSize, level)
 	if levelSize%2 == 0 {
 		li := levelSize - 2
 		ri := levelSize - 1
 		newHash := branchHash(l.storage.Get(level, li).Digest, l.storage.Get(level, ri).Digest)
-		l.addNodeToLevel(level+1, &schema.LogLeaf{
+		err = l.addNodeToLevel(level+1, &schema.LogLeaf{
 			// We don't save the raw value for a branch hash
 			Digest: newHash,
 		})
+		if err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 func (l *VerifiableLog) AuditProof(node int, size int) [][]byte {

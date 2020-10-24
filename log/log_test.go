@@ -130,7 +130,11 @@ func TestLogRoots(t *testing.T) {
 	assert.Equal("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", hex.EncodeToString(tree.Root()), fmt.Sprintf("Correct root for zero inputs"))
 
 	for _, input := range mkInputs() {
-		tree.Append(input.Input)
+		err = tree.Append(input.Input)
+		if err != nil {
+			t.Fatalf("tree.Append failed: %v", err)
+		}
+
 		root := tree.Root()
 		// Encode to hex to get prettier error message
 		assert.Equal(hex.EncodeToString(input.ExpectedRoot), hex.EncodeToString(root), fmt.Sprintf("Correct root for input %s", input.Input))
@@ -152,7 +156,10 @@ func TestAuditProofs(t *testing.T) {
 
 	inputs := mkInputs()
 	for _, input := range inputs {
-		tree.Append(input.Input)
+		err = tree.Append(input.Input)
+		if err != nil {
+			t.Fatalf("tree.Append failed: %v", err)
+		}
 	}
 
 	assert.Equal(7, len(inputs), "Assert expected inputs to test")
@@ -206,7 +213,10 @@ func TestConsistencyProofs(t *testing.T) {
 
 	inputs := mkInputs()
 	for _, input := range inputs {
-		tree.Append(input.Input)
+		err = tree.Append(input.Input)
+		if err != nil {
+			t.Fatalf("tree.Append failed: %v", err)
+		}
 	}
 
 	assert.Equal(7, len(inputs), "Assert expected inputs to test")

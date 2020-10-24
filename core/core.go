@@ -137,7 +137,10 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 
 		// Append value to both verifiable log & sparse indexed tree
 		log.Debug("Appending value to log")
-		vLog.Append(value)
+		err = vLog.Append(value)
+		if err != nil {
+			return err
+		}
 
 		entry, err := proto.Marshal(&schema.MapEntry{
 			Value: value,

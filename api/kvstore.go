@@ -211,7 +211,10 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 
 			// Append value to both verifiable log & sparse indexed tree
 			log.Debug("Appending value to log")
-			vLog.Append(pair.Value)
+			err = vLog.Append(pair.Value)
+			if err != nil {
+				return err
+			}
 
 			entry, err := proto.Marshal(&schema.MapEntry{
 				Value: pair.Value,
