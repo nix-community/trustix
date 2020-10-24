@@ -47,10 +47,10 @@ func (l *VerifiableLog) Size() int {
 	return l.treeSize
 }
 
-func (l *VerifiableLog) Root() []byte {
+func (l *VerifiableLog) Root() ([]byte, error) {
 	if l.treeSize == 0 {
 		h := sha256.New()
-		return h.Sum(nil)
+		return h.Sum(nil), nil
 	}
 
 	level := 0
@@ -59,17 +59,27 @@ func (l *VerifiableLog) Root() []byte {
 	}
 
 	lastIndex := levelSize(l.treeSize, level) - 1
-	hash := l.storage.Get(level, lastIndex).Digest
+	leaf, err := l.storage.Get(level, lastIndex)
+	if err != nil {
+		return nil, err
+	}
+
+	digest := leaf.Digest
 
 	storageSize := rootSize(l.treeSize)
 	for i := level + 1; i < storageSize; i++ {
 		levelSize := levelSize(l.treeSize, i)
 		if levelSize%2 == 1 {
-			hash = branchHash(l.storage.Get(i, levelSize-1).Digest, hash)
+			newLeaf, err := l.storage.Get(i, levelSize-1)
+			if err != nil {
+				return nil, err
+			}
+
+			digest = branchHash(newLeaf.Digest, digest)
 		}
 	}
 
-	return hash
+	return digest, nil
 }
 
 func (l *VerifiableLog) Append(data []byte) error {
@@ -96,7 +106,18 @@ func (l *VerifiableLog) addNodeToLevel(level int, leaf *schema.LogLeaf) error {
 	if levelSize%2 == 0 {
 		li := levelSize - 2
 		ri := levelSize - 1
-		newHash := branchHash(l.storage.Get(level, li).Digest, l.storage.Get(level, ri).Digest)
+
+		ll, err := l.storage.Get(level, li)
+		if err != nil {
+			return err
+		}
+
+		rl, err := l.storage.Get(level, ri)
+		if err != nil {
+			return err
+		}
+
+		newHash := branchHash(ll.Digest, rl.Digest)
 		err = l.addNodeToLevel(level+1, &schema.LogLeaf{
 			// We don't save the raw value for a branch hash
 			Digest: newHash,
@@ -109,23 +130,34 @@ func (l *VerifiableLog) addNodeToLevel(level int, leaf *schema.LogLeaf) error {
 	return nil
 }
 
-func (l *VerifiableLog) AuditProof(node int, size int) [][]byte {
+func (l *VerifiableLog) AuditProof(node int, size int) ([][]byte, error) {
 	return l.pathFromNodeToRootAtSnapshot(node, 0, size)
 }
 
-func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapshot int) [][]byte {
+func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapshot int) ([][]byte, error) {
 	var path [][]byte
 
 	if snapshot == 0 {
-		return path
+		return path, nil
 	}
 
 	lastNode := snapshot - 1
-	lastHash := l.storage.Get(0, lastNode).Digest
+
+	lastLeaf, err := l.storage.Get(0, lastNode)
+	if err != nil {
+		return nil, err
+	}
+
+	lastHash := lastLeaf.Digest
 
 	for i := 0; i < level; i++ {
 		if isRightChild(lastNode) {
-			lastHash = branchHash(l.storage.Get(i, lastNode-1).Digest, lastHash)
+			lastLeaf, err = l.storage.Get(i, lastNode-1)
+			if err != nil {
+				return nil, err
+			}
+
+			lastHash = branchHash(lastLeaf.Digest, lastHash)
 		}
 		lastNode = parent(lastNode)
 	}
@@ -139,26 +171,36 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapsh
 		}
 
 		if sibling < lastNode {
-			path = append(path, l.storage.Get(level, sibling).Digest)
+			siblingLeaf, err := l.storage.Get(level, sibling)
+			if err != nil {
+				return nil, err
+			}
+
+			path = append(path, siblingLeaf.Digest)
 		} else if sibling == lastNode {
 			path = append(path, lastHash)
 		}
 
 		if isRightChild(lastNode) {
-			lastHash = branchHash(l.storage.Get(level, lastNode-1).Digest, lastHash)
+			lastLeaf, err = l.storage.Get(level, lastNode-1)
+			if err != nil {
+				return nil, err
+			}
+
+			lastHash = branchHash(lastLeaf.Digest, lastHash)
 		}
 		level += 1
 		node = parent(node)
 		lastNode = parent(lastNode)
 	}
 
-	return path
+	return path, nil
 }
 
-func (l *VerifiableLog) ConsistencyProof(fstSize int, sndSize int) [][]byte {
+func (l *VerifiableLog) ConsistencyProof(fstSize int, sndSize int) ([][]byte, error) {
 	var proof [][]byte
 	if fstSize == 0 || fstSize >= sndSize || sndSize > l.treeSize {
-		return proof
+		return proof, nil
 	}
 
 	level := 0
@@ -169,9 +211,18 @@ func (l *VerifiableLog) ConsistencyProof(fstSize int, sndSize int) [][]byte {
 	}
 
 	if node > 0 {
-		proof = append(proof, l.storage.Get(level, node).Digest)
+		leaf, err := l.storage.Get(level, node)
+		if err != nil {
+			return nil, err
+		}
+		proof = append(proof, leaf.Digest)
 	}
 
-	proof = append(proof, l.pathFromNodeToRootAtSnapshot(node, level, sndSize)...)
-	return proof
+	other, err := l.pathFromNodeToRootAtSnapshot(node, level, sndSize)
+	if err != nil {
+		return nil, err
+	}
+
+	proof = append(proof, other...)
+	return proof, nil
 }

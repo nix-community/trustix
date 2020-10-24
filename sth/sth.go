@@ -37,7 +37,10 @@ import (
 func SignHead(smTree *smt.SparseMerkleTree, vLog *vlog.VerifiableLog, signer crypto.Signer) (*schema.STH, error) {
 	opts := crypto.SignerOpts(crypto.Hash(0))
 
-	vLogRoot := vLog.Root()
+	vLogRoot, err := vLog.Root()
+	if err != nil {
+		return nil, err
+	}
 	smTreeRoot := smTree.Root()
 
 	h := sha256.New()

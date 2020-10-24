@@ -40,21 +40,21 @@ func NewLogStorage(txn storage.Transaction) *LogStorage {
 	}
 }
 
-func (s *LogStorage) Get(level int, idx int) *schema.LogLeaf {
+func (s *LogStorage) Get(level int, idx int) (*schema.LogLeaf, error) {
 	bucket := []byte(fmt.Sprintf("log-%d", level))
 	key := []byte(fmt.Sprintf("%d", idx))
 
 	v, err := s.txn.Get(bucket, key)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	l, err := LeafFromBytes(v)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return l
+	return l, nil
 }
 
 func (s *LogStorage) Append(treeSize int, level int, leaf *schema.LogLeaf) error {
