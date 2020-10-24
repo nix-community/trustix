@@ -81,12 +81,17 @@ func (kv *kvStoreLogApi) GetSTH(req *STHRequest) (sth *schema.STH, err error) {
 func (kv *kvStoreLogApi) GetLogConsistencyProof(req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
 
 	err = kv.store.View(func(txn storage.Transaction) error {
-		vLog, err := vlog.NewVerifiableLog(txn, int(req.SecondSize))
+		vLog, err := vlog.NewVerifiableLog(txn, req.SecondSize)
 		if err != nil {
 			return err
 		}
 
-		resp.Proof = vLog.ConsistencyProof(int(req.FirstSize), int(req.SecondSize))
+		proof, err := vLog.ConsistencyProof(req.FirstSize, req.SecondSize)
+		if err != nil {
+			return err
+		}
+
+		resp.Proof = proof
 
 		return nil
 	})
@@ -100,12 +105,17 @@ func (kv *kvStoreLogApi) GetLogConsistencyProof(req *GetLogConsistencyProofReque
 func (kv *kvStoreLogApi) GetLogAuditProof(req *GetLogAuditProofRequest) (resp *ProofResponse, err error) {
 
 	err = kv.store.View(func(txn storage.Transaction) error {
-		vLog, err := vlog.NewVerifiableLog(txn, int(req.TreeSize))
+		vLog, err := vlog.NewVerifiableLog(txn, req.TreeSize)
 		if err != nil {
 			return err
 		}
 
-		resp.Proof = vLog.AuditProof(int(req.Index), int(req.TreeSize))
+		proof, err := vLog.AuditProof(req.Index, req.TreeSize)
+		if err != nil {
+			return err
+		}
+
+		resp.Proof = proof
 
 		return nil
 	})
@@ -126,7 +136,10 @@ func (kv *kvStoreLogApi) GetLogEntries(req *GetLogEntriesRequest) (*LogEntriesRe
 		logStorage := vlog.NewLogStorage(txn)
 
 		for i := int(req.Start); i <= int(req.Finish); i++ {
-			leaf := logStorage.Get(0, i)
+			leaf, err := logStorage.Get(0, uint64(i))
+			if err != nil {
+				return err
+			}
 			resp.Leaves = append(resp.Leaves, leaf)
 		}
 
@@ -192,7 +205,7 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 
 		// The append-only log
 		log.WithField("size", sth.TreeSize).Debug("Creating log tree from persisted data")
-		vLog, err := vlog.NewVerifiableLog(txn, int(sth.TreeSize))
+		vLog, err := vlog.NewVerifiableLog(txn, sth.TreeSize)
 		if err != nil {
 			return err
 		}

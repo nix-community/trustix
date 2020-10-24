@@ -105,10 +105,10 @@ func mkInputs() []*testInput {
 	}
 }
 
-func mkAssertProof(t *testing.T, proofFunc func(first int, second int) (proof [][]byte, err error)) func(first int, second int, expected []string) {
+func mkAssertProof(t *testing.T, proofFunc func(first uint64, second uint64) (proof [][]byte, err error)) func(first int, second int, expected []string) {
 	assert := assert.New(t)
 	return func(first int, second int, expected []string) {
-		proof, err := proofFunc(first, second)
+		proof, err := proofFunc(uint64(first), uint64(second))
 		assert.Nil(err)
 
 		assert.Equal(len(expected), len(proof), "Proof length matches expected length")

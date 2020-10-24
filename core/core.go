@@ -130,7 +130,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 
 		// The append-only log
 		log.WithField("size", s.treeSize).Debug("Creating log tree from persisted data")
-		vLog, err := vlog.NewVerifiableLog(txn, s.treeSize)
+		vLog, err := vlog.NewVerifiableLog(txn, uint64(s.treeSize))
 		if err != nil {
 			return err
 		}
@@ -171,7 +171,7 @@ func (s *TrustixCore) Submit(key []byte, value []byte) error {
 
 		s.mapRoot = sth.MapRoot
 		s.logRoot = sth.LogRoot
-		s.treeSize = vLog.Size()
+		s.treeSize = int(vLog.Size())
 
 		return nil
 	})

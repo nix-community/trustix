@@ -29,7 +29,7 @@ import (
 	"fmt"
 )
 
-func rootHashFromAuditProof(leafHash []byte, proof [][]byte, idx int, treeSize int) ([]byte, error) {
+func rootHashFromAuditProof(leafHash []byte, proof [][]byte, idx uint64, treeSize uint64) ([]byte, error) {
 	if len(proof) == 0 {
 		return leafHash, nil
 	}
@@ -49,7 +49,7 @@ func rootHashFromAuditProof(leafHash []byte, proof [][]byte, idx int, treeSize i
 	}
 }
 
-func rootHashFromConsistencyProof(oldSize int, newSize int, proofNodes [][]byte, oldRoot []byte, computeNewRoot bool, startFromOldRoot bool) []byte {
+func rootHashFromConsistencyProof(oldSize uint64, newSize uint64, proofNodes [][]byte, oldRoot []byte, computeNewRoot bool, startFromOldRoot bool) []byte {
 	if oldSize == newSize {
 		if startFromOldRoot {
 			return oldRoot
@@ -76,7 +76,7 @@ func rootHashFromConsistencyProof(oldSize int, newSize int, proofNodes [][]byte,
 
 }
 
-func ValidAuditProof(rootHash []byte, treeSize int, idx int, proof [][]byte, leafData []byte) (bool, error) {
+func ValidAuditProof(rootHash []byte, treeSize uint64, idx uint64, proof [][]byte, leafData []byte) (bool, error) {
 	leafHash := sha256.New()
 	leafHash.Write([]byte{0})
 	leafHash.Write(leafData)
@@ -93,7 +93,7 @@ func ValidAuditProof(rootHash []byte, treeSize int, idx int, proof [][]byte, lea
 	return bytes.Compare(rootHash, fromAuditProof) == 0, nil
 }
 
-func ValidConsistencyProof(oldRoot []byte, newRoot []byte, oldSize int, newSize int, proofNodes [][]byte) bool {
+func ValidConsistencyProof(oldRoot []byte, newRoot []byte, oldSize uint64, newSize uint64, proofNodes [][]byte) bool {
 	if oldSize == 0 { // Empty tree consistent with any future state
 		return true
 	}

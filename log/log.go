@@ -30,11 +30,11 @@ import (
 )
 
 type VerifiableLog struct {
-	treeSize int
+	treeSize uint64
 	storage  *LogStorage
 }
 
-func NewVerifiableLog(transaction storage.Transaction, treeSize int) (*VerifiableLog, error) {
+func NewVerifiableLog(transaction storage.Transaction, treeSize uint64) (*VerifiableLog, error) {
 	return &VerifiableLog{
 		storage: &LogStorage{
 			txn: transaction,
@@ -43,7 +43,7 @@ func NewVerifiableLog(transaction storage.Transaction, treeSize int) (*Verifiabl
 	}, nil
 }
 
-func (l *VerifiableLog) Size() int {
+func (l *VerifiableLog) Size() uint64 {
 	return l.treeSize
 }
 
@@ -130,11 +130,11 @@ func (l *VerifiableLog) addNodeToLevel(level int, leaf *schema.LogLeaf) error {
 	return nil
 }
 
-func (l *VerifiableLog) AuditProof(node int, size int) ([][]byte, error) {
+func (l *VerifiableLog) AuditProof(node uint64, size uint64) ([][]byte, error) {
 	return l.pathFromNodeToRootAtSnapshot(node, 0, size)
 }
 
-func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapshot int) ([][]byte, error) {
+func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node uint64, level int, snapshot uint64) ([][]byte, error) {
 	var path [][]byte
 
 	if snapshot == 0 {
@@ -163,7 +163,7 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapsh
 	}
 
 	for lastNode > 0 {
-		var sibling int
+		var sibling uint64
 		if isRightChild(node) {
 			sibling = node - 1
 		} else {
@@ -197,7 +197,7 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node int, level int, snapsh
 	return path, nil
 }
 
-func (l *VerifiableLog) ConsistencyProof(fstSize int, sndSize int) ([][]byte, error) {
+func (l *VerifiableLog) ConsistencyProof(fstSize uint64, sndSize uint64) ([][]byte, error) {
 	var proof [][]byte
 	if fstSize == 0 || fstSize >= sndSize || sndSize > l.treeSize {
 		return proof, nil

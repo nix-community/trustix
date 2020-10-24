@@ -27,19 +27,19 @@ import (
 	"crypto/sha256"
 )
 
-func isRightChild(node int) bool {
+func isRightChild(node uint64) bool {
 	return node%2 == 1
 }
 
-func splitPoint(n int) int {
-	split := 1
+func splitPoint(n uint64) uint64 {
+	split := uint64(1)
 	for split < n {
 		split <<= 1
 	}
 	return split >> 1
 }
 
-func parent(node int) int {
+func parent(node uint64) uint64 {
 	return node / 2
 }
 
@@ -51,7 +51,7 @@ func branchHash(left []byte, right []byte) []byte {
 	return h.Sum(nil)
 }
 
-func levelSize(treeSize int, level int) int {
+func levelSize(treeSize uint64, level int) uint64 {
 	size := treeSize
 	for i := 0; i <= level-1; i++ {
 		size = size / 2
@@ -60,7 +60,7 @@ func levelSize(treeSize int, level int) int {
 }
 
 // How many "buckets" are in the root level for a given tree size
-func rootSize(treeSize int) int {
+func rootSize(treeSize uint64) int {
 	if treeSize == 0 {
 		return 0
 	}
