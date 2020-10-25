@@ -29,12 +29,15 @@ import (
 	"github.com/coreos/go-systemd/activation"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/core"
 	"github.com/tweag/trustix/correlator"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/rpc"
 	"github.com/tweag/trustix/rpc/auth"
+	"github.com/tweag/trustix/signer"
+	"github.com/tweag/trustix/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"net"
@@ -103,6 +106,8 @@ var rootCmd = &cobra.Command{
 		var rpcServer *rpc.TrustixRPCServer
 		var kvServer *rpc.TrustixKVServer
 
+		var logAPIServer api.TrustixLogAPIServer
+
 		logMap := make(map[string]*core.TrustixCore)
 		for _, logConfig := range config.Logs {
 			log.WithFields(log.Fields{
@@ -125,6 +130,24 @@ var rootCmd = &cobra.Command{
 
 				rpcServer = rpc.NewTrustixRPCServer(c)
 				kvServer = rpc.NewTrustixKVServer(c)
+
+				// New API
+
+				sig, err := signer.FromConfig(logConfig.Signer)
+				if err != nil {
+					return err
+				}
+
+				if !sig.CanSign() {
+					return fmt.Errorf("Cannot sign using the current configuration, aborting.")
+				}
+
+				store, err := storage.FromConfig(logConfig.Name, stateDirectory, logConfig.Storage)
+				if err != nil {
+					return err
+				}
+
+				logAPIServer = api.NewTrustixAPIServer(api.NewKVStoreAPI(store, sig))
 			}
 		}
 
@@ -165,6 +188,10 @@ var rootCmd = &cobra.Command{
 				}
 
 				s = grpc.NewServer(grpc.Creds(credentials.NewTLS(config)))
+			}
+
+			if logAPIServer != nil {
+				api.RegisterTrustixLogAPIServer(s, logAPIServer)
 			}
 
 			if kvServer != nil {
