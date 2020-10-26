@@ -137,7 +137,15 @@ var rootCmd = &cobra.Command{
 					return err
 				}
 
-				logAPIServer = api.NewTrustixAPIServer(api.NewKVStoreAPI(store, sig))
+				logAPI, err := api.NewKVStoreAPI(store, sig)
+				if err != nil {
+					return err
+				}
+
+				logAPIServer, err = api.NewTrustixAPIServer(logAPI)
+				if err != nil {
+					return err
+				}
 			}
 
 		}

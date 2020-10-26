@@ -42,14 +42,59 @@ type kvStoreLogApi struct {
 	signer signer.TrustixSigner
 }
 
-func NewKVStoreAPI(store storage.TrustixStorage, signer signer.TrustixSigner) TrustixLogAPI {
-	return &kvStoreLogApi{
+func NewKVStoreAPI(store storage.TrustixStorage, signer signer.TrustixSigner) (TrustixLogAPI, error) {
+
+	api := &kvStoreLogApi{
 		store:  store,
 		signer: signer,
 	}
+
+	// Create an empty initial log if it doesn't exist already
+	err := store.Update(func(txn storage.Transaction) error {
+		_, err := txn.Get([]byte("META"), []byte("HEAD"))
+		if err == nil {
+			return nil
+		}
+		if err != storage.ObjectNotFoundError {
+			return err
+		}
+
+		smTree := smt.NewSparseMerkleTree(newMapStore(txn), sha256.New())
+		vLog, err := vlog.NewVerifiableLog(txn, 0)
+		if err != nil {
+			return err
+		}
+
+		log.Debug("Signing STH for empty tree")
+		sth, err := sthsig.SignHead(smTree, vLog, signer)
+		if err != nil {
+			return err
+		}
+
+		smhBytes, err := proto.Marshal(sth)
+		if err != nil {
+			return err
+		}
+
+		log.WithField("size", sth.TreeSize).Debug("Setting STH for empty tree")
+		err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return api, nil
 }
 
-func getSTH(txn storage.Transaction) (sth *schema.STH, err error) {
+func getSTH(txn storage.Transaction) (*schema.STH, error) {
+	sth := &schema.STH{}
+	var err error
+
 	sthBytes, err := txn.Get([]byte("META"), []byte("HEAD"))
 	if err != nil {
 		return nil, err
@@ -63,7 +108,10 @@ func getSTH(txn storage.Transaction) (sth *schema.STH, err error) {
 	return sth, nil
 }
 
-func (kv *kvStoreLogApi) GetSTH(req *STHRequest) (sth *schema.STH, err error) {
+func (kv *kvStoreLogApi) GetSTH(req *STHRequest) (*schema.STH, error) {
+	sth := &schema.STH{}
+	var err error
+
 	err = kv.store.View(func(txn storage.Transaction) error {
 		sth, err = getSTH(txn)
 		if err != nil {
@@ -264,5 +312,7 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return &SubmitResponse{
+		Status: SubmitResponse_OK,
+	}, nil
 }
