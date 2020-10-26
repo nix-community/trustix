@@ -80,10 +80,6 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Could not create state directory: %s", stateDirectory)
 		}
 
-		flagConfig := &core.FlagConfig{
-			StateDirectory: stateDirectory,
-		}
-
 		// Check if any names are non-unique
 		seenNames := make(map[string]struct{})
 		// The number of authoritive logs, can't exceed 1
@@ -107,25 +103,25 @@ var rootCmd = &cobra.Command{
 
 		logMap := make(map[string]*core.TrustixCore)
 		for _, logConfig := range config.Logs {
-			log.WithFields(log.Fields{
-				"name":   logConfig.Name,
-				"pubkey": logConfig.Signer.PublicKey,
-				"mode":   logConfig.Mode,
-			}).Info("Adding log")
-			c, err := core.CoreFromConfig(logConfig, flagConfig)
-			if err != nil {
-				log.Fatal(err)
-			}
 
-			logMap[logConfig.Name] = c
+			// log.WithFields(log.Fields{
+			// 	"name":   logConfig.Name,
+			// 	"pubkey": logConfig.Signer.PublicKey,
+			// 	"mode":   logConfig.Mode,
+			// }).Info("Adding log")
+			// c, err := core.CoreFromConfig(logConfig, &core.FlagConfig{
+			// 	StateDirectory: stateDirectory,
+			// })
+			// if err != nil {
+			// 	log.Fatal(err)
+			// }
+			// logMap[logConfig.Name] = c
 
 			if logConfig.Mode == "trustix-log" {
 				log.WithFields(log.Fields{
 					"name": logConfig.Name,
 					"mode": logConfig.Mode,
 				}).Info("Adding authoritive log to gRPC")
-
-				// New API
 
 				sig, err := signer.FromConfig(logConfig.Signer)
 				if err != nil {
@@ -143,6 +139,7 @@ var rootCmd = &cobra.Command{
 
 				logAPIServer = api.NewTrustixAPIServer(api.NewKVStoreAPI(store, sig))
 			}
+
 		}
 
 		corr, err := correlator.NewMinimumPercentCorrelator(50)
