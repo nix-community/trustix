@@ -103,7 +103,6 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		var rpcServer *rpc.TrustixRPCServer
 		var kvServer *rpc.TrustixKVServer
 
 		var logAPIServer api.TrustixLogAPIServer
@@ -128,7 +127,6 @@ var rootCmd = &cobra.Command{
 					"mode": logConfig.Mode,
 				}).Info("Adding authoritive log to gRPC")
 
-				rpcServer = rpc.NewTrustixRPCServer(c)
 				kvServer = rpc.NewTrustixKVServer(c)
 
 				// New API
@@ -172,9 +170,6 @@ var rootCmd = &cobra.Command{
 
 				pb.RegisterTrustixCombinedRPCServer(s, logServer)
 
-				if rpcServer != nil {
-					pb.RegisterTrustixRPCServer(s, rpcServer)
-				}
 			} else {
 
 				cert, err := generateCert()

@@ -28,7 +28,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	pb "github.com/tweag/trustix/proto"
+	"github.com/tweag/trustix/api"
 )
 
 var queryCommand = &cobra.Command{
@@ -50,21 +50,28 @@ var queryCommand = &cobra.Command{
 		}
 		defer conn.Close()
 
-		c := pb.NewTrustixRPCClient(conn)
+		c := api.NewTrustixLogAPIClient(conn)
 		ctx, cancel := createContext()
 		defer cancel()
+
+		log.Debug("Requesting STH")
+		sth, err := c.GetSTH(ctx, &api.STHRequest{})
+		if err != nil {
+			log.Fatalf("could not get STH: %v", err)
+		}
 
 		log.WithFields(log.Fields{
 			"inputHash": inputHashHex,
 		}).Debug("Requesting output mapping for")
-		r, err := c.QueryMapping(ctx, &pb.QueryRequest{
-			InputHash: inputBytes,
+		r, err := c.GetMapValue(ctx, &api.GetMapValueRequest{
+			Key:     inputBytes,
+			MapRoot: sth.MapRoot,
 		})
 		if err != nil {
-			log.Fatalf("could not submit: %v", err)
+			log.Fatalf("could not query: %v", err)
 		}
 
-		fmt.Println(fmt.Sprintf("Output hash: %s", hex.EncodeToString(r.OutputHash)))
+		fmt.Println(fmt.Sprintf("Output hash: %s", hex.EncodeToString(r.Value)))
 
 		return nil
 	},

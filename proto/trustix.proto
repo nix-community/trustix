@@ -4,35 +4,6 @@ option go_package = "github.com/tweag/trustix/proto";
 
 package trustix;
 
-// TrustixRPC - (Mainly) Local RPC
-service TrustixRPC {
-  // SubmitMapping - Submit an input/output mapping to the local log
-  rpc SubmitMapping (SubmitRequest) returns (SubmitResponse) {}
-
-  // QueryMapping - Query a mapping from the local log
-  rpc QueryMapping (QueryRequest) returns (QueryResponse) {}
-}
-
-message SubmitRequest {
-  bytes InputHash = 1;
-  bytes OutputHash = 2;
-}
-
-message SubmitResponse {
-  enum Status {
-    OK = 0;
-  }
-  Status status = 1;
-}
-
-message QueryRequest {
-  bytes InputHash = 1;
-}
-
-message QueryResponse {
-  bytes OutputHash = 1;
-}
-
 // TrustixKV - Access a remote Key/Value store (remote log)
 service TrustixKV {
   // SubmitMapping - Submit an input/output mapping to the local log

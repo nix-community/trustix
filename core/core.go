@@ -25,13 +25,11 @@ package core
 
 import (
 	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/config"
-	vlog "github.com/tweag/trustix/log"
 	"github.com/tweag/trustix/schema"
 	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/sth"
@@ -109,72 +107,6 @@ func (s *TrustixCore) Get(bucket []byte, key []byte) ([]byte, error) {
 	}
 
 	return buf, nil
-}
-
-func (s *TrustixCore) Submit(key []byte, value []byte) error {
-	return s.store.Update(func(txn storage.Transaction) error {
-
-		// The sparse merkle tree
-		log.Debug("Creating sparse merkle tree from persisted data")
-		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), s.mapRoot)
-
-		// Get the old value and check it against new submitted value
-		log.Debug("Checking if newly submitted value is already set")
-		oldValue, err := smTree.Get(key)
-		if err != nil {
-			return err
-		}
-		if len(oldValue) > 0 {
-			return fmt.Errorf("'%s' already exists in log", hex.EncodeToString(key))
-		}
-
-		// The append-only log
-		log.WithField("size", s.treeSize).Debug("Creating log tree from persisted data")
-		vLog, err := vlog.NewVerifiableLog(txn, uint64(s.treeSize))
-		if err != nil {
-			return err
-		}
-
-		// Append value to both verifiable log & sparse indexed tree
-		log.Debug("Appending value to log")
-		err = vLog.Append(value)
-		if err != nil {
-			return err
-		}
-
-		entry, err := proto.Marshal(&schema.MapEntry{
-			Value: value,
-			Index: uint64(vLog.Size() - 1),
-		})
-		if err != nil {
-			return err
-		}
-
-		smTree.Update(key, entry)
-
-		sth, err := sth.SignHead(smTree, vLog, s.signer)
-		if err != nil {
-			return err
-		}
-
-		log.Debug("Signing tree heads")
-		smhBytes, err := proto.Marshal(sth)
-		if err != nil {
-			return err
-		}
-
-		log.WithField("size", sth.TreeSize).Debug("Setting new signed tree heads")
-		err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
-		if err != nil {
-			return err
-		}
-
-		s.mapRoot = sth.MapRoot
-		s.logRoot = sth.LogRoot
-		s.treeSize = int(vLog.Size())
-
-		return nil
-	})
 }
 
 func (s *TrustixCore) updateRoot() error {

@@ -28,7 +28,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	pb "github.com/tweag/trustix/proto"
+	"github.com/tweag/trustix/api"
 )
 
 var inputHashHex string
@@ -61,15 +61,20 @@ var submitCommand = &cobra.Command{
 		ctx, cancel := createContext()
 		defer cancel()
 
-		c := pb.NewTrustixRPCClient(conn)
+		c := api.NewTrustixLogAPIClient(conn)
 
 		log.WithFields(log.Fields{
 			"inputHash":  inputHashHex,
 			"outputHash": outputHashHex,
 		}).Debug("Submitting mapping")
-		r, err := c.SubmitMapping(ctx, &pb.SubmitRequest{
-			OutputHash: outputBytes,
-			InputHash:  inputBytes,
+
+		r, err := c.Submit(ctx, &api.SubmitRequest{
+			Items: []*api.KeyValuePair{
+				&api.KeyValuePair{
+					Key:   inputBytes,
+					Value: outputBytes,
+				},
+			},
 		})
 		if err != nil {
 			log.Fatalf("could not submit: %v", err)
