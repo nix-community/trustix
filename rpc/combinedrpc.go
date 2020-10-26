@@ -28,7 +28,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"github.com/tweag/trustix/core"
+	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/correlator"
 	pb "github.com/tweag/trustix/proto"
 	"sync"
@@ -36,11 +36,11 @@ import (
 
 type TrustixCombinedRPCServer struct {
 	pb.UnimplementedTrustixCombinedRPCServer
-	logMap     map[string]*core.TrustixCore
+	logMap     map[string]api.TrustixLogAPI
 	correlator correlator.LogCorrelator
 }
 
-func NewTrustixCombinedRPCServer(logMap map[string]*core.TrustixCore, correlator correlator.LogCorrelator) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(logMap map[string]api.TrustixLogAPI, correlator correlator.LogCorrelator) *TrustixCombinedRPCServer {
 	return &TrustixCombinedRPCServer{
 		logMap:     logMap,
 		correlator: correlator,
@@ -71,13 +71,22 @@ func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashReque
 				"logName":   name,
 			}).Info("Querying log")
 
-			h, err := l.Query(in.InputHash)
+			sth, err := l.GetSTH(&api.STHRequest{})
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println(fmt.Errorf("could not get STH: %v", err))
+				return
+			}
+			resp, err := l.GetMapValue(&api.GetMapValueRequest{
+				Key:     in.InputHash,
+				MapRoot: sth.MapRoot,
+			})
+			if err != nil {
+				fmt.Println("could not query: %v", err)
+				return
 			}
 
 			mux.Lock()
-			responses[name] = h.Value
+			responses[name] = resp.Value
 			mux.Unlock()
 		}()
 	}
@@ -115,7 +124,20 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 				"logName":   name,
 			}).Info("Querying log")
 
-			h, err := l.Query(in.InputHash)
+			sth, err := l.GetSTH(&api.STHRequest{})
+			if err != nil {
+				fmt.Println(fmt.Errorf("could not get STH: %v", err))
+				return
+			}
+			resp, err := l.GetMapValue(&api.GetMapValueRequest{
+				Key:     in.InputHash,
+				MapRoot: sth.MapRoot,
+			})
+			if err != nil {
+				fmt.Println("could not query: %v", err)
+				return
+			}
+
 			mux.Lock()
 			defer mux.Unlock()
 
@@ -125,14 +147,14 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 				return
 			}
 
-			if len(h.Value) == 0 {
+			if len(resp.Value) == 0 {
 				misses = append(misses, name)
 				return
 			}
 
 			inputs = append(inputs, &correlator.LogCorrelatorInput{
 				LogName:    name,
-				OutputHash: hex.EncodeToString(h.Value),
+				OutputHash: hex.EncodeToString(resp.Value),
 			})
 
 		}()

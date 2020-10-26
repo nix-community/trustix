@@ -31,7 +31,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/config"
-	"github.com/tweag/trustix/core"
 	"github.com/tweag/trustix/correlator"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/rpc"
@@ -101,7 +100,7 @@ var rootCmd = &cobra.Command{
 
 		var logAPIServer api.TrustixLogAPIServer
 
-		logMap := make(map[string]*core.TrustixCore)
+		logMap := make(map[string]api.TrustixLogAPI)
 		for _, logConfig := range config.Logs {
 
 			// log.WithFields(log.Fields{

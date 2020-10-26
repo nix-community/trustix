@@ -50,45 +50,6 @@ type TrustixCore struct {
 	treeSize int
 }
 
-func (s *TrustixCore) Query(key []byte) (*schema.MapEntry, error) {
-	var buf []byte
-
-	err := s.store.View(func(txn storage.Transaction) error {
-		tree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), s.mapRoot)
-
-		// TODO: Log verification (but optional?)
-
-		v, err := tree.Get(key)
-		if err != nil {
-			return err
-		}
-		buf = v
-
-		// Check inclusion proof
-		proof, err := tree.Prove(key)
-		if err != nil {
-			return err
-		}
-
-		if !smt.VerifyProof(proof, tree.Root(), key, v, sha256.New()) {
-			return fmt.Errorf("Proof verification failed")
-		}
-
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	e := &schema.MapEntry{}
-	err = proto.Unmarshal(buf, e)
-	if err != nil {
-		return nil, err
-	}
-
-	return e, nil
-}
-
 func (s *TrustixCore) updateRoot() error {
 	return s.store.View(func(txn storage.Transaction) error {
 		log.Debug("Updating tree root")

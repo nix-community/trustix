@@ -9,6 +9,8 @@ in pkgs.mkShell {
     pkgs.hivemind  # Process monitoring in development
     pkgs.reflex  # File watcher utility
     pkgs.go
+    pkgs.gocode
+    pkgs.gore
 
     pkgs.libgit2
     pkgs.pkgconfig
