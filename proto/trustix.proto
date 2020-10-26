@@ -4,21 +4,6 @@ option go_package = "github.com/tweag/trustix/proto";
 
 package trustix;
 
-// TrustixKV - Access a remote Key/Value store (remote log)
-service TrustixKV {
-  // SubmitMapping - Submit an input/output mapping to the local log
-  rpc Get (KVRequest) returns (KVResponse) {}
-}
-
-message KVRequest {
-  bytes Bucket = 1;
-  bytes Key = 2;
-}
-
-message KVResponse {
-  bytes Value = 1;
-}
-
 // TrustixCombinedRPC
 service TrustixCombinedRPC {
   // Get map[LogName]OutputHash

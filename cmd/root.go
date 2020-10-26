@@ -103,8 +103,6 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		var kvServer *rpc.TrustixKVServer
-
 		var logAPIServer api.TrustixLogAPIServer
 
 		logMap := make(map[string]*core.TrustixCore)
@@ -126,8 +124,6 @@ var rootCmd = &cobra.Command{
 					"name": logConfig.Name,
 					"mode": logConfig.Mode,
 				}).Info("Adding authoritive log to gRPC")
-
-				kvServer = rpc.NewTrustixKVServer(c)
 
 				// New API
 
@@ -187,10 +183,6 @@ var rootCmd = &cobra.Command{
 
 			if logAPIServer != nil {
 				api.RegisterTrustixLogAPIServer(s, logAPIServer)
-			}
-
-			if kvServer != nil {
-				pb.RegisterTrustixKVServer(s, kvServer)
 			}
 
 			go func() {

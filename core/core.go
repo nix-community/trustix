@@ -34,7 +34,6 @@ import (
 	"github.com/tweag/trustix/signer"
 	"github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
-	"github.com/tweag/trustix/transport"
 	"time"
 )
 
@@ -90,25 +89,6 @@ func (s *TrustixCore) Query(key []byte) (*schema.MapEntry, error) {
 	return e, nil
 }
 
-func (s *TrustixCore) Get(bucket []byte, key []byte) ([]byte, error) {
-	var buf []byte
-
-	err := s.store.View(func(txn storage.Transaction) error {
-		v, err := txn.Get(bucket, key)
-		if err != nil {
-			return err
-		}
-		buf = v
-
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return buf, nil
-}
-
 func (s *TrustixCore) updateRoot() error {
 	return s.store.View(func(txn storage.Transaction) error {
 		log.Debug("Updating tree root")
@@ -158,11 +138,11 @@ func CoreFromConfig(conf *config.LogConfig, flags *FlagConfig) (*TrustixCore, er
 		if err != nil {
 			return nil, err
 		}
-	case "trustix-follower":
-		store, err = transport.NewGRPCTransport(conf.Transport.GRPC, sig)
-		if err != nil {
-			return nil, err
-		}
+	// case "trustix-follower":
+	// 	store, err = transport.NewGRPCTransport(conf.Transport.GRPC, sig)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
 	default:
 		return nil, fmt.Errorf("Mode '%s' unhandled", conf.Mode)
