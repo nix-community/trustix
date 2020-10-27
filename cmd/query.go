@@ -26,9 +26,11 @@ package cmd
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
+	"github.com/tweag/trustix/schema"
 )
 
 var queryCommand = &cobra.Command{
@@ -44,7 +46,7 @@ var queryCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		conn, err := createClientConn()
+		conn, err := createClientConn(dialAddress, nil)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -71,7 +73,13 @@ var queryCommand = &cobra.Command{
 			log.Fatalf("could not query: %v", err)
 		}
 
-		fmt.Println(fmt.Sprintf("Output hash: %s", hex.EncodeToString(r.Value)))
+		mapEntry := &schema.MapEntry{}
+		err = proto.Unmarshal(r.Value, mapEntry)
+		if err != nil {
+			log.Fatalf("Could not unmarshal value")
+		}
+
+		fmt.Println(fmt.Sprintf("Output hash: %s", hex.EncodeToString(mapEntry.Value)))
 
 		return nil
 	},

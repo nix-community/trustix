@@ -103,20 +103,15 @@ var rootCmd = &cobra.Command{
 		logMap := make(map[string]api.TrustixLogAPI)
 		for _, logConfig := range config.Logs {
 
-			// log.WithFields(log.Fields{
-			// 	"name":   logConfig.Name,
-			// 	"pubkey": logConfig.Signer.PublicKey,
-			// 	"mode":   logConfig.Mode,
-			// }).Info("Adding log")
-			// c, err := core.CoreFromConfig(logConfig, &core.FlagConfig{
-			// 	StateDirectory: stateDirectory,
-			// })
-			// if err != nil {
-			// 	log.Fatal(err)
-			// }
-			// logMap[logConfig.Name] = c
+			log.WithFields(log.Fields{
+				"name":   logConfig.Name,
+				"pubkey": logConfig.Signer.PublicKey,
+				"mode":   logConfig.Mode,
+			}).Info("Adding log")
 
-			if logConfig.Mode == "trustix-log" {
+			switch logConfig.Mode {
+
+			case "trustix-log":
 				log.WithFields(log.Fields{
 					"name": logConfig.Name,
 					"mode": logConfig.Mode,
@@ -145,6 +140,31 @@ var rootCmd = &cobra.Command{
 				if err != nil {
 					return err
 				}
+
+				logMap[logConfig.Name] = logAPI
+
+			case "trustix-follower":
+
+				sig, err := signer.FromConfig(logConfig.Signer)
+				if err != nil {
+					return err
+				}
+
+				conn, err := createClientConn(logConfig.Transport.GRPC.Remote, sig.Public())
+				if err != nil {
+					return err
+				}
+
+				c, err := api.NewTrustixAPIGRPCClient(conn)
+				if err != nil {
+					return err
+				}
+
+				logMap[logConfig.Name] = c
+
+			default:
+				return fmt.Errorf("Mode '%s' could not be initialised for log name %s", logConfig.Mode, logConfig.Name)
+
 			}
 
 		}

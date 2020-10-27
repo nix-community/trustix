@@ -27,10 +27,12 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/correlator"
 	pb "github.com/tweag/trustix/proto"
+	"github.com/tweag/trustix/schema"
 	"sync"
 )
 
@@ -138,6 +140,13 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 				return
 			}
 
+			mapEntry := &schema.MapEntry{}
+			err = proto.Unmarshal(resp.Value, mapEntry)
+			if err != nil {
+				fmt.Println("Could not unmarshal value")
+				return
+			}
+
 			mux.Lock()
 			defer mux.Unlock()
 
@@ -154,7 +163,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 
 			inputs = append(inputs, &correlator.LogCorrelatorInput{
 				LogName:    name,
-				OutputHash: hex.EncodeToString(resp.Value),
+				OutputHash: hex.EncodeToString(mapEntry.Value),
 			})
 
 		}()

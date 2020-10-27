@@ -52,7 +52,7 @@ var submitCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		conn, err := createClientConn()
+		conn, err := createClientConn(dialAddress, nil)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}

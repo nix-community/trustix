@@ -25,17 +25,21 @@ package cmd
 
 import (
 	"context"
+	"crypto"
+	"crypto/ed25519"
+	"crypto/tls"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"net"
 	"net/url"
 	"time"
 )
 
-func createClientConn() (*grpc.ClientConn, error) {
+func createClientConn(address string, pubKey crypto.PublicKey) (*grpc.ClientConn, error) {
 
-	u, err := url.Parse(dialAddress)
+	u, err := url.Parse(address)
 	if err != nil {
 		return nil, err
 	}
@@ -47,20 +51,69 @@ func createClientConn() (*grpc.ClientConn, error) {
 	sockPath := u.Host + u.Path
 
 	log.WithFields(log.Fields{
-		"address": dialAddress,
+		"address": address,
 	}).Debug("Dialing gRPC")
 
-	return grpc.Dial(
-		sockPath,
-		grpc.WithInsecure(),
-		grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
-			unix_addr, err := net.ResolveUnixAddr("unix", addr)
-			if err != nil {
-				return nil, err
-			}
-			return net.DialUnix("unix", nil, unix_addr)
-		}),
-	)
+	var conn *grpc.ClientConn
+
+	switch u.Scheme {
+	case "https":
+		config := &tls.Config{
+			InsecureSkipVerify: true,
+			VerifyConnection: func(state tls.ConnectionState) error {
+				if len(state.PeerCertificates) != 1 {
+					return fmt.Errorf("Dont know how to handle %d certs", len(state.PeerCertificates))
+				}
+
+				cert := state.PeerCertificates[0]
+
+				edPub, ok := cert.PublicKey.(ed25519.PublicKey)
+				if !ok {
+					return fmt.Errorf("Key not ed25519")
+				}
+
+				if !edPub.Equal(pubKey) {
+					return fmt.Errorf("Expected key mismatch")
+				}
+
+				err := cert.CheckSignature(cert.SignatureAlgorithm, cert.RawTBSCertificate, cert.Signature)
+				if err != nil {
+					fmt.Errorf("Signature check failed %d certs", len(state.PeerCertificates))
+					return err
+				}
+
+				return nil
+			},
+		}
+
+		creds := credentials.NewTLS(config)
+
+		conn, err = grpc.Dial(address, grpc.WithTransportCredentials(creds))
+		if err != nil {
+			return nil, err
+		}
+
+	case "unix":
+		conn, err = grpc.Dial(
+			sockPath,
+			grpc.WithInsecure(),
+			grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+				unix_addr, err := net.ResolveUnixAddr("unix", addr)
+				if err != nil {
+					return nil, err
+				}
+				return net.DialUnix("unix", nil, unix_addr)
+			}),
+		)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("URL scheme '%s' not supported", u.Scheme)
+
+	}
+
+	return conn, nil
 }
 
 // Create a context with the default timeout set
