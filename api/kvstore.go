@@ -40,14 +40,12 @@ import (
 type kvStoreLogApi struct {
 	store  storage.TrustixStorage
 	signer signer.TrustixSigner
+	sth    *schema.STH
 }
 
 func NewKVStoreAPI(store storage.TrustixStorage, signer signer.TrustixSigner) (TrustixLogAPI, error) {
 
-	api := &kvStoreLogApi{
-		store:  store,
-		signer: signer,
-	}
+	var sth *schema.STH
 
 	// Create an empty initial log if it doesn't exist already
 	err := store.Update(func(txn storage.Transaction) error {
@@ -66,7 +64,7 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer signer.TrustixSigner) (T
 		}
 
 		log.Debug("Signing STH for empty tree")
-		sth, err := sthsig.SignHead(smTree, vLog, signer)
+		sth, err = sthsig.SignHead(smTree, vLog, signer)
 		if err != nil {
 			return err
 		}
@@ -88,10 +86,34 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer signer.TrustixSigner) (T
 		return nil, err
 	}
 
+	api := &kvStoreLogApi{
+		store:  store,
+		signer: signer,
+		sth:    sth,
+	}
+
+	if api.sth == nil {
+		err := store.View(func(txn storage.Transaction) error {
+			sth, err := api.getSTH(txn)
+			if err != nil {
+				return err
+			}
+			api.sth = sth
+			return nil
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if api.sth == nil {
+		return nil, fmt.Errorf("Could not find STH")
+	}
+
 	return api, nil
 }
 
-func getSTH(txn storage.Transaction) (*schema.STH, error) {
+func (kv *kvStoreLogApi) getSTH(txn storage.Transaction) (*schema.STH, error) {
 	sth := &schema.STH{}
 	var err error
 
@@ -109,21 +131,7 @@ func getSTH(txn storage.Transaction) (*schema.STH, error) {
 }
 
 func (kv *kvStoreLogApi) GetSTH(req *STHRequest) (*schema.STH, error) {
-	sth := &schema.STH{}
-	var err error
-
-	err = kv.store.View(func(txn storage.Transaction) error {
-		sth, err = getSTH(txn)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return sth, nil
+	return kv.sth, nil
 }
 
 func (kv *kvStoreLogApi) GetLogConsistencyProof(req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
@@ -240,13 +248,9 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 		return nil, fmt.Errorf("Signing is disabled")
 	}
 
-	err := kv.store.Update(func(txn storage.Transaction) error {
-		// Consider: Should this one be an external param?
-		sth, err := getSTH(txn)
-		if err != nil {
-			return err
-		}
+	sth := kv.sth
 
+	err := kv.store.Update(func(txn storage.Transaction) error {
 		// The sparse merkle tree
 		log.Debug("Creating sparse merkle tree from persisted data")
 		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), sth.MapRoot)
@@ -311,6 +315,8 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	kv.sth = sth
 
 	return &SubmitResponse{
 		Status: SubmitResponse_OK,
