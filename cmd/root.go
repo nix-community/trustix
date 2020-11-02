@@ -342,6 +342,8 @@ func initCommands() {
 
 	rootCmd.AddCommand(decideCommand)
 	initDecide()
+
+	rootCmd.AddCommand(nixHookCommand)
 }
 
 func Execute() {
