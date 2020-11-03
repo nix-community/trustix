@@ -122,10 +122,6 @@ var rootCmd = &cobra.Command{
 					return err
 				}
 
-				if !sig.CanSign() {
-					return fmt.Errorf("Cannot sign using the current configuration, aborting.")
-				}
-
 				store, err := storage.FromConfig(logConfig.Name, stateDirectory, logConfig.Storage)
 				if err != nil {
 					return err

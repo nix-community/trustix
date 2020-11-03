@@ -25,6 +25,7 @@ package signer
 
 import (
 	"crypto"
+	"crypto/ed25519"
 	"crypto/rand"
 	"github.com/stretchr/testify/assert"
 	"github.com/tweag/trustix/config"
@@ -38,7 +39,7 @@ func fixturePath(name string) string {
 	return path.Join(wd, "fixtures", name)
 }
 
-func mkSnakeOil(t *testing.T) TrustixSigner {
+func mkSnakeOil(t *testing.T) crypto.Signer {
 	config := &config.SignerConfig{
 		Type:    "ed25519",
 		KeyType: "ed25519",
@@ -46,14 +47,9 @@ func mkSnakeOil(t *testing.T) TrustixSigner {
 			PrivateKeyPath: fixturePath("priv"),
 		},
 	}
-	signer, err := genED25519Signer(config)
+	signer, err := newED25519Signer(config)
 	assert.Nil(t, err)
 	return signer
-}
-
-func TestCanSign(t *testing.T) {
-	signer := mkSnakeOil(t)
-	assert.Equal(t, signer.CanSign(), true, "Signer can sign")
 }
 
 func TestSign(t *testing.T) {
@@ -65,6 +61,7 @@ func TestSign(t *testing.T) {
 	sig, err := signer.Sign(rand.Reader, message, opts)
 	assert.Nil(t, err)
 
-	valid := signer.Verify(message, sig)
+	verifier := newED25519Verifier(signer.Public().(ed25519.PublicKey))
+	valid := verifier.Verify(message, sig)
 	assert.Equal(t, valid, true, "Signature valid")
 }

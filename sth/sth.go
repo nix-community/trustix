@@ -27,7 +27,6 @@ import (
 	"crypto"
 	"crypto/rand"
 	"crypto/sha256"
-	"fmt"
 	"github.com/lazyledger/smt"
 	vlog "github.com/tweag/trustix/log"
 	"github.com/tweag/trustix/schema"
@@ -61,15 +60,11 @@ func SignHead(smTree *smt.SparseMerkleTree, vLog *vlog.VerifiableLog, signer cry
 	}, nil
 }
 
-func VerifySTHSig(signer signer.TrustixSigner, sth *schema.STH) error {
+func VerifySTHSig(verifier signer.TrustixVerifier, sth *schema.STH) bool {
 	h := sha256.New()
 	h.Write(sth.LogRoot)
 	h.Write(sth.MapRoot)
 	sum := h.Sum(nil)
 
-	if !signer.Verify(sum, sth.Signature) {
-		return fmt.Errorf("STH signature verification failed")
-	}
-
-	return nil
+	return verifier.Verify(sum, sth.Signature)
 }

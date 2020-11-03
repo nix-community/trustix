@@ -24,6 +24,7 @@
 package api
 
 import (
+	"crypto"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -32,18 +33,17 @@ import (
 	log "github.com/sirupsen/logrus"
 	vlog "github.com/tweag/trustix/log"
 	"github.com/tweag/trustix/schema"
-	"github.com/tweag/trustix/signer"
 	sthsig "github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
 )
 
 type kvStoreLogApi struct {
 	store  storage.TrustixStorage
-	signer signer.TrustixSigner
+	signer crypto.Signer
 	sth    *schema.STH
 }
 
-func NewKVStoreAPI(store storage.TrustixStorage, signer signer.TrustixSigner) (TrustixLogAPI, error) {
+func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixLogAPI, error) {
 
 	var sth *schema.STH
 
