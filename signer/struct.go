@@ -23,6 +23,11 @@
 
 package signer
 
+import (
+	"crypto"
+)
+
 type TrustixVerifier interface {
 	Verify(message, sig []byte) bool
+	Public() crypto.PublicKey
 }

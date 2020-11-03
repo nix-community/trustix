@@ -24,6 +24,7 @@
 package cmd
 
 import (
+	"crypto"
 	"crypto/tls"
 	"fmt"
 	"github.com/coreos/go-systemd/activation"
@@ -117,9 +118,23 @@ var rootCmd = &cobra.Command{
 					"mode": logConfig.Mode,
 				}).Info("Adding authoritive log to gRPC")
 
-				sig, err := signer.FromConfig(logConfig.Signer)
-				if err != nil {
-					return err
+				signerConfig := logConfig.Signer
+
+				if signerConfig.Type == "" {
+					fmt.Errorf("Missing signer config field 'type'.")
+				}
+
+				var sig crypto.Signer
+
+				log.WithField("type", signerConfig.Type).Info("Creating signer")
+				switch signerConfig.Type {
+				case "ed25519":
+					sig, err = signer.NewED25519Signer(signerConfig.ED25519.PrivateKeyPath)
+					if err != nil {
+						return err
+					}
+				default:
+					return fmt.Errorf("Signer type '%s' is not supported.", signerConfig.Type)
 				}
 
 				store, err := storage.FromConfig(logConfig.Name, stateDirectory, logConfig.Storage)
@@ -140,13 +155,20 @@ var rootCmd = &cobra.Command{
 				logMap[logConfig.Name] = logAPI
 
 			case "trustix-follower":
+				var verifier signer.TrustixVerifier
 
-				sig, err := signer.FromConfig(logConfig.Signer)
-				if err != nil {
-					return err
+				signerConfig := logConfig.Signer
+				switch signerConfig.Type {
+				case "ed25519":
+					verifier, err = signer.NewED25519Verifier(logConfig.Signer.PublicKey)
+					if err != nil {
+						return err
+					}
+				default:
+					return fmt.Errorf("Verifier type '%s' is not supported.", signerConfig.Type)
 				}
 
-				conn, err := createClientConn(logConfig.Transport.GRPC.Remote, sig.Public())
+				conn, err := createClientConn(logConfig.Transport.GRPC.Remote, verifier.Public())
 				if err != nil {
 					return err
 				}

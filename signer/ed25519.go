@@ -26,25 +26,33 @@ package signer
 import (
 	"crypto"
 	"crypto/ed25519"
-	"github.com/tweag/trustix/config"
 )
 
 type ed25519Verifier struct {
 	pub ed25519.PublicKey
 }
 
+func (v *ed25519Verifier) Public() crypto.PublicKey {
+	return v.pub
+}
+
 func (v *ed25519Verifier) Verify(message, sig []byte) bool {
 	return ed25519.Verify(v.pub, message, sig)
 }
 
-func newED25519Verifier(pubkey ed25519.PublicKey) TrustixVerifier {
+func NewED25519Verifier(pub string) (TrustixVerifier, error) {
+	pubkey, err := decodeKey(pub)
+	if err != nil {
+		return nil, err
+	}
+
 	return &ed25519Verifier{
 		pub: pubkey,
-	}
+	}, nil
 }
 
-func newED25519Signer(signerConfig *config.SignerConfig) (crypto.Signer, error) {
-	privBytes, err := readKey(signerConfig.ED25519.PrivateKeyPath)
+func NewED25519Signer(privKeyPath string) (crypto.Signer, error) {
+	privBytes, err := readKey(privKeyPath)
 	if err != nil {
 		return nil, err
 	}
