@@ -25,9 +25,11 @@ package rpc
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/correlator"
@@ -52,8 +54,17 @@ func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *Trusti
 	}
 }
 
+func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
+	return smt.SparseCompactMerkleProof{
+		SideNodes:             p.SideNodes,
+		NonMembershipLeafData: p.NonMembershipLeafData,
+		BitMask:               p.BitMask,
+		NumSideNodes:          int(p.NumSideNodes),
+	}
+}
+
 func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMapResponse, error) {
-	responses := make(map[string][]byte)
+	responses := make(map[string]*schema.MapEntry)
 
 	var wg sync.WaitGroup
 	var mux sync.Mutex
@@ -91,8 +102,21 @@ func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashReque
 				return
 			}
 
+			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.InputHash, resp.Value, sha256.New())
+			if !valid {
+				fmt.Println("SMT proof verification failed")
+				return
+			}
+
+			entry := &schema.MapEntry{}
+			err = proto.Unmarshal(resp.Value, entry)
+			if err != nil {
+				fmt.Println("Could not unmarshal map value")
+				return
+			}
+
 			mux.Lock()
-			responses[name] = resp.Value
+			responses[name] = entry
 			mux.Unlock()
 		}()
 	}

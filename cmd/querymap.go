@@ -66,7 +66,7 @@ var queryMap = &cobra.Command{
 		}
 
 		for name, h := range r.Hashes {
-			s := hex.EncodeToString(h)
+			s := hex.EncodeToString(h.Value)
 			if err != nil {
 				return err
 			}

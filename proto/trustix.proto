@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "schema/mapentry.proto";
+
 option go_package = "github.com/tweag/trustix/proto";
 
 package trustix;
@@ -18,7 +20,7 @@ message HashRequest {
 }
 
 message HashMapResponse {
-  map<string, bytes> hashes = 1;
+  map<string, MapEntry> hashes = 1;
 }
 
 message OutputHashResponse {
