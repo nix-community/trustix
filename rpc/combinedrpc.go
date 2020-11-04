@@ -33,6 +33,7 @@ import (
 	"github.com/tweag/trustix/correlator"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/schema"
+	"github.com/tweag/trustix/sthmanager"
 	"sync"
 )
 
@@ -40,12 +41,14 @@ type TrustixCombinedRPCServer struct {
 	pb.UnimplementedTrustixCombinedRPCServer
 	logs       *TrustixCombinedRPCServerMap
 	correlator correlator.LogCorrelator
+	sthmanager *sthmanager.STHManager
 }
 
-func NewTrustixCombinedRPCServer(logs *TrustixCombinedRPCServerMap, correlator correlator.LogCorrelator) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *TrustixCombinedRPCServerMap, correlator correlator.LogCorrelator) *TrustixCombinedRPCServer {
 	return &TrustixCombinedRPCServer{
 		logs:       logs,
 		correlator: correlator,
+		sthmanager: sthmanager,
 	}
 }
 
@@ -58,8 +61,9 @@ func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashReque
 	hexInput := hex.EncodeToString(in.InputHash)
 	log.WithField("inputHash", hexInput).Info("Received HashMap request")
 
+	getSTH := l.sthmanager.Get
+
 	for name, l := range l.logs.Map() {
-		// Create copies for goroutine
 		name := name
 		l := l
 
@@ -73,7 +77,7 @@ func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashReque
 				"logName":   name,
 			}).Info("Querying log")
 
-			sth, err := l.GetSTH(&api.STHRequest{})
+			sth, err := getSTH(name)
 			if err != nil {
 				fmt.Println(fmt.Errorf("could not get STH: %v", err))
 				return
@@ -111,8 +115,9 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 	var inputs []*correlator.LogCorrelatorInput
 	var misses []string
 
+	getSTH := l.sthmanager.Get
+
 	for name, l := range l.logs.Map() {
-		// Create copies for goroutine
 		name := name
 		l := l
 
@@ -126,7 +131,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 				"logName":   name,
 			}).Info("Querying log")
 
-			sth, err := l.GetSTH(&api.STHRequest{})
+			sth, err := getSTH(name)
 			if err != nil {
 				fmt.Println(fmt.Errorf("could not get STH: %v", err))
 				return

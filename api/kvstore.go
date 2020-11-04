@@ -135,6 +135,7 @@ func (kv *kvStoreLogApi) GetSTH(req *STHRequest) (*schema.STH, error) {
 }
 
 func (kv *kvStoreLogApi) GetLogConsistencyProof(req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
+	resp = &ProofResponse{}
 
 	err = kv.store.View(func(txn storage.Transaction) error {
 		vLog, err := vlog.NewVerifiableLog(txn, req.SecondSize)

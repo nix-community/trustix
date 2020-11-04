@@ -36,7 +36,9 @@ import (
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/rpc"
 	"github.com/tweag/trustix/rpc/auth"
+	"github.com/tweag/trustix/schema"
 	"github.com/tweag/trustix/signer"
+	"github.com/tweag/trustix/sthmanager"
 	"github.com/tweag/trustix/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -109,6 +111,13 @@ var rootCmd = &cobra.Command{
 			close(errChan)
 		}()
 
+		sthmgr := sthmanager.NewSTHManager()
+		defer sthmgr.Close()
+		sthstore, err := storage.NewNativeStorage("STH", stateDirectory)
+		if err != nil {
+			log.Fatal("Could not create local cache storage")
+		}
+
 		logMap := rpc.NewTrustixCombinedRPCServerMap()
 		for _, logConfig := range config.Logs {
 			logConfig := logConfig
@@ -153,7 +162,7 @@ var rootCmd = &cobra.Command{
 					case "git":
 						store, err = storage.NewGitStorage(logConfig.Name, stateDirectory, logConfig.Storage.Git.Commiter, logConfig.Storage.Git.Email)
 					case "native":
-						store, err = storage.NewNativeStorage(logConfig.Name, stateDirectory)
+						store, err = storage.NewNativeStorage("log-"+logConfig.Name, stateDirectory)
 					case "memory":
 						store, err = storage.NewMemoryStorage()
 					}
@@ -172,6 +181,9 @@ var rootCmd = &cobra.Command{
 					}
 
 					logMap.Add(logConfig.Name, logAPI)
+					sthmgr.Add(logConfig.Name, sthmanager.NewDummySTHCache(func() (*schema.STH, error) {
+						return logAPI.GetSTH(new(api.STHRequest))
+					}))
 
 				case "trustix-follower":
 					var verifier signer.TrustixVerifier
@@ -198,6 +210,7 @@ var rootCmd = &cobra.Command{
 					}
 
 					logMap.Add(logConfig.Name, c)
+					sthmgr.Add(logConfig.Name, sthmanager.NewSTHCache(logConfig.Name, sthstore, c, verifier))
 
 				default:
 					return fmt.Errorf("Mode '%s' could not be initialised for log name %s", logConfig.Mode, logConfig.Name)
@@ -222,13 +235,14 @@ var rootCmd = &cobra.Command{
 				return err
 			}
 		}
+		wg.Wait()
 
 		corr, err := correlator.NewMinimumPercentCorrelator(50)
 		if err != nil {
 			log.Fatalf("Failed to create correlator: %v", err)
 		}
 
-		logServer := rpc.NewTrustixCombinedRPCServer(logMap, corr)
+		logServer := rpc.NewTrustixCombinedRPCServer(sthmgr, logMap, corr)
 
 		log.Debug("Creating gRPC servers")
 
