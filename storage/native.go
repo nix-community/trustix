@@ -66,7 +66,11 @@ func (t *nativeTxn) Set(bucket []byte, key []byte, value []byte) error {
 
 func NativeStorageFromConfig(name string, stateDirectory string, conf *config.NativeStorageConfig) (*nativeStorage, error) {
 	path := path.Join(stateDirectory, name+".db")
-	db, err := badger.Open(badger.DefaultOptions(path))
+
+	options := badger.DefaultOptions(path)
+	options.Logger = nil
+
+	db, err := badger.Open(options)
 	if err != nil {
 		return nil, err
 	}
