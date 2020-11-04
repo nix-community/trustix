@@ -148,7 +148,15 @@ var rootCmd = &cobra.Command{
 						return fmt.Errorf("Signer type '%s' is not supported.", signerConfig.Type)
 					}
 
-					store, err := storage.FromConfig(logConfig.Name, stateDirectory, logConfig.Storage)
+					var store storage.TrustixStorage
+					switch logConfig.Storage.Type {
+					case "git":
+						store, err = storage.NewGitStorage(logConfig.Name, stateDirectory, logConfig.Storage.Git.Commiter, logConfig.Storage.Git.Email)
+					case "native":
+						store, err = storage.NewNativeStorage(logConfig.Name, stateDirectory)
+					case "memory":
+						store, err = storage.NewMemoryStorage()
+					}
 					if err != nil {
 						return err
 					}

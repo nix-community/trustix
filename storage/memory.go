@@ -69,7 +69,7 @@ func (t *memoryTxn) Set(bucket []byte, key []byte, value []byte) error {
 	})
 }
 
-func MemoryStorageFromConfig() (*memoryStorage, error) {
+func NewMemoryStorage() (*memoryStorage, error) {
 	schema := &memdb.DBSchema{
 		Tables: map[string]*memdb.TableSchema{
 			"record": &memdb.TableSchema{

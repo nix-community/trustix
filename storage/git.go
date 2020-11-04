@@ -28,7 +28,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/libgit2/git2go/v30"
-	"github.com/tweag/trustix/config"
 	"os"
 	"path"
 	"time"
@@ -201,7 +200,7 @@ type GitKVStore struct {
 	commit *git.Commit // Previous commit
 }
 
-func GitStorageFromConfig(name string, stateDirectory string, conf *config.GitStorageConfig) (*GitKVStore, error) {
+func NewGitStorage(name string, stateDirectory string, commiter string, email string) (*GitKVStore, error) {
 
 	// Always use bare repository (no worktree)
 	bare := true
@@ -234,8 +233,8 @@ func GitStorageFromConfig(name string, stateDirectory string, conf *config.GitSt
 		repo:        repo,
 		treeDepth:   treeDepth,
 		tokenLength: tokenLength,
-		name:        conf.Commiter,
-		email:       conf.Email,
+		name:        commiter,
+		email:       email,
 	}
 
 	if created {

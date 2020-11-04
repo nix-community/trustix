@@ -25,7 +25,6 @@ package storage
 
 import (
 	badger "github.com/dgraph-io/badger/v2"
-	"github.com/tweag/trustix/config"
 	"path"
 	"sync"
 )
@@ -64,7 +63,7 @@ func (t *nativeTxn) Set(bucket []byte, key []byte, value []byte) error {
 	return t.txn.Set(createCompoundNativeKey(bucket, key), value)
 }
 
-func NativeStorageFromConfig(name string, stateDirectory string, conf *config.NativeStorageConfig) (*nativeStorage, error) {
+func NewNativeStorage(name string, stateDirectory string) (*nativeStorage, error) {
 	path := path.Join(stateDirectory, name+".db")
 
 	options := badger.DefaultOptions(path)
