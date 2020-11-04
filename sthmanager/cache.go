@@ -136,6 +136,8 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 			}
 		}
 
+		run()
+
 		// TODO: Make timeout configurable (& manually triggerable)
 		for {
 			select {
