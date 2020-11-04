@@ -101,7 +101,7 @@ var rootCmd = &cobra.Command{
 
 		var logAPIServer api.TrustixLogAPIServer
 
-		logMap := make(map[string]api.TrustixLogAPI)
+		logMap := rpc.NewTrustixCombinedRPCServerMap()
 		for _, logConfig := range config.Logs {
 
 			log.WithFields(log.Fields{
@@ -152,7 +152,7 @@ var rootCmd = &cobra.Command{
 					return err
 				}
 
-				logMap[logConfig.Name] = logAPI
+				logMap.Add(logConfig.Name, logAPI)
 
 			case "trustix-follower":
 				var verifier signer.TrustixVerifier
@@ -178,7 +178,7 @@ var rootCmd = &cobra.Command{
 					return err
 				}
 
-				logMap[logConfig.Name] = c
+				logMap.Add(logConfig.Name, c)
 
 			default:
 				return fmt.Errorf("Mode '%s' could not be initialised for log name %s", logConfig.Mode, logConfig.Name)

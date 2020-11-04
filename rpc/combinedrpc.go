@@ -38,13 +38,13 @@ import (
 
 type TrustixCombinedRPCServer struct {
 	pb.UnimplementedTrustixCombinedRPCServer
-	logMap     map[string]api.TrustixLogAPI
+	logs       *TrustixCombinedRPCServerMap
 	correlator correlator.LogCorrelator
 }
 
-func NewTrustixCombinedRPCServer(logMap map[string]api.TrustixLogAPI, correlator correlator.LogCorrelator) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(logs *TrustixCombinedRPCServerMap, correlator correlator.LogCorrelator) *TrustixCombinedRPCServer {
 	return &TrustixCombinedRPCServer{
-		logMap:     logMap,
+		logs:       logs,
 		correlator: correlator,
 	}
 }
@@ -58,7 +58,7 @@ func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashReque
 	hexInput := hex.EncodeToString(in.InputHash)
 	log.WithField("inputHash", hexInput).Info("Received HashMap request")
 
-	for name, l := range l.logMap {
+	for name, l := range l.logs.Map() {
 		// Create copies for goroutine
 		name := name
 		l := l
@@ -111,7 +111,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 	var inputs []*correlator.LogCorrelatorInput
 	var misses []string
 
-	for name, l := range l.logMap {
+	for name, l := range l.logs.Map() {
 		// Create copies for goroutine
 		name := name
 		l := l
