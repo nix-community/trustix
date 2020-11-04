@@ -248,7 +248,7 @@ var rootCmd = &cobra.Command{
 
 		errChan = make(chan error)
 
-		createServer := func(lis net.Listener) (s *grpc.Server) {
+		createServer := func(lis net.Listener, insecure bool) (s *grpc.Server) {
 			_, isUnix := lis.(*net.UnixListener)
 
 			if isUnix {
@@ -260,17 +260,22 @@ var rootCmd = &cobra.Command{
 
 			} else {
 
-				cert, err := generateCert()
-				if err != nil {
-					log.Fatalf("Could not create cert")
+				if insecure {
+					s = grpc.NewServer()
+				} else {
+					cert, err := generateCert()
+					if err != nil {
+						log.Fatalf("Could not create cert")
+					}
+
+					config := &tls.Config{
+						Certificates: []tls.Certificate{*cert},
+						ClientAuth:   tls.NoClientCert,
+					}
+
+					s = grpc.NewServer(grpc.Creds(credentials.NewTLS(config)))
 				}
 
-				config := &tls.Config{
-					Certificates: []tls.Certificate{*cert},
-					ClientAuth:   tls.NoClientCert,
-				}
-
-				s = grpc.NewServer(grpc.Creds(credentials.NewTLS(config)))
 			}
 
 			if logAPIServer != nil {
@@ -299,7 +304,7 @@ var rootCmd = &cobra.Command{
 				"address": lis.Addr(),
 			}).Info("Using socket activated listener")
 
-			servers = append(servers, createServer(lis))
+			servers = append(servers, createServer(lis, false))
 		}
 
 		// Create sockets
@@ -321,7 +326,10 @@ var rootCmd = &cobra.Command{
 			case "unix":
 				family = "unix"
 				host = u.Host + u.Path
-			case "tcp":
+			case "http":
+				family = "tcp"
+				host = u.Host
+			case "https":
 				family = "tcp"
 				host = u.Host
 			default:
@@ -337,7 +345,7 @@ var rootCmd = &cobra.Command{
 				"address": addr,
 			}).Info("Listening to address")
 
-			servers = append(servers, createServer(lis))
+			servers = append(servers, createServer(lis, u.Scheme == "http"))
 		}
 
 		if len(servers) <= 0 {
