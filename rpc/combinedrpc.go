@@ -169,6 +169,12 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 				return
 			}
 
+			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.InputHash, resp.Value, sha256.New())
+			if !valid {
+				fmt.Println("SMT proof verification failed")
+				return
+			}
+
 			mapEntry := &schema.MapEntry{}
 			err = proto.Unmarshal(resp.Value, mapEntry)
 			if err != nil {
