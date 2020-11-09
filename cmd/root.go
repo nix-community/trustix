@@ -159,8 +159,6 @@ var rootCmd = &cobra.Command{
 
 					var store storage.TrustixStorage
 					switch logConfig.Storage.Type {
-					case "git":
-						store, err = storage.NewGitStorage(logConfig.Name, stateDirectory, logConfig.Storage.Git.Commiter, logConfig.Storage.Git.Email)
 					case "native":
 						store, err = storage.NewNativeStorage("log-"+logConfig.Name, stateDirectory)
 					case "memory":

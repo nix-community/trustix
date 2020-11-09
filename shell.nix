@@ -12,7 +12,7 @@ in pkgs.mkShell {
     pkgs.gocode
     pkgs.gore
 
-    pkgs.libgit2
+    # pkgs.libgit2
     pkgs.pkgconfig
 
     pkgs.protobuf
