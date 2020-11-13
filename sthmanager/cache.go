@@ -58,7 +58,15 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 	updateSTH := func() error {
 		oldSTH, err := c.Get()
 		if err != nil {
-			return err
+			if err != storage.ObjectNotFoundError {
+				return err
+			} else {
+				// New tree, no local state yet
+				size := uint64(0)
+				oldSTH = &schema.STH{
+					TreeSize: &size,
+				}
+			}
 		}
 
 		sth, err := logapi.GetSTH(new(api.STHRequest))
@@ -121,8 +129,8 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 
 		log.WithFields(log.Fields{
 			"logName":     logName,
-			"oldTreeSize": oldSTH.TreeSize,
-			"treeSize":    sth.TreeSize,
+			"oldTreeSize": *oldSTH.TreeSize,
+			"treeSize":    *sth.TreeSize,
 		}).Info("Updated STH")
 
 		return err
@@ -173,6 +181,10 @@ func (c *sthCache) Get() (*schema.STH, error) {
 		buf = v
 		return err
 	})
+
+	if len(buf) == 0 {
+		return nil, storage.ObjectNotFoundError
+	}
 
 	sth := &schema.STH{}
 	err = proto.Unmarshal(buf, sth)
