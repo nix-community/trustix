@@ -225,11 +225,12 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 			return nil, err
 		}
 
+		confidence := int32(decision.Confidence)
 		if len(decision.LogNames) > 0 {
 			resp.Decision = &pb.OutputHashDecision{
 				LogNames:   decision.LogNames,
 				OutputHash: outputHash,
-				Confidence: int32(decision.Confidence),
+				Confidence: &confidence,
 			}
 		}
 	}
@@ -246,7 +247,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 		}
 
 		resp.Mismatches = append(resp.Mismatches, &pb.OutputHashResponse{
-			LogName:    input.LogName,
+			LogName:    &input.LogName,
 			OutputHash: h,
 		})
 	}

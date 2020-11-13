@@ -1,4 +1,4 @@
-syntax = "proto3";
+syntax = "proto2";
 
 import "schema/mapentry.proto";
 
@@ -16,7 +16,7 @@ service TrustixCombinedRPC {
 }
 
 message HashRequest {
-  bytes InputHash = 1;
+  required bytes InputHash = 1;
 }
 
 message HashMapResponse {
@@ -24,18 +24,18 @@ message HashMapResponse {
 }
 
 message OutputHashResponse {
-  string LogName = 1;
-  bytes OutputHash = 2;
+  required string LogName = 1;
+  required bytes OutputHash = 2;
 }
 
 message OutputHashDecision {
   repeated string LogNames = 1;
-  bytes OutputHash = 2;
-  int32 Confidence = 3;
+  required bytes OutputHash = 2;
+  required int32 Confidence = 3;
 }
 
 message DecisionResponse {
-  OutputHashDecision Decision = 1;
+  required OutputHashDecision Decision = 1;
 
   // Non-matches (hash mismatch)
   repeated OutputHashResponse Mismatches = 2;
