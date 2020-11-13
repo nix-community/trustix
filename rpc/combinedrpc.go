@@ -233,6 +233,8 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 				Confidence: &confidence,
 			}
 		}
+	} else {
+		return nil, fmt.Errorf("No outputs found for input")
 	}
 
 	// inputMap := make(map[string][]byte)

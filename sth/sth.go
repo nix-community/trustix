@@ -52,9 +52,10 @@ func SignHead(smTree *smt.SparseMerkleTree, vLog *vlog.VerifiableLog, signer cry
 		return nil, err
 	}
 
+	vLogSize := uint64(vLog.Size())
 	return &schema.STH{
 		LogRoot:   vLogRoot,
-		TreeSize:  uint64(vLog.Size()),
+		TreeSize:  &vLogSize,
 		MapRoot:   smTreeRoot,
 		Signature: sig,
 	}, nil

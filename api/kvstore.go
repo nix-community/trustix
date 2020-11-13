@@ -221,6 +221,10 @@ func (kv *kvStoreLogApi) GetMapValue(req *GetMapValueRequest) (*MapValueResponse
 			return err
 		}
 
+		if len(v) == 0 {
+			return fmt.Errorf("Map value not found")
+		}
+
 		proof, err := tree.ProveCompact(req.Key)
 		if err != nil {
 			return err
@@ -228,6 +232,7 @@ func (kv *kvStoreLogApi) GetMapValue(req *GetMapValueRequest) (*MapValueResponse
 
 		numSideNodes := uint64(proof.NumSideNodes)
 		resp.Value = v
+
 		resp.Proof = &SparseCompactMerkleProof{
 			SideNodes:             proof.SideNodes,
 			NonMembershipLeafData: proof.NonMembershipLeafData,
@@ -259,7 +264,7 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 
 		// The append-only log
 		log.WithField("size", sth.TreeSize).Debug("Creating log tree from persisted data")
-		vLog, err := vlog.NewVerifiableLog(txn, sth.TreeSize)
+		vLog, err := vlog.NewVerifiableLog(txn, *sth.TreeSize)
 		if err != nil {
 			return err
 		}
@@ -283,9 +288,10 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 				return err
 			}
 
+			vLogSize := uint64(vLog.Size() - 1)
 			entry, err := proto.Marshal(&schema.MapEntry{
 				Value: pair.Value,
-				Index: uint64(vLog.Size() - 1),
+				Index: &vLogSize,
 			})
 			if err != nil {
 				return err
@@ -306,7 +312,7 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 			return err
 		}
 
-		log.WithField("size", sth.TreeSize).Debug("Setting new signed tree heads")
+		log.WithField("size", *sth.TreeSize).Debug("Setting new signed tree heads")
 		err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
 		if err != nil {
 			return err

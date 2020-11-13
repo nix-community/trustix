@@ -66,13 +66,16 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 			return err
 		}
 
-		if oldSTH.TreeSize > 0 {
+		newTreeSize := *sth.TreeSize
+		oldTreeSize := *oldSTH.TreeSize
 
-			if sth.TreeSize < oldSTH.TreeSize {
+		if oldTreeSize > 0 {
+
+			if newTreeSize < oldTreeSize {
 				return fmt.Errorf("Refusing to go back in time")
 			}
 
-			if sth.TreeSize == oldSTH.TreeSize {
+			if newTreeSize == oldTreeSize {
 
 				if !bytes.Equal(sth.LogRoot, oldSTH.LogRoot) {
 					return fmt.Errorf("Log root hash mismatch")
@@ -96,8 +99,8 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 		}
 
 		resp, err := logapi.GetLogConsistencyProof(&api.GetLogConsistencyProofRequest{
-			FirstSize:  &oldSTH.TreeSize,
-			SecondSize: &sth.TreeSize,
+			FirstSize:  &oldTreeSize,
+			SecondSize: &newTreeSize,
 		})
 		if err != nil {
 			return err
@@ -106,8 +109,8 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 		valid = vlog.ValidConsistencyProof(
 			oldSTH.LogRoot,
 			sth.LogRoot,
-			oldSTH.TreeSize,
-			sth.TreeSize,
+			oldTreeSize,
+			newTreeSize,
 			resp.Proof,
 		)
 		if !valid {

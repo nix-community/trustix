@@ -1,10 +1,10 @@
-syntax = "proto3";
+syntax = "proto2";
 
 option go_package = "github.com/tweag/trustix/schema";
 
 message STH {
-  bytes LogRoot = 1;
-  uint64 TreeSize = 2;
-  bytes MapRoot = 3;
-  bytes Signature = 4;
+  required bytes LogRoot = 1;
+  required uint64 TreeSize = 2;
+  required bytes MapRoot = 3;
+  required bytes Signature = 4;
 }

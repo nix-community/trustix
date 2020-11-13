@@ -70,7 +70,7 @@ var decideCommand = &cobra.Command{
 		}
 
 		for _, unmatched := range r.Mismatches {
-			fmt.Println(fmt.Sprintf("Found mismatched hash '%s' in log '%s'", hex.EncodeToString(unmatched.OutputHash), unmatched.LogName))
+			fmt.Println(fmt.Sprintf("Found mismatched hash '%s' in log '%s'", hex.EncodeToString(unmatched.OutputHash), *unmatched.LogName))
 		}
 
 		if r.Decision != nil {
