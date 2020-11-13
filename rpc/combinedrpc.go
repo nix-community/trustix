@@ -59,7 +59,7 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 		SideNodes:             p.SideNodes,
 		NonMembershipLeafData: p.NonMembershipLeafData,
 		BitMask:               p.BitMask,
-		NumSideNodes:          int(p.NumSideNodes),
+		NumSideNodes:          int(*p.NumSideNodes),
 	}
 }
 
@@ -93,6 +93,7 @@ func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashReque
 				fmt.Println(fmt.Errorf("could not get STH: %v", err))
 				return
 			}
+
 			resp, err := l.GetMapValue(&api.GetMapValueRequest{
 				Key:     in.InputHash,
 				MapRoot: sth.MapRoot,

@@ -5,6 +5,9 @@ let
 
 in pkgs.mkShell {
 
+  # Speed up compilation
+  CGO_ENABLED = "0";
+
   buildInputs = [
     pkgs.hivemind  # Process monitoring in development
     pkgs.reflex  # File watcher utility
@@ -21,11 +24,6 @@ in pkgs.mkShell {
 
     # For development scripts
     pythonEnv
-
   ];
-
-  shellHook = ''
-    unset GOPATH
-  '';
 
 }

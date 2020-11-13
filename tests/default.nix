@@ -102,6 +102,5 @@ in {
   }) [
     "native"
     "memory"
-    "git"
   ])
 )

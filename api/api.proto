@@ -1,4 +1,4 @@
-syntax = "proto3";
+syntax = "proto2";
 
 import "schema/sth.proto";
 import "schema/logleaf.proto";
@@ -11,8 +11,8 @@ message STHRequest {
 }
 
 message GetLogConsistencyProofRequest {
-  uint64 FirstSize = 1;
-  uint64 SecondSize = 2;
+  required uint64 FirstSize = 1;
+  required uint64 SecondSize = 2;
 }
 
 message ProofResponse {
@@ -20,33 +20,33 @@ message ProofResponse {
 }
 
 message GetLogAuditProofRequest {
-  uint64 Index = 1;
-  uint64 TreeSize = 2;
+  required uint64 Index = 1;
+  required uint64 TreeSize = 2;
 }
 
 message GetLogEntriesRequest {
-  uint64 Start = 1;
-  uint64 Finish = 2;
+  required uint64 Start = 1;
+  required uint64 Finish = 2;
 }
 
 message GetMapValueRequest {
-  bytes Key = 1;
-  bytes MapRoot = 2;
+  required bytes Key = 1;
+  required bytes MapRoot = 2;
 }
 
 message SparseCompactMerkleProof {
   repeated bytes SideNodes = 1;
-  bytes NonMembershipLeafData = 2;
-  bytes BitMask = 3;
-  uint64 NumSideNodes = 4;
+  required bytes NonMembershipLeafData = 2;
+  required bytes BitMask = 3;
+  required uint64 NumSideNodes = 4;
 }
 
 message MapValueResponse {
   // Note that the Value field is actually a MapEntry
   // but we need to return the marshaled version
   // as that's what the proof is created from
-  bytes Value = 1;
-  SparseCompactMerkleProof Proof = 2;
+  required bytes Value = 1;
+  required SparseCompactMerkleProof Proof = 2;
 }
 
 message LogEntriesResponse {
@@ -54,8 +54,8 @@ message LogEntriesResponse {
 }
 
 message KeyValuePair {
-  bytes Key = 1;
-  bytes Value = 2;
+  required bytes Key = 1;
+  required bytes Value = 2;
 }
 
 message SubmitRequest {
@@ -66,7 +66,7 @@ message SubmitResponse {
   enum Status {
     OK = 0;
   }
-  Status status = 1;
+ required Status status = 1;
 }
 
 service TrustixLogAPI {

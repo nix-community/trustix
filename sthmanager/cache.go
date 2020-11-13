@@ -96,8 +96,8 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 		}
 
 		resp, err := logapi.GetLogConsistencyProof(&api.GetLogConsistencyProofRequest{
-			FirstSize:  oldSTH.TreeSize,
-			SecondSize: sth.TreeSize,
+			FirstSize:  &oldSTH.TreeSize,
+			SecondSize: &sth.TreeSize,
 		})
 		if err != nil {
 			return err

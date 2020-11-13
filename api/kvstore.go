@@ -138,12 +138,12 @@ func (kv *kvStoreLogApi) GetLogConsistencyProof(req *GetLogConsistencyProofReque
 	resp = &ProofResponse{}
 
 	err = kv.store.View(func(txn storage.Transaction) error {
-		vLog, err := vlog.NewVerifiableLog(txn, req.SecondSize)
+		vLog, err := vlog.NewVerifiableLog(txn, *req.SecondSize)
 		if err != nil {
 			return err
 		}
 
-		proof, err := vLog.ConsistencyProof(req.FirstSize, req.SecondSize)
+		proof, err := vLog.ConsistencyProof(*req.FirstSize, *req.SecondSize)
 		if err != nil {
 			return err
 		}
@@ -162,12 +162,12 @@ func (kv *kvStoreLogApi) GetLogConsistencyProof(req *GetLogConsistencyProofReque
 func (kv *kvStoreLogApi) GetLogAuditProof(req *GetLogAuditProofRequest) (resp *ProofResponse, err error) {
 
 	err = kv.store.View(func(txn storage.Transaction) error {
-		vLog, err := vlog.NewVerifiableLog(txn, req.TreeSize)
+		vLog, err := vlog.NewVerifiableLog(txn, *req.TreeSize)
 		if err != nil {
 			return err
 		}
 
-		proof, err := vLog.AuditProof(req.Index, req.TreeSize)
+		proof, err := vLog.AuditProof(*req.Index, *req.TreeSize)
 		if err != nil {
 			return err
 		}
@@ -192,7 +192,7 @@ func (kv *kvStoreLogApi) GetLogEntries(req *GetLogEntriesRequest) (*LogEntriesRe
 	err := kv.store.View(func(txn storage.Transaction) error {
 		logStorage := vlog.NewLogStorage(txn)
 
-		for i := int(req.Start); i <= int(req.Finish); i++ {
+		for i := int(*req.Start); i <= int(*req.Finish); i++ {
 			leaf, err := logStorage.Get(0, uint64(i))
 			if err != nil {
 				return err
@@ -226,12 +226,13 @@ func (kv *kvStoreLogApi) GetMapValue(req *GetMapValueRequest) (*MapValueResponse
 			return err
 		}
 
+		numSideNodes := uint64(proof.NumSideNodes)
 		resp.Value = v
 		resp.Proof = &SparseCompactMerkleProof{
 			SideNodes:             proof.SideNodes,
 			NonMembershipLeafData: proof.NonMembershipLeafData,
 			BitMask:               proof.BitMask,
-			NumSideNodes:          uint64(proof.NumSideNodes),
+			NumSideNodes:          &numSideNodes,
 		}
 
 		return nil
@@ -319,7 +320,8 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 
 	kv.sth = sth
 
+	status := SubmitResponse_OK
 	return &SubmitResponse{
-		Status: SubmitResponse_OK,
+		Status: &status,
 	}, nil
 }
