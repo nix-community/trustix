@@ -27,6 +27,7 @@ import (
 	"crypto"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
@@ -263,7 +264,7 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), sth.MapRoot)
 
 		// The append-only log
-		log.WithField("size", sth.TreeSize).Debug("Creating log tree from persisted data")
+		log.WithField("size", *sth.TreeSize).Debug("Creating log tree from persisted data")
 		vLog, err := vlog.NewVerifiableLog(txn, *sth.TreeSize)
 		if err != nil {
 			return err
@@ -289,7 +290,7 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 			}
 
 			vLogSize := uint64(vLog.Size() - 1)
-			entry, err := proto.Marshal(&schema.MapEntry{
+			entry, err := json.Marshal(&schema.MapEntry{
 				Value: pair.Value,
 				Index: &vLogSize,
 			})

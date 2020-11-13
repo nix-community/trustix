@@ -27,6 +27,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
@@ -177,7 +178,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 			}
 
 			mapEntry := &schema.MapEntry{}
-			err = proto.Unmarshal(resp.Value, mapEntry)
+			err = json.Unmarshal(resp.Value, mapEntry)
 			if err != nil {
 				fmt.Println("Could not unmarshal value")
 				return

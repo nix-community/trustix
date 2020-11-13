@@ -25,8 +25,8 @@ package cmd
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
@@ -74,7 +74,7 @@ var queryCommand = &cobra.Command{
 		}
 
 		mapEntry := &schema.MapEntry{}
-		err = proto.Unmarshal(r.Value, mapEntry)
+		err = json.Unmarshal(r.Value, mapEntry)
 		if err != nil {
 			log.Fatalf("Could not unmarshal value")
 		}
