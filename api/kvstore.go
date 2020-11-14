@@ -24,6 +24,7 @@
 package api
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/sha256"
 	"encoding/hex"
@@ -36,12 +37,23 @@ import (
 	"github.com/tweag/trustix/schema"
 	sthsig "github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
+	"sync"
+	"time"
 )
 
 type kvStoreLogApi struct {
-	store  storage.TrustixStorage
-	signer crypto.Signer
-	sth    *schema.STH
+	store     storage.TrustixStorage
+	signer    crypto.Signer
+	sth       *schema.STH
+	queueMux  *sync.Mutex
+	submitMux *sync.Mutex
+}
+
+func minUint64(x, y uint64) uint64 {
+	if x > y {
+		return y
+	}
+	return x
 }
 
 func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixLogAPI, error) {
@@ -75,7 +87,7 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixL
 			return err
 		}
 
-		log.WithField("size", sth.TreeSize).Debug("Setting STH for empty tree")
+		log.WithField("size", *sth.TreeSize).Debug("Setting STH for empty tree")
 		err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
 		if err != nil {
 			return err
@@ -88,9 +100,11 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixL
 	}
 
 	api := &kvStoreLogApi{
-		store:  store,
-		signer: signer,
-		sth:    sth,
+		store:     store,
+		signer:    signer,
+		sth:       sth,
+		queueMux:  &sync.Mutex{},
+		submitMux: &sync.Mutex{},
 	}
 
 	if api.sth == nil {
@@ -110,6 +124,23 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixL
 	if api.sth == nil {
 		return nil, fmt.Errorf("Could not find STH")
 	}
+
+	go func() {
+		// TODO: Figure out a better method than hard coded sleep
+		duration := time.Second * 5
+		for {
+			q, err := api.submitBatch()
+			if err != nil {
+				fmt.Println(err)
+				time.Sleep(duration)
+				continue
+			}
+
+			if *q.Min >= *q.Max {
+				time.Sleep(duration)
+			}
+		}
+	}()
 
 	return api, nil
 }
@@ -251,70 +282,51 @@ func (kv *kvStoreLogApi) GetMapValue(req *GetMapValueRequest) (*MapValueResponse
 }
 
 func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
-
-	if kv.signer == nil {
-		return nil, fmt.Errorf("Signing is disabled")
-	}
-
-	sth := kv.sth
+	kv.queueMux.Lock()
+	defer kv.queueMux.Unlock()
 
 	err := kv.store.Update(func(txn storage.Transaction) error {
-		// The sparse merkle tree
-		log.Debug("Creating sparse merkle tree from persisted data")
-		smTree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), sth.MapRoot)
 
-		// The append-only log
-		log.WithField("size", *sth.TreeSize).Debug("Creating log tree from persisted data")
-		vLog, err := vlog.NewVerifiableLog(txn, *sth.TreeSize)
-		if err != nil {
+		// Get the current state of the queue
+		q := &schema.SubmitQueue{}
+		qBytes, err := txn.Get([]byte("QUEUE"), []byte("META"))
+		if err != nil && err == storage.ObjectNotFoundError {
+			min := uint64(0)
+			max := uint64(0)
+			q.Min = &min
+			q.Max = &max
+		} else if err != nil {
 			return err
+		} else {
+			err = proto.Unmarshal(qBytes, q)
+			if err != nil {
+				return err
+			}
 		}
 
+		// Write each item to the DB while updating queue state
 		for _, pair := range req.Items {
-
-			// Get the old value and check it against new submitted value
-			log.Debug("Checking if newly submitted value is already set")
-			oldValue, err := smTree.Get(pair.Key)
-			if err != nil {
-				return err
-			}
-			if len(oldValue) > 0 {
-				return fmt.Errorf("'%s' already exists in log", hex.EncodeToString(pair.Key))
-			}
-
-			// Append value to both verifiable log & sparse indexed tree
-			log.Debug("Appending value to log")
-			err = vLog.Append(pair.Value)
+			itemBytes, err := proto.Marshal(pair)
 			if err != nil {
 				return err
 			}
 
-			vLogSize := uint64(vLog.Size() - 1)
-			entry, err := json.Marshal(&schema.MapEntry{
-				Value: pair.Value,
-				Index: &vLogSize,
-			})
+			itemId := *q.Max
+			err = txn.Set([]byte("QUEUE"), []byte(fmt.Sprintf("%d", itemId)), itemBytes)
 			if err != nil {
 				return err
 			}
 
-			smTree.Update(pair.Key, entry)
-
+			next := itemId + 1
+			q.Max = &next
 		}
 
-		sth, err = sthsig.SignHead(smTree, vLog, kv.signer)
+		// Write queue state
+		qBytes, err = proto.Marshal(q)
 		if err != nil {
 			return err
 		}
-
-		log.Debug("Signing tree heads")
-		smhBytes, err := proto.Marshal(sth)
-		if err != nil {
-			return err
-		}
-
-		log.WithField("size", *sth.TreeSize).Debug("Setting new signed tree heads")
-		err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
+		err = txn.Set([]byte("QUEUE"), []byte("META"), qBytes)
 		if err != nil {
 			return err
 		}
@@ -325,10 +337,177 @@ func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
 		return nil, err
 	}
 
-	kv.sth = sth
-
 	status := SubmitResponse_OK
 	return &SubmitResponse{
 		Status: &status,
 	}, nil
+}
+
+func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
+	kv.queueMux.Lock()
+	defer kv.queueMux.Unlock()
+
+	q := &schema.SubmitQueue{}
+
+	err := kv.store.Update(func(txn storage.Transaction) error {
+
+		// Get the current state of the queue
+		qBytes, err := txn.Get([]byte("QUEUE"), []byte("META"))
+		if err != nil && err == storage.ObjectNotFoundError {
+			min := uint64(0)
+			max := uint64(0)
+			q.Min = &min
+			q.Max = &max
+			return nil
+		} else if err != nil {
+			return err
+		}
+		err = proto.Unmarshal(qBytes, q)
+		if err != nil {
+			return err
+		}
+
+		maxBatchSize := uint64(500)
+
+		items := []*KeyValuePair{}
+		max := minUint64(*q.Max-1, *q.Min+maxBatchSize)
+		for itemId := *q.Min; itemId <= max; itemId++ {
+			q.Min = &itemId
+
+			itemBytes, err := txn.Get([]byte("QUEUE"), []byte(fmt.Sprintf("%d", itemId)))
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			item := &KeyValuePair{}
+			err = proto.Unmarshal(itemBytes, item)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			// TODO: Delete item
+
+			items = append(items, item)
+		}
+
+		if len(items) == 0 {
+			return nil
+		}
+		err = kv.writeItems(txn, items)
+		if err != nil {
+			return err
+		}
+
+		// Write queue state
+		qBytes, err = proto.Marshal(q)
+		if err != nil {
+			return err
+		}
+		err = txn.Set([]byte("QUEUE"), []byte("META"), qBytes)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return q, nil
+}
+
+func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePair) error {
+	kv.submitMux.Lock()
+	defer kv.submitMux.Unlock()
+
+	if kv.signer == nil {
+		return fmt.Errorf("Signing is disabled")
+	}
+
+	sth := kv.sth
+
+	// The sparse merkle tree
+	log.Debug("Creating sparse merkle tree from persisted data")
+	smTree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), sth.MapRoot)
+
+	// The append-only log
+	log.WithField("size", *sth.TreeSize).Debug("Creating log tree from persisted data")
+	vLog, err := vlog.NewVerifiableLog(txn, *sth.TreeSize)
+	if err != nil {
+		return err
+	}
+
+	wrote := false
+
+	for _, pair := range items {
+
+		// Get the old value and check it against new submitted value
+		log.Debug("Checking if newly submitted value is already set")
+		oldValue, err := smTree.Get(pair.Key)
+		if err != nil {
+			return err
+		}
+		if len(oldValue) > 0 {
+			oldEntry := &schema.MapEntry{}
+			err = json.Unmarshal(oldValue, oldEntry)
+			if err != nil {
+				return err
+			}
+			if bytes.Equal(oldEntry.Value, pair.Value) {
+				continue
+			}
+			// Consider: What to do???
+			return fmt.Errorf("'%s' already exists in log", hex.EncodeToString(pair.Key))
+		}
+
+		wrote = true
+
+		// Append value to both verifiable log & sparse indexed tree
+		log.Debug("Appending value to log")
+		err = vLog.Append(pair.Value)
+		if err != nil {
+			return err
+		}
+
+		vLogSize := uint64(vLog.Size() - 1)
+		entry, err := json.Marshal(&schema.MapEntry{
+			Value: pair.Value,
+			Index: &vLogSize,
+		})
+		if err != nil {
+			return err
+		}
+
+		smTree.Update(pair.Key, entry)
+
+	}
+
+	if !wrote {
+		log.WithField("size", *sth.TreeSize).Debug("Nothing written, skipping head signatures")
+		return nil
+	}
+
+	sth, err = sthsig.SignHead(smTree, vLog, kv.signer)
+	if err != nil {
+		return err
+	}
+
+	log.Debug("Signing tree heads")
+	smhBytes, err := proto.Marshal(sth)
+	if err != nil {
+		return err
+	}
+
+	log.WithField("size", *sth.TreeSize).Debug("Setting new signed tree heads")
+	err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
+	if err != nil {
+		return err
+	}
+
+	kv.sth = sth
+
+	return nil
 }
