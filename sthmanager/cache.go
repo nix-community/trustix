@@ -149,12 +149,17 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 
 		run()
 
+		duration := time.Second * 10
+		timeout := time.NewTimer(duration)
+		defer timeout.Stop()
+
 		// TODO: Make timeout configurable (& manually triggerable)
 		for {
+			timeout.Reset(duration)
 			select {
 			case _ = <-c.closeChan:
 				return
-			case <-time.After(10 * time.Second):
+			case <-timeout.C:
 				run()
 			}
 		}
