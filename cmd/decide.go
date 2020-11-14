@@ -74,7 +74,7 @@ var decideCommand = &cobra.Command{
 		}
 
 		if r.Decision != nil {
-			fmt.Println(fmt.Sprintf("Decided on output hash '%s' with confidence %d", hex.EncodeToString(r.Decision.OutputHash), r.Decision.Confidence))
+			fmt.Println(fmt.Sprintf("Decided on output hash '%s' with confidence %d", hex.EncodeToString(r.Decision.OutputHash), *r.Decision.Confidence))
 		}
 
 		return nil
