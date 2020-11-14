@@ -67,11 +67,8 @@ func rootSize(treeSize uint64) int {
 
 	size := treeSize
 	i := 1
-	for {
+	for size > 0 {
 		size = size / 2
-		if size == 0 {
-			break
-		}
 		i++
 	}
 	return i
