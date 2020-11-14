@@ -27,9 +27,10 @@ import (
 	"crypto/ed25519"
 	"encoding/base64"
 	"fmt"
-	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
+
+	"github.com/spf13/cobra"
 )
 
 var generatePrivateKeyOutput string

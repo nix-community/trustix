@@ -29,6 +29,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"sync"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
@@ -37,7 +39,6 @@ import (
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/schema"
 	"github.com/tweag/trustix/sthmanager"
-	"sync"
 )
 
 type TrustixCombinedRPCServer struct {

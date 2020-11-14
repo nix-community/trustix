@@ -28,6 +28,15 @@ import (
 	"crypto"
 	"crypto/tls"
 	"fmt"
+	"net"
+	"net/url"
+	"os"
+	"os/signal"
+	"path"
+	"path/filepath"
+	"sync"
+	"syscall"
+
 	"github.com/coreos/go-systemd/activation"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -43,14 +52,6 @@ import (
 	"github.com/tweag/trustix/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"net"
-	"net/url"
-	"os"
-	"os/signal"
-	"path"
-	"path/filepath"
-	"sync"
-	"syscall"
 )
 
 var once sync.Once

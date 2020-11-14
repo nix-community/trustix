@@ -29,12 +29,13 @@ import (
 	"crypto/ed25519"
 	"crypto/tls"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"net"
 	"net/url"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 func createClientConn(address string, pubKey crypto.PublicKey) (*grpc.ClientConn, error) {

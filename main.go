@@ -24,8 +24,9 @@
 package main // import "github.com/tweag/trustix"
 
 import (
-	"github.com/tweag/trustix/cmd"
 	"runtime"
+
+	"github.com/tweag/trustix/cmd"
 )
 
 func main() {

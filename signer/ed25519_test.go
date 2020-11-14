@@ -27,10 +27,11 @@ import (
 	"crypto"
 	"crypto/ed25519"
 	"crypto/rand"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func fixturePath(name string) string {

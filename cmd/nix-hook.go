@@ -27,13 +27,14 @@ import (
 	"bytes"
 	"encoding/base32"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	"github.com/tweag/trustix/api"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"github.com/tweag/trustix/api"
 )
 
 const NIX_STORE_DIR = "/nix/store"

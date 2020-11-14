@@ -25,6 +25,7 @@ package api
 
 import (
 	"fmt"
+
 	"github.com/tweag/trustix/storage"
 )
 

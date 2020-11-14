@@ -27,6 +27,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"time"
+
 	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/api"
@@ -35,7 +37,6 @@ import (
 	"github.com/tweag/trustix/signer"
 	sthlib "github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
-	"time"
 )
 
 type STHCache interface {

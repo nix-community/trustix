@@ -25,11 +25,12 @@ package auth
 import (
 	"errors"
 	"fmt"
+	"net"
+	"syscall"
+
 	log "github.com/sirupsen/logrus"
 	context "golang.org/x/net/context"
 	"google.golang.org/grpc/credentials"
-	"net"
-	"syscall"
 )
 
 type SoPeercred struct{}

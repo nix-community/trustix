@@ -26,8 +26,9 @@ package storage
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/hashicorp/go-memdb"
 	"sync"
+
+	"github.com/hashicorp/go-memdb"
 )
 
 type memdbRecord struct {

@@ -25,6 +25,7 @@ package log
 
 import (
 	"fmt"
+
 	proto "github.com/golang/protobuf/proto"
 	"github.com/tweag/trustix/schema"
 	"github.com/tweag/trustix/storage"

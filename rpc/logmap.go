@@ -25,8 +25,9 @@ package rpc
 
 import (
 	"fmt"
-	"github.com/tweag/trustix/api"
 	"sync"
+
+	"github.com/tweag/trustix/api"
 )
 
 type TrustixCombinedRPCServerMap struct {

@@ -24,8 +24,9 @@
 package correlator
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPercentages(t *testing.T) {

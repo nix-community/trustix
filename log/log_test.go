@@ -26,9 +26,10 @@ package log
 import (
 	"encoding/hex"
 	"fmt"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/tweag/trustix/storage"
-	"testing"
 )
 
 type testInput struct {

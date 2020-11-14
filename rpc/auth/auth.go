@@ -25,10 +25,11 @@ package auth
 import (
 	"context"
 	"fmt"
-	"google.golang.org/grpc/peer"
 	"os/user"
 	"strconv"
 	"syscall"
+
+	"google.golang.org/grpc/peer"
 )
 
 type AuthInfo struct {

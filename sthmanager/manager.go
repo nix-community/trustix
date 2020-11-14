@@ -25,8 +25,9 @@ package sthmanager
 
 import (
 	"fmt"
-	"github.com/tweag/trustix/schema"
 	"sync"
+
+	"github.com/tweag/trustix/schema"
 )
 
 type STHManager struct {

@@ -25,6 +25,7 @@ package api
 
 import (
 	"context"
+
 	"github.com/tweag/trustix/schema"
 	"google.golang.org/grpc"
 )

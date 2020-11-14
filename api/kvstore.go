@@ -31,6 +31,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"sync"
+	"time"
+
 	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
@@ -38,8 +41,6 @@ import (
 	"github.com/tweag/trustix/schema"
 	sthsig "github.com/tweag/trustix/sth"
 	"github.com/tweag/trustix/storage"
-	"sync"
-	"time"
 )
 
 type kvStoreLogApi struct {

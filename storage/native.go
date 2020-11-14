@@ -24,9 +24,10 @@
 package storage
 
 import (
-	badger "github.com/dgraph-io/badger/v2"
 	"path"
 	"sync"
+
+	badger "github.com/dgraph-io/badger/v2"
 )
 
 type nativeStorage struct {

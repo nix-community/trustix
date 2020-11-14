@@ -25,6 +25,7 @@ package correlator
 
 import (
 	"fmt"
+
 	"github.com/Shopify/go-lua"
 )
 

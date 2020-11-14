@@ -27,6 +27,7 @@ import (
 	"crypto"
 	"crypto/rand"
 	"crypto/sha256"
+
 	"github.com/lazyledger/smt"
 	vlog "github.com/tweag/trustix/log"
 	"github.com/tweag/trustix/schema"

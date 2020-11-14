@@ -25,6 +25,7 @@ package sthmanager
 
 import (
 	"fmt"
+
 	"github.com/tweag/trustix/schema"
 )
 
