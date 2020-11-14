@@ -24,6 +24,7 @@
 package cmd
 
 import (
+	"context"
 	"crypto"
 	"crypto/tls"
 	"fmt"
@@ -180,7 +181,7 @@ var rootCmd = &cobra.Command{
 
 					logMap.Add(logConfig.Name, logAPI)
 					sthmgr.Add(logConfig.Name, sthmanager.NewDummySTHCache(func() (*schema.STH, error) {
-						return logAPI.GetSTH(new(api.STHRequest))
+						return logAPI.GetSTH(context.Background(), new(api.STHRequest))
 					}))
 
 				case "trustix-follower":

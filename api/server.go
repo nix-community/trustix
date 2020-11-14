@@ -41,23 +41,23 @@ func NewTrustixAPIServer(impl TrustixLogAPI) (*TrustixAPIServer, error) {
 }
 
 func (s *TrustixAPIServer) GetSTH(ctx context.Context, req *STHRequest) (*schema.STH, error) {
-	return s.impl.GetSTH(req)
+	return s.impl.GetSTH(ctx, req)
 }
 
 func (s *TrustixAPIServer) GetLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
-	return s.impl.GetLogConsistencyProof(req)
+	return s.impl.GetLogConsistencyProof(ctx, req)
 }
 
 func (s *TrustixAPIServer) GetLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (*ProofResponse, error) {
-	return s.impl.GetLogAuditProof(req)
+	return s.impl.GetLogAuditProof(ctx, req)
 }
 
 func (s *TrustixAPIServer) GetLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
-	return s.impl.GetLogEntries(req)
+	return s.impl.GetLogEntries(ctx, req)
 }
 
 func (s *TrustixAPIServer) GetMapValue(ctx context.Context, req *GetMapValueRequest) (*MapValueResponse, error) {
-	return s.impl.GetMapValue(req)
+	return s.impl.GetMapValue(ctx, req)
 }
 
 func (s *TrustixAPIServer) Submit(ctx context.Context, req *SubmitRequest) (*SubmitResponse, error) {
@@ -67,5 +67,5 @@ func (s *TrustixAPIServer) Submit(ctx context.Context, req *SubmitRequest) (*Sub
 		return nil, err
 	}
 
-	return s.impl.Submit(req)
+	return s.impl.Submit(ctx, req)
 }

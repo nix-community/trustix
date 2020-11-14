@@ -25,6 +25,7 @@ package sthmanager
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
@@ -69,7 +70,7 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 			}
 		}
 
-		sth, err := logapi.GetSTH(new(api.STHRequest))
+		sth, err := logapi.GetSTH(context.Background(), new(api.STHRequest))
 		if err != nil {
 			return err
 		}
@@ -106,7 +107,7 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 			return fmt.Errorf("STH signature invalid")
 		}
 
-		resp, err := logapi.GetLogConsistencyProof(&api.GetLogConsistencyProofRequest{
+		resp, err := logapi.GetLogConsistencyProof(context.Background(), &api.GetLogConsistencyProofRequest{
 			FirstSize:  &oldTreeSize,
 			SecondSize: &newTreeSize,
 		})

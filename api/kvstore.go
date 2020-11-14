@@ -25,6 +25,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"crypto"
 	"crypto/sha256"
 	"encoding/hex"
@@ -162,11 +163,11 @@ func (kv *kvStoreLogApi) getSTH(txn storage.Transaction) (*schema.STH, error) {
 	return sth, nil
 }
 
-func (kv *kvStoreLogApi) GetSTH(req *STHRequest) (*schema.STH, error) {
+func (kv *kvStoreLogApi) GetSTH(ctx context.Context, req *STHRequest) (*schema.STH, error) {
 	return kv.sth, nil
 }
 
-func (kv *kvStoreLogApi) GetLogConsistencyProof(req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
+func (kv *kvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
 	resp = &ProofResponse{}
 
 	err = kv.store.View(func(txn storage.Transaction) error {
@@ -191,7 +192,7 @@ func (kv *kvStoreLogApi) GetLogConsistencyProof(req *GetLogConsistencyProofReque
 	return resp, nil
 }
 
-func (kv *kvStoreLogApi) GetLogAuditProof(req *GetLogAuditProofRequest) (resp *ProofResponse, err error) {
+func (kv *kvStoreLogApi) GetLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (resp *ProofResponse, err error) {
 
 	err = kv.store.View(func(txn storage.Transaction) error {
 		vLog, err := vlog.NewVerifiableLog(txn, *req.TreeSize)
@@ -215,7 +216,7 @@ func (kv *kvStoreLogApi) GetLogAuditProof(req *GetLogAuditProofRequest) (resp *P
 	return nil, nil
 }
 
-func (kv *kvStoreLogApi) GetLogEntries(req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+func (kv *kvStoreLogApi) GetLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
 
 	resp := &LogEntriesResponse{
 		Leaves: []*schema.LogLeaf{},
@@ -241,7 +242,7 @@ func (kv *kvStoreLogApi) GetLogEntries(req *GetLogEntriesRequest) (*LogEntriesRe
 	return nil, nil
 }
 
-func (kv *kvStoreLogApi) GetMapValue(req *GetMapValueRequest) (*MapValueResponse, error) {
+func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *GetMapValueRequest) (*MapValueResponse, error) {
 
 	resp := &MapValueResponse{}
 
@@ -281,7 +282,7 @@ func (kv *kvStoreLogApi) GetMapValue(req *GetMapValueRequest) (*MapValueResponse
 	return resp, nil
 }
 
-func (kv *kvStoreLogApi) Submit(req *SubmitRequest) (*SubmitResponse, error) {
+func (kv *kvStoreLogApi) Submit(ctx context.Context, req *SubmitRequest) (*SubmitResponse, error) {
 	kv.queueMux.Lock()
 	defer kv.queueMux.Unlock()
 

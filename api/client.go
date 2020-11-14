@@ -40,26 +40,26 @@ func NewTrustixAPIGRPCClient(conn *grpc.ClientConn) (*TrustixAPIGRPCClient, erro
 	}, nil
 }
 
-func (s *TrustixAPIGRPCClient) GetSTH(req *STHRequest) (*schema.STH, error) {
-	return s.client.GetSTH(context.Background(), req)
+func (s *TrustixAPIGRPCClient) GetSTH(ctx context.Context, req *STHRequest) (*schema.STH, error) {
+	return s.client.GetSTH(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetLogConsistencyProof(req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
-	return s.client.GetLogConsistencyProof(context.Background(), req)
+func (s *TrustixAPIGRPCClient) GetLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
+	return s.client.GetLogConsistencyProof(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetLogAuditProof(req *GetLogAuditProofRequest) (*ProofResponse, error) {
-	return s.client.GetLogAuditProof(context.Background(), req)
+func (s *TrustixAPIGRPCClient) GetLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (*ProofResponse, error) {
+	return s.client.GetLogAuditProof(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetLogEntries(req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
-	return s.client.GetLogEntries(context.Background(), req)
+func (s *TrustixAPIGRPCClient) GetLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+	return s.client.GetLogEntries(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetMapValue(req *GetMapValueRequest) (*MapValueResponse, error) {
-	return s.client.GetMapValue(context.Background(), req)
+func (s *TrustixAPIGRPCClient) GetMapValue(ctx context.Context, req *GetMapValueRequest) (*MapValueResponse, error) {
+	return s.client.GetMapValue(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) Submit(req *SubmitRequest) (*SubmitResponse, error) {
-	return s.client.Submit(context.Background(), req)
+func (s *TrustixAPIGRPCClient) Submit(ctx context.Context, req *SubmitRequest) (*SubmitResponse, error) {
+	return s.client.Submit(ctx, req)
 }

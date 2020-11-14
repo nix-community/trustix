@@ -95,7 +95,7 @@ func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashReque
 				return
 			}
 
-			resp, err := l.GetMapValue(&api.GetMapValueRequest{
+			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
 				Key:     in.InputHash,
 				MapRoot: sth.MapRoot,
 			})
@@ -162,7 +162,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 				fmt.Println(fmt.Errorf("could not get STH: %v", err))
 				return
 			}
-			resp, err := l.GetMapValue(&api.GetMapValueRequest{
+			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
 				Key:     in.InputHash,
 				MapRoot: sth.MapRoot,
 			})

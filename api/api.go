@@ -24,14 +24,15 @@
 package api
 
 import (
+	"context"
 	"github.com/tweag/trustix/schema"
 )
 
 type TrustixLogAPI interface {
-	GetSTH(*STHRequest) (*schema.STH, error)
-	GetLogConsistencyProof(*GetLogConsistencyProofRequest) (*ProofResponse, error)
-	GetLogAuditProof(*GetLogAuditProofRequest) (*ProofResponse, error)
-	GetLogEntries(*GetLogEntriesRequest) (*LogEntriesResponse, error)
-	GetMapValue(*GetMapValueRequest) (*MapValueResponse, error)
-	Submit(*SubmitRequest) (*SubmitResponse, error)
+	GetSTH(context.Context, *STHRequest) (*schema.STH, error)
+	GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
+	GetLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
+	GetLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
+	GetMapValue(context.Context, *GetMapValueRequest) (*MapValueResponse, error)
+	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
 }
