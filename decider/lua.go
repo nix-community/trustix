@@ -55,6 +55,10 @@ func NewLuaDecider(function string) (LogDecider, error) {
 	}, nil
 }
 
+func (l *luaDecider) Name() string {
+	return "lua"
+}
+
 func (l *luaDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
 	state := l.state
 

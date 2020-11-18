@@ -39,6 +39,10 @@ func NewLogNameDecider(logName string) (LogDecider, error) {
 	}, nil
 }
 
+func (l *lognameDecider) Name() string {
+	return "logname"
+}
+
 func (l *lognameDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
 	for i := range inputs {
 		input := inputs[i]

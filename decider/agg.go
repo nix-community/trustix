@@ -23,25 +23,46 @@
 
 package decider
 
-// LogDeciderInput
-type LogDeciderInput struct {
-	LogName    string
-	OutputHash string
+import (
+	"fmt"
+)
+
+type aggDecider struct {
+	deciders []LogDecider
 }
 
-type LogDeciderOutput struct {
-	// All lognames that matched this hash
-	LogNames []string
-	// The decided OutputHash
-	OutputHash string
-	// An arbitrary number conveying the underlying engines confidence in the result
-	Confidence int
+// Create a new logdecider that steps over a slice of deciders one by one,
+// returning the first match, and returns an aggregated error if no decision could be made
+func NewAggDecider(deciders ...LogDecider) LogDecider {
+	return &aggDecider{
+		deciders: deciders,
+	}
 }
 
-type LogDecider interface {
-	// Name - The name of the decision engine
-	Name() string
+func (d *aggDecider) Name() string {
+	return "aggregate"
+}
 
-	// Decide - Decide on an output hash from aggregated logs
-	Decide([]*LogDeciderInput) (*LogDeciderOutput, error)
+func (d *aggDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
+	errors := make([]error, len(d.deciders))
+	for i, decider := range d.deciders {
+		decision, err := decider.Decide(inputs)
+		if err != nil {
+			errors[i] = err
+			continue
+		}
+		return decision, nil
+	}
+
+	errorS := "Encountered errors while deciding:\n"
+	for i, err := range errors {
+		if err == nil {
+			continue
+		}
+
+		decider := d.deciders[i]
+
+		errorS = errorS + decider.Name() + ": " + err.Error() + "\n"
+	}
+	return nil, fmt.Errorf(errorS)
 }

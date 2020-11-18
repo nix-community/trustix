@@ -38,6 +38,10 @@ func NewMinimumPercentDecider(minimumPct int) (LogDecider, error) {
 	}, nil
 }
 
+func (q *minimumPercent) Name() string {
+	return "percentage"
+}
+
 func (q *minimumPercent) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
 	numInputs := len(inputs)
 	pctPerEntry := 100 / numInputs
