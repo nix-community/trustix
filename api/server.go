@@ -30,6 +30,7 @@ import (
 	"github.com/tweag/trustix/schema"
 )
 
+// TrustixAPIServer wraps kvStoreLogApi and turns it into a gRPC implementation
 type TrustixAPIServer struct {
 	UnimplementedTrustixLogAPIServer
 	impl TrustixLogAPI

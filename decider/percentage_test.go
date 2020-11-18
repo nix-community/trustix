@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-package correlator
+package decider
 
 import (
 	"testing"
@@ -29,43 +29,52 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLuaScript(t *testing.T) {
-
-	script := `
-      function(inputs)
-        t = {}
-        t["LogNames"] = {"DummyLogName"}
-        t["OutputHash"] = "DummyReturn"
-        return t
-      end
-    `
+func TestPercentages(t *testing.T) {
 
 	assert := assert.New(t)
 
-	inputs := []*LogCorrelatorInput{
-		&LogCorrelatorInput{
+	inputs := []*LogDeciderInput{
+		&LogDeciderInput{
 			LogName:    "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
-		&LogCorrelatorInput{
+		&LogDeciderInput{
 			LogName:    "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
-		&LogCorrelatorInput{
+		&LogDeciderInput{
 			LogName:    "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
-		&LogCorrelatorInput{
+		&LogDeciderInput{
 			LogName:    "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 	}
 
-	correlator, err := NewLuaCorrelator(script)
+	// 30% minimum matches
+	decider, err := NewMinimumPercentDecider(30)
 	assert.Nil(err)
 
-	output, err := correlator.Decide(inputs)
+	// 100% match case
+	output, err := decider.Decide(inputs)
 	assert.Nil(err)
-	assert.NotNil(output)
+	assert.Equal(len(output.LogNames), 4, "The correct number of matches returned")
+	assert.Equal(output.Confidence, 100, "Confidence is correct")
+
+	// 75% match case
+	inputs[0].OutputHash = "somedummyvalue"
+	output, err = decider.Decide(inputs)
+	assert.Nil(err)
+	assert.Equal(3, len(output.LogNames), "The correct number of matches returned")
+	assert.Equal(75, output.Confidence, "Confidence is correct")
+
+	// No match case
+	inputs[0].OutputHash = "somedummyvalue"
+	inputs[1].OutputHash = "someotherdummyvalue"
+	inputs[2].OutputHash = "somethirddummyvalue"
+	output, err = decider.Decide(inputs)
+	assert.NotNil(err)
+	assert.Nil(output)
 
 }

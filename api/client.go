@@ -30,6 +30,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// TrustixAPIGRPCClient is a gRPC based implementation of TrustixLogAPI wrapping a gRPC ClientConn
 type TrustixAPIGRPCClient struct {
 	client TrustixLogAPIClient
 }

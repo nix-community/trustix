@@ -42,7 +42,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/config"
-	"github.com/tweag/trustix/correlator"
+	"github.com/tweag/trustix/decider"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/rpc"
 	"github.com/tweag/trustix/rpc/auth"
@@ -237,9 +237,9 @@ var rootCmd = &cobra.Command{
 		}
 		wg.Wait()
 
-		corr, err := correlator.NewMinimumPercentCorrelator(50)
+		corr, err := decider.NewMinimumPercentDecider(50)
 		if err != nil {
-			log.Fatalf("Failed to create correlator: %v", err)
+			log.Fatalf("Failed to create decider: %v", err)
 		}
 
 		logServer := rpc.NewTrustixCombinedRPCServer(sthmgr, logMap, corr)

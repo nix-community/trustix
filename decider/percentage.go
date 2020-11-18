@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-package correlator
+package decider
 
 import (
 	"fmt"
@@ -32,18 +32,18 @@ type minimumPercent struct {
 	minimumPct int
 }
 
-func NewMinimumPercentCorrelator(minimumPct int) (LogCorrelator, error) {
+func NewMinimumPercentDecider(minimumPct int) (LogDecider, error) {
 	return &minimumPercent{
 		minimumPct: minimumPct,
 	}, nil
 }
 
-func (q *minimumPercent) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOutput, error) {
+func (q *minimumPercent) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
 	numInputs := len(inputs)
 	pctPerEntry := 100 / numInputs
 
 	// Map OutputHash to list of matches
-	entries := make(map[string][]*LogCorrelatorInput)
+	entries := make(map[string][]*LogDeciderInput)
 	for i := range inputs {
 		input := inputs[i]
 		l := entries[input.OutputHash]
@@ -56,8 +56,8 @@ func (q *minimumPercent) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOut
 		pct int
 	}
 
-	makeReturn := func(m *sortStruct) (*LogCorrelatorOutput, error) {
-		ret := &LogCorrelatorOutput{
+	makeReturn := func(m *sortStruct) (*LogDeciderOutput, error) {
+		ret := &LogDeciderOutput{
 			OutputHash: m.key,
 			Confidence: m.pct,
 		}

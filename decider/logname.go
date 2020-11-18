@@ -21,29 +21,29 @@
 // SOFTWARE.
 //
 
-package correlator
+package decider
 
 import (
 	"fmt"
 )
 
-type lognameCorrelator struct {
+type lognameDecider struct {
 	logName string
 }
 
-// NewLogNameCorrelator - Matches a single name of a log
+// NewLogNameDecider - Matches a single name of a log
 // This mode is meant to be used as a fallback for e.g. cache.nixos.org
-func NewLogNameCorrelator(logName string) (LogCorrelator, error) {
-	return &lognameCorrelator{
+func NewLogNameDecider(logName string) (LogDecider, error) {
+	return &lognameDecider{
 		logName: logName,
 	}, nil
 }
 
-func (l *lognameCorrelator) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOutput, error) {
+func (l *lognameDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
 	for i := range inputs {
 		input := inputs[i]
 		if input.LogName == l.logName {
-			return &LogCorrelatorOutput{
+			return &LogDeciderOutput{
 				LogNames:   []string{input.LogName},
 				OutputHash: input.OutputHash,
 				Confidence: 100,

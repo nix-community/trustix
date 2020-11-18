@@ -30,6 +30,7 @@ import (
 )
 
 type TrustixLogAPI interface {
+	// GetSTH - Get a signed tree head
 	GetSTH(context.Context, *STHRequest) (*schema.STH, error)
 	GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
 	GetLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)

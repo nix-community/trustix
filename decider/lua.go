@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-package correlator
+package decider
 
 import (
 	"fmt"
@@ -29,16 +29,16 @@ import (
 	"github.com/Shopify/go-lua"
 )
 
-type luaCorrelator struct {
+type luaDecider struct {
 	state  *lua.State
 	script string
 }
 
 const luaScriptWrapper = `
-  CorrelatorFunction = (%s)
+  DeciderFunction = (%s)
 `
 
-func NewLuaCorrelator(function string) (LogCorrelator, error) {
+func NewLuaDecider(function string) (LogDecider, error) {
 	state := lua.NewState()
 	lua.OpenLibraries(state)
 
@@ -48,28 +48,28 @@ func NewLuaCorrelator(function string) (LogCorrelator, error) {
 	}
 
 	// Initial state is function call
-	state.Global("CorrelatorFunction")
+	state.Global("DeciderFunction")
 
-	return &luaCorrelator{
+	return &luaDecider{
 		state: state,
 	}, nil
 }
 
-func (l *luaCorrelator) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOutput, error) {
+func (l *luaDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
 	state := l.state
 
 	// TODO: Recover from panic() in call
 
 	// Set state
-	state.Global("CorrelatorFunction")
+	state.Global("DeciderFunction")
 
 	// Reset state to function call on exit
-	defer state.Global("CorrelatorFunction")
+	defer state.Global("DeciderFunction")
 
-	// Create corresponding []*LogCorrelatorInput
+	// Create corresponding []*LogDeciderInput
 	state.NewTable()
 
-	// Create corresponding *LogCorrelatorInput
+	// Create corresponding *LogDeciderInput
 	for i, in := range inputs {
 		state.NewTable()
 		state.PushString(in.LogName)
@@ -91,7 +91,7 @@ func (l *luaCorrelator) Decide(inputs []*LogCorrelatorInput) (*LogCorrelatorOutp
 	}
 
 	// Translate lua table back to Go struct
-	ret := &LogCorrelatorOutput{}
+	ret := &LogDeciderOutput{}
 
 	state.Field(-1, "OutputHash")
 	outputHash, ok := state.ToString(-1)

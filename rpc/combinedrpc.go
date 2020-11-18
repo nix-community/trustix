@@ -35,7 +35,7 @@ import (
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/api"
-	"github.com/tweag/trustix/correlator"
+	"github.com/tweag/trustix/decider"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/schema"
 	"github.com/tweag/trustix/sthmanager"
@@ -44,14 +44,14 @@ import (
 type TrustixCombinedRPCServer struct {
 	pb.UnimplementedTrustixCombinedRPCServer
 	logs       *TrustixCombinedRPCServerMap
-	correlator correlator.LogCorrelator
+	decider    decider.LogDecider
 	sthmanager *sthmanager.STHManager
 }
 
-func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *TrustixCombinedRPCServerMap, correlator correlator.LogCorrelator) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *TrustixCombinedRPCServerMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
 	return &TrustixCombinedRPCServer{
 		logs:       logs,
-		correlator: correlator,
+		decider:    decider,
 		sthmanager: sthmanager,
 	}
 }
@@ -139,7 +139,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 
 	var wg sync.WaitGroup
 	var mux sync.Mutex
-	var inputs []*correlator.LogCorrelatorInput
+	var inputs []*decider.LogDeciderInput
 	var misses []string
 
 	getSTH := l.sthmanager.Get
@@ -199,7 +199,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 				return
 			}
 
-			inputs = append(inputs, &correlator.LogCorrelatorInput{
+			inputs = append(inputs, &decider.LogDeciderInput{
 				LogName:    name,
 				OutputHash: hex.EncodeToString(mapEntry.Value),
 			})
@@ -213,11 +213,11 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 		Misses: misses,
 	}
 
-	var decision *correlator.LogCorrelatorOutput
+	var decision *decider.LogDeciderOutput
 	if len(inputs) > 0 {
 
 		var err error
-		decision, err = l.correlator.Decide(inputs)
+		decision, err = l.decider.Decide(inputs)
 		if err != nil {
 			return nil, err
 		}

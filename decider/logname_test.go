@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-package correlator
+package decider
 
 import (
 	"testing"
@@ -33,29 +33,29 @@ func TestLogNameSimple(t *testing.T) {
 
 	assert := assert.New(t)
 
-	inputs := []*LogCorrelatorInput{
-		&LogCorrelatorInput{
+	inputs := []*LogDeciderInput{
+		&LogDeciderInput{
 			LogName:    "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210ab",
 		},
-		&LogCorrelatorInput{
+		&LogDeciderInput{
 			LogName:    "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210af",
 		},
-		&LogCorrelatorInput{
+		&LogDeciderInput{
 			LogName:    "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210a7",
 		},
-		&LogCorrelatorInput{
+		&LogDeciderInput{
 			LogName:    "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 	}
 
-	correlator, err := NewLogNameCorrelator("test3")
+	decider, err := NewLogNameDecider("test3")
 	assert.Nil(err)
 
-	output, err := correlator.Decide(inputs)
+	output, err := decider.Decide(inputs)
 	assert.Nil(err)
 
 	assert.Equal(len(output.LogNames), 1, "The number of matches returned is expected to be 1")
@@ -68,29 +68,29 @@ func TestLogNameNonMatch(t *testing.T) {
 
 	assert := assert.New(t)
 
-	inputs := []*LogCorrelatorInput{
-		&LogCorrelatorInput{
+	inputs := []*LogDeciderInput{
+		&LogDeciderInput{
 			LogName:    "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210ab",
 		},
-		&LogCorrelatorInput{
+		&LogDeciderInput{
 			LogName:    "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210af",
 		},
-		&LogCorrelatorInput{
+		&LogDeciderInput{
 			LogName:    "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210a7",
 		},
-		&LogCorrelatorInput{
+		&LogDeciderInput{
 			LogName:    "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 	}
 
-	correlator, err := NewLogNameCorrelator("test5")
+	decider, err := NewLogNameDecider("test5")
 	assert.Nil(err)
 
-	output, err := correlator.Decide(inputs)
+	output, err := decider.Decide(inputs)
 	assert.Nil(output)
 	assert.NotNil(err)
 

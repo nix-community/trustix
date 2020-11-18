@@ -21,15 +21,15 @@
 // SOFTWARE.
 //
 
-package correlator
+package decider
 
-// LogCorrelatorInput
-type LogCorrelatorInput struct {
+// LogDeciderInput
+type LogDeciderInput struct {
 	LogName    string
 	OutputHash string
 }
 
-type LogCorrelatorOutput struct {
+type LogDeciderOutput struct {
 	// All lognames that matched this hash
 	LogNames []string
 	// The decided OutputHash
@@ -38,7 +38,7 @@ type LogCorrelatorOutput struct {
 	Confidence int
 }
 
-type LogCorrelator interface {
+type LogDecider interface {
 	// Decide - Decide on an output hash from aggregated logs
-	Decide([]*LogCorrelatorInput) (*LogCorrelatorOutput, error)
+	Decide([]*LogDeciderInput) (*LogDeciderOutput, error)
 }
