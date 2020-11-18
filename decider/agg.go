@@ -44,6 +44,10 @@ func (d *aggDecider) Name() string {
 }
 
 func (d *aggDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
+	if len(d.deciders) == 0 {
+		return nil, fmt.Errorf("No decision making engines configured")
+	}
+
 	errors := make([]error, len(d.deciders))
 	for i, decider := range d.deciders {
 		decision, err := decider.Decide(inputs)

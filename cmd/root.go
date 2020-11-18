@@ -237,12 +237,39 @@ var rootCmd = &cobra.Command{
 		}
 		wg.Wait()
 
-		corr, err := decider.NewMinimumPercentDecider(50)
+		decider, err := func() (decider.LogDecider, error) {
+			deciders := []decider.LogDecider{}
+			for _, deciderConfig := range config.Deciders {
+				switch deciderConfig.Engine {
+				case "lua":
+					decider, err := decider.NewLuaDecider(deciderConfig.Lua.Script)
+					if err != nil {
+						return nil, err
+					}
+					deciders = append(deciders, decider)
+				case "percentage":
+					decider, err := decider.NewMinimumPercentDecider(deciderConfig.Percentage.Minimum)
+					if err != nil {
+						return nil, err
+					}
+					deciders = append(deciders, decider)
+				case "logname":
+					decider, err := decider.NewLogNameDecider(deciderConfig.LogName.Name)
+					if err != nil {
+						return nil, err
+					}
+					deciders = append(deciders, decider)
+				default:
+					return nil, fmt.Errorf("No such engine: %s", deciderConfig.Engine)
+				}
+			}
+			return decider.NewAggDecider(deciders...), nil
+		}()
 		if err != nil {
-			log.Fatalf("Failed to create decider: %v", err)
+			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		logServer := rpc.NewTrustixCombinedRPCServer(sthmgr, logMap, corr)
+		logServer := rpc.NewTrustixCombinedRPCServer(sthmgr, logMap, decider)
 
 		log.Debug("Creating gRPC servers")
 

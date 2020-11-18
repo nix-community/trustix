@@ -34,19 +34,19 @@ func TestLogNameSimple(t *testing.T) {
 	assert := assert.New(t)
 
 	inputs := []*LogDeciderInput{
-		&LogDeciderInput{
+		{
 			LogName:    "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210ab",
 		},
-		&LogDeciderInput{
+		{
 			LogName:    "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210af",
 		},
-		&LogDeciderInput{
+		{
 			LogName:    "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210a7",
 		},
-		&LogDeciderInput{
+		{
 			LogName:    "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
@@ -69,19 +69,19 @@ func TestLogNameNonMatch(t *testing.T) {
 	assert := assert.New(t)
 
 	inputs := []*LogDeciderInput{
-		&LogDeciderInput{
+		{
 			LogName:    "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210ab",
 		},
-		&LogDeciderInput{
+		{
 			LogName:    "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210af",
 		},
-		&LogDeciderInput{
+		{
 			LogName:    "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210a7",
 		},
-		&LogDeciderInput{
+		{
 			LogName:    "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},

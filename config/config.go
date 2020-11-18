@@ -70,8 +70,28 @@ type LogConfig struct {
 	Signer    *SignerConfig    `toml:"signer"`
 }
 
+type LuaDeciderConfig struct {
+	Script string `toml:"script"`
+}
+
+type LogNameDeciderConfig struct {
+	Name string `toml:"name"`
+}
+
+type PercentageDeciderConfig struct {
+	Minimum int `toml:"minimum"`
+}
+
+type DeciderConfig struct {
+	Engine     string                   `toml:"engine"`
+	Lua        *LuaDeciderConfig        `toml:"lua"`
+	LogName    *LogNameDeciderConfig    `toml:"logname"`
+	Percentage *PercentageDeciderConfig `toml:"percentage"`
+}
+
 type Config struct {
-	Logs []*LogConfig `toml:"log"`
+	Deciders []*DeciderConfig `toml:"decider"`
+	Logs     []*LogConfig     `toml:"log"`
 }
 
 func NewConfigFromFile(path string) (*Config, error) {
