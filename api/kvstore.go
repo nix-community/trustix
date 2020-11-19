@@ -58,6 +58,10 @@ func minUint64(x, y uint64) uint64 {
 	return x
 }
 
+// NewKVStoreAPI - Returns an instance of the log API for an authoritive log implemented on top
+// of a key/value store
+//
+// This is the underlying implementation used by all other abstractions
 func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixLogAPI, error) {
 
 	var sth *schema.STH

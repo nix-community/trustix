@@ -32,13 +32,31 @@ import (
 type TrustixLogAPI interface {
 	// GetSTH - Get a signed tree head
 	GetSTH(context.Context, *STHRequest) (*schema.STH, error)
+
+	// Get log consistency proof
 	GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
+
+	// Get leaf audit proof
 	GetLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
+
+	// Get log entries (batched)
 	GetLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
+
+	// Get value from the map
 	GetMapValue(context.Context, *GetMapValueRequest) (*MapValueResponse, error)
+
+	// Submit a value to the log
 	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
+
+	// Flush the queue and write new heads
 	Flush(context.Context, *FlushRequest) (*FlushResponse, error)
+
+	// Get map head log consistency proof
 	GetMHLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
+
+	// Get map head log leaf audit proof
 	GetMHLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
+
+	// Get map head log entries (batched)
 	GetMHLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
 }
