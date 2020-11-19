@@ -22,10 +22,6 @@ in pkgs.buildGoApplication {
 
   modules = ./gomod2nix.toml;
 
-  buildInputs = [
-    pkgs.libgit2
-  ];
-
   nativeBuildInputs = [
     pkgs.pkgconfig
   ];

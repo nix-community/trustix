@@ -446,6 +446,8 @@ func initCommands() {
 	rootCmd.AddCommand(decideCommand)
 	initDecide()
 
+	rootCmd.AddCommand(flushCommand)
+
 	rootCmd.AddCommand(nixHookCommand)
 }
 

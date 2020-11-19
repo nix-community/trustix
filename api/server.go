@@ -71,3 +71,12 @@ func (s *TrustixAPIServer) Submit(ctx context.Context, req *SubmitRequest) (*Sub
 
 	return s.impl.Submit(ctx, req)
 }
+
+func (s *TrustixAPIServer) Flush(ctx context.Context, req *FlushRequest) (*FlushResponse, error) {
+	err := auth.CanWrite(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.impl.Flush(ctx, req)
+}

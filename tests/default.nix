@@ -31,6 +31,7 @@ in {
     systemfd -s ./sock -- trustix --config ${./config-simple.toml} &
 
     trustix submit --input-hash "$input_hash" --output-hash "$output_hash"
+    trustix flush
 
     echo "Checking input equality"
     test $(trustix query --input-hash "$input_hash" | cut -d' ' -f 3) = "$output_hash"
@@ -51,8 +52,11 @@ in {
 
     # Submit hashes
     trustix submit --input-hash "$input_hash" --output-hash "$output_hash" --address "unix://./1.sock"
+    trustix flush --address "unix://./1.sock"
     trustix submit --input-hash "$input_hash" --output-hash "$output_hash" --address "unix://./2.sock"
+    trustix flush --address "unix://./2.sock"
     trustix submit --input-hash "$input_hash" --output-hash "$evil_hash" --address "unix://./3.sock"
+    trustix flush --address "unix://./3.sock"
 
     (cd ${compare-fixtures/log-agg}; systemfd -s $build_dir/agg.sock -- trustix --state $TMPDIR/log-agg-state --config ./config.toml) &
 

@@ -4,7 +4,6 @@ package api
 
 import (
 	context "context"
-
 	schema "github.com/tweag/trustix/schema"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -25,6 +24,7 @@ type TrustixLogAPIClient interface {
 	GetLogEntries(ctx context.Context, in *GetLogEntriesRequest, opts ...grpc.CallOption) (*LogEntriesResponse, error)
 	GetMapValue(ctx context.Context, in *GetMapValueRequest, opts ...grpc.CallOption) (*MapValueResponse, error)
 	Submit(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error)
+	Flush(ctx context.Context, in *FlushRequest, opts ...grpc.CallOption) (*FlushResponse, error)
 }
 
 type trustixLogAPIClient struct {
@@ -89,6 +89,15 @@ func (c *trustixLogAPIClient) Submit(ctx context.Context, in *SubmitRequest, opt
 	return out, nil
 }
 
+func (c *trustixLogAPIClient) Flush(ctx context.Context, in *FlushRequest, opts ...grpc.CallOption) (*FlushResponse, error) {
+	out := new(FlushResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixLogAPI/Flush", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TrustixLogAPIServer is the server API for TrustixLogAPI service.
 // All implementations must embed UnimplementedTrustixLogAPIServer
 // for forward compatibility
@@ -99,6 +108,7 @@ type TrustixLogAPIServer interface {
 	GetLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
 	GetMapValue(context.Context, *GetMapValueRequest) (*MapValueResponse, error)
 	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
+	Flush(context.Context, *FlushRequest) (*FlushResponse, error)
 	mustEmbedUnimplementedTrustixLogAPIServer()
 }
 
@@ -123,6 +133,9 @@ func (UnimplementedTrustixLogAPIServer) GetMapValue(context.Context, *GetMapValu
 }
 func (UnimplementedTrustixLogAPIServer) Submit(context.Context, *SubmitRequest) (*SubmitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Submit not implemented")
+}
+func (UnimplementedTrustixLogAPIServer) Flush(context.Context, *FlushRequest) (*FlushResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Flush not implemented")
 }
 func (UnimplementedTrustixLogAPIServer) mustEmbedUnimplementedTrustixLogAPIServer() {}
 
@@ -245,6 +258,24 @@ func _TrustixLogAPI_Submit_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TrustixLogAPI_Flush_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FlushRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixLogAPIServer).Flush(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixLogAPI/Flush",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixLogAPIServer).Flush(ctx, req.(*FlushRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _TrustixLogAPI_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "trustix.TrustixLogAPI",
 	HandlerType: (*TrustixLogAPIServer)(nil),
@@ -272,6 +303,10 @@ var _TrustixLogAPI_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Submit",
 			Handler:    _TrustixLogAPI_Submit_Handler,
+		},
+		{
+			MethodName: "Flush",
+			Handler:    _TrustixLogAPI_Flush_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

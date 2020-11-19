@@ -69,6 +69,12 @@ message SubmitResponse {
  required Status status = 1;
 }
 
+message FlushRequest {
+}
+
+message FlushResponse {
+}
+
 service TrustixLogAPI {
 
   rpc GetSTH (STHRequest) returns (STH) {}
@@ -83,4 +89,5 @@ service TrustixLogAPI {
 
   rpc Submit (SubmitRequest) returns (SubmitResponse) {}
 
+  rpc Flush (FlushRequest) returns (FlushResponse) {}
 }

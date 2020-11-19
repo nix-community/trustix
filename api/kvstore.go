@@ -345,6 +345,22 @@ func (kv *kvStoreLogApi) Submit(ctx context.Context, req *SubmitRequest) (*Submi
 	}, nil
 }
 
+func (kv *kvStoreLogApi) Flush(ctx context.Context, in *FlushRequest) (*FlushResponse, error) {
+
+	for {
+		q, err := kv.submitBatch()
+		if err != nil {
+			return nil, err
+		}
+
+		if *q.Min >= *q.Max {
+			return &FlushResponse{}, nil
+		}
+	}
+
+	return &FlushResponse{}, nil
+}
+
 func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 	kv.queueMux.Lock()
 	defer kv.queueMux.Unlock()

@@ -21,21 +21,34 @@
 // SOFTWARE.
 //
 
-package api
+package cmd
 
 import (
-	"context"
-
-	"github.com/tweag/trustix/schema"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"github.com/tweag/trustix/api"
 )
 
-type TrustixLogAPI interface {
-	// GetSTH - Get a signed tree head
-	GetSTH(context.Context, *STHRequest) (*schema.STH, error)
-	GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
-	GetLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
-	GetLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
-	GetMapValue(context.Context, *GetMapValueRequest) (*MapValueResponse, error)
-	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
-	Flush(context.Context, *FlushRequest) (*FlushResponse, error)
+var flushCommand = &cobra.Command{
+	Use:   "flush",
+	Short: "Flush submissions and write new tree head",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		conn, err := createClientConn(dialAddress, nil)
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+		defer conn.Close()
+
+		ctx, cancel := createContext()
+		defer cancel()
+
+		c := api.NewTrustixLogAPIClient(conn)
+
+		_, err = c.Flush(ctx, &api.FlushRequest{})
+		if err != nil {
+			log.Fatalf("could not flush: %v", err)
+		}
+
+		return nil
+	},
 }
