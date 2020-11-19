@@ -38,4 +38,7 @@ type TrustixLogAPI interface {
 	GetMapValue(context.Context, *GetMapValueRequest) (*MapValueResponse, error)
 	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
 	Flush(context.Context, *FlushRequest) (*FlushResponse, error)
+	GetMHLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
+	GetMHLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
+	GetMHLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
 }

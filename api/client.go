@@ -69,3 +69,15 @@ func (s *TrustixAPIGRPCClient) Submit(ctx context.Context, req *SubmitRequest) (
 func (s *TrustixAPIGRPCClient) Flush(ctx context.Context, in *FlushRequest) (*FlushResponse, error) {
 	return s.client.Flush(ctx, in)
 }
+
+func (s *TrustixAPIGRPCClient) GetMHLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
+	return s.client.GetMHLogConsistencyProof(ctx, req)
+}
+
+func (s *TrustixAPIGRPCClient) GetMHLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (*ProofResponse, error) {
+	return s.client.GetMHLogAuditProof(ctx, req)
+}
+
+func (s *TrustixAPIGRPCClient) GetMHLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+	return s.client.GetMHLogEntries(ctx, req)
+}

@@ -19,12 +19,15 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TrustixLogAPIClient interface {
 	GetSTH(ctx context.Context, in *STHRequest, opts ...grpc.CallOption) (*schema.STH, error)
+	Submit(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error)
+	Flush(ctx context.Context, in *FlushRequest, opts ...grpc.CallOption) (*FlushResponse, error)
 	GetLogConsistencyProof(ctx context.Context, in *GetLogConsistencyProofRequest, opts ...grpc.CallOption) (*ProofResponse, error)
 	GetLogAuditProof(ctx context.Context, in *GetLogAuditProofRequest, opts ...grpc.CallOption) (*ProofResponse, error)
 	GetLogEntries(ctx context.Context, in *GetLogEntriesRequest, opts ...grpc.CallOption) (*LogEntriesResponse, error)
 	GetMapValue(ctx context.Context, in *GetMapValueRequest, opts ...grpc.CallOption) (*MapValueResponse, error)
-	Submit(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error)
-	Flush(ctx context.Context, in *FlushRequest, opts ...grpc.CallOption) (*FlushResponse, error)
+	GetMHLogConsistencyProof(ctx context.Context, in *GetLogConsistencyProofRequest, opts ...grpc.CallOption) (*ProofResponse, error)
+	GetMHLogAuditProof(ctx context.Context, in *GetLogAuditProofRequest, opts ...grpc.CallOption) (*ProofResponse, error)
+	GetMHLogEntries(ctx context.Context, in *GetLogEntriesRequest, opts ...grpc.CallOption) (*LogEntriesResponse, error)
 }
 
 type trustixLogAPIClient struct {
@@ -38,6 +41,24 @@ func NewTrustixLogAPIClient(cc grpc.ClientConnInterface) TrustixLogAPIClient {
 func (c *trustixLogAPIClient) GetSTH(ctx context.Context, in *STHRequest, opts ...grpc.CallOption) (*schema.STH, error) {
 	out := new(schema.STH)
 	err := c.cc.Invoke(ctx, "/trustix.TrustixLogAPI/GetSTH", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trustixLogAPIClient) Submit(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error) {
+	out := new(SubmitResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixLogAPI/Submit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trustixLogAPIClient) Flush(ctx context.Context, in *FlushRequest, opts ...grpc.CallOption) (*FlushResponse, error) {
+	out := new(FlushResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixLogAPI/Flush", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,18 +101,27 @@ func (c *trustixLogAPIClient) GetMapValue(ctx context.Context, in *GetMapValueRe
 	return out, nil
 }
 
-func (c *trustixLogAPIClient) Submit(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error) {
-	out := new(SubmitResponse)
-	err := c.cc.Invoke(ctx, "/trustix.TrustixLogAPI/Submit", in, out, opts...)
+func (c *trustixLogAPIClient) GetMHLogConsistencyProof(ctx context.Context, in *GetLogConsistencyProofRequest, opts ...grpc.CallOption) (*ProofResponse, error) {
+	out := new(ProofResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixLogAPI/GetMHLogConsistencyProof", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *trustixLogAPIClient) Flush(ctx context.Context, in *FlushRequest, opts ...grpc.CallOption) (*FlushResponse, error) {
-	out := new(FlushResponse)
-	err := c.cc.Invoke(ctx, "/trustix.TrustixLogAPI/Flush", in, out, opts...)
+func (c *trustixLogAPIClient) GetMHLogAuditProof(ctx context.Context, in *GetLogAuditProofRequest, opts ...grpc.CallOption) (*ProofResponse, error) {
+	out := new(ProofResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixLogAPI/GetMHLogAuditProof", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trustixLogAPIClient) GetMHLogEntries(ctx context.Context, in *GetLogEntriesRequest, opts ...grpc.CallOption) (*LogEntriesResponse, error) {
+	out := new(LogEntriesResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixLogAPI/GetMHLogEntries", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,12 +133,15 @@ func (c *trustixLogAPIClient) Flush(ctx context.Context, in *FlushRequest, opts 
 // for forward compatibility
 type TrustixLogAPIServer interface {
 	GetSTH(context.Context, *STHRequest) (*schema.STH, error)
+	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
+	Flush(context.Context, *FlushRequest) (*FlushResponse, error)
 	GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
 	GetLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
 	GetLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
 	GetMapValue(context.Context, *GetMapValueRequest) (*MapValueResponse, error)
-	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
-	Flush(context.Context, *FlushRequest) (*FlushResponse, error)
+	GetMHLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
+	GetMHLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
+	GetMHLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
 	mustEmbedUnimplementedTrustixLogAPIServer()
 }
 
@@ -118,6 +151,12 @@ type UnimplementedTrustixLogAPIServer struct {
 
 func (UnimplementedTrustixLogAPIServer) GetSTH(context.Context, *STHRequest) (*schema.STH, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSTH not implemented")
+}
+func (UnimplementedTrustixLogAPIServer) Submit(context.Context, *SubmitRequest) (*SubmitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Submit not implemented")
+}
+func (UnimplementedTrustixLogAPIServer) Flush(context.Context, *FlushRequest) (*FlushResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Flush not implemented")
 }
 func (UnimplementedTrustixLogAPIServer) GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLogConsistencyProof not implemented")
@@ -131,11 +170,14 @@ func (UnimplementedTrustixLogAPIServer) GetLogEntries(context.Context, *GetLogEn
 func (UnimplementedTrustixLogAPIServer) GetMapValue(context.Context, *GetMapValueRequest) (*MapValueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMapValue not implemented")
 }
-func (UnimplementedTrustixLogAPIServer) Submit(context.Context, *SubmitRequest) (*SubmitResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Submit not implemented")
+func (UnimplementedTrustixLogAPIServer) GetMHLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMHLogConsistencyProof not implemented")
 }
-func (UnimplementedTrustixLogAPIServer) Flush(context.Context, *FlushRequest) (*FlushResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Flush not implemented")
+func (UnimplementedTrustixLogAPIServer) GetMHLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMHLogAuditProof not implemented")
+}
+func (UnimplementedTrustixLogAPIServer) GetMHLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMHLogEntries not implemented")
 }
 func (UnimplementedTrustixLogAPIServer) mustEmbedUnimplementedTrustixLogAPIServer() {}
 
@@ -164,6 +206,42 @@ func _TrustixLogAPI_GetSTH_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TrustixLogAPIServer).GetSTH(ctx, req.(*STHRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrustixLogAPI_Submit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixLogAPIServer).Submit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixLogAPI/Submit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixLogAPIServer).Submit(ctx, req.(*SubmitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrustixLogAPI_Flush_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FlushRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixLogAPIServer).Flush(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixLogAPI/Flush",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixLogAPIServer).Flush(ctx, req.(*FlushRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -240,38 +318,56 @@ func _TrustixLogAPI_GetMapValue_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TrustixLogAPI_Submit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubmitRequest)
+func _TrustixLogAPI_GetMHLogConsistencyProof_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLogConsistencyProofRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrustixLogAPIServer).Submit(ctx, in)
+		return srv.(TrustixLogAPIServer).GetMHLogConsistencyProof(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.TrustixLogAPI/Submit",
+		FullMethod: "/trustix.TrustixLogAPI/GetMHLogConsistencyProof",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixLogAPIServer).Submit(ctx, req.(*SubmitRequest))
+		return srv.(TrustixLogAPIServer).GetMHLogConsistencyProof(ctx, req.(*GetLogConsistencyProofRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TrustixLogAPI_Flush_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FlushRequest)
+func _TrustixLogAPI_GetMHLogAuditProof_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLogAuditProofRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrustixLogAPIServer).Flush(ctx, in)
+		return srv.(TrustixLogAPIServer).GetMHLogAuditProof(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.TrustixLogAPI/Flush",
+		FullMethod: "/trustix.TrustixLogAPI/GetMHLogAuditProof",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixLogAPIServer).Flush(ctx, req.(*FlushRequest))
+		return srv.(TrustixLogAPIServer).GetMHLogAuditProof(ctx, req.(*GetLogAuditProofRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrustixLogAPI_GetMHLogEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLogEntriesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixLogAPIServer).GetMHLogEntries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixLogAPI/GetMHLogEntries",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixLogAPIServer).GetMHLogEntries(ctx, req.(*GetLogEntriesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -283,6 +379,14 @@ var _TrustixLogAPI_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSTH",
 			Handler:    _TrustixLogAPI_GetSTH_Handler,
+		},
+		{
+			MethodName: "Submit",
+			Handler:    _TrustixLogAPI_Submit_Handler,
+		},
+		{
+			MethodName: "Flush",
+			Handler:    _TrustixLogAPI_Flush_Handler,
 		},
 		{
 			MethodName: "GetLogConsistencyProof",
@@ -301,12 +405,16 @@ var _TrustixLogAPI_serviceDesc = grpc.ServiceDesc{
 			Handler:    _TrustixLogAPI_GetMapValue_Handler,
 		},
 		{
-			MethodName: "Submit",
-			Handler:    _TrustixLogAPI_Submit_Handler,
+			MethodName: "GetMHLogConsistencyProof",
+			Handler:    _TrustixLogAPI_GetMHLogConsistencyProof_Handler,
 		},
 		{
-			MethodName: "Flush",
-			Handler:    _TrustixLogAPI_Flush_Handler,
+			MethodName: "GetMHLogAuditProof",
+			Handler:    _TrustixLogAPI_GetMHLogAuditProof_Handler,
+		},
+		{
+			MethodName: "GetMHLogEntries",
+			Handler:    _TrustixLogAPI_GetMHLogEntries_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

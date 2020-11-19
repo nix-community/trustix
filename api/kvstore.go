@@ -72,14 +72,14 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixL
 			return err
 		}
 
-		vLog, err := vlog.NewVerifiableLog(txn, 0)
+		vLog, err := vlog.NewVerifiableLog("log", txn, 0)
 		if err != nil {
 			return err
 		}
 
 		smTree := smt.NewSparseMerkleTree(newMapStore(txn), sha256.New())
 
-		vMapLog, err := vlog.NewVerifiableLog(txn, 0)
+		vMapLog, err := vlog.NewVerifiableLog("maplog", txn, 0)
 		if err != nil {
 			return err
 		}
@@ -176,20 +176,11 @@ func (kv *kvStoreLogApi) GetSTH(ctx context.Context, req *STHRequest) (*schema.S
 
 func (kv *kvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
 	resp = &ProofResponse{}
-
 	err = kv.store.View(func(txn storage.Transaction) error {
-		vLog, err := vlog.NewVerifiableLog(txn, *req.SecondSize)
+		resp, err = getLogConsistencyProof("log", txn, ctx, req)
 		if err != nil {
 			return err
 		}
-
-		proof, err := vLog.ConsistencyProof(*req.FirstSize, *req.SecondSize)
-		if err != nil {
-			return err
-		}
-
-		resp.Proof = proof
-
 		return nil
 	})
 	if err != nil {
@@ -200,53 +191,38 @@ func (kv *kvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *GetLog
 }
 
 func (kv *kvStoreLogApi) GetLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (resp *ProofResponse, err error) {
-
+	resp = &ProofResponse{}
 	err = kv.store.View(func(txn storage.Transaction) error {
-		vLog, err := vlog.NewVerifiableLog(txn, *req.TreeSize)
+		resp, err = getLogAuditProof("log", txn, ctx, req)
 		if err != nil {
 			return err
 		}
-
-		proof, err := vLog.AuditProof(*req.Index, *req.TreeSize)
-		if err != nil {
-			return err
-		}
-
-		resp.Proof = proof
-
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return resp, nil
 }
 
-func (kv *kvStoreLogApi) GetLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
-
-	resp := &LogEntriesResponse{
+func (kv *kvStoreLogApi) GetLogEntries(ctx context.Context, req *GetLogEntriesRequest) (resp *LogEntriesResponse, err error) {
+	resp = &LogEntriesResponse{
 		Leaves: []*schema.LogLeaf{},
 	}
 
-	err := kv.store.View(func(txn storage.Transaction) error {
-		logStorage := vlog.NewLogStorage(txn)
-
-		for i := int(*req.Start); i <= int(*req.Finish); i++ {
-			leaf, err := logStorage.Get(0, uint64(i))
-			if err != nil {
-				return err
-			}
-			resp.Leaves = append(resp.Leaves, leaf)
+	err = kv.store.View(func(txn storage.Transaction) error {
+		resp, err = getLogEntries("log", txn, ctx, req)
+		if err != nil {
+			return err
 		}
-
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return resp, nil
 }
 
 func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *GetMapValueRequest) (*MapValueResponse, error) {
@@ -459,7 +435,7 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 
 	// The append-only log
 	log.WithField("size", *sth.TreeSize).Debug("Creating log tree from persisted data")
-	vLog, err := vlog.NewVerifiableLog(txn, *sth.TreeSize)
+	vLog, err := vlog.NewVerifiableLog("log", txn, *sth.TreeSize)
 	if err != nil {
 		return err
 	}
@@ -470,7 +446,7 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 
 	// The append-only log tracking published map heads
 	log.WithField("size", *sth.MHTreeSize).Debug("Creating log tree from persisted data")
-	vMapLog, err := vlog.NewVerifiableLog(txn, *sth.MHTreeSize)
+	vMapLog, err := vlog.NewVerifiableLog("maplog", txn, *sth.MHTreeSize)
 	if err != nil {
 		return err
 	}
@@ -549,4 +525,55 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 	kv.sth = sth
 
 	return nil
+}
+
+func (kv *kvStoreLogApi) GetMHLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
+	resp = &ProofResponse{}
+	err = kv.store.View(func(txn storage.Transaction) error {
+		resp, err = getLogConsistencyProof("log", txn, ctx, req)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (kv *kvStoreLogApi) GetMHLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (resp *ProofResponse, err error) {
+	resp = &ProofResponse{}
+	err = kv.store.View(func(txn storage.Transaction) error {
+		resp, err = getLogAuditProof("log", txn, ctx, req)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (kv *kvStoreLogApi) GetMHLogEntries(ctx context.Context, req *GetLogEntriesRequest) (resp *LogEntriesResponse, err error) {
+	resp = &LogEntriesResponse{
+		Leaves: []*schema.LogLeaf{},
+	}
+
+	err = kv.store.View(func(txn storage.Transaction) error {
+		resp, err = getLogEntries("log", txn, ctx, req)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

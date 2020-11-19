@@ -35,11 +35,10 @@ type VerifiableLog struct {
 	storage  *LogStorage
 }
 
-func NewVerifiableLog(transaction storage.Transaction, treeSize uint64) (*VerifiableLog, error) {
+func NewVerifiableLog(prefix string, txn storage.Transaction, treeSize uint64) (*VerifiableLog, error) {
+	storage := NewLogStorage(prefix, txn)
 	return &VerifiableLog{
-		storage: &LogStorage{
-			txn: transaction,
-		},
+		storage:  storage,
 		treeSize: treeSize,
 	}, nil
 }

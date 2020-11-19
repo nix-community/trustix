@@ -77,7 +77,15 @@ message FlushResponse {
 
 service TrustixLogAPI {
 
+  // Aggregate
+
   rpc GetSTH (STHRequest) returns (STH) {}
+
+  rpc Submit (SubmitRequest) returns (SubmitResponse) {}
+
+  rpc Flush (FlushRequest) returns (FlushResponse) {}
+
+  // Log
 
   rpc GetLogConsistencyProof(GetLogConsistencyProofRequest) returns (ProofResponse) {}
 
@@ -85,9 +93,16 @@ service TrustixLogAPI {
 
   rpc GetLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
 
+  // Map
+
   rpc GetMapValue(GetMapValueRequest) returns (MapValueResponse) {}
 
-  rpc Submit (SubmitRequest) returns (SubmitResponse) {}
+  // Maphead log
 
-  rpc Flush (FlushRequest) returns (FlushResponse) {}
+  rpc GetMHLogConsistencyProof(GetLogConsistencyProofRequest) returns (ProofResponse) {}
+
+  rpc GetMHLogAuditProof(GetLogAuditProofRequest) returns (ProofResponse) {}
+
+  rpc GetMHLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
+
 }
