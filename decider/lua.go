@@ -105,27 +105,6 @@ func (l *luaDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error
 	}
 	ret.OutputHash = outputHash
 
-	state.Field(-1, "LogNames")
-	if !state.IsTable(-1) {
-		return nil, fmt.Errorf("LogNames is not of type table")
-	}
-	state.Length(-1)
-	logNamesLen, ok := state.ToInteger(-1)
-	state.Pop(1)
-	if !ok {
-		return nil, fmt.Errorf("OutputHash is not of type string")
-	}
-	for i := 0; i < logNamesLen; i++ {
-		idx := i + 1 // Arrays start at 1
-		state.RawGetInt(-1, idx)
-		value, ok := state.ToString(-1)
-		state.Pop(1)
-		if !ok {
-			return nil, fmt.Errorf("Member of OutputHash at index %d is not a string", idx)
-		}
-		ret.LogNames = append(ret.LogNames, value)
-	}
-
 	ret.Confidence = 1
 
 	return ret, nil

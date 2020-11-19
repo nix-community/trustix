@@ -288,9 +288,16 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 		}
 
 		confidence := int32(decision.Confidence)
-		if len(decision.LogNames) > 0 {
+		if decision.OutputHash != "" {
+			logNames := []string{}
+			for _, input := range inputs {
+				if input.OutputHash == decision.OutputHash {
+					logNames = append(logNames, input.LogName)
+				}
+			}
+
 			resp.Decision = &pb.LogValueDecision{
-				LogNames:   decision.LogNames,
+				LogNames:   logNames,
 				Value:      outputHash,
 				Confidence: &confidence,
 			}

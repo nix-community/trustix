@@ -65,9 +65,6 @@ func (q *minimumPercent) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, e
 			OutputHash: m.key,
 			Confidence: m.pct,
 		}
-		for _, v := range entries[m.key] {
-			ret.LogNames = append(ret.LogNames, v.LogName)
-		}
 		return ret, nil
 	}
 

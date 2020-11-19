@@ -48,7 +48,6 @@ func (l *lognameDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, e
 		input := inputs[i]
 		if input.LogName == l.logName {
 			return &LogDeciderOutput{
-				LogNames:   []string{input.LogName},
 				OutputHash: input.OutputHash,
 				Confidence: 100,
 			}, nil

@@ -30,8 +30,6 @@ type LogDeciderInput struct {
 }
 
 type LogDeciderOutput struct {
-	// All lognames that matched this hash
-	LogNames []string
 	// The decided OutputHash
 	OutputHash string
 	// An arbitrary number conveying the underlying engines confidence in the result

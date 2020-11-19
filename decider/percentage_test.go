@@ -59,14 +59,12 @@ func TestPercentages(t *testing.T) {
 	// 100% match case
 	output, err := decider.Decide(inputs)
 	assert.Nil(err)
-	assert.Equal(len(output.LogNames), 4, "The correct number of matches returned")
 	assert.Equal(output.Confidence, 100, "Confidence is correct")
 
 	// 75% match case
 	inputs[0].OutputHash = "somedummyvalue"
 	output, err = decider.Decide(inputs)
 	assert.Nil(err)
-	assert.Equal(3, len(output.LogNames), "The correct number of matches returned")
 	assert.Equal(75, output.Confidence, "Confidence is correct")
 
 	// No match case

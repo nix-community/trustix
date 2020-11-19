@@ -60,8 +60,6 @@ func TestAggSimple(t *testing.T) {
 	output, err := decider.Decide(inputs)
 	assert.Nil(err)
 
-	assert.Equal(len(output.LogNames), 1, "The number of matches returned is expected to be 1")
-	assert.Equal(output.LogNames[0], "test3", "The correct match is returned")
 	assert.Equal(output.OutputHash, "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210a7", "The correct match is returned")
 
 }

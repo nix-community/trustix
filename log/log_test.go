@@ -63,6 +63,9 @@ func (s *testStorageTxn) Set(bucket []byte, key []byte, value []byte) error {
 	s.kv[string(bucket)][string(key)] = value
 	return nil
 }
+func (s *testStorageTxn) Delete(bucket []byte, key []byte) error {
+	return fmt.Errorf("Not implemented")
+}
 
 func mkInputs() []*testInput {
 
@@ -128,7 +131,7 @@ func TestLogRoots(t *testing.T) {
 		kv: make(map[string]map[string][]byte),
 	}
 
-	tree, err := NewVerifiableLog(storageTxn, 0)
+	tree, err := NewVerifiableLog("log", storageTxn, 0)
 	assert.Nil(err)
 
 	root, err := tree.Root()
@@ -159,7 +162,7 @@ func TestAuditProofs(t *testing.T) {
 		kv: make(map[string]map[string][]byte),
 	}
 
-	tree, err := NewVerifiableLog(storageTxn, 0)
+	tree, err := NewVerifiableLog("log", storageTxn, 0)
 	assert.Nil(err)
 
 	inputs := mkInputs()
@@ -213,7 +216,7 @@ func TestConsistencyProofs(t *testing.T) {
 		kv: make(map[string]map[string][]byte),
 	}
 
-	tree, err := NewVerifiableLog(storageTxn, 0)
+	tree, err := NewVerifiableLog("log", storageTxn, 0)
 	assert.Nil(err)
 
 	assertProof := mkAssertProof(t, tree.ConsistencyProof)
