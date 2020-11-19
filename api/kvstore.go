@@ -477,8 +477,12 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 			if bytes.Equal(oldEntry.Value, pair.Value) {
 				continue
 			}
-			// Consider: What to do???
-			return fmt.Errorf("'%s' already exists in log", hex.EncodeToString(pair.Key))
+
+			log.WithFields(log.Fields{
+				"key":   hex.EncodeToString(pair.Key),
+				"value": hex.EncodeToString(pair.Value),
+			}).Error("Already exists in log with a different value")
+			continue
 		}
 
 		wrote = true
