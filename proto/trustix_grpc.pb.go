@@ -22,6 +22,7 @@ type TrustixCombinedRPCClient interface {
 	GetStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_GetStreamClient, error)
 	// Compare(inputHash)
 	Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
+	DecideStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_DecideStreamClient, error)
 }
 
 type trustixCombinedRPCClient struct {
@@ -81,6 +82,37 @@ func (c *trustixCombinedRPCClient) Decide(ctx context.Context, in *KeyRequest, o
 	return out, nil
 }
 
+func (c *trustixCombinedRPCClient) DecideStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_DecideStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_TrustixCombinedRPC_serviceDesc.Streams[1], "/trustix.TrustixCombinedRPC/DecideStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &trustixCombinedRPCDecideStreamClient{stream}
+	return x, nil
+}
+
+type TrustixCombinedRPC_DecideStreamClient interface {
+	Send(*KeyRequest) error
+	Recv() (*DecisionResponse, error)
+	grpc.ClientStream
+}
+
+type trustixCombinedRPCDecideStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *trustixCombinedRPCDecideStreamClient) Send(m *KeyRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *trustixCombinedRPCDecideStreamClient) Recv() (*DecisionResponse, error) {
+	m := new(DecisionResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // TrustixCombinedRPCServer is the server API for TrustixCombinedRPC service.
 // All implementations must embed UnimplementedTrustixCombinedRPCServer
 // for forward compatibility
@@ -90,6 +122,7 @@ type TrustixCombinedRPCServer interface {
 	GetStream(TrustixCombinedRPC_GetStreamServer) error
 	// Compare(inputHash)
 	Decide(context.Context, *KeyRequest) (*DecisionResponse, error)
+	DecideStream(TrustixCombinedRPC_DecideStreamServer) error
 	mustEmbedUnimplementedTrustixCombinedRPCServer()
 }
 
@@ -105,6 +138,9 @@ func (UnimplementedTrustixCombinedRPCServer) GetStream(TrustixCombinedRPC_GetStr
 }
 func (UnimplementedTrustixCombinedRPCServer) Decide(context.Context, *KeyRequest) (*DecisionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Decide not implemented")
+}
+func (UnimplementedTrustixCombinedRPCServer) DecideStream(TrustixCombinedRPC_DecideStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method DecideStream not implemented")
 }
 func (UnimplementedTrustixCombinedRPCServer) mustEmbedUnimplementedTrustixCombinedRPCServer() {}
 
@@ -181,6 +217,32 @@ func _TrustixCombinedRPC_Decide_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TrustixCombinedRPC_DecideStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(TrustixCombinedRPCServer).DecideStream(&trustixCombinedRPCDecideStreamServer{stream})
+}
+
+type TrustixCombinedRPC_DecideStreamServer interface {
+	Send(*DecisionResponse) error
+	Recv() (*KeyRequest, error)
+	grpc.ServerStream
+}
+
+type trustixCombinedRPCDecideStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *trustixCombinedRPCDecideStreamServer) Send(m *DecisionResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *trustixCombinedRPCDecideStreamServer) Recv() (*KeyRequest, error) {
+	m := new(KeyRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 var _TrustixCombinedRPC_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "trustix.TrustixCombinedRPC",
 	HandlerType: (*TrustixCombinedRPCServer)(nil),
@@ -198,6 +260,12 @@ var _TrustixCombinedRPC_serviceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GetStream",
 			Handler:       _TrustixCombinedRPC_GetStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "DecideStream",
+			Handler:       _TrustixCombinedRPC_DecideStream_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

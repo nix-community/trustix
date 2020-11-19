@@ -319,3 +319,61 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 	return resp, nil
 
 }
+
+func (l *TrustixCombinedRPCServer) DecideStream(srv pb.TrustixCombinedRPC_DecideStreamServer) error {
+
+	ctx := context.Background()
+	var wg sync.WaitGroup
+	jobChan := make(chan *pb.KeyRequest)
+	errChan := make(chan error)
+
+	numWorkers := 20
+	for i := 0; i <= numWorkers; i++ {
+		i := i
+		go func() {
+			log.WithField("count", i).Debug("Creating Decide stream worker")
+
+			for in := range jobChan {
+				resp, err := l.Decide(ctx, in)
+				if err != nil {
+					wg.Done()
+					errChan <- err
+					return
+				}
+
+				err = srv.Send(resp)
+				if err != nil {
+					wg.Done()
+					errChan <- err
+					return
+				}
+
+				wg.Done()
+			}
+		}()
+	}
+
+	go func() {
+		for {
+			in, err := srv.Recv()
+			if err != nil {
+				if err == io.EOF {
+					close(jobChan)
+					wg.Wait()
+					close(errChan)
+					break
+				}
+				errChan <- err
+				return
+			}
+			wg.Add(1)
+			jobChan <- in
+		}
+	}()
+
+	for err := range errChan {
+		return err
+	}
+
+	return nil
+}

@@ -13,7 +13,7 @@ service TrustixCombinedRPC {
   rpc GetStream (stream KeyRequest) returns (stream EntriesResponse) {}
   // Compare(inputHash)
   rpc Decide (KeyRequest) returns (DecisionResponse) {}
-
+  rpc DecideStream (stream KeyRequest) returns (stream DecisionResponse) {}
 }
 
 message KeyRequest {
