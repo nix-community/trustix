@@ -3,8 +3,14 @@ syntax = "proto2";
 option go_package = "github.com/tweag/trustix/schema";
 
 message STH {
+  // Log
   required bytes LogRoot = 1;
   required uint64 TreeSize = 2;
+  // Map
   required bytes MapRoot = 3;
-  required bytes Signature = 4;
+  // Map head fields
+  required bytes MHRoot = 4;
+  required uint64 MHTreeSize = 5;
+  // Aggregate signature
+  required bytes Signature = 6;
 }

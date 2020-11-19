@@ -72,14 +72,20 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixL
 			return err
 		}
 
-		smTree := smt.NewSparseMerkleTree(newMapStore(txn), sha256.New())
 		vLog, err := vlog.NewVerifiableLog(txn, 0)
 		if err != nil {
 			return err
 		}
 
+		smTree := smt.NewSparseMerkleTree(newMapStore(txn), sha256.New())
+
+		vMapLog, err := vlog.NewVerifiableLog(txn, 0)
+		if err != nil {
+			return err
+		}
+
 		log.Debug("Signing STH for empty tree")
-		sth, err = sthsig.SignHead(smTree, vLog, signer)
+		sth, err = sthsig.SignHead(vLog, smTree, vMapLog, signer)
 		if err != nil {
 			return err
 		}
@@ -447,13 +453,20 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 
 	sth := kv.sth
 
+	// The append-only log
+	log.WithField("size", *sth.TreeSize).Debug("Creating log tree from persisted data")
+	vLog, err := vlog.NewVerifiableLog(txn, *sth.TreeSize)
+	if err != nil {
+		return err
+	}
+
 	// The sparse merkle tree
 	log.Debug("Creating sparse merkle tree from persisted data")
 	smTree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), sth.MapRoot)
 
-	// The append-only log
-	log.WithField("size", *sth.TreeSize).Debug("Creating log tree from persisted data")
-	vLog, err := vlog.NewVerifiableLog(txn, *sth.TreeSize)
+	// The append-only log tracking published map heads
+	log.WithField("size", *sth.MHTreeSize).Debug("Creating log tree from persisted data")
+	vMapLog, err := vlog.NewVerifiableLog(txn, *sth.MHTreeSize)
 	if err != nil {
 		return err
 	}
@@ -512,7 +525,7 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 		return nil
 	}
 
-	sth, err = sthsig.SignHead(smTree, vLog, kv.signer)
+	sth, err = sthsig.SignHead(vLog, smTree, vMapLog, kv.signer)
 	if err != nil {
 		return err
 	}

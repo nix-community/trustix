@@ -27,6 +27,7 @@ import (
 	"crypto"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/binary"
 
 	"github.com/lazyledger/smt"
 	vlog "github.com/tweag/trustix/log"
@@ -34,7 +35,13 @@ import (
 	"github.com/tweag/trustix/signer"
 )
 
-func SignHead(smTree *smt.SparseMerkleTree, vLog *vlog.VerifiableLog, signer crypto.Signer) (*schema.STH, error) {
+func uint64ToBytes(i uint64) []byte {
+	b := make([]byte, 8)
+	binary.LittleEndian.PutUint64(b, i)
+	return b[:]
+}
+
+func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *vlog.VerifiableLog, signer crypto.Signer) (*schema.STH, error) {
 	opts := crypto.SignerOpts(crypto.Hash(0))
 
 	vLogRoot, err := vLog.Root()
@@ -43,9 +50,25 @@ func SignHead(smTree *smt.SparseMerkleTree, vLog *vlog.VerifiableLog, signer cry
 	}
 	smTreeRoot := smTree.Root()
 
+	err = vMapLog.Append(smTreeRoot)
+	if err != nil {
+		return nil, err
+	}
+
+	vMapLogRoot, err := vMapLog.Root()
+	if err != nil {
+		return nil, err
+	}
+
+	vLogSize := vLog.Size()
+	vMapLogSize := vMapLog.Size()
+
 	h := sha256.New()
 	h.Write(vLogRoot)
+	h.Write(uint64ToBytes(vLogSize))
 	h.Write(smTreeRoot)
+	h.Write(vMapLogRoot)
+	h.Write(uint64ToBytes(vMapLogSize))
 	sum := h.Sum(nil)
 
 	sig, err := signer.Sign(rand.Reader, sum, opts)
@@ -53,19 +76,24 @@ func SignHead(smTree *smt.SparseMerkleTree, vLog *vlog.VerifiableLog, signer cry
 		return nil, err
 	}
 
-	vLogSize := uint64(vLog.Size())
 	return &schema.STH{
-		LogRoot:   vLogRoot,
-		TreeSize:  &vLogSize,
-		MapRoot:   smTreeRoot,
-		Signature: sig,
+		LogRoot:    vLogRoot,
+		TreeSize:   &vLogSize,
+		MapRoot:    smTreeRoot,
+		MHRoot:     vMapLogRoot,
+		MHTreeSize: &vMapLogSize,
+		Signature:  sig,
 	}, nil
 }
 
 func VerifySTHSig(verifier signer.TrustixVerifier, sth *schema.STH) bool {
+
 	h := sha256.New()
 	h.Write(sth.LogRoot)
+	h.Write(uint64ToBytes(*sth.TreeSize))
 	h.Write(sth.MapRoot)
+	h.Write(sth.MHRoot)
+	h.Write(uint64ToBytes(*sth.MHTreeSize))
 	sum := h.Sum(nil)
 
 	return verifier.Verify(sum, sth.Signature)
