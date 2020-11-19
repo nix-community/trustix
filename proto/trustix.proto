@@ -10,6 +10,7 @@ package trustix;
 service TrustixCombinedRPC {
   // Get map[LogName]OutputHash
   rpc Get (KeyRequest) returns (EntriesResponse) {}
+  rpc GetStream (stream KeyRequest) returns (stream EntriesResponse) {}
   // Compare(inputHash)
   rpc Decide (KeyRequest) returns (DecisionResponse) {}
 
@@ -20,7 +21,8 @@ message KeyRequest {
 }
 
 message EntriesResponse {
-  map<string, MapEntry> Entries = 1;
+  required bytes Key = 1;
+  map<string, MapEntry> Entries = 2;
 }
 
 message LogValueResponse {

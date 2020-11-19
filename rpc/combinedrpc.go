@@ -29,6 +29,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"sync"
 
 	"github.com/golang/protobuf/proto"
@@ -127,9 +128,68 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 	wg.Wait()
 
 	return &pb.EntriesResponse{
+		Key:     in.Key,
 		Entries: responses,
 	}, nil
 
+}
+
+func (l *TrustixCombinedRPCServer) GetStream(srv pb.TrustixCombinedRPC_GetStreamServer) error {
+
+	ctx := context.Background()
+	var wg sync.WaitGroup
+	jobChan := make(chan *pb.KeyRequest)
+	errChan := make(chan error)
+
+	numWorkers := 20
+	for i := 0; i <= numWorkers; i++ {
+		i := i
+		go func() {
+			log.WithField("count", i).Debug("Creating Get stream worker")
+
+			for in := range jobChan {
+				resp, err := l.Get(ctx, in)
+				if err != nil {
+					wg.Done()
+					errChan <- err
+					return
+				}
+
+				err = srv.Send(resp)
+				if err != nil {
+					wg.Done()
+					errChan <- err
+					return
+				}
+
+				wg.Done()
+			}
+		}()
+	}
+
+	go func() {
+		for {
+			in, err := srv.Recv()
+			if err != nil {
+				if err == io.EOF {
+					close(jobChan)
+					wg.Wait()
+					close(errChan)
+					break
+				}
+				errChan <- err
+				return
+			}
+			wg.Add(1)
+			jobChan <- in
+		}
+	}()
+
+	for err := range errChan {
+		return err
+	}
+
+	return nil
 }
 
 func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
