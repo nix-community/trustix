@@ -210,7 +210,13 @@ var rootCmd = &cobra.Command{
 					}
 
 					logMap.Add(logConfig.Name, c)
-					sthmgr.Add(logConfig.Name, sthmanager.NewSTHCache(logConfig.Name, sthstore, c, verifier))
+
+					sthCache, err := sthmanager.NewSTHCache(logConfig.Name, sthstore, c, verifier)
+					if err != nil {
+						return err
+					}
+
+					sthmgr.Add(logConfig.Name, sthCache)
 
 				default:
 					return fmt.Errorf("Mode '%s' could not be initialised for log name %s", logConfig.Mode, logConfig.Name)

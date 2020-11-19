@@ -1,3 +1,9 @@
+[[decider]]
+engine = "percentage"
+
+[decider.percentage]
+minimum = 50
+
 [[log]]
 name = "trustix-test-follower1"
 mode = "trustix-follower"

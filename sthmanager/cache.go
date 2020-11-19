@@ -50,7 +50,7 @@ type sthCache struct {
 	closeChan chan interface{}
 }
 
-func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) STHCache {
+func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) (STHCache, error) {
 	c := &sthCache{
 		store:     store,
 		logName:   logName,
@@ -138,6 +138,19 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 		return err
 	}
 
+	_, err := c.Get()
+	if err != nil {
+		if err != storage.ObjectNotFoundError {
+			return nil, err
+		} else {
+			// New tree, no local state yet
+			err = updateSTH()
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	go func() {
 		run := func() {
 			err := updateSTH()
@@ -167,7 +180,7 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 		}
 	}()
 
-	return c
+	return c, nil
 }
 
 func (c *sthCache) Set(sth *schema.STH) error {
