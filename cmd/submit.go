@@ -32,23 +32,23 @@ import (
 	"github.com/tweag/trustix/api"
 )
 
-var inputHashHex string
-var outputHashHex string
+var keyHex string
+var valueHex string
 
 var submitCommand = &cobra.Command{
 	Use:   "submit",
 	Short: "Submit hashes for inclusion in the log",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if inputHashHex == "" || outputHashHex == "" {
+		if keyHex == "" || valueHex == "" {
 			return fmt.Errorf("Missing input/output hash")
 		}
 
-		inputBytes, err := hex.DecodeString(inputHashHex)
+		inputBytes, err := hex.DecodeString(keyHex)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		outputBytes, err := hex.DecodeString(outputHashHex)
+		outputBytes, err := hex.DecodeString(valueHex)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -65,8 +65,8 @@ var submitCommand = &cobra.Command{
 		c := api.NewTrustixLogAPIClient(conn)
 
 		log.WithFields(log.Fields{
-			"inputHash":  inputHashHex,
-			"outputHash": outputHashHex,
+			"key":   keyHex,
+			"value": valueHex,
 		}).Debug("Submitting mapping")
 
 		r, err := c.Submit(ctx, &api.SubmitRequest{
@@ -88,6 +88,6 @@ var submitCommand = &cobra.Command{
 }
 
 func initSubmit() {
-	submitCommand.Flags().StringVar(&inputHashHex, "input-hash", "", "Input hash in hex encoding")
-	submitCommand.Flags().StringVar(&outputHashHex, "output-hash", "", "Output hash in hex encoding")
+	submitCommand.Flags().StringVar(&keyHex, "input-hash", "", "Input hash in hex encoding")
+	submitCommand.Flags().StringVar(&valueHex, "output-hash", "", "Output hash in hex encoding")
 }

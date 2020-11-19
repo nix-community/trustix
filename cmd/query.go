@@ -38,11 +38,11 @@ var queryCommand = &cobra.Command{
 	Use:   "query",
 	Short: "Query hashes from the log",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if inputHashHex == "" {
+		if keyHex == "" {
 			return fmt.Errorf("Missing input/output hash")
 		}
 
-		inputBytes, err := hex.DecodeString(inputHashHex)
+		inputBytes, err := hex.DecodeString(keyHex)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -64,7 +64,7 @@ var queryCommand = &cobra.Command{
 		}
 
 		log.WithFields(log.Fields{
-			"inputHash": inputHashHex,
+			"key": keyHex,
 		}).Debug("Requesting output mapping for")
 		r, err := c.GetMapValue(ctx, &api.GetMapValueRequest{
 			Key:     inputBytes,
@@ -87,5 +87,5 @@ var queryCommand = &cobra.Command{
 }
 
 func initQuery() {
-	queryCommand.Flags().StringVar(&inputHashHex, "input-hash", "", "Input hash in hex encoding")
+	queryCommand.Flags().StringVar(&keyHex, "input-hash", "", "Input hash in hex encoding")
 }

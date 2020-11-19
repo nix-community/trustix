@@ -36,11 +36,11 @@ var decideCommand = &cobra.Command{
 	Use:   "decide",
 	Short: "Decide output hash from the logs (multiple)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if inputHashHex == "" {
+		if keyHex == "" {
 			return fmt.Errorf("Missing input/output hash")
 		}
 
-		inputBytes, err := hex.DecodeString(inputHashHex)
+		inputBytes, err := hex.DecodeString(keyHex)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -57,7 +57,7 @@ var decideCommand = &cobra.Command{
 		defer cancel()
 
 		log.WithFields(log.Fields{
-			"inputHash": inputHashHex,
+			"key": keyHex,
 		}).Debug("Requesting output mappings for")
 		r, err := c.Decide(ctx, &pb.KeyRequest{
 			Key: inputBytes,
@@ -83,5 +83,5 @@ var decideCommand = &cobra.Command{
 }
 
 func initDecide() {
-	decideCommand.Flags().StringVar(&inputHashHex, "input-hash", "", "Input hash in hex encoding")
+	decideCommand.Flags().StringVar(&keyHex, "input-hash", "", "Input hash in hex encoding")
 }

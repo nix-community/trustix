@@ -73,7 +73,7 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 	var mux sync.Mutex
 
 	hexInput := hex.EncodeToString(in.Key)
-	log.WithField("inputHash", hexInput).Info("Received Get request")
+	log.WithField("key", hexInput).Info("Received Get request")
 
 	getSTH := l.sthmanager.Get
 
@@ -87,8 +87,8 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 			defer wg.Done()
 
 			log.WithFields(log.Fields{
-				"inputHash": hexInput,
-				"logName":   name,
+				"key":     hexInput,
+				"logName": name,
 			}).Info("Querying log")
 
 			sth, err := getSTH(name)
@@ -195,7 +195,7 @@ func (l *TrustixCombinedRPCServer) GetStream(srv pb.TrustixCombinedRPC_GetStream
 func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
 
 	hexInput := hex.EncodeToString(in.Key)
-	log.WithField("inputHash", hexInput).Info("Received Decide request")
+	log.WithField("key", hexInput).Info("Received Decide request")
 
 	var wg sync.WaitGroup
 	var mux sync.Mutex
@@ -214,8 +214,8 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 			defer wg.Done()
 
 			log.WithFields(log.Fields{
-				"inputHash": hexInput,
-				"logName":   name,
+				"key":     hexInput,
+				"logName": name,
 			}).Info("Querying log")
 
 			sth, err := getSTH(name)
