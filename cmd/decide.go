@@ -59,8 +59,8 @@ var decideCommand = &cobra.Command{
 		log.WithFields(log.Fields{
 			"inputHash": inputHashHex,
 		}).Debug("Requesting output mappings for")
-		r, err := c.Decide(ctx, &pb.HashRequest{
-			InputHash: inputBytes,
+		r, err := c.Decide(ctx, &pb.KeyRequest{
+			Key: inputBytes,
 		})
 		if err != nil {
 			log.Fatalf("could not query: %v", err)
@@ -71,11 +71,11 @@ var decideCommand = &cobra.Command{
 		}
 
 		for _, unmatched := range r.Mismatches {
-			fmt.Println(fmt.Sprintf("Found mismatched hash '%s' in log '%s'", hex.EncodeToString(unmatched.OutputHash), *unmatched.LogName))
+			fmt.Println(fmt.Sprintf("Found mismatched hash '%s' in log '%s'", hex.EncodeToString(unmatched.Value), *unmatched.LogName))
 		}
 
 		if r.Decision != nil {
-			fmt.Println(fmt.Sprintf("Decided on output hash '%s' with confidence %d", hex.EncodeToString(r.Decision.OutputHash), *r.Decision.Confidence))
+			fmt.Println(fmt.Sprintf("Decided on output hash '%s' with confidence %d", hex.EncodeToString(r.Decision.Value), *r.Decision.Confidence))
 		}
 
 		return nil

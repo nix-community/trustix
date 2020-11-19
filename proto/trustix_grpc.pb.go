@@ -18,9 +18,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TrustixCombinedRPCClient interface {
 	// Get map[LogName]OutputHash
-	HashMap(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashMapResponse, error)
+	Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error)
 	// Compare(inputHash)
-	Decide(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
+	Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
 }
 
 type trustixCombinedRPCClient struct {
@@ -31,16 +31,16 @@ func NewTrustixCombinedRPCClient(cc grpc.ClientConnInterface) TrustixCombinedRPC
 	return &trustixCombinedRPCClient{cc}
 }
 
-func (c *trustixCombinedRPCClient) HashMap(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashMapResponse, error) {
-	out := new(HashMapResponse)
-	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/HashMap", in, out, opts...)
+func (c *trustixCombinedRPCClient) Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error) {
+	out := new(EntriesResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *trustixCombinedRPCClient) Decide(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*DecisionResponse, error) {
+func (c *trustixCombinedRPCClient) Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error) {
 	out := new(DecisionResponse)
 	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/Decide", in, out, opts...)
 	if err != nil {
@@ -54,9 +54,9 @@ func (c *trustixCombinedRPCClient) Decide(ctx context.Context, in *HashRequest, 
 // for forward compatibility
 type TrustixCombinedRPCServer interface {
 	// Get map[LogName]OutputHash
-	HashMap(context.Context, *HashRequest) (*HashMapResponse, error)
+	Get(context.Context, *KeyRequest) (*EntriesResponse, error)
 	// Compare(inputHash)
-	Decide(context.Context, *HashRequest) (*DecisionResponse, error)
+	Decide(context.Context, *KeyRequest) (*DecisionResponse, error)
 	mustEmbedUnimplementedTrustixCombinedRPCServer()
 }
 
@@ -64,10 +64,10 @@ type TrustixCombinedRPCServer interface {
 type UnimplementedTrustixCombinedRPCServer struct {
 }
 
-func (UnimplementedTrustixCombinedRPCServer) HashMap(context.Context, *HashRequest) (*HashMapResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HashMap not implemented")
+func (UnimplementedTrustixCombinedRPCServer) Get(context.Context, *KeyRequest) (*EntriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedTrustixCombinedRPCServer) Decide(context.Context, *HashRequest) (*DecisionResponse, error) {
+func (UnimplementedTrustixCombinedRPCServer) Decide(context.Context, *KeyRequest) (*DecisionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Decide not implemented")
 }
 func (UnimplementedTrustixCombinedRPCServer) mustEmbedUnimplementedTrustixCombinedRPCServer() {}
@@ -83,26 +83,26 @@ func RegisterTrustixCombinedRPCServer(s grpc.ServiceRegistrar, srv TrustixCombin
 	s.RegisterService(&_TrustixCombinedRPC_serviceDesc, srv)
 }
 
-func _TrustixCombinedRPC_HashMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HashRequest)
+func _TrustixCombinedRPC_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(KeyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrustixCombinedRPCServer).HashMap(ctx, in)
+		return srv.(TrustixCombinedRPCServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.TrustixCombinedRPC/HashMap",
+		FullMethod: "/trustix.TrustixCombinedRPC/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixCombinedRPCServer).HashMap(ctx, req.(*HashRequest))
+		return srv.(TrustixCombinedRPCServer).Get(ctx, req.(*KeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _TrustixCombinedRPC_Decide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HashRequest)
+	in := new(KeyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func _TrustixCombinedRPC_Decide_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/trustix.TrustixCombinedRPC/Decide",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixCombinedRPCServer).Decide(ctx, req.(*HashRequest))
+		return srv.(TrustixCombinedRPCServer).Decide(ctx, req.(*KeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -124,8 +124,8 @@ var _TrustixCombinedRPC_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*TrustixCombinedRPCServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "HashMap",
-			Handler:    _TrustixCombinedRPC_HashMap_Handler,
+			MethodName: "Get",
+			Handler:    _TrustixCombinedRPC_Get_Handler,
 		},
 		{
 			MethodName: "Decide",

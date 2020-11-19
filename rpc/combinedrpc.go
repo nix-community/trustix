@@ -65,14 +65,14 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 	}
 }
 
-func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashRequest) (*pb.HashMapResponse, error) {
+func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.EntriesResponse, error) {
 	responses := make(map[string]*schema.MapEntry)
 
 	var wg sync.WaitGroup
 	var mux sync.Mutex
 
-	hexInput := hex.EncodeToString(in.InputHash)
-	log.WithField("inputHash", hexInput).Info("Received HashMap request")
+	hexInput := hex.EncodeToString(in.Key)
+	log.WithField("inputHash", hexInput).Info("Received Get request")
 
 	getSTH := l.sthmanager.Get
 
@@ -97,15 +97,15 @@ func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashReque
 			}
 
 			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
-				Key:     in.InputHash,
+				Key:     in.Key,
 				MapRoot: sth.MapRoot,
 			})
 			if err != nil {
-				fmt.Println("could not query: %v", err)
+				fmt.Println(fmt.Sprintf("could not query: %v", err))
 				return
 			}
 
-			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.InputHash, resp.Value, sha256.New())
+			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.Key, resp.Value, sha256.New())
 			if !valid {
 				fmt.Println("SMT proof verification failed")
 				return
@@ -126,15 +126,15 @@ func (l *TrustixCombinedRPCServer) HashMap(ctx context.Context, in *pb.HashReque
 
 	wg.Wait()
 
-	return &pb.HashMapResponse{
-		Hashes: responses,
+	return &pb.EntriesResponse{
+		Entries: responses,
 	}, nil
 
 }
 
-func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashRequest) (*pb.DecisionResponse, error) {
+func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
 
-	hexInput := hex.EncodeToString(in.InputHash)
+	hexInput := hex.EncodeToString(in.Key)
 	log.WithField("inputHash", hexInput).Info("Received Decide request")
 
 	var wg sync.WaitGroup
@@ -164,15 +164,15 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 				return
 			}
 			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
-				Key:     in.InputHash,
+				Key:     in.Key,
 				MapRoot: sth.MapRoot,
 			})
 			if err != nil {
-				fmt.Println("could not query: %v", err)
+				fmt.Println(fmt.Sprintf("could not query: %v", err))
 				return
 			}
 
-			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.InputHash, resp.Value, sha256.New())
+			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.Key, resp.Value, sha256.New())
 			if !valid {
 				fmt.Println("SMT proof verification failed")
 				return
@@ -229,9 +229,9 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 
 		confidence := int32(decision.Confidence)
 		if len(decision.LogNames) > 0 {
-			resp.Decision = &pb.OutputHashDecision{
+			resp.Decision = &pb.LogValueDecision{
 				LogNames:   decision.LogNames,
-				OutputHash: outputHash,
+				Value:      outputHash,
 				Confidence: &confidence,
 			}
 		}
@@ -250,9 +250,9 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.HashReques
 			return nil, err
 		}
 
-		resp.Mismatches = append(resp.Mismatches, &pb.OutputHashResponse{
-			LogName:    &input.LogName,
-			OutputHash: h,
+		resp.Mismatches = append(resp.Mismatches, &pb.LogValueResponse{
+			LogName: &input.LogName,
+			Value:   h,
 		})
 	}
 

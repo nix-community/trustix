@@ -9,37 +9,37 @@ package trustix;
 // TrustixCombinedRPC
 service TrustixCombinedRPC {
   // Get map[LogName]OutputHash
-  rpc HashMap (HashRequest) returns (HashMapResponse) {}
+  rpc Get (KeyRequest) returns (EntriesResponse) {}
   // Compare(inputHash)
-  rpc Decide (HashRequest) returns (DecisionResponse) {}
+  rpc Decide (KeyRequest) returns (DecisionResponse) {}
 
 }
 
-message HashRequest {
-  required bytes InputHash = 1;
+message KeyRequest {
+  required bytes Key = 1;
 }
 
-message HashMapResponse {
-  map<string, MapEntry> hashes = 1;
+message EntriesResponse {
+  map<string, MapEntry> Entries = 1;
 }
 
-message OutputHashResponse {
+message LogValueResponse {
   required string LogName = 1;
-  required bytes OutputHash = 2;
+  required bytes Value = 2;
 }
 
-message OutputHashDecision {
+message LogValueDecision {
   repeated string LogNames = 1;
-  required bytes OutputHash = 2;
+  required bytes Value = 2;
   required int32 Confidence = 3;
 }
 
 message DecisionResponse {
-  required OutputHashDecision Decision = 1;
+  required LogValueDecision Decision = 1;
 
   // Non-matches (hash mismatch)
-  repeated OutputHashResponse Mismatches = 2;
+  repeated LogValueResponse Mismatches = 2;
 
-  // Full misses (missing log entry)
+  // Full misses (lognames missing log entry entirely)
   repeated string Misses = 3;
 }

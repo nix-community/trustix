@@ -59,14 +59,14 @@ var queryMap = &cobra.Command{
 		log.WithFields(log.Fields{
 			"inputHash": inputHashHex,
 		}).Debug("Requesting output mappings for")
-		r, err := c.HashMap(ctx, &pb.HashRequest{
-			InputHash: inputBytes,
+		r, err := c.Get(ctx, &pb.KeyRequest{
+			Key: inputBytes,
 		})
 		if err != nil {
 			log.Fatalf("could not query: %v", err)
 		}
 
-		for name, h := range r.Hashes {
+		for name, h := range r.Entries {
 			s := hex.EncodeToString(h.Value)
 			if err != nil {
 				return err
