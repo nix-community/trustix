@@ -12,7 +12,7 @@ let
   inherit (pkgs) lib;
 
 in pkgs.buildGoApplication {
-  pname = "trustix";
+  pname = "trustiqx";
   version = "dev";
 
   src = lib.cleanSourceWith {
