@@ -133,7 +133,7 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixL
 		for {
 			q, err := api.submitBatch()
 			if err != nil {
-				fmt.Println(err)
+				log.Error(err)
 				time.Sleep(duration)
 				continue
 			}
@@ -394,14 +394,14 @@ func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 
 			itemBytes, err := txn.Get([]byte("QUEUE"), []byte(fmt.Sprintf("%d", itemId)))
 			if err != nil {
-				fmt.Println(err)
+				log.Error(err)
 				continue
 			}
 
 			item := &KeyValuePair{}
 			err = proto.Unmarshal(itemBytes, item)
 			if err != nil {
-				fmt.Println(err)
+				log.Error(err)
 				continue
 			}
 

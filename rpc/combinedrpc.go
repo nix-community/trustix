@@ -93,7 +93,7 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 
 			sth, err := getSTH(name)
 			if err != nil {
-				fmt.Println(fmt.Errorf("could not get STH: %v", err))
+				log.Error(fmt.Errorf("could not get STH: %v", err))
 				return
 			}
 
@@ -102,20 +102,20 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 				MapRoot: sth.MapRoot,
 			})
 			if err != nil {
-				fmt.Println(fmt.Sprintf("could not query: %v", err))
+				log.Error(fmt.Sprintf("could not query: %v", err))
 				return
 			}
 
 			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.Key, resp.Value, sha256.New())
 			if !valid {
-				fmt.Println("SMT proof verification failed")
+				log.Error("SMT proof verification failed")
 				return
 			}
 
 			entry := &schema.MapEntry{}
 			err = proto.Unmarshal(resp.Value, entry)
 			if err != nil {
-				fmt.Println("Could not unmarshal map value")
+				log.Error("Could not unmarshal map value")
 				return
 			}
 
@@ -220,7 +220,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 
 			sth, err := getSTH(name)
 			if err != nil {
-				fmt.Println(fmt.Errorf("could not get STH: %v", err))
+				log.WithField("error", err).Error("Could not get STH")
 				return
 			}
 			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
@@ -228,20 +228,20 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 				MapRoot: sth.MapRoot,
 			})
 			if err != nil {
-				fmt.Println(fmt.Sprintf("could not query: %v", err))
+				log.WithField("error", err).Error("Could not get query")
 				return
 			}
 
 			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.Key, resp.Value, sha256.New())
 			if !valid {
-				fmt.Println("SMT proof verification failed")
+				log.Error("SMT proof verification failed")
 				return
 			}
 
 			mapEntry := &schema.MapEntry{}
 			err = json.Unmarshal(resp.Value, mapEntry)
 			if err != nil {
-				fmt.Println("Could not unmarshal value")
+				log.Error("Could not unmarshal value")
 				return
 			}
 
@@ -249,7 +249,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 			defer mux.Unlock()
 
 			if err != nil {
-				fmt.Println(err)
+				log.Error(err)
 				misses = append(misses, name)
 				return
 			}
