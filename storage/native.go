@@ -64,6 +64,10 @@ func (t *nativeTxn) Set(bucket []byte, key []byte, value []byte) error {
 	return t.txn.Set(createCompoundNativeKey(bucket, key), value)
 }
 
+func (t *nativeTxn) Delete(bucket []byte, key []byte) error {
+	return t.txn.Delete(createCompoundNativeKey(bucket, key))
+}
+
 func NewNativeStorage(name string, stateDirectory string) (*nativeStorage, error) {
 	path := path.Join(stateDirectory, name+".db")
 

@@ -70,6 +70,12 @@ func (t *memoryTxn) Set(bucket []byte, key []byte, value []byte) error {
 	})
 }
 
+func (t *memoryTxn) Delete(bucket []byte, key []byte) error {
+	return t.txn.Delete("record", &memdbRecord{
+		Key: base64.StdEncoding.EncodeToString(createCompoundNativeKey(bucket, key)),
+	})
+}
+
 func NewMemoryStorage() (*memoryStorage, error) {
 	schema := &memdb.DBSchema{
 		Tables: map[string]*memdb.TableSchema{

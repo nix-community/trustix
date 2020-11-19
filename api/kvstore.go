@@ -411,7 +411,11 @@ func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 				continue
 			}
 
-			// TODO: Delete item
+			err = txn.Delete([]byte("QUEUE"), []byte(fmt.Sprintf("%d", itemId)))
+			if err != nil {
+				log.Error(err)
+				continue
+			}
 
 			items = append(items, item)
 		}
