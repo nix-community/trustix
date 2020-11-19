@@ -454,6 +454,9 @@ func initCommands() {
 
 	rootCmd.AddCommand(flushCommand)
 
+	rootCmd.AddCommand(exportCommand)
+	initExport()
+
 	rootCmd.AddCommand(nixHookCommand)
 }
 

@@ -80,3 +80,15 @@ func (s *TrustixAPIServer) Flush(ctx context.Context, req *FlushRequest) (*Flush
 
 	return s.impl.Flush(ctx, req)
 }
+
+func (s *TrustixAPIServer) GetMHLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
+	return s.impl.GetMHLogConsistencyProof(ctx, req)
+}
+
+func (s *TrustixAPIServer) GetMHLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (*ProofResponse, error) {
+	return s.impl.GetMHLogAuditProof(ctx, req)
+}
+
+func (s *TrustixAPIServer) GetMHLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+	return s.impl.GetMHLogEntries(ctx, req)
+}

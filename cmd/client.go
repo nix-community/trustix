@@ -119,5 +119,5 @@ func createClientConn(address string, pubKey crypto.PublicKey) (*grpc.ClientConn
 
 // Create a context with the default timeout set
 func createContext() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), time.Second)
+	return context.WithTimeout(context.Background(), time.Second*30)
 }
