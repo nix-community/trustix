@@ -3,12 +3,12 @@
 , buildGoModule
 , fetchFromGitHub
 }:
-
 let
   pname = "trillian";
   version = "1.3.10";
 
-in buildGoModule {
+in
+buildGoModule {
   inherit pname version;
   vendorSha256 = "194zpzg6b7y046djs137rsiih2babzfzck1106c516xdpc2jj56m";
 
