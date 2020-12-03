@@ -13,7 +13,7 @@ let
 
 in
 pkgs.buildGoApplication {
-  pname = "trustiqx";
+  pname = "trustix";
   version = "dev";
 
   src = lib.cleanSourceWith {

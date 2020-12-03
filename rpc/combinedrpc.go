@@ -32,7 +32,6 @@ import (
 	"io"
 	"sync"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/api"
@@ -113,7 +112,7 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 			}
 
 			entry := &schema.MapEntry{}
-			err = proto.Unmarshal(resp.Value, entry)
+			err = json.Unmarshal(resp.Value, entry)
 			if err != nil {
 				log.Error("Could not unmarshal map value")
 				return

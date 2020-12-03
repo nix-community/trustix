@@ -96,6 +96,23 @@ func (l *VerifiableLog) Append(data []byte) error {
 	return l.addNodeToLevel(0, leaf)
 }
 
+func (l *VerifiableLog) AppendKV(key []byte, value []byte) error {
+	l.treeSize += 1
+	h := sha256.New()
+	h.Write([]byte{0}) // Write 0x00 prefix
+	h.Write(key)
+	h.Write([]byte(":"))
+	h.Write(value)
+
+	leaf := &schema.LogLeaf{
+		Key:    key,
+		Value:  value,
+		Digest: h.Sum(nil),
+	}
+
+	return l.addNodeToLevel(0, leaf)
+}
+
 func (l *VerifiableLog) addNodeToLevel(level int, leaf *schema.LogLeaf) error {
 	err := l.storage.Append(l.treeSize, level, leaf)
 	if err != nil {
