@@ -1,0 +1,2 @@
+all:
+	nix-build ./.

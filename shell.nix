@@ -17,7 +17,7 @@ pkgs.mkShell {
     pkgs.gore
 
     pkgs.nixpkgs-fmt
-    # pkgs.gomod2nix
+    pkgs.gomod2nix
 
     # pkgs.libgit2
     pkgs.pkgconfig

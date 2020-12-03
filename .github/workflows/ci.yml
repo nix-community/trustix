@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    paths-ignore:
+    - '**.md'
+
+jobs:
+  nixpkgs-fmt:
+    runs-on: ubuntu-latest
+    env:
+      NIX_PATH: "nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz"
+    steps:
+    - uses: cachix/install-nix-action@v12
+    - uses: actions/checkout@v1
+    - name: Check format
+      run: ./check-fmt
+
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        nixpkgs_version: ["master"]
+        # os: [ubuntu-latest, macos-latest]
+    env:
+      NIX_PATH: "nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz"
+    steps:
+    - uses: cachix/install-nix-action@v12
+    - uses: actions/checkout@v1
+    - run: nix-shell --run 'gomod2nix && make'

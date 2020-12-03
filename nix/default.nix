@@ -13,7 +13,7 @@ let
       (import ./overlay.nix)
       (import "${(builtins.fetchGit {
         url = "git@github.com:tweag/gomod2nix.git";
-        rev = "d43300e22e1d379b80e4736c6583d5b9078b3c45";
+        rev = "929d740884811b388acc0f037efba7b5bc5745e8";
       })}/overlay.nix")
     ];
   };
