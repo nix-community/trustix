@@ -486,7 +486,7 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 
 		// Append value to both verifiable log & sparse indexed tree
 		log.Debug("Appending value to log")
-		err = vLog.AppendKV(pair.Key, pair.Value)
+		_, err = vLog.AppendKV(pair.Key, pair.Value)
 		if err != nil {
 			return err
 		}

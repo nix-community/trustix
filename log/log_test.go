@@ -140,7 +140,7 @@ func TestLogRoots(t *testing.T) {
 	assert.Equal("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", hex.EncodeToString(root), fmt.Sprintf("Correct root for zero inputs"))
 
 	for _, input := range mkInputs() {
-		err = tree.Append(input.Input)
+		_, err = tree.Append(input.Input)
 		if err != nil {
 			t.Fatalf("tree.Append failed: %v", err)
 		}
@@ -167,7 +167,7 @@ func TestAuditProofs(t *testing.T) {
 
 	inputs := mkInputs()
 	for _, input := range inputs {
-		err = tree.Append(input.Input)
+		_, err = tree.Append(input.Input)
 		if err != nil {
 			t.Fatalf("tree.Append failed: %v", err)
 		}
@@ -223,7 +223,7 @@ func TestConsistencyProofs(t *testing.T) {
 
 	inputs := mkInputs()
 	for _, input := range inputs {
-		err = tree.Append(input.Input)
+		_, err = tree.Append(input.Input)
 		if err != nil {
 			t.Fatalf("tree.Append failed: %v", err)
 		}

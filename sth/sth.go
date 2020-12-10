@@ -50,7 +50,7 @@ func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *v
 	}
 	smTreeRoot := smTree.Root()
 
-	err = vMapLog.Append(smTreeRoot)
+	_, err = vMapLog.Append(smTreeRoot)
 	if err != nil {
 		return nil, err
 	}

@@ -82,7 +82,7 @@ func (l *VerifiableLog) Root() ([]byte, error) {
 	return digest, nil
 }
 
-func (l *VerifiableLog) Append(data []byte) error {
+func (l *VerifiableLog) Append(data []byte) (*schema.LogLeaf, error) {
 	l.treeSize += 1
 	h := sha256.New()
 	h.Write([]byte{0}) // Write 0x00 prefix
@@ -93,10 +93,15 @@ func (l *VerifiableLog) Append(data []byte) error {
 		Digest: h.Sum(nil),
 	}
 
-	return l.addNodeToLevel(0, leaf)
+	err := l.addNodeToLevel(0, leaf)
+	if err != nil {
+		return nil, err
+	}
+
+	return leaf, nil
 }
 
-func (l *VerifiableLog) AppendKV(key []byte, value []byte) error {
+func (l *VerifiableLog) AppendKV(key []byte, value []byte) (*schema.LogLeaf, error) {
 	l.treeSize += 1
 	h := sha256.New()
 	h.Write([]byte{0}) // Write 0x00 prefix
@@ -110,7 +115,12 @@ func (l *VerifiableLog) AppendKV(key []byte, value []byte) error {
 		Digest: h.Sum(nil),
 	}
 
-	return l.addNodeToLevel(0, leaf)
+	err := l.addNodeToLevel(0, leaf)
+	if err != nil {
+		return nil, err
+	}
+
+	return leaf, nil
 }
 
 func (l *VerifiableLog) addNodeToLevel(level int, leaf *schema.LogLeaf) error {
