@@ -75,6 +75,14 @@ message FlushRequest {
 message FlushResponse {
 }
 
+message ValueRequest {
+  required bytes Digest = 1;
+}
+
+message ValueResponse {
+  required bytes Value = 1;
+}
+
 service TrustixLogAPI {
 
   // Aggregate
@@ -84,6 +92,10 @@ service TrustixLogAPI {
   rpc Submit (SubmitRequest) returns (SubmitResponse) {}
 
   rpc Flush (FlushRequest) returns (FlushResponse) {}
+
+  // Content-addressed values
+
+  rpc GetValue(ValueRequest) returns (ValueResponse) {}
 
   // Log
 

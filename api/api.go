@@ -51,6 +51,9 @@ type TrustixLogAPI interface {
 	// Flush the queue and write new heads
 	Flush(context.Context, *FlushRequest) (*FlushResponse, error)
 
+	// Get content-addressed computation outputs
+	GetValue(context.Context, *ValueRequest) (*ValueResponse, error)
+
 	// Get map head log consistency proof
 	GetMHLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
 
