@@ -25,18 +25,19 @@ in
 
   # A simple submit/get test
   submission = mkTest "submit" ''
-    input_hash="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
-    output_hash="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
+    key="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
+    value="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
+    expected="2eb044328ae92b67e10f3e3343db9ee18295e94b11590c2fdcdfa65889c8fb28"
 
     export TRUSTIX_SOCK=./sock
 
     systemfd -s ./sock -- trustix --config ${./config-simple.toml} &
 
-    trustix submit --input-hash "$input_hash" --output-hash "$output_hash"
+    trustix submit --input-hash "$key" --output-hash "$value"
     trustix flush
 
     echo "Checking input equality"
-    test $(trustix query --input-hash "$input_hash" | cut -d' ' -f 3) = "$output_hash"
+    test $(trustix query --input-hash "$key" | cut -d' ' -f 3) = "$expected"
   '';
 
   # Test comparing multiple logs
@@ -65,8 +66,8 @@ in
     trustix decide --input-hash "$input_hash" --address "unix://./agg.sock" > output
 
     # Assert correct output
-    grep "Found mismatched hash '053e399dbbdd74b10ad6d2cfa28ab4aab7e342d613a731c7dc4b66c2283e0757' in log 'trustix-test-follower3'" output > /dev/null
-    grep "Decided on output hash '28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321' with confidence 66" output > /dev/null
+    grep "Found mismatched digest '2dedcb6e16ca0e64a514baf26d5b39b1860cf166760163a106afb2892b17cff9' in log 'trustix-test-follower3'" output > /dev/null
+    grep "Decided on output digest '2eb044328ae92b67e10f3e3343db9ee18295e94b11590c2fdcdfa65889c8fb28' with confidence 66" output > /dev/null
   '';
 }
   # Storage (one test per storage type)
@@ -85,7 +86,7 @@ in
         config =
           let
             drv = pkgs.writeText "conf-${storageType}" (builtins.toJSON {
-              log = [ (old // { storage = { type = "native"; }; }) ];
+              log = [ (old // { storage = { type = storageType; }; }) ];
             });
           in
           drv.overrideAttrs (old: {
@@ -101,6 +102,7 @@ in
         value = mkTest name ''
           input_hash="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
           output_hash="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
+          expected="2eb044328ae92b67e10f3e3343db9ee18295e94b11590c2fdcdfa65889c8fb28"
 
           systemfd -s ./log.sock -- trustix --config ${config} &
 
@@ -108,8 +110,10 @@ in
 
           trustix submit --input-hash "$input_hash" --output-hash "$output_hash"
 
+          trustix flush
+
           echo "Checking input equality"
-          test $(trustix query --input-hash "$input_hash" | cut -d' ' -f 3) = "$output_hash"
+          test $(trustix query --input-hash "$input_hash" | cut -d' ' -f 3) = "$expected"
         '';
       }) [
     "native"
