@@ -260,7 +260,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 
 			inputs = append(inputs, &decider.LogDeciderInput{
 				LogName:    name,
-				OutputHash: hex.EncodeToString(mapEntry.Value),
+				OutputHash: hex.EncodeToString(mapEntry.Digest),
 			})
 
 		}()

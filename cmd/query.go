@@ -80,7 +80,7 @@ var queryCommand = &cobra.Command{
 			log.Fatalf("Could not unmarshal value")
 		}
 
-		fmt.Println(fmt.Sprintf("Output hash: %s", hex.EncodeToString(mapEntry.Value)))
+		fmt.Println(fmt.Sprintf("Output hash: %s", hex.EncodeToString(mapEntry.Digest)))
 
 		return nil
 	},

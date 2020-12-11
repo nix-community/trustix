@@ -37,6 +37,7 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
+	ca "github.com/tweag/trustix/cavaluestore"
 	vlog "github.com/tweag/trustix/log"
 	"github.com/tweag/trustix/schema"
 	sthsig "github.com/tweag/trustix/sth"
@@ -347,6 +348,10 @@ func (kv *kvStoreLogApi) Flush(ctx context.Context, in *FlushRequest) (*FlushRes
 	return &FlushResponse{}, nil
 }
 
+func (kv *kvStoreLogApi) GetValue(ctx context.Context, in *ValueRequest) (*ValueResponse, error) {
+	return nil, nil
+}
+
 func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 	kv.queueMux.Lock()
 	defer kv.queueMux.Unlock()
@@ -471,7 +476,7 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 			if err != nil {
 				return err
 			}
-			if bytes.Equal(oldEntry.Value, pair.Value) {
+			if bytes.Equal(oldEntry.Digest, pair.Value) {
 				continue
 			}
 
@@ -484,17 +489,23 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 
 		wrote = true
 
+		// Add value to content-addressed value store
+		err = ca.Set(txn, pair.Value)
+		if err != nil {
+			return err
+		}
+
 		// Append value to both verifiable log & sparse indexed tree
 		log.Debug("Appending value to log")
-		_, err = vLog.AppendKV(pair.Key, pair.Value)
+		leaf, err := vLog.AppendKV(pair.Key, pair.Value)
 		if err != nil {
 			return err
 		}
 
 		vLogSize := uint64(vLog.Size() - 1)
 		entry, err := json.Marshal(&schema.MapEntry{
-			Value: pair.Value,
-			Index: &vLogSize,
+			Digest: leaf.Digest,
+			Index:  &vLogSize,
 		})
 		if err != nil {
 			return err

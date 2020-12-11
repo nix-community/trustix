@@ -70,6 +70,10 @@ func (s *TrustixAPIGRPCClient) Flush(ctx context.Context, in *FlushRequest) (*Fl
 	return s.client.Flush(ctx, in)
 }
 
+func (s *TrustixAPIGRPCClient) GetValue(ctx context.Context, in *ValueRequest) (*ValueResponse, error) {
+	return s.client.GetValue(ctx, in)
+}
+
 func (s *TrustixAPIGRPCClient) GetMHLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
 	return s.client.GetMHLogConsistencyProof(ctx, req)
 }
