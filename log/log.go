@@ -89,7 +89,6 @@ func (l *VerifiableLog) Append(data []byte) (*schema.LogLeaf, error) {
 	h.Write(data)
 
 	leaf := &schema.LogLeaf{
-		Value:  data,
 		Digest: h.Sum(nil),
 	}
 
@@ -111,7 +110,6 @@ func (l *VerifiableLog) AppendKV(key []byte, value []byte) (*schema.LogLeaf, err
 
 	leaf := &schema.LogLeaf{
 		Key:    key,
-		Value:  value,
 		Digest: h.Sum(nil),
 	}
 

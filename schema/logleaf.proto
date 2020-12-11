@@ -5,5 +5,4 @@ option go_package = "github.com/tweag/trustix/schema";
 message LogLeaf {
   required bytes Digest = 1;
   optional bytes Key = 2;
-  optional bytes Value = 3;
 }
