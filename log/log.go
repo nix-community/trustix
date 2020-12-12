@@ -24,8 +24,6 @@
 package log
 
 import (
-	"crypto/sha256"
-
 	"github.com/tweag/trustix/schema"
 	"github.com/tweag/trustix/storage"
 )
@@ -49,8 +47,7 @@ func (l *VerifiableLog) Size() uint64 {
 
 func (l *VerifiableLog) Root() ([]byte, error) {
 	if l.treeSize == 0 {
-		h := sha256.New()
-		return h.Sum(nil), nil
+		return LeafDigest(nil), nil
 	}
 
 	level := 0
@@ -84,12 +81,9 @@ func (l *VerifiableLog) Root() ([]byte, error) {
 
 func (l *VerifiableLog) Append(data []byte) (*schema.LogLeaf, error) {
 	l.treeSize += 1
-	h := sha256.New()
-	h.Write([]byte{0}) // Write 0x00 prefix
-	h.Write(data)
 
 	leaf := &schema.LogLeaf{
-		Digest: h.Sum(nil),
+		Digest: LeafDigest(data),
 	}
 
 	err := l.addNodeToLevel(0, leaf)
@@ -102,15 +96,10 @@ func (l *VerifiableLog) Append(data []byte) (*schema.LogLeaf, error) {
 
 func (l *VerifiableLog) AppendKV(key []byte, value []byte) (*schema.LogLeaf, error) {
 	l.treeSize += 1
-	h := sha256.New()
-	h.Write([]byte{0}) // Write 0x00 prefix
-	h.Write(key)
-	h.Write([]byte(":"))
-	h.Write(value)
 
 	leaf := &schema.LogLeaf{
 		Key:    key,
-		Digest: h.Sum(nil),
+		Digest: LeafDigestKV(key, value),
 	}
 
 	err := l.addNodeToLevel(0, leaf)

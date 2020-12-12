@@ -27,6 +27,24 @@ import (
 	"crypto/sha256"
 )
 
+func LeafDigest(data []byte) []byte {
+	h := sha256.New()
+	if data != nil {
+		h.Write([]byte{0}) // Write 0x00 prefix
+		h.Write(data)
+	}
+	return h.Sum(nil)
+}
+
+func LeafDigestKV(key []byte, value []byte) []byte {
+	h := sha256.New()
+	h.Write([]byte{0}) // Write 0x00 prefix
+	h.Write(key)
+	h.Write([]byte(":"))
+	h.Write(value)
+	return h.Sum(nil)
+}
+
 func isRightChild(node uint64) bool {
 	return node%2 == 1
 }

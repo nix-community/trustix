@@ -476,7 +476,8 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 			if err != nil {
 				return err
 			}
-			if bytes.Equal(oldEntry.Digest, pair.Value) {
+
+			if bytes.Equal(oldEntry.Digest, vlog.LeafDigestKV(pair.Key, pair.Value)) {
 				continue
 			}
 
