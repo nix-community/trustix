@@ -477,7 +477,8 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 				return err
 			}
 
-			if bytes.Equal(oldEntry.Digest, vlog.LeafDigestKV(pair.Key, pair.Value)) {
+			valueDigest := sha256.Sum256(pair.Value)
+			if bytes.Equal(oldEntry.Digest, valueDigest[:]) {
 				continue
 			}
 
@@ -505,7 +506,7 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 
 		vLogSize := uint64(vLog.Size() - 1)
 		entry, err := json.Marshal(&schema.MapEntry{
-			Digest: leaf.Digest,
+			Digest: leaf.ValueDigest,
 			Index:  &vLogSize,
 		})
 		if err != nil {

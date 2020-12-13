@@ -30,7 +30,7 @@ import (
 
 func NewLeaf(digest []byte, value []byte) (*schema.LogLeaf, error) {
 	return &schema.LogLeaf{
-		Digest: digest,
+		LeafDigest: digest,
 	}, nil
 }
 

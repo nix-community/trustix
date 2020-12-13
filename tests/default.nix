@@ -27,7 +27,7 @@ in
   submission = mkTest "submit" ''
     key="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
     value="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
-    expected="2eb044328ae92b67e10f3e3343db9ee18295e94b11590c2fdcdfa65889c8fb28"
+    expected="5768f7201db3dccf3ec8c5ec2be5108c411396ad8c1351d89294f515456cdc23"
 
     export TRUSTIX_SOCK=./sock
 
@@ -66,8 +66,8 @@ in
     trustix decide --input-hash "$input_hash" --address "unix://./agg.sock" > output
 
     # Assert correct output
-    grep "Found mismatched digest '2dedcb6e16ca0e64a514baf26d5b39b1860cf166760163a106afb2892b17cff9' in log 'trustix-test-follower3'" output > /dev/null
-    grep "Decided on output digest '2eb044328ae92b67e10f3e3343db9ee18295e94b11590c2fdcdfa65889c8fb28' with confidence 66" output > /dev/null
+    grep "Found mismatched digest '7ab45a4e40d2c0e72291ad824f8a4b208b2921e44c283022a66e87ab7c61ee38' in log 'trustix-test-follower3'" output > /dev/null
+    grep "Decided on output digest '5768f7201db3dccf3ec8c5ec2be5108c411396ad8c1351d89294f515456cdc23' with confidence 66" output > /dev/null
   '';
 }
   # Storage (one test per storage type)
@@ -102,7 +102,7 @@ in
         value = mkTest name ''
           input_hash="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
           output_hash="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
-          expected="2eb044328ae92b67e10f3e3343db9ee18295e94b11590c2fdcdfa65889c8fb28"
+          expected="5768f7201db3dccf3ec8c5ec2be5108c411396ad8c1351d89294f515456cdc23"
 
           systemfd -s ./log.sock -- trustix --config ${config} &
 
