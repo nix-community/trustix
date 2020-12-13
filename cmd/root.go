@@ -432,6 +432,7 @@ func initCommands() {
 	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
 
 	log.SetLevel(log.DebugLevel)
+	log.SetOutput(os.Stderr)
 
 	homeDir, _ := os.UserHomeDir()
 	defaultStateDir := path.Join(homeDir, ".local/share/trustix")
