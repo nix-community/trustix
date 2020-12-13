@@ -23,9 +23,9 @@ pkgs.buildGoApplication {
 
   modules = ./gomod2nix.toml;
 
-  nativeBuildInputs = [
-    pkgs.pkgconfig
-  ];
+  subPackages = [ "." ];
+
+  nativeBuildInputs = [ pkgs.pkgconfig ];
 
   CGO_ENABLED = "1";
 

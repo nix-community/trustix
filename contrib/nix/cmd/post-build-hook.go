@@ -40,7 +40,7 @@ import (
 const NIX_STORE_DIR = "/nix/store"
 
 var nixHookCommand = &cobra.Command{
-	Use:   "nix-hook",
+	Use:   "post-build-hook",
 	Short: "Submit hashes for inclusion in the log (Nix post-build hook)",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -58,6 +58,7 @@ var nixHookCommand = &cobra.Command{
 		encoding := base32.NewEncoding("0123456789abcdfghijklmnpqrsvwxyz")
 
 		for _, storePath := range storePaths {
+			storePath := storePath
 			if storePath == "" {
 				continue
 			}
