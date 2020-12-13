@@ -21,21 +21,59 @@
 // SOFTWARE.
 //
 
-package cavaluestore
+package cmd
 
 import (
-	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"os"
 
-	"github.com/tweag/trustix/storage"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"github.com/tweag/trustix/api"
 )
 
-const Bucket = "VALUES"
+var valueDigest string
 
-func Get(txn storage.Transaction, digest []byte) ([]byte, error) {
-	return txn.Get([]byte(Bucket), digest)
+var getValueCommand = &cobra.Command{
+	Use:   "get-value",
+	Short: "Get computed value based on content digest",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if valueDigest == "" {
+			return fmt.Errorf("Missing input/output hash")
+		}
+
+		digest, err := hex.DecodeString(valueDigest)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		conn, err := createClientConn(dialAddress, nil)
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+		defer conn.Close()
+
+		c := api.NewTrustixLogAPIClient(conn)
+		ctx, cancel := createContext()
+		defer cancel()
+
+		resp, err := c.GetValue(ctx, &api.ValueRequest{
+			Digest: digest,
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, err = os.Stdout.Write(resp.Value)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return nil
+	},
 }
 
-func Set(txn storage.Transaction, value []byte) error {
-	digest := sha256.Sum256(value)
-	return txn.Set([]byte(Bucket), digest[:], value)
+func initGetValue() {
+	getValueCommand.Flags().StringVar(&valueDigest, "digest", "", "Value content digest")
 }

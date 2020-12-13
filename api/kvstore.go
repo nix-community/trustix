@@ -333,7 +333,6 @@ func (kv *kvStoreLogApi) Submit(ctx context.Context, req *SubmitRequest) (*Submi
 }
 
 func (kv *kvStoreLogApi) Flush(ctx context.Context, in *FlushRequest) (*FlushResponse, error) {
-
 	for {
 		q, err := kv.submitBatch()
 		if err != nil {
@@ -344,12 +343,23 @@ func (kv *kvStoreLogApi) Flush(ctx context.Context, in *FlushRequest) (*FlushRes
 			return &FlushResponse{}, nil
 		}
 	}
-
-	return &FlushResponse{}, nil
 }
 
 func (kv *kvStoreLogApi) GetValue(ctx context.Context, in *ValueRequest) (*ValueResponse, error) {
-	return nil, nil
+	var value []byte
+	err := kv.store.View(func(txn storage.Transaction) error {
+		v, err := ca.Get(txn, in.Digest)
+		value = v
+		return err
+
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &ValueResponse{
+		Value: value,
+	}, nil
 }
 
 func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {

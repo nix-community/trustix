@@ -447,6 +447,9 @@ func initCommands() {
 	rootCmd.AddCommand(queryCommand)
 	initQuery()
 
+	rootCmd.AddCommand(getValueCommand)
+	initGetValue()
+
 	rootCmd.AddCommand(queryMap)
 	initMapQuery()
 
