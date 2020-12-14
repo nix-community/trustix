@@ -63,11 +63,12 @@ type SignerConfig struct {
 }
 
 type LogConfig struct {
-	Name      string           `toml:"name"`
-	Mode      string           `toml:"mode"`
-	Storage   *StorageConfig   `toml:"storage"`
-	Transport *TransportConfig `toml:"transport"`
-	Signer    *SignerConfig    `toml:"signer"`
+	Name      string            `toml:"name"`
+	Mode      string            `toml:"mode"`
+	Storage   *StorageConfig    `toml:"storage"`
+	Transport *TransportConfig  `toml:"transport"`
+	Signer    *SignerConfig     `toml:"signer"`
+	Meta      map[string]string `toml:"meta"`
 }
 
 type LuaDeciderConfig struct {

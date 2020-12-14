@@ -1,23 +1,23 @@
-[[log]]
-# Possible modes are trustix-log, trustix-follower & trustix-gossip
-# Note that right now trustix-gossip is a TODO
-mode = "trustix-log"
+[[decider]]
+engine = "percentage"
 
+[decider.percentage]
+minimum = 50
+
+[[log]]
+mode = "trustix-log"
 # Try to be globally unique when assigning names
 # This is not a strict requirement as names are only enforced to be locally unique
 name = "trustix-test"
 
+[log.meta]
+upstream = "https://cache.nixos.org"
 
 [log.storage]
-type = "git"
+type = "native"
 
-[log.storage.git]
-# Do note that "remote" is set at EVERY startup to follow declarative config
-remote = "git@github.com:someuser/trustix-log.git"
-path = "repo"  # Relative to state directory
-# Only used by trustix-log mode
-commiter = "trustix"
-email = "trustix@example.com"
+[log.storage.native]
+path = "trustix-log"
 
 [log.signer]
 # The difference between type & key-type is that type is the Trustix "signer mode" while key-type is the type of key
