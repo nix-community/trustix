@@ -29,15 +29,35 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"sync"
 
+	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
+	"github.com/tweag/trustix/contrib/nix/schema"
 )
 
 const NIX_STORE_DIR = "/nix/store"
+
+func runCommand(command ...string) (string, error) {
+	cmd := exec.Command(command[0], command[1:]...)
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
+
+	err := cmd.Run()
+	if err != nil {
+		return "", err
+	}
+
+	stdoutBytes := bytes.TrimSpace(stdout.Bytes())
+	if len(stdoutBytes) == 0 {
+		return "", fmt.Errorf("Empty decoded store hash")
+	}
+	return strings.TrimSpace(string(stdoutBytes)), nil
+}
 
 var nixHookCommand = &cobra.Command{
 	Use:   "post-build-hook",
@@ -79,54 +99,56 @@ var nixHookCommand = &cobra.Command{
 					return
 				}
 
-				cmd := exec.Command("nix-store", "--query", "--hash", storePath)
-				var stdout bytes.Buffer
-				cmd.Stdout = &stdout
-
-				err = cmd.Run()
+				narHash, err := runCommand("nix-store", "--query", "--hash", storePath)
 				if err != nil {
 					errChan <- err
 					return
 				}
 
-				stdoutBytes := bytes.TrimSpace(stdout.Bytes())
-				if len(stdoutBytes) == 0 {
-					errChan <- fmt.Errorf("Empty decoded store hash")
-					return
-				}
-
-				components := bytes.Split(stdoutBytes, []byte(":"))
-				if len(components) != 2 {
-					errChan <- fmt.Errorf("Malformed store hash output")
-					return
-				}
-
-				if !bytes.Equal(components[0], []byte("sha256")) {
-					errChan <- fmt.Errorf("Store hash type mismatch")
-					return
-				}
-
-				// Pad
-				b32Hash := string(components[1])
-				for i := len(b32Hash); i <= 56; i++ {
-					b32Hash = b32Hash + "="
-				}
-
-				hash, err := encoding.DecodeString(b32Hash)
+				var narSize uint64
+				narSizeStr, err := runCommand("nix-store", "--query", "--size", storePath)
 				if err != nil {
 					errChan <- err
 					return
+				}
+				if s, err := strconv.ParseUint(narSizeStr, 10, 64); err == nil {
+					narSize = s
+				}
+
+				refs := []string{}
+				refsStr, err := runCommand("nix-store", "--query", "--references", storePath)
+				if err != nil {
+					errChan <- err
+					return
+				}
+				for _, path := range strings.Split(refsStr, "\n") {
+					if len(path) == 0 {
+						continue
+					}
+					refs = append(refs, strings.TrimPrefix(path, NIX_STORE_DIR+"/"))
+				}
+
+				narinfo := &schema.NarInfo{
+					StorePath:  &storePath,
+					NarHash:    &narHash,
+					NarSize:    &narSize,
+					References: refs,
 				}
 
 				log.WithFields(log.Fields{
-					"inputHash":  storeHashStr,
-					"outputHash": string(components[1]),
+					"storePath": storePath,
 				}).Debug("Submitting mapping")
+
+				narinfoBytes, err := proto.Marshal(narinfo)
+				if err != nil {
+					errChan <- err
+					return
+				}
 
 				mux.Lock()
 				req.Items = append(req.Items, &api.KeyValuePair{
 					Key:   storeHash,
-					Value: hash,
+					Value: narinfoBytes,
 				})
 				mux.Unlock()
 			}()
@@ -149,12 +171,10 @@ var nixHookCommand = &cobra.Command{
 		defer cancel()
 
 		c := api.NewTrustixLogAPIClient(conn)
-		r, err := c.Submit(ctx, req)
+		_, err = c.Submit(ctx, req)
 		if err != nil {
 			log.Fatalf("could not submit: %v", err)
 		}
-
-		fmt.Println(r.Status)
 
 		return nil
 	},
