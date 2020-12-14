@@ -240,7 +240,9 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 
 	getSTH := l.sthmanager.Get
 
-	for name, l := range l.logs.Map() {
+	logMap := l.logs.Map()
+
+	for name, l := range logMap {
 		name := name
 		l := l
 
@@ -332,10 +334,22 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 				}
 			}
 
+			value := []byte{}
+			for _, name := range logNames {
+				resp, err := logMap[name].GetValue(ctx, &api.ValueRequest{
+					Digest: outputHash,
+				})
+				if err != nil {
+					return nil, err
+				}
+				value = resp.Value
+			}
+
 			resp.Decision = &pb.LogValueDecision{
 				LogNames:   logNames,
-				Value:      outputHash,
+				Digest:     outputHash,
 				Confidence: &confidence,
+				Value:      value,
 			}
 		}
 	} else {
@@ -348,14 +362,14 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 			continue
 		}
 
-		h, err := hex.DecodeString(input.OutputHash)
+		digest, err := hex.DecodeString(input.OutputHash)
 		if err != nil {
 			return nil, err
 		}
 
 		resp.Mismatches = append(resp.Mismatches, &pb.LogValueResponse{
 			LogName: &input.LogName,
-			Value:   h,
+			Digest:  digest,
 		})
 	}
 

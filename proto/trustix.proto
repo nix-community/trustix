@@ -54,13 +54,14 @@ message EntriesResponse {
 
 message LogValueResponse {
   required string LogName = 1;
-  required bytes Value = 2;
+  required bytes Digest = 2;
 }
 
 message LogValueDecision {
   repeated string LogNames = 1;
-  required bytes Value = 2;
+  required bytes Digest = 2;
   required int32 Confidence = 3;
+  required bytes Value = 4;
 }
 
 message DecisionResponse {
