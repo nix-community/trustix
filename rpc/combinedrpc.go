@@ -68,6 +68,40 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 	}
 }
 
+func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {
+
+	logs := []*pb.Log{}
+
+	for name, _ := range l.logs.Map() {
+		conf, ok := l.configs[name]
+		if !ok {
+			return nil, fmt.Errorf("Could not find config for log with name: %s", name)
+		}
+
+		log := &pb.Log{}
+
+		log.Name = &name
+		log.Mode = &conf.Mode
+
+		value, ok := pb.LogSigner_KeyTypes_value[conf.Signer.KeyType]
+		if !ok {
+			return nil, fmt.Errorf("Invalid enum value")
+		}
+		log.Signer = &pb.LogSigner{
+			KeyType: pb.LogSigner_KeyTypes(value).Enum(),
+			Public:  &conf.Signer.PublicKey,
+		}
+
+		log.Meta = conf.Meta
+
+		logs = append(logs, log)
+	}
+
+	return &pb.LogsResponse{
+		Logs: logs,
+	}, nil
+}
+
 func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.EntriesResponse, error) {
 	responses := make(map[string]*schema.MapEntry)
 

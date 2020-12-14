@@ -17,6 +17,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TrustixCombinedRPCClient interface {
+	// Get map[LogName]Log
+	Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (*LogsResponse, error)
 	// Get map[LogName]OutputHash
 	Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error)
 	GetStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_GetStreamClient, error)
@@ -31,6 +33,15 @@ type trustixCombinedRPCClient struct {
 
 func NewTrustixCombinedRPCClient(cc grpc.ClientConnInterface) TrustixCombinedRPCClient {
 	return &trustixCombinedRPCClient{cc}
+}
+
+func (c *trustixCombinedRPCClient) Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
+	out := new(LogsResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/Logs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *trustixCombinedRPCClient) Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error) {
@@ -117,6 +128,8 @@ func (x *trustixCombinedRPCDecideStreamClient) Recv() (*DecisionResponse, error)
 // All implementations must embed UnimplementedTrustixCombinedRPCServer
 // for forward compatibility
 type TrustixCombinedRPCServer interface {
+	// Get map[LogName]Log
+	Logs(context.Context, *LogsRequest) (*LogsResponse, error)
 	// Get map[LogName]OutputHash
 	Get(context.Context, *KeyRequest) (*EntriesResponse, error)
 	GetStream(TrustixCombinedRPC_GetStreamServer) error
@@ -130,6 +143,9 @@ type TrustixCombinedRPCServer interface {
 type UnimplementedTrustixCombinedRPCServer struct {
 }
 
+func (UnimplementedTrustixCombinedRPCServer) Logs(context.Context, *LogsRequest) (*LogsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logs not implemented")
+}
 func (UnimplementedTrustixCombinedRPCServer) Get(context.Context, *KeyRequest) (*EntriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
@@ -153,6 +169,24 @@ type UnsafeTrustixCombinedRPCServer interface {
 
 func RegisterTrustixCombinedRPCServer(s grpc.ServiceRegistrar, srv TrustixCombinedRPCServer) {
 	s.RegisterService(&_TrustixCombinedRPC_serviceDesc, srv)
+}
+
+func _TrustixCombinedRPC_Logs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixCombinedRPCServer).Logs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixCombinedRPC/Logs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixCombinedRPCServer).Logs(ctx, req.(*LogsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _TrustixCombinedRPC_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -247,6 +281,10 @@ var _TrustixCombinedRPC_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "trustix.TrustixCombinedRPC",
 	HandlerType: (*TrustixCombinedRPCServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Logs",
+			Handler:    _TrustixCombinedRPC_Logs_Handler,
+		},
 		{
 			MethodName: "Get",
 			Handler:    _TrustixCombinedRPC_Get_Handler,

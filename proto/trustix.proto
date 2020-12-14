@@ -8,12 +8,39 @@ package trustix;
 
 // TrustixCombinedRPC
 service TrustixCombinedRPC {
+  // Get map[LogName]Log
+  rpc Logs (LogsRequest) returns (LogsResponse) {}
+
   // Get map[LogName]OutputHash
   rpc Get (KeyRequest) returns (EntriesResponse) {}
   rpc GetStream (stream KeyRequest) returns (stream EntriesResponse) {}
+
   // Compare(inputHash)
   rpc Decide (KeyRequest) returns (DecisionResponse) {}
   rpc DecideStream (stream KeyRequest) returns (stream DecisionResponse) {}
+
+}
+
+message LogsRequest {
+}
+
+message LogSigner {
+  enum KeyTypes {
+    ed25519 = 0;
+  }
+  required KeyTypes KeyType = 1;
+  required string Public = 2;
+}
+
+message Log {
+  required string Name = 1;
+  required string Mode = 2;
+  required LogSigner Signer = 3;
+  map<string, string> Meta = 4;
+}
+
+message LogsResponse {
+  repeated Log Logs = 1;
 }
 
 message KeyRequest {
