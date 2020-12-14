@@ -35,6 +35,7 @@ import (
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/api"
+	"github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/decider"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/schema"
@@ -46,13 +47,15 @@ type TrustixCombinedRPCServer struct {
 	logs       *TrustixCombinedRPCServerMap
 	decider    decider.LogDecider
 	sthmanager *sthmanager.STHManager
+	configs    map[string]*config.LogConfig
 }
 
-func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *TrustixCombinedRPCServerMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *TrustixCombinedRPCServerMap, decider decider.LogDecider, configMap map[string]*config.LogConfig) *TrustixCombinedRPCServer {
 	return &TrustixCombinedRPCServer{
 		logs:       logs,
 		decider:    decider,
 		sthmanager: sthmanager,
+		configs:    configMap,
 	}
 }
 

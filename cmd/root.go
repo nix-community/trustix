@@ -41,7 +41,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
-	"github.com/tweag/trustix/config"
+	conf "github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/decider"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/tweag/trustix/rpc"
@@ -71,7 +71,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Missing config flag")
 		}
 
-		config, err := config.NewConfigFromFile(configPath)
+		config, err := conf.NewConfigFromFile(configPath)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -121,6 +121,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		logMap := rpc.NewTrustixCombinedRPCServerMap()
+		configMap := make(map[string]*conf.LogConfig)
 		for _, logConfig := range config.Logs {
 			logConfig := logConfig
 			wg.Add(1)
@@ -223,6 +224,8 @@ var rootCmd = &cobra.Command{
 
 				}
 
+				configMap[logConfig.Name] = logConfig
+
 				return nil
 			}
 
@@ -275,7 +278,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		logServer := rpc.NewTrustixCombinedRPCServer(sthmgr, logMap, decider)
+		logServer := rpc.NewTrustixCombinedRPCServer(sthmgr, logMap, decider, configMap)
 
 		log.Debug("Creating gRPC servers")
 
