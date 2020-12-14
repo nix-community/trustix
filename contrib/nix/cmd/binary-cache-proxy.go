@@ -42,13 +42,36 @@ import (
 	pb "github.com/tweag/trustix/proto"
 )
 
+func getCaches(c pb.TrustixCombinedRPCClient) ([]string, error) {
+	ctx, cancel := client.CreateContext(30)
+	defer cancel()
+	resp, err := c.Logs(ctx, &pb.LogsRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]string)
+	caches := []string{}
+
+	for _, log := range resp.Logs {
+		upstream, ok := log.Meta["upstream"]
+		if ok {
+			_, hasSeen := seen[upstream]
+			if !hasSeen {
+				caches = append(caches, upstream)
+			}
+		}
+	}
+
+	return caches, nil
+}
+
 var binaryCacheCommand = &cobra.Command{
 	Use:   "binary-cache-proxy",
 	Short: "Run a Trustix based binary cache proxy",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		// TODO: Get from remote trustix node & check at startup
-		caches := []string{"https://cache.nixos.org"}
 		keyPrefix := "trustix-1"
 
 		_, signer, err := ed25519.GenerateKey(rand.Reader)
@@ -65,6 +88,11 @@ var binaryCacheCommand = &cobra.Command{
 		c := pb.NewTrustixCombinedRPCClient(conn)
 
 		encoding := base32.NewEncoding("0123456789abcdfghijklmnpqrsvwxyz")
+
+		caches, err := getCaches(c)
+		if err != nil {
+			panic(err)
+		}
 
 		handler := func(w http.ResponseWriter, r *http.Request) {
 			defer r.Body.Close()
