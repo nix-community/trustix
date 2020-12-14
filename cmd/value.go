@@ -31,6 +31,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
+	"github.com/tweag/trustix/client"
 )
 
 var valueDigest string
@@ -48,14 +49,14 @@ var getValueCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		conn, err := createClientConn(dialAddress, nil)
+		conn, err := client.CreateClientConn(dialAddress, nil)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
 		defer conn.Close()
 
 		c := api.NewTrustixLogAPIClient(conn)
-		ctx, cancel := createContext()
+		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
 		resp, err := c.GetValue(ctx, &api.ValueRequest{

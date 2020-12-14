@@ -41,6 +41,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
+	"github.com/tweag/trustix/client"
 	conf "github.com/tweag/trustix/config"
 	"github.com/tweag/trustix/decider"
 	pb "github.com/tweag/trustix/proto"
@@ -60,6 +61,8 @@ var stateDirectory string
 
 var listenAddress string
 var dialAddress string
+
+var timeout int
 
 var rootCmd = &cobra.Command{
 	Use:   "trustix",
@@ -200,7 +203,7 @@ var rootCmd = &cobra.Command{
 						return fmt.Errorf("Verifier type '%s' is not supported.", signerConfig.Type)
 					}
 
-					conn, err := createClientConn(logConfig.Transport.GRPC.Remote, verifier.Public())
+					conn, err := client.CreateClientConn(logConfig.Transport.GRPC.Remote, verifier.Public())
 					if err != nil {
 						return err
 					}
@@ -424,6 +427,7 @@ func initCommands() {
 	rootCmd.Flags().StringVar(&configPath, "config", "", "Path to config.toml")
 
 	rootCmd.PersistentFlags().StringVar(&listenAddress, "listen", "", "Listen to address")
+	rootCmd.PersistentFlags().IntVar(&timeout, "timeout", 20, "Timeout in seconds")
 
 	trustixSock := os.Getenv("TRUSTIX_SOCK")
 	if trustixSock == "" {

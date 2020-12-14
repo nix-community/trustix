@@ -40,6 +40,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
+	"github.com/tweag/trustix/client"
 	"github.com/tweag/trustix/contrib/nix/nar"
 )
 
@@ -157,13 +158,13 @@ var nixHookCommand = &cobra.Command{
 			log.Fatalf("Could not hash store path: %v", err)
 		}
 
-		conn, err := createClientConn(dialAddress, nil)
+		conn, err := client.CreateClientConn(dialAddress, nil)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
 		defer conn.Close()
 
-		ctx, cancel := createContext()
+		ctx, cancel := client.CreateContext(30)
 		defer cancel()
 
 		c := api.NewTrustixLogAPIClient(conn)

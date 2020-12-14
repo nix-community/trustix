@@ -29,6 +29,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/tweag/trustix/client"
 	pb "github.com/tweag/trustix/proto"
 )
 
@@ -45,7 +46,7 @@ var queryMap = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		conn, err := createClientConn(dialAddress, nil)
+		conn, err := client.CreateClientConn(dialAddress, nil)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -53,7 +54,7 @@ var queryMap = &cobra.Command{
 
 		c := pb.NewTrustixCombinedRPCClient(conn)
 
-		ctx, cancel := createContext()
+		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
 		log.WithFields(log.Fields{

@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-package cmd
+package client
 
 import (
 	"context"
@@ -38,7 +38,7 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-func createClientConn(address string, pubKey crypto.PublicKey) (*grpc.ClientConn, error) {
+func CreateClientConn(address string, pubKey crypto.PublicKey) (*grpc.ClientConn, error) {
 
 	u, err := url.Parse(address)
 	if err != nil {
@@ -118,6 +118,6 @@ func createClientConn(address string, pubKey crypto.PublicKey) (*grpc.ClientConn
 }
 
 // Create a context with the default timeout set
-func createContext() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), time.Second*30)
+func CreateContext(timeout int) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), time.Second*time.Duration(timeout))
 }

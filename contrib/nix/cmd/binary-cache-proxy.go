@@ -37,6 +37,7 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/tweag/trustix/client"
 	"github.com/tweag/trustix/contrib/nix/schema"
 	pb "github.com/tweag/trustix/proto"
 )
@@ -55,7 +56,7 @@ var binaryCacheCommand = &cobra.Command{
 			panic(err)
 		}
 
-		conn, err := createClientConn(dialAddress, nil)
+		conn, err := client.CreateClientConn(dialAddress, nil)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
