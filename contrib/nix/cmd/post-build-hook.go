@@ -27,9 +27,12 @@ import (
 	"bytes"
 	"encoding/base32"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
-	"strconv"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -37,12 +40,14 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
-	"github.com/tweag/trustix/contrib/nix/schema"
+	"github.com/tweag/trustix/contrib/nix/nar"
 )
 
 const NIX_STORE_DIR = "/nix/store"
 
 func runCommand(command ...string) (string, error) {
+	fmt.Println(command)
+
 	cmd := exec.Command(command[0], command[1:]...)
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
@@ -52,17 +57,15 @@ func runCommand(command ...string) (string, error) {
 		return "", err
 	}
 
-	stdoutBytes := bytes.TrimSpace(stdout.Bytes())
-	if len(stdoutBytes) == 0 {
-		return "", fmt.Errorf("Empty decoded store hash")
-	}
-	return strings.TrimSpace(string(stdoutBytes)), nil
+	return stdout.String(), nil
 }
 
 var nixHookCommand = &cobra.Command{
 	Use:   "post-build-hook",
 	Short: "Submit hashes for inclusion in the log (Nix post-build hook)",
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		upstreamCache := "https://cache.nixos.org"
 
 		storePaths := strings.Split(os.Getenv("OUT_PATHS"), " ")
 		if len(storePaths) < 1 {
@@ -77,6 +80,15 @@ var nixHookCommand = &cobra.Command{
 
 		encoding := base32.NewEncoding("0123456789abcdfghijklmnpqrsvwxyz")
 
+		tmpDir, err := ioutil.TempDir("", "nix-trustix")
+		if err != nil {
+			return err
+		}
+		err = os.RemoveAll(tmpDir)
+		if err != nil {
+			return err
+		}
+
 		for _, storePath := range storePaths {
 			storePath := storePath
 			if storePath == "" {
@@ -87,52 +99,36 @@ var nixHookCommand = &cobra.Command{
 			go func() {
 				defer wg.Done()
 
-				storeHashStr := strings.Split(strings.TrimPrefix(storePath, NIX_STORE_DIR+"/"), "-")[0]
+				storeHashStr := strings.Split(filepath.Base(storePath), "-")[0]
 				storeHash, err := encoding.DecodeString(storeHashStr)
 				if err != nil {
 					errChan <- err
 					return
 				}
-
 				if len(storeHash) == 0 {
 					errChan <- fmt.Errorf("Empty decoded store path hash")
 					return
 				}
 
-				narHash, err := runCommand("nix-store", "--query", "--hash", storePath)
+				URL, err := url.Parse(upstreamCache)
 				if err != nil {
 					errChan <- err
 					return
 				}
+				URL.Path = fmt.Sprintf("%s.narinfo", storeHashStr)
 
-				var narSize uint64
-				narSizeStr, err := runCommand("nix-store", "--query", "--size", storePath)
+				resp, err := http.Get(URL.String())
 				if err != nil {
 					errChan <- err
 					return
 				}
-				if s, err := strconv.ParseUint(narSizeStr, 10, 64); err == nil {
-					narSize = s
-				}
+				defer resp.Body.Close()
+				body, err := ioutil.ReadAll(resp.Body)
 
-				refs := []string{}
-				refsStr, err := runCommand("nix-store", "--query", "--references", storePath)
+				narinfo, err := nar.ParseNarInfo(string(body))
 				if err != nil {
 					errChan <- err
 					return
-				}
-				for _, path := range strings.Split(refsStr, "\n") {
-					if len(path) == 0 {
-						continue
-					}
-					refs = append(refs, strings.TrimPrefix(path, NIX_STORE_DIR+"/"))
-				}
-
-				narinfo := &schema.NarInfo{
-					StorePath:  &storePath,
-					NarHash:    &narHash,
-					NarSize:    &narSize,
-					References: refs,
 				}
 
 				log.WithFields(log.Fields{

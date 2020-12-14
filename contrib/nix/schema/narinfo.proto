@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+option go_package = "github.com/tweag/trustix/contrib/nix/schema";
+
+message NarInfo {
+
+  // Note that we include all narinfo fields in this file for completeness but omit the ones we don't use
+
+  required string StorePath = 1;
+  required string URL = 2;
+  required string Compression = 3;
+  required string FileHash = 4;
+  required uint64 FileSize = 5;
+  required string NarHash = 6;
+  required uint64 NarSize = 7;
+  repeated string References = 8;
+  // optional string Deriver = 9;
+  // optional string System = 10;
+  // optional string Sig = 11;
+  // optional string CA = 12;
+
+}

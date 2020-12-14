@@ -21,53 +21,66 @@
 // SOFTWARE.
 //
 
-package cmd
+package nar
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"sync"
-
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
+	"github.com/tweag/trustix/contrib/nix/schema"
+	"strconv"
+	"strings"
 )
 
-var once sync.Once
+func ParseNarInfo(input string) (*schema.NarInfo, error) {
 
-var dialAddress string
+	n := &schema.NarInfo{}
 
-var rootCmd = &cobra.Command{
-	Use:   "trustix-nix",
-	Short: "Trustix nix integration",
-	Long:  `Trustix nix integration`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return nil
-	},
-}
-
-func initCommands() {
-	trustixSock := os.Getenv("TRUSTIX_SOCK")
-	if trustixSock == "" {
-		tmpDir := "/tmp"
-		trustixSock = filepath.Join(tmpDir, "trustix.sock")
+	parseUint := func(in string) (*uint64, error) {
+		i, err := strconv.ParseUint(in, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		return &i, nil
 	}
-	trustixSock = fmt.Sprintf("unix://%s", trustixSock)
 
-	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
+	var err error
 
-	log.SetLevel(log.DebugLevel)
-	log.SetOutput(os.Stderr)
+	for _, line := range strings.Split(input, "\n") {
+		tok := strings.SplitN(line, ": ", 2)
+		if len(tok) <= 1 {
+			continue
+		}
 
-	rootCmd.AddCommand(nixHookCommand)
-	rootCmd.AddCommand(binaryCacheCommand)
-}
+		if len(tok) != 2 {
+			return nil, fmt.Errorf("Unexpected number of tokens '%d' for value '%s'", len(tok), tok)
+		}
+		value := tok[1]
 
-func Execute() {
-	once.Do(initCommands)
+		switch tok[0] {
+		case "StorePath":
+			n.StorePath = &value
+		case "URL":
+			n.URL = &value
+		case "Compression":
+			n.Compression = &value
+		case "FileHash":
+			n.FileHash = &value
+		case "FileSize":
+			n.FileSize, err = parseUint(value)
+			if err != nil {
+				return nil, err
+			}
+		case "NarHash":
+			n.NarHash = &value
+		case "NarSize":
+			n.NarSize, err = parseUint(value)
+			if err != nil {
+				return nil, err
+			}
+		case "References":
+			n.References = strings.Split(value, " ")
+		}
 
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
 	}
+
+	return n, nil
 }
