@@ -24,12 +24,14 @@
 package cmd
 
 import (
+	"bytes"
+	"crypto"
 	"crypto/ed25519"
-	"crypto/rand"
 	"encoding/base32"
 	"encoding/base64"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -66,15 +68,37 @@ func getCaches(c pb.TrustixCombinedRPCClient) ([]string, error) {
 	return caches, nil
 }
 
+func readKey(path string) (string, crypto.Signer, error) {
+	keyBytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+
+	components := bytes.Split(keyBytes, []byte(":"))
+	if len(components) != 2 {
+		return "", nil, fmt.Errorf("Unexpected number of key components: %d", len(components))
+	}
+
+	buf := make([]byte, 64)
+	n, err := base64.StdEncoding.Decode(buf, components[1])
+	if err != nil {
+		return "", nil, err
+	}
+	if n != 64 {
+		return "", nil, fmt.Errorf("Expected 64 bytes, wrote %d", n)
+	}
+
+	priv := ed25519.NewKeyFromSeed(buf[:32])
+
+	return string(components[0]), priv, nil
+}
+
 var binaryCacheCommand = &cobra.Command{
 	Use:   "binary-cache-proxy",
 	Short: "Run a Trustix based binary cache proxy",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		// TODO: Get from remote trustix node & check at startup
-		keyPrefix := "trustix-1"
-
-		_, signer, err := ed25519.GenerateKey(rand.Reader)
+		keyPrefix, signer, err := readKey("cache-priv-key.pem")
 		if err != nil {
 			panic(err)
 		}
