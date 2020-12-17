@@ -39,7 +39,13 @@ class Derivation(models.Model):
         max_length=255,
         db_index=True,
     )
-    refs = models.ManyToManyField("self", blank=True, db_constraint=False)
+
+    # All build dependencies (recursive)
+    refs_all = models.ManyToManyField("self", blank=True)
+
+    # All directy build dependencies (non-recursive)
+    refs_direct = models.ManyToManyField("self", blank=True)
+
     evaluations = models.ManyToManyField(Evaluation)
 
     def __str__(self):
@@ -87,7 +93,7 @@ class DerivationOutputResult(models.Model):
     )
 
     def __str__(self):
-        return f"{self.output_id} -> {self.log_id}"
+        return f"{self.log_id}({self.output.derivation_id, self.output.output})"
 
     class Meta:
         constraints = [

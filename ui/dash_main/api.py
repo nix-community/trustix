@@ -11,8 +11,11 @@ import dateutil.parser
 import ijson  # type: ignore
 from proto import trustix_pb2_grpc
 from proto import trustix_pb2
-import grpc
+import grpc  # type: ignore
 from django.conf import settings
+from functools import lru_cache
+from django.db.models import Q
+from concurrent import futures
 import typing
 import pynix
 
@@ -21,79 +24,138 @@ channel = grpc.insecure_channel(settings.TRUSTIX_RPC)
 stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 
 
-def check_reprod(attr: str):
-    # outputs = DerivationOutputResult.objects.filter(output__derivation__attr=attr)
+def get_derivation_outputs(drv: typing.Optional[str]) -> typing.List[DerivationOutputResult]:
 
-    print(Derivation.objects.filter(attr="hello").values_list("refs", flat=True))
+    items = []
+    with futures.ThreadPoolExecutor(max_workers=1) as e:
+        f = e.submit(lambda: None)
+        print(f.result())
 
-    # drv = Derivation.objects.get(attr=attr)
-    # print(drv.refs.all())
+    for q_filter in (Q(refs_all=drv), Q(drv=drv)):
+        items.extend(Derivation.objects.filter(q_filter).select_related("output").select_related("output__result"))
+    return []
 
-    # def get_refs(drv):
-    #     for ref in drv.refs.all():
-    #         print(ref)
-    #         get_refs(ref)
 
-    # get_refs(drv)
+def get_derivation_outputs__(drv: typing.Optional[str]) -> typing.List[DerivationOutputResult]:
+    def select_related(qs):
+        return qs.select_related("output").select_related("output__derivation")
+
+    items = list(
+        select_related(
+            DerivationOutputResult.objects.filter(Q(output__derivation__refs_all=drv))
+        )
+    )
+    items.extend(
+        list(
+            DerivationOutputResult.objects.exclude(id__in=[i.id for i in items]).filter(
+                output__derivation__drv=drv
+            )
+        )
+    )
+
+    return items
 
 
 @transaction.atomic
 def index_eval(commit_sha: str):
 
-    # gh = Github()
-    # repo = gh.get_repo("NixOS/nixpkgs")
-    # commit = repo.get_commit(commit_sha)
+    gh = Github()
+    repo = gh.get_repo("NixOS/nixpkgs")
+    commit = repo.get_commit(commit_sha)
 
     try:
         evaluation = Evaluation.objects.get(commit=commit_sha)
     except Evaluation.DoesNotExist:
         evaluation = Evaluation.objects.create(
             commit=commit_sha,
-            # timestamp=dateutil.parser.parse(
-            #     commit.raw_data["commit"]["committer"]["date"]
-            # ),
-            timestamp=datetime.utcnow(),
+            timestamp=dateutil.parser.parse(
+                commit.raw_data["commit"]["committer"]["date"]
+            ),
         )
 
-    seen: typing.Set[str] = set()
+    refs: typing.Dict[str, typing.Set[str]] = {}
+
+    # Consider:
+    # - Fast short circuit when drv is already indexed
+
+    @lru_cache(maxsize=30_000)
+    def drv_read(drv_path: str) -> typing.Dict:
+        with open(drv_path) as f:
+            return pynix.drvparse(f.read())
 
     def gen_drvs(
         attr: typing.Optional[str], drv_path: str
-    ) -> typing.Generator[typing.Tuple[typing.Optional[str], str, typing.Any], None, None]:
-        with open(drv_path) as f:
-            drv = pynix.drvparse(f.read())
+    ) -> typing.Generator[
+        typing.Tuple[
+            typing.Optional[str], typing.Dict, typing.Set[str], typing.Set[str], str
+        ],
+        None,
+        None,
+    ]:
+        drv = drv_read(drv_path)
 
-        yield (attr, drv_path, drv)
-        seen.add(drv_path)
+        # Direct dependencies
+        refs_direct: typing.Set[str] = set(drv["inputDrvs"])
 
-        for drvpath in drv["inputDrvs"]:
-            if drvpath not in seen:
-                yield from gen_drvs(None, drvpath)
+        # All dependencies (recursive, flattened)
+        refs_all = refs_direct.copy()
 
-    def gen_drvs_attrs() -> typing.Generator[typing.Tuple[typing.Optional[str], str, typing.Any], None, None]:
+        for input_ in drv["inputDrvs"]:
+            if input_ not in refs:
+                yield from gen_drvs(None, input_)
+
+            # If the input _still_ doesn't exist it means it's a fixed-output
+            # and should be filtered out
+            try:
+                refs_all = refs_all | refs[input_]
+            except KeyError:
+                refs_direct.remove(input_)
+                refs_all.remove(input_)
+
+        # Filter fixed outputs
+        if all("hashAlgo" in d for d in drv["outputs"].values()):
+            return
+
+        refs[drv_path] = refs_direct
+
+        yield (attr, drv, refs_direct, refs_all, drv_path)
+
+    def gen_drvs_attrs() -> typing.Generator[
+        typing.Tuple[
+            typing.Optional[str], typing.Dict, typing.Set[str], typing.Set[str], str
+        ],
+        None,
+        None,
+    ]:
         for attr, pkg in ijson.kvitems(open("./output"), ""):
             if "error" in pkg:
                 continue
 
-            print(attr)
             attr = attr.rsplit(".", 1)[0]
             yield from gen_drvs(attr, pkg["drvPath"])
 
-    for attr, drv_path, drv in gen_drvs_attrs():
-        print(drv_path)
+    for (attr, drv, refs_direct, refs_all, drv_path) in gen_drvs_attrs():
+        if attr:
+            print(f"Indexing {attr}")
 
-        d, created = Derivation.objects.get_or_create(
-            drv=drv_path.split("/")[-1]
-        )
+        d, created = Derivation.objects.get_or_create(drv=drv_path.split("/")[-1])
+        changed = False
         if created:
+            changed = True
             d.system = drv["platform"]
+
+            for ref in refs_direct:
+                d.refs_direct.add(ref.split("/")[-1])
+
+            for ref in refs_all:
+                d.refs_all.add(ref.split("/")[-1])
+
         if not d.attr and attr:
+            changed = True
             d.attr = attr
 
-        for ref in drv["inputDrvs"]:
-            d.refs.add(ref.split("/")[-1])
-
-        d.save()
+        if changed:
+            d.save()
 
         for output, store_path in drv["outputs"].items():
             store_path = store_path["path"].split("/")[-1]
