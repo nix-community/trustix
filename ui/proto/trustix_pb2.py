@@ -6,544 +6,618 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
-
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
 from schema import mapentry_pb2 as schema_dot_mapentry__pb2
+from schema import sth_pb2 as schema_dot_sth__pb2
+from api import api_pb2 as api_dot_api__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
-    name="proto/trustix.proto",
-    package="trustix",
-    syntax="proto2",
-    serialized_options=b"Z\036github.com/tweag/trustix/proto",
-    create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\x13proto/trustix.proto\x12\x07trustix\x1a\x15schema/mapentry.proto"\x19\n\nKeyRequest\x12\x0b\n\x03Key\x18\x01 \x02(\x0c"\x91\x01\n\x0f\x45ntriesResponse\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\x36\n\x07\x45ntries\x18\x02 \x03(\x0b\x32%.trustix.EntriesResponse.EntriesEntry\x1a\x39\n\x0c\x45ntriesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.MapEntry:\x02\x38\x01"2\n\x10LogValueResponse\x12\x0f\n\x07LogName\x18\x01 \x02(\t\x12\r\n\x05Value\x18\x02 \x02(\x0c"G\n\x10LogValueDecision\x12\x10\n\x08LogNames\x18\x01 \x03(\t\x12\r\n\x05Value\x18\x02 \x02(\x0c\x12\x12\n\nConfidence\x18\x03 \x02(\x05"~\n\x10\x44\x65\x63isionResponse\x12+\n\x08\x44\x65\x63ision\x18\x01 \x02(\x0b\x32\x19.trustix.LogValueDecision\x12-\n\nMismatches\x18\x02 \x03(\x0b\x32\x19.trustix.LogValueResponse\x12\x0e\n\x06Misses\x18\x03 \x03(\t2\x90\x02\n\x12TrustixCombinedRPC\x12\x36\n\x03Get\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse"\x00\x12@\n\tGetStream\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse"\x00(\x01\x30\x01\x12:\n\x06\x44\x65\x63ide\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse"\x00\x12\x44\n\x0c\x44\x65\x63ideStream\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse"\x00(\x01\x30\x01\x42 Z\x1egithub.com/tweag/trustix/proto',
-    dependencies=[
-        schema_dot_mapentry__pb2.DESCRIPTOR,
-    ],
+  name='proto/trustix.proto',
+  package='trustix',
+  syntax='proto2',
+  serialized_options=b'Z\036github.com/tweag/trustix/proto',
+  create_key=_descriptor._internal_create_key,
+  serialized_pb=b'\n\x13proto/trustix.proto\x12\x07trustix\x1a\x15schema/mapentry.proto\x1a\x10schema/sth.proto\x1a\rapi/api.proto\"K\n\x19GetLogEntriesRequestNamed\x12\x0f\n\x07LogName\x18\x01 \x02(\t\x12\r\n\x05Start\x18\x02 \x02(\x04\x12\x0e\n\x06\x46inish\x18\x03 \x02(\x04\"\x1c\n\x07LogMeta\x12\x11\n\x03STH\x18\x01 \x02(\x0b\x32\x04.STH\"\r\n\x0bLogsRequest\"|\n\x0cLogsResponse\x12-\n\x04Logs\x18\x01 \x03(\x0b\x32\x1f.trustix.LogsResponse.LogsEntry\x1a=\n\tLogsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1f\n\x05value\x18\x02 \x01(\x0b\x32\x10.trustix.LogMeta:\x02\x38\x01\"\x19\n\nKeyRequest\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\"\x91\x01\n\x0f\x45ntriesResponse\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\x36\n\x07\x45ntries\x18\x02 \x03(\x0b\x32%.trustix.EntriesResponse.EntriesEntry\x1a\x39\n\x0c\x45ntriesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.MapEntry:\x02\x38\x01\"2\n\x10LogValueResponse\x12\x0f\n\x07LogName\x18\x01 \x02(\t\x12\r\n\x05Value\x18\x02 \x02(\x0c\"G\n\x10LogValueDecision\x12\x10\n\x08LogNames\x18\x01 \x03(\t\x12\r\n\x05Value\x18\x02 \x02(\x0c\x12\x12\n\nConfidence\x18\x03 \x02(\x05\"~\n\x10\x44\x65\x63isionResponse\x12+\n\x08\x44\x65\x63ision\x18\x01 \x02(\x0b\x32\x19.trustix.LogValueDecision\x12-\n\nMismatches\x18\x02 \x03(\x0b\x32\x19.trustix.LogValueResponse\x12\x0e\n\x06Misses\x18\x03 \x03(\t2\x9b\x03\n\x12TrustixCombinedRPC\x12\x36\n\x03Get\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse\"\x00\x12@\n\tGetStream\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse\"\x00(\x01\x30\x01\x12:\n\x06\x44\x65\x63ide\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse\"\x00\x12\x44\n\x0c\x44\x65\x63ideStream\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse\"\x00(\x01\x30\x01\x12\x35\n\x04Logs\x12\x14.trustix.LogsRequest\x1a\x15.trustix.LogsResponse\"\x00\x12R\n\rGetLogEntries\x12\".trustix.GetLogEntriesRequestNamed\x1a\x1b.trustix.LogEntriesResponse\"\x00\x42 Z\x1egithub.com/tweag/trustix/proto'
+  ,
+  dependencies=[schema_dot_mapentry__pb2.DESCRIPTOR,schema_dot_sth__pb2.DESCRIPTOR,api_dot_api__pb2.DESCRIPTOR,])
+
+
+
+
+_GETLOGENTRIESREQUESTNAMED = _descriptor.Descriptor(
+  name='GetLogEntriesRequestNamed',
+  full_name='trustix.GetLogEntriesRequestNamed',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='LogName', full_name='trustix.GetLogEntriesRequestNamed.LogName', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='Start', full_name='trustix.GetLogEntriesRequestNamed.Start', index=1,
+      number=2, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='Finish', full_name='trustix.GetLogEntriesRequestNamed.Finish', index=2,
+      number=3, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=88,
+  serialized_end=163,
+)
+
+
+_LOGMETA = _descriptor.Descriptor(
+  name='LogMeta',
+  full_name='trustix.LogMeta',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='STH', full_name='trustix.LogMeta.STH', index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=165,
+  serialized_end=193,
+)
+
+
+_LOGSREQUEST = _descriptor.Descriptor(
+  name='LogsRequest',
+  full_name='trustix.LogsRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=195,
+  serialized_end=208,
+)
+
+
+_LOGSRESPONSE_LOGSENTRY = _descriptor.Descriptor(
+  name='LogsEntry',
+  full_name='trustix.LogsResponse.LogsEntry',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='trustix.LogsResponse.LogsEntry.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='trustix.LogsResponse.LogsEntry.value', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=b'8\001',
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=273,
+  serialized_end=334,
+)
+
+_LOGSRESPONSE = _descriptor.Descriptor(
+  name='LogsResponse',
+  full_name='trustix.LogsResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='Logs', full_name='trustix.LogsResponse.Logs', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[_LOGSRESPONSE_LOGSENTRY, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=210,
+  serialized_end=334,
 )
 
 
 _KEYREQUEST = _descriptor.Descriptor(
-    name="KeyRequest",
-    full_name="trustix.KeyRequest",
-    filename=None,
-    file=DESCRIPTOR,
-    containing_type=None,
-    create_key=_descriptor._internal_create_key,
-    fields=[
-        _descriptor.FieldDescriptor(
-            name="Key",
-            full_name="trustix.KeyRequest.Key",
-            index=0,
-            number=1,
-            type=12,
-            cpp_type=9,
-            label=2,
-            has_default_value=False,
-            default_value=b"",
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-    ],
-    extensions=[],
-    nested_types=[],
-    enum_types=[],
-    serialized_options=None,
-    is_extendable=False,
-    syntax="proto2",
-    extension_ranges=[],
-    oneofs=[],
-    serialized_start=55,
-    serialized_end=80,
+  name='KeyRequest',
+  full_name='trustix.KeyRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='Key', full_name='trustix.KeyRequest.Key', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=336,
+  serialized_end=361,
 )
 
 
 _ENTRIESRESPONSE_ENTRIESENTRY = _descriptor.Descriptor(
-    name="EntriesEntry",
-    full_name="trustix.EntriesResponse.EntriesEntry",
-    filename=None,
-    file=DESCRIPTOR,
-    containing_type=None,
-    create_key=_descriptor._internal_create_key,
-    fields=[
-        _descriptor.FieldDescriptor(
-            name="key",
-            full_name="trustix.EntriesResponse.EntriesEntry.key",
-            index=0,
-            number=1,
-            type=9,
-            cpp_type=9,
-            label=1,
-            has_default_value=False,
-            default_value=b"".decode("utf-8"),
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.FieldDescriptor(
-            name="value",
-            full_name="trustix.EntriesResponse.EntriesEntry.value",
-            index=1,
-            number=2,
-            type=11,
-            cpp_type=10,
-            label=1,
-            has_default_value=False,
-            default_value=None,
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-    ],
-    extensions=[],
-    nested_types=[],
-    enum_types=[],
-    serialized_options=b"8\001",
-    is_extendable=False,
-    syntax="proto2",
-    extension_ranges=[],
-    oneofs=[],
-    serialized_start=171,
-    serialized_end=228,
+  name='EntriesEntry',
+  full_name='trustix.EntriesResponse.EntriesEntry',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='trustix.EntriesResponse.EntriesEntry.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='trustix.EntriesResponse.EntriesEntry.value', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=b'8\001',
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=452,
+  serialized_end=509,
 )
 
 _ENTRIESRESPONSE = _descriptor.Descriptor(
-    name="EntriesResponse",
-    full_name="trustix.EntriesResponse",
-    filename=None,
-    file=DESCRIPTOR,
-    containing_type=None,
-    create_key=_descriptor._internal_create_key,
-    fields=[
-        _descriptor.FieldDescriptor(
-            name="Key",
-            full_name="trustix.EntriesResponse.Key",
-            index=0,
-            number=1,
-            type=12,
-            cpp_type=9,
-            label=2,
-            has_default_value=False,
-            default_value=b"",
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.FieldDescriptor(
-            name="Entries",
-            full_name="trustix.EntriesResponse.Entries",
-            index=1,
-            number=2,
-            type=11,
-            cpp_type=10,
-            label=3,
-            has_default_value=False,
-            default_value=[],
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-    ],
-    extensions=[],
-    nested_types=[
-        _ENTRIESRESPONSE_ENTRIESENTRY,
-    ],
-    enum_types=[],
-    serialized_options=None,
-    is_extendable=False,
-    syntax="proto2",
-    extension_ranges=[],
-    oneofs=[],
-    serialized_start=83,
-    serialized_end=228,
+  name='EntriesResponse',
+  full_name='trustix.EntriesResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='Key', full_name='trustix.EntriesResponse.Key', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='Entries', full_name='trustix.EntriesResponse.Entries', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[_ENTRIESRESPONSE_ENTRIESENTRY, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=364,
+  serialized_end=509,
 )
 
 
 _LOGVALUERESPONSE = _descriptor.Descriptor(
-    name="LogValueResponse",
-    full_name="trustix.LogValueResponse",
-    filename=None,
-    file=DESCRIPTOR,
-    containing_type=None,
-    create_key=_descriptor._internal_create_key,
-    fields=[
-        _descriptor.FieldDescriptor(
-            name="LogName",
-            full_name="trustix.LogValueResponse.LogName",
-            index=0,
-            number=1,
-            type=9,
-            cpp_type=9,
-            label=2,
-            has_default_value=False,
-            default_value=b"".decode("utf-8"),
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.FieldDescriptor(
-            name="Value",
-            full_name="trustix.LogValueResponse.Value",
-            index=1,
-            number=2,
-            type=12,
-            cpp_type=9,
-            label=2,
-            has_default_value=False,
-            default_value=b"",
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-    ],
-    extensions=[],
-    nested_types=[],
-    enum_types=[],
-    serialized_options=None,
-    is_extendable=False,
-    syntax="proto2",
-    extension_ranges=[],
-    oneofs=[],
-    serialized_start=230,
-    serialized_end=280,
+  name='LogValueResponse',
+  full_name='trustix.LogValueResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='LogName', full_name='trustix.LogValueResponse.LogName', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='Value', full_name='trustix.LogValueResponse.Value', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=511,
+  serialized_end=561,
 )
 
 
 _LOGVALUEDECISION = _descriptor.Descriptor(
-    name="LogValueDecision",
-    full_name="trustix.LogValueDecision",
-    filename=None,
-    file=DESCRIPTOR,
-    containing_type=None,
-    create_key=_descriptor._internal_create_key,
-    fields=[
-        _descriptor.FieldDescriptor(
-            name="LogNames",
-            full_name="trustix.LogValueDecision.LogNames",
-            index=0,
-            number=1,
-            type=9,
-            cpp_type=9,
-            label=3,
-            has_default_value=False,
-            default_value=[],
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.FieldDescriptor(
-            name="Value",
-            full_name="trustix.LogValueDecision.Value",
-            index=1,
-            number=2,
-            type=12,
-            cpp_type=9,
-            label=2,
-            has_default_value=False,
-            default_value=b"",
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.FieldDescriptor(
-            name="Confidence",
-            full_name="trustix.LogValueDecision.Confidence",
-            index=2,
-            number=3,
-            type=5,
-            cpp_type=1,
-            label=2,
-            has_default_value=False,
-            default_value=0,
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-    ],
-    extensions=[],
-    nested_types=[],
-    enum_types=[],
-    serialized_options=None,
-    is_extendable=False,
-    syntax="proto2",
-    extension_ranges=[],
-    oneofs=[],
-    serialized_start=282,
-    serialized_end=353,
+  name='LogValueDecision',
+  full_name='trustix.LogValueDecision',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='LogNames', full_name='trustix.LogValueDecision.LogNames', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='Value', full_name='trustix.LogValueDecision.Value', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='Confidence', full_name='trustix.LogValueDecision.Confidence', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=563,
+  serialized_end=634,
 )
 
 
 _DECISIONRESPONSE = _descriptor.Descriptor(
-    name="DecisionResponse",
-    full_name="trustix.DecisionResponse",
-    filename=None,
-    file=DESCRIPTOR,
-    containing_type=None,
-    create_key=_descriptor._internal_create_key,
-    fields=[
-        _descriptor.FieldDescriptor(
-            name="Decision",
-            full_name="trustix.DecisionResponse.Decision",
-            index=0,
-            number=1,
-            type=11,
-            cpp_type=10,
-            label=2,
-            has_default_value=False,
-            default_value=None,
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.FieldDescriptor(
-            name="Mismatches",
-            full_name="trustix.DecisionResponse.Mismatches",
-            index=1,
-            number=2,
-            type=11,
-            cpp_type=10,
-            label=3,
-            has_default_value=False,
-            default_value=[],
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.FieldDescriptor(
-            name="Misses",
-            full_name="trustix.DecisionResponse.Misses",
-            index=2,
-            number=3,
-            type=9,
-            cpp_type=9,
-            label=3,
-            has_default_value=False,
-            default_value=[],
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-    ],
-    extensions=[],
-    nested_types=[],
-    enum_types=[],
-    serialized_options=None,
-    is_extendable=False,
-    syntax="proto2",
-    extension_ranges=[],
-    oneofs=[],
-    serialized_start=355,
-    serialized_end=481,
+  name='DecisionResponse',
+  full_name='trustix.DecisionResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='Decision', full_name='trustix.DecisionResponse.Decision', index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='Mismatches', full_name='trustix.DecisionResponse.Mismatches', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='Misses', full_name='trustix.DecisionResponse.Misses', index=2,
+      number=3, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=636,
+  serialized_end=762,
 )
 
-_ENTRIESRESPONSE_ENTRIESENTRY.fields_by_name[
-    "value"
-].message_type = schema_dot_mapentry__pb2._MAPENTRY
+_LOGMETA.fields_by_name['STH'].message_type = schema_dot_sth__pb2._STH
+_LOGSRESPONSE_LOGSENTRY.fields_by_name['value'].message_type = _LOGMETA
+_LOGSRESPONSE_LOGSENTRY.containing_type = _LOGSRESPONSE
+_LOGSRESPONSE.fields_by_name['Logs'].message_type = _LOGSRESPONSE_LOGSENTRY
+_ENTRIESRESPONSE_ENTRIESENTRY.fields_by_name['value'].message_type = schema_dot_mapentry__pb2._MAPENTRY
 _ENTRIESRESPONSE_ENTRIESENTRY.containing_type = _ENTRIESRESPONSE
-_ENTRIESRESPONSE.fields_by_name["Entries"].message_type = _ENTRIESRESPONSE_ENTRIESENTRY
-_DECISIONRESPONSE.fields_by_name["Decision"].message_type = _LOGVALUEDECISION
-_DECISIONRESPONSE.fields_by_name["Mismatches"].message_type = _LOGVALUERESPONSE
-DESCRIPTOR.message_types_by_name["KeyRequest"] = _KEYREQUEST
-DESCRIPTOR.message_types_by_name["EntriesResponse"] = _ENTRIESRESPONSE
-DESCRIPTOR.message_types_by_name["LogValueResponse"] = _LOGVALUERESPONSE
-DESCRIPTOR.message_types_by_name["LogValueDecision"] = _LOGVALUEDECISION
-DESCRIPTOR.message_types_by_name["DecisionResponse"] = _DECISIONRESPONSE
+_ENTRIESRESPONSE.fields_by_name['Entries'].message_type = _ENTRIESRESPONSE_ENTRIESENTRY
+_DECISIONRESPONSE.fields_by_name['Decision'].message_type = _LOGVALUEDECISION
+_DECISIONRESPONSE.fields_by_name['Mismatches'].message_type = _LOGVALUERESPONSE
+DESCRIPTOR.message_types_by_name['GetLogEntriesRequestNamed'] = _GETLOGENTRIESREQUESTNAMED
+DESCRIPTOR.message_types_by_name['LogMeta'] = _LOGMETA
+DESCRIPTOR.message_types_by_name['LogsRequest'] = _LOGSREQUEST
+DESCRIPTOR.message_types_by_name['LogsResponse'] = _LOGSRESPONSE
+DESCRIPTOR.message_types_by_name['KeyRequest'] = _KEYREQUEST
+DESCRIPTOR.message_types_by_name['EntriesResponse'] = _ENTRIESRESPONSE
+DESCRIPTOR.message_types_by_name['LogValueResponse'] = _LOGVALUERESPONSE
+DESCRIPTOR.message_types_by_name['LogValueDecision'] = _LOGVALUEDECISION
+DESCRIPTOR.message_types_by_name['DecisionResponse'] = _DECISIONRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-KeyRequest = _reflection.GeneratedProtocolMessageType(
-    "KeyRequest",
-    (_message.Message,),
-    {
-        "DESCRIPTOR": _KEYREQUEST,
-        "__module__": "proto.trustix_pb2"
-        # @@protoc_insertion_point(class_scope:trustix.KeyRequest)
-    },
-)
+GetLogEntriesRequestNamed = _reflection.GeneratedProtocolMessageType('GetLogEntriesRequestNamed', (_message.Message,), {
+  'DESCRIPTOR' : _GETLOGENTRIESREQUESTNAMED,
+  '__module__' : 'proto.trustix_pb2'
+  # @@protoc_insertion_point(class_scope:trustix.GetLogEntriesRequestNamed)
+  })
+_sym_db.RegisterMessage(GetLogEntriesRequestNamed)
+
+LogMeta = _reflection.GeneratedProtocolMessageType('LogMeta', (_message.Message,), {
+  'DESCRIPTOR' : _LOGMETA,
+  '__module__' : 'proto.trustix_pb2'
+  # @@protoc_insertion_point(class_scope:trustix.LogMeta)
+  })
+_sym_db.RegisterMessage(LogMeta)
+
+LogsRequest = _reflection.GeneratedProtocolMessageType('LogsRequest', (_message.Message,), {
+  'DESCRIPTOR' : _LOGSREQUEST,
+  '__module__' : 'proto.trustix_pb2'
+  # @@protoc_insertion_point(class_scope:trustix.LogsRequest)
+  })
+_sym_db.RegisterMessage(LogsRequest)
+
+LogsResponse = _reflection.GeneratedProtocolMessageType('LogsResponse', (_message.Message,), {
+
+  'LogsEntry' : _reflection.GeneratedProtocolMessageType('LogsEntry', (_message.Message,), {
+    'DESCRIPTOR' : _LOGSRESPONSE_LOGSENTRY,
+    '__module__' : 'proto.trustix_pb2'
+    # @@protoc_insertion_point(class_scope:trustix.LogsResponse.LogsEntry)
+    })
+  ,
+  'DESCRIPTOR' : _LOGSRESPONSE,
+  '__module__' : 'proto.trustix_pb2'
+  # @@protoc_insertion_point(class_scope:trustix.LogsResponse)
+  })
+_sym_db.RegisterMessage(LogsResponse)
+_sym_db.RegisterMessage(LogsResponse.LogsEntry)
+
+KeyRequest = _reflection.GeneratedProtocolMessageType('KeyRequest', (_message.Message,), {
+  'DESCRIPTOR' : _KEYREQUEST,
+  '__module__' : 'proto.trustix_pb2'
+  # @@protoc_insertion_point(class_scope:trustix.KeyRequest)
+  })
 _sym_db.RegisterMessage(KeyRequest)
 
-EntriesResponse = _reflection.GeneratedProtocolMessageType(
-    "EntriesResponse",
-    (_message.Message,),
-    {
-        "EntriesEntry": _reflection.GeneratedProtocolMessageType(
-            "EntriesEntry",
-            (_message.Message,),
-            {
-                "DESCRIPTOR": _ENTRIESRESPONSE_ENTRIESENTRY,
-                "__module__": "proto.trustix_pb2"
-                # @@protoc_insertion_point(class_scope:trustix.EntriesResponse.EntriesEntry)
-            },
-        ),
-        "DESCRIPTOR": _ENTRIESRESPONSE,
-        "__module__": "proto.trustix_pb2"
-        # @@protoc_insertion_point(class_scope:trustix.EntriesResponse)
-    },
-)
+EntriesResponse = _reflection.GeneratedProtocolMessageType('EntriesResponse', (_message.Message,), {
+
+  'EntriesEntry' : _reflection.GeneratedProtocolMessageType('EntriesEntry', (_message.Message,), {
+    'DESCRIPTOR' : _ENTRIESRESPONSE_ENTRIESENTRY,
+    '__module__' : 'proto.trustix_pb2'
+    # @@protoc_insertion_point(class_scope:trustix.EntriesResponse.EntriesEntry)
+    })
+  ,
+  'DESCRIPTOR' : _ENTRIESRESPONSE,
+  '__module__' : 'proto.trustix_pb2'
+  # @@protoc_insertion_point(class_scope:trustix.EntriesResponse)
+  })
 _sym_db.RegisterMessage(EntriesResponse)
 _sym_db.RegisterMessage(EntriesResponse.EntriesEntry)
 
-LogValueResponse = _reflection.GeneratedProtocolMessageType(
-    "LogValueResponse",
-    (_message.Message,),
-    {
-        "DESCRIPTOR": _LOGVALUERESPONSE,
-        "__module__": "proto.trustix_pb2"
-        # @@protoc_insertion_point(class_scope:trustix.LogValueResponse)
-    },
-)
+LogValueResponse = _reflection.GeneratedProtocolMessageType('LogValueResponse', (_message.Message,), {
+  'DESCRIPTOR' : _LOGVALUERESPONSE,
+  '__module__' : 'proto.trustix_pb2'
+  # @@protoc_insertion_point(class_scope:trustix.LogValueResponse)
+  })
 _sym_db.RegisterMessage(LogValueResponse)
 
-LogValueDecision = _reflection.GeneratedProtocolMessageType(
-    "LogValueDecision",
-    (_message.Message,),
-    {
-        "DESCRIPTOR": _LOGVALUEDECISION,
-        "__module__": "proto.trustix_pb2"
-        # @@protoc_insertion_point(class_scope:trustix.LogValueDecision)
-    },
-)
+LogValueDecision = _reflection.GeneratedProtocolMessageType('LogValueDecision', (_message.Message,), {
+  'DESCRIPTOR' : _LOGVALUEDECISION,
+  '__module__' : 'proto.trustix_pb2'
+  # @@protoc_insertion_point(class_scope:trustix.LogValueDecision)
+  })
 _sym_db.RegisterMessage(LogValueDecision)
 
-DecisionResponse = _reflection.GeneratedProtocolMessageType(
-    "DecisionResponse",
-    (_message.Message,),
-    {
-        "DESCRIPTOR": _DECISIONRESPONSE,
-        "__module__": "proto.trustix_pb2"
-        # @@protoc_insertion_point(class_scope:trustix.DecisionResponse)
-    },
-)
+DecisionResponse = _reflection.GeneratedProtocolMessageType('DecisionResponse', (_message.Message,), {
+  'DESCRIPTOR' : _DECISIONRESPONSE,
+  '__module__' : 'proto.trustix_pb2'
+  # @@protoc_insertion_point(class_scope:trustix.DecisionResponse)
+  })
 _sym_db.RegisterMessage(DecisionResponse)
 
 
 DESCRIPTOR._options = None
+_LOGSRESPONSE_LOGSENTRY._options = None
 _ENTRIESRESPONSE_ENTRIESENTRY._options = None
 
 _TRUSTIXCOMBINEDRPC = _descriptor.ServiceDescriptor(
-    name="TrustixCombinedRPC",
-    full_name="trustix.TrustixCombinedRPC",
-    file=DESCRIPTOR,
+  name='TrustixCombinedRPC',
+  full_name='trustix.TrustixCombinedRPC',
+  file=DESCRIPTOR,
+  index=0,
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_start=765,
+  serialized_end=1176,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='Get',
+    full_name='trustix.TrustixCombinedRPC.Get',
     index=0,
+    containing_service=None,
+    input_type=_KEYREQUEST,
+    output_type=_ENTRIESRESPONSE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-    serialized_start=484,
-    serialized_end=756,
-    methods=[
-        _descriptor.MethodDescriptor(
-            name="Get",
-            full_name="trustix.TrustixCombinedRPC.Get",
-            index=0,
-            containing_service=None,
-            input_type=_KEYREQUEST,
-            output_type=_ENTRIESRESPONSE,
-            serialized_options=None,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.MethodDescriptor(
-            name="GetStream",
-            full_name="trustix.TrustixCombinedRPC.GetStream",
-            index=1,
-            containing_service=None,
-            input_type=_KEYREQUEST,
-            output_type=_ENTRIESRESPONSE,
-            serialized_options=None,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.MethodDescriptor(
-            name="Decide",
-            full_name="trustix.TrustixCombinedRPC.Decide",
-            index=2,
-            containing_service=None,
-            input_type=_KEYREQUEST,
-            output_type=_DECISIONRESPONSE,
-            serialized_options=None,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.MethodDescriptor(
-            name="DecideStream",
-            full_name="trustix.TrustixCombinedRPC.DecideStream",
-            index=3,
-            containing_service=None,
-            input_type=_KEYREQUEST,
-            output_type=_DECISIONRESPONSE,
-            serialized_options=None,
-            create_key=_descriptor._internal_create_key,
-        ),
-    ],
-)
+  ),
+  _descriptor.MethodDescriptor(
+    name='GetStream',
+    full_name='trustix.TrustixCombinedRPC.GetStream',
+    index=1,
+    containing_service=None,
+    input_type=_KEYREQUEST,
+    output_type=_ENTRIESRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Decide',
+    full_name='trustix.TrustixCombinedRPC.Decide',
+    index=2,
+    containing_service=None,
+    input_type=_KEYREQUEST,
+    output_type=_DECISIONRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='DecideStream',
+    full_name='trustix.TrustixCombinedRPC.DecideStream',
+    index=3,
+    containing_service=None,
+    input_type=_KEYREQUEST,
+    output_type=_DECISIONRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Logs',
+    full_name='trustix.TrustixCombinedRPC.Logs',
+    index=4,
+    containing_service=None,
+    input_type=_LOGSREQUEST,
+    output_type=_LOGSRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='GetLogEntries',
+    full_name='trustix.TrustixCombinedRPC.GetLogEntries',
+    index=5,
+    containing_service=None,
+    input_type=_GETLOGENTRIESREQUESTNAMED,
+    output_type=api_dot_api__pb2._LOGENTRIESRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+])
 _sym_db.RegisterServiceDescriptor(_TRUSTIXCOMBINEDRPC)
 
-DESCRIPTOR.services_by_name["TrustixCombinedRPC"] = _TRUSTIXCOMBINEDRPC
+DESCRIPTOR.services_by_name['TrustixCombinedRPC'] = _TRUSTIXCOMBINEDRPC
 
 # @@protoc_insertion_point(module_scope)

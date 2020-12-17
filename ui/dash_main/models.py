@@ -8,6 +8,7 @@ class Log(models.Model):
         primary_key=True,
         db_index=True,
     )
+    tree_size = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -74,7 +75,6 @@ class DerivationOutput(models.Model):
 
 
 class DerivationOutputResult(models.Model):
-    # TODO: Make "output" point to some deterministic ID
     output = models.ForeignKey(
         DerivationOutput,
         to_field="input_hash",

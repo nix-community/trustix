@@ -1,6 +1,8 @@
 syntax = "proto2";
 
 import "schema/mapentry.proto";
+import "schema/sth.proto";
+import "api/api.proto";
 
 option go_package = "github.com/tweag/trustix/proto";
 
@@ -10,6 +12,9 @@ package trustix;
 service TrustixCombinedRPC {
   // Get map[LogName]Log
   rpc Logs (LogsRequest) returns (LogsResponse) {}
+
+  // TODO: I'm not sure if this belongs here in it's current shape...
+  rpc GetLogEntries(GetLogEntriesRequestNamed) returns (LogEntriesResponse) {}
 
   // Get map[LogName]OutputHash
   rpc Get (KeyRequest) returns (EntriesResponse) {}
@@ -37,10 +42,17 @@ message Log {
   required string Mode = 2;
   required LogSigner Signer = 3;
   map<string, string> Meta = 4;
+  required STH STH = 5;
 }
 
 message LogsResponse {
   repeated Log Logs = 1;
+}
+
+message GetLogEntriesRequestNamed {
+  required string LogName = 1;
+  required uint64 Start = 2;
+  required uint64 Finish = 3;
 }
 
 message KeyRequest {

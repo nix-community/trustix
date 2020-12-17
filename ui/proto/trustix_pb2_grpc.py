@@ -2,11 +2,13 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
+from api import api_pb2 as api_dot_api__pb2
 from proto import trustix_pb2 as proto_dot_trustix__pb2
 
 
 class TrustixCombinedRPCStub(object):
-    """TrustixCombinedRPC"""
+    """TrustixCombinedRPC
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -15,200 +17,222 @@ class TrustixCombinedRPCStub(object):
             channel: A grpc.Channel.
         """
         self.Get = channel.unary_unary(
-            "/trustix.TrustixCombinedRPC/Get",
-            request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.EntriesResponse.FromString,
-        )
+                '/trustix.TrustixCombinedRPC/Get',
+                request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
+                response_deserializer=proto_dot_trustix__pb2.EntriesResponse.FromString,
+                )
         self.GetStream = channel.stream_stream(
-            "/trustix.TrustixCombinedRPC/GetStream",
-            request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.EntriesResponse.FromString,
-        )
+                '/trustix.TrustixCombinedRPC/GetStream',
+                request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
+                response_deserializer=proto_dot_trustix__pb2.EntriesResponse.FromString,
+                )
         self.Decide = channel.unary_unary(
-            "/trustix.TrustixCombinedRPC/Decide",
-            request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.DecisionResponse.FromString,
-        )
+                '/trustix.TrustixCombinedRPC/Decide',
+                request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
+                response_deserializer=proto_dot_trustix__pb2.DecisionResponse.FromString,
+                )
         self.DecideStream = channel.stream_stream(
-            "/trustix.TrustixCombinedRPC/DecideStream",
-            request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.DecisionResponse.FromString,
-        )
+                '/trustix.TrustixCombinedRPC/DecideStream',
+                request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
+                response_deserializer=proto_dot_trustix__pb2.DecisionResponse.FromString,
+                )
+        self.Logs = channel.unary_unary(
+                '/trustix.TrustixCombinedRPC/Logs',
+                request_serializer=proto_dot_trustix__pb2.LogsRequest.SerializeToString,
+                response_deserializer=proto_dot_trustix__pb2.LogsResponse.FromString,
+                )
+        self.GetLogEntries = channel.unary_unary(
+                '/trustix.TrustixCombinedRPC/GetLogEntries',
+                request_serializer=proto_dot_trustix__pb2.GetLogEntriesRequestNamed.SerializeToString,
+                response_deserializer=api_dot_api__pb2.LogEntriesResponse.FromString,
+                )
 
 
 class TrustixCombinedRPCServicer(object):
-    """TrustixCombinedRPC"""
+    """TrustixCombinedRPC
+    """
 
     def Get(self, request, context):
-        """Get map[LogName]OutputHash"""
+        """Get map[LogName]OutputHash
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def GetStream(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def Decide(self, request, context):
-        """Compare(inputHash)"""
+        """Compare(inputHash)
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def DecideStream(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Logs(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetLogEntries(self, request, context):
+        """TODO: I'm not sure if this belongs here in it's current shape...
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
 
 def add_TrustixCombinedRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        "Get": grpc.unary_unary_rpc_method_handler(
-            servicer.Get,
-            request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.EntriesResponse.SerializeToString,
-        ),
-        "GetStream": grpc.stream_stream_rpc_method_handler(
-            servicer.GetStream,
-            request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.EntriesResponse.SerializeToString,
-        ),
-        "Decide": grpc.unary_unary_rpc_method_handler(
-            servicer.Decide,
-            request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.DecisionResponse.SerializeToString,
-        ),
-        "DecideStream": grpc.stream_stream_rpc_method_handler(
-            servicer.DecideStream,
-            request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.DecisionResponse.SerializeToString,
-        ),
+            'Get': grpc.unary_unary_rpc_method_handler(
+                    servicer.Get,
+                    request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
+                    response_serializer=proto_dot_trustix__pb2.EntriesResponse.SerializeToString,
+            ),
+            'GetStream': grpc.stream_stream_rpc_method_handler(
+                    servicer.GetStream,
+                    request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
+                    response_serializer=proto_dot_trustix__pb2.EntriesResponse.SerializeToString,
+            ),
+            'Decide': grpc.unary_unary_rpc_method_handler(
+                    servicer.Decide,
+                    request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
+                    response_serializer=proto_dot_trustix__pb2.DecisionResponse.SerializeToString,
+            ),
+            'DecideStream': grpc.stream_stream_rpc_method_handler(
+                    servicer.DecideStream,
+                    request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
+                    response_serializer=proto_dot_trustix__pb2.DecisionResponse.SerializeToString,
+            ),
+            'Logs': grpc.unary_unary_rpc_method_handler(
+                    servicer.Logs,
+                    request_deserializer=proto_dot_trustix__pb2.LogsRequest.FromString,
+                    response_serializer=proto_dot_trustix__pb2.LogsResponse.SerializeToString,
+            ),
+            'GetLogEntries': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetLogEntries,
+                    request_deserializer=proto_dot_trustix__pb2.GetLogEntriesRequestNamed.FromString,
+                    response_serializer=api_dot_api__pb2.LogEntriesResponse.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        "trustix.TrustixCombinedRPC", rpc_method_handlers
-    )
+            'trustix.TrustixCombinedRPC', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
-# This class is part of an EXPERIMENTAL API.
+ # This class is part of an EXPERIMENTAL API.
 class TrustixCombinedRPC(object):
-    """TrustixCombinedRPC"""
+    """TrustixCombinedRPC
+    """
 
     @staticmethod
-    def Get(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
+    def Get(request,
             target,
-            "/trustix.TrustixCombinedRPC/Get",
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/trustix.TrustixCombinedRPC/Get',
             proto_dot_trustix__pb2.KeyRequest.SerializeToString,
             proto_dot_trustix__pb2.EntriesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def GetStream(
-        request_iterator,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.stream_stream(
-            request_iterator,
+    def GetStream(request_iterator,
             target,
-            "/trustix.TrustixCombinedRPC/GetStream",
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(request_iterator, target, '/trustix.TrustixCombinedRPC/GetStream',
             proto_dot_trustix__pb2.KeyRequest.SerializeToString,
             proto_dot_trustix__pb2.EntriesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def Decide(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
+    def Decide(request,
             target,
-            "/trustix.TrustixCombinedRPC/Decide",
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/trustix.TrustixCombinedRPC/Decide',
             proto_dot_trustix__pb2.KeyRequest.SerializeToString,
             proto_dot_trustix__pb2.DecisionResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def DecideStream(
-        request_iterator,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.stream_stream(
-            request_iterator,
+    def DecideStream(request_iterator,
             target,
-            "/trustix.TrustixCombinedRPC/DecideStream",
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(request_iterator, target, '/trustix.TrustixCombinedRPC/DecideStream',
             proto_dot_trustix__pb2.KeyRequest.SerializeToString,
             proto_dot_trustix__pb2.DecisionResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Logs(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/trustix.TrustixCombinedRPC/Logs',
+            proto_dot_trustix__pb2.LogsRequest.SerializeToString,
+            proto_dot_trustix__pb2.LogsResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetLogEntries(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/trustix.TrustixCombinedRPC/GetLogEntries',
+            proto_dot_trustix__pb2.GetLogEntriesRequestNamed.SerializeToString,
+            api_dot_api__pb2.LogEntriesResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

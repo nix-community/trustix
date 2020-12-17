@@ -4,6 +4,7 @@ package proto
 
 import (
 	context "context"
+	api "github.com/tweag/trustix/api"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -19,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion7
 type TrustixCombinedRPCClient interface {
 	// Get map[LogName]Log
 	Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (*LogsResponse, error)
+	// TODO: I'm not sure if this belongs here in it's current shape...
+	GetLogEntries(ctx context.Context, in *GetLogEntriesRequestNamed, opts ...grpc.CallOption) (*api.LogEntriesResponse, error)
 	// Get map[LogName]OutputHash
 	Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error)
 	GetStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_GetStreamClient, error)
@@ -38,6 +41,15 @@ func NewTrustixCombinedRPCClient(cc grpc.ClientConnInterface) TrustixCombinedRPC
 func (c *trustixCombinedRPCClient) Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
 	out := new(LogsResponse)
 	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/Logs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trustixCombinedRPCClient) GetLogEntries(ctx context.Context, in *GetLogEntriesRequestNamed, opts ...grpc.CallOption) (*api.LogEntriesResponse, error) {
+	out := new(api.LogEntriesResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/GetLogEntries", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -130,6 +142,8 @@ func (x *trustixCombinedRPCDecideStreamClient) Recv() (*DecisionResponse, error)
 type TrustixCombinedRPCServer interface {
 	// Get map[LogName]Log
 	Logs(context.Context, *LogsRequest) (*LogsResponse, error)
+	// TODO: I'm not sure if this belongs here in it's current shape...
+	GetLogEntries(context.Context, *GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error)
 	// Get map[LogName]OutputHash
 	Get(context.Context, *KeyRequest) (*EntriesResponse, error)
 	GetStream(TrustixCombinedRPC_GetStreamServer) error
@@ -145,6 +159,9 @@ type UnimplementedTrustixCombinedRPCServer struct {
 
 func (UnimplementedTrustixCombinedRPCServer) Logs(context.Context, *LogsRequest) (*LogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logs not implemented")
+}
+func (UnimplementedTrustixCombinedRPCServer) GetLogEntries(context.Context, *GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLogEntries not implemented")
 }
 func (UnimplementedTrustixCombinedRPCServer) Get(context.Context, *KeyRequest) (*EntriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
@@ -185,6 +202,24 @@ func _TrustixCombinedRPC_Logs_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TrustixCombinedRPCServer).Logs(ctx, req.(*LogsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrustixCombinedRPC_GetLogEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLogEntriesRequestNamed)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixCombinedRPCServer).GetLogEntries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixCombinedRPC/GetLogEntries",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixCombinedRPCServer).GetLogEntries(ctx, req.(*GetLogEntriesRequestNamed))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -284,6 +319,10 @@ var _TrustixCombinedRPC_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logs",
 			Handler:    _TrustixCombinedRPC_Logs_Handler,
+		},
+		{
+			MethodName: "GetLogEntries",
+			Handler:    _TrustixCombinedRPC_GetLogEntries_Handler,
 		},
 		{
 			MethodName: "Get",

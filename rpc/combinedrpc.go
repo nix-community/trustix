@@ -72,7 +72,14 @@ func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest)
 
 	logs := []*pb.Log{}
 
+	var wg sync.WaitGroup
+	var mux sync.Mutex
+
 	for name, _ := range l.logs.Map() {
+		name := name
+
+		wg.Add(1)
+
 		conf, ok := l.configs[name]
 		if !ok {
 			return nil, fmt.Errorf("Could not find config for log with name: %s", name)
@@ -100,6 +107,58 @@ func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest)
 	return &pb.LogsResponse{
 		Logs: logs,
 	}, nil
+}
+
+
+func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *pb.GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error) {
+	log, err := l.logs.Get(*in.LogName)
+	if err != nil {
+		return nil, err
+	}
+
+	return log.GetLogEntries(ctx, &api.GetLogEntriesRequest{
+		Start:  in.Start,
+		Finish: in.Finish,
+	})
+}
+
+func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {
+	resp := &pb.LogsResponse{
+		Logs: make(map[string]*pb.LogMeta),
+	}
+
+	var wg sync.WaitGroup
+	var mux sync.Mutex
+
+	getSTH := l.sthmanager.Get
+
+	for name, _ := range l.logs.Map() {
+		name := name
+
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			sth, err := getSTH(name)
+			if err != nil {
+				log.Error(fmt.Errorf("could not get STH: %v", err))
+				return
+			}
+
+			mux.Lock()
+			resp.Logs[name] = &pb.LogMeta{
+				STH: sth,
+			}
+			mux.Unlock()
+
+		}()
+	}
+
+	wg.Wait()
+
+	return resp, nil
+>>>>>>> cfce538 (ui: Index all logged builds in the SQL database)
 }
 
 func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.EntriesResponse, error) {
