@@ -47,7 +47,9 @@ def index_eval(commit_sha: str):
         if "error" in pkg:
             continue
 
-        attr = attr.rstrip("." + pkg["system"])
+        attr = attr.rsplit(".", 1)[0]
+
+        print(attr)
 
         drv, created = Derivation.objects.get_or_create(
             drv=pkg["drvPath"].split("/")[-1]
@@ -92,14 +94,11 @@ def index_log(log, sth):
         print(f"Indexing logname={log.name}, start={start}, finish={finish}")
 
         for leaf in resp.Leaves:
-            print("X")
-            print(leaf)
-            raise ValueError("!")
             try:
-                DerivationOutputResult.objects.get(output_id=leaf.Digest, log=log)
+                DerivationOutputResult.objects.get(output_id=leaf.Key, log=log)
             except DerivationOutputResult.DoesNotExist:
                 DerivationOutputResult.objects.create(
-                    output_id=leaf.Digest, output_hash=leaf.Value, log=log
+                    output_id=leaf.Key, output_hash=leaf.Value, log=log
                 )
 
         start = finish
