@@ -21,6 +21,11 @@ channel = grpc.insecure_channel(settings.TRUSTIX_RPC)
 stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 
 
+def check_reprod(attr: str):
+    outputs = DerivationOutputResult.objects.filter(output__derivation__attr=attr)
+    print(outputs)
+
+
 @transaction.atomic
 def index_eval(commit_sha: str):
 
@@ -43,7 +48,6 @@ def index_eval(commit_sha: str):
             continue
 
         attr = attr.rstrip("." + pkg["system"])
-        print(attr)
 
         drv, created = Derivation.objects.get_or_create(
             drv=pkg["drvPath"].split("/")[-1]
@@ -78,18 +82,25 @@ def index_log(log, sth):
 
     start = chunks[0]
     for finish in chunks:
-        resp = stub.GetLogEntries(trustix_pb2.GetLogEntriesRequestNamed(
-            LogName=log.name,
-            Start=start,
-            Finish=finish,
-        ))
+        resp = stub.GetLogEntries(
+            trustix_pb2.GetLogEntriesRequestNamed(
+                LogName=log.name,
+                Start=start,
+                Finish=finish,
+            )
+        )
         print(f"Indexing logname={log.name}, start={start}, finish={finish}")
 
         for leaf in resp.Leaves:
+            print("X")
+            print(leaf)
+            raise ValueError("!")
             try:
                 DerivationOutputResult.objects.get(output_id=leaf.Digest, log=log)
             except DerivationOutputResult.DoesNotExist:
-                DerivationOutputResult.objects.create(output_id=leaf.Digest, output_hash=leaf.Value, log=log)
+                DerivationOutputResult.objects.create(
+                    output_id=leaf.Digest, output_hash=leaf.Value, log=log
+                )
 
         start = finish
 

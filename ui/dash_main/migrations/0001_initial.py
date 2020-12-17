@@ -8,67 +8,128 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Derivation',
+            name="Derivation",
             fields=[
-                ('drv', models.CharField(db_index=True, max_length=40, primary_key=True, serialize=False)),
-                ('attr', models.CharField(db_index=True, max_length=255)),
-                ('system', models.CharField(db_index=True, max_length=255)),
+                (
+                    "drv",
+                    models.CharField(
+                        db_index=True, max_length=40, primary_key=True, serialize=False
+                    ),
+                ),
+                ("attr", models.CharField(db_index=True, max_length=255)),
+                ("system", models.CharField(db_index=True, max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='DerivationOutput',
+            name="DerivationOutput",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('input_hash', models.BinaryField(db_index=True, max_length=64, unique=True)),
-                ('output', models.CharField(db_index=True, max_length=40)),
-                ('store_path', models.CharField(db_index=True, max_length=255)),
-                ('derivation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dash_main.derivation')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "input_hash",
+                    models.BinaryField(db_index=True, max_length=64, unique=True),
+                ),
+                ("output", models.CharField(db_index=True, max_length=40)),
+                ("store_path", models.CharField(db_index=True, max_length=255)),
+                (
+                    "derivation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="dash_main.derivation",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Evaluation',
+            name="Evaluation",
             fields=[
-                ('commit', models.CharField(db_index=True, max_length=40, primary_key=True, serialize=False)),
-                ('timestamp', models.DateTimeField()),
+                (
+                    "commit",
+                    models.CharField(
+                        db_index=True, max_length=40, primary_key=True, serialize=False
+                    ),
+                ),
+                ("timestamp", models.DateTimeField()),
             ],
         ),
         migrations.CreateModel(
-            name='Log',
+            name="Log",
             fields=[
-                ('name', models.CharField(db_index=True, max_length=55, primary_key=True, serialize=False)),
-                ('tree_size', models.IntegerField()),
+                (
+                    "name",
+                    models.CharField(
+                        db_index=True, max_length=55, primary_key=True, serialize=False
+                    ),
+                ),
+                ("tree_size", models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='DerivationOutputResult',
+            name="DerivationOutputResult",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('output_hash', models.BinaryField(max_length=255)),
-                ('log', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dash_main.log')),
-                ('output', models.ForeignKey(db_constraint=False, on_delete=django.db.models.deletion.CASCADE, to='dash_main.derivationoutput', to_field='input_hash')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("output_hash", models.BinaryField(max_length=255)),
+                (
+                    "log",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="dash_main.log"
+                    ),
+                ),
+                (
+                    "output",
+                    models.ForeignKey(
+                        db_constraint=False,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="dash_main.derivationoutput",
+                        to_field="input_hash",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='derivation',
-            name='evaluations',
-            field=models.ManyToManyField(to='dash_main.Evaluation'),
+            model_name="derivation",
+            name="evaluations",
+            field=models.ManyToManyField(to="dash_main.Evaluation"),
         ),
         migrations.AddField(
-            model_name='derivation',
-            name='refs',
-            field=models.ManyToManyField(blank=True, db_constraint=False, related_name='_derivation_refs_+', to='dash_main.Derivation'),
+            model_name="derivation",
+            name="refs",
+            field=models.ManyToManyField(
+                blank=True,
+                db_constraint=False,
+                related_name="_derivation_refs_+",
+                to="dash_main.Derivation",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='derivationoutputresult',
-            constraint=models.UniqueConstraint(fields=('output', 'log'), name='unique_output_result'),
+            model_name="derivationoutputresult",
+            constraint=models.UniqueConstraint(
+                fields=("output", "log"), name="unique_output_result"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='derivationoutput',
-            constraint=models.UniqueConstraint(fields=('derivation', 'output'), name='unique_output'),
+            model_name="derivationoutput",
+            constraint=models.UniqueConstraint(
+                fields=("derivation", "output"), name="unique_output"
+            ),
         ),
     ]

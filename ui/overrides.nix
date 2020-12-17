@@ -13,4 +13,10 @@
     buildInputs = [ self.flit-core ];
   });
 
+  daphne = super.daphne.overridePythonAttrs (old: {
+    postPatch = ''
+      substituteInPlace setup.py --replace 'setup_requires=["pytest-runner"],' ""
+    '';
+  });
+
 }
