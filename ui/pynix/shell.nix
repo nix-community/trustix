@@ -6,5 +6,5 @@ let
 
 in
 pkgs.mkShell {
-  buildInputs = [ pythonEnv ];
+  buildInputs = [ pkgs.poetry pythonEnv ];
 }

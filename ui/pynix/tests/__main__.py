@@ -48,7 +48,12 @@ def drvparse_nix(drv_path: str) -> typing.Dict:
     env = os.environ.copy()
     env["NIX_STORE_DIR"] = FIXTURES_DIR
 
-    p = subprocess.run(["nix", "show-derivation", drv_path], env=env, check=True, stdout=subprocess.PIPE)
+    p = subprocess.run(
+        ["nix", "show-derivation", drv_path],
+        env=env,
+        check=True,
+        stdout=subprocess.PIPE,
+    )
     for x in json.loads(p.stdout).values():
         return x
     raise ValueError()
@@ -61,12 +66,14 @@ def drvparse_pynix(drv_path: str) -> typing.Dict:
 
 
 class DrvParseTest(unittest.TestCase):
-
     def test_parse(self):
         """Test comparing parsing drv's between nix & pynix"""
 
-        drvs = [os.path.join(FIXTURES_DIR, drv_path) for drv_path in os.listdir(FIXTURES_DIR)]
-        self.assertEqual(len(drvs), 3)
+        drvs = [
+            os.path.join(FIXTURES_DIR, drv_path)
+            for drv_path in os.listdir(FIXTURES_DIR)
+        ]
+        self.assertEqual(len(drvs), 4)
 
         for i, d in enumerate(drvs):
             with self.subTest(drv=d):
@@ -74,13 +81,12 @@ class DrvParseTest(unittest.TestCase):
 
 
 class B32Test(unittest.TestCase):
-
     def test_decode(self):
         b = pynix.b32decode("v5sv61sszx301i0x6xysaqzla09nksnd")
-        self.assertEqual(b, b'\xd9u\xb3\x07Z\xffF\x00\xc4\x1d7}\xa5c\xf4P\x13i\xea\xcd')
+        self.assertEqual(b, b"\xd9u\xb3\x07Z\xffF\x00\xc4\x1d7}\xa5c\xf4P\x13i\xea\xcd")
 
     def test_encode(self):
-        b = pynix.b32encode(b'\xd9u\xb3\x07Z\xffF\x00\xc4\x1d7}\xa5c\xf4P\x13i\xea\xcd')
+        b = pynix.b32encode(b"\xd9u\xb3\x07Z\xffF\x00\xc4\x1d7}\xa5c\xf4P\x13i\xea\xcd")
         self.assertEqual(b, b"v5sv61sszx301i0x6xysaqzla09nksnd")
 
 

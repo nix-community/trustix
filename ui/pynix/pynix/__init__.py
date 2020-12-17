@@ -61,11 +61,13 @@ def drvparse(drv: str) -> typing.Dict:
             value = {k: v for k, v in value}
         elif field == "outputs":
             d = {}
-            for v in value:
-                v = v[:-2]  # Outputs always end with empty kv pair
-                if len(v) != 2:
-                    raise ValueError()
-                d[v[0]] = {"path": v[1]}
+            for output, store_path, hash_algo, hash_hex in value:
+                v = {"path": store_path}
+                if hash_algo:
+                    v["hashAlgo"] = hash_algo
+                if hash_hex:
+                    v["hash"] = hash_hex
+                d[output] = v
             value = d
 
         ret[field] = value
