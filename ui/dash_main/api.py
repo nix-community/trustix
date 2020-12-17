@@ -162,11 +162,10 @@ def index_eval(commit_sha: str):
             input_hash = pynix.b32decode(store_path.split("-", 1)[0])
 
             try:
-                DerivationOutput.objects.get(input_hash=input_hash)
+                DerivationOutput.objects.get(derivation=d, output=output)
             except DerivationOutput.DoesNotExist:
                 DerivationOutput.objects.create(
                     derivation=d,
-                    input_hash=input_hash,
                     output=output,
                     store_path=store_path,
                 )
