@@ -13,8 +13,11 @@ from proto import trustix_pb2_grpc
 from proto import trustix_pb2
 import grpc
 from django.conf import settings
+import typing
+from datetime import datetime
+from concurrent import futures
 
-from .util import decode_nix_b32, get_drv_refs
+from .util import decode_nix_b32, parse_drv
 
 
 channel = grpc.insecure_channel(settings.TRUSTIX_RPC)
@@ -22,55 +25,91 @@ stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 
 
 def check_reprod(attr: str):
-    outputs = DerivationOutputResult.objects.filter(output__derivation__attr=attr)
-    print(outputs)
+    # outputs = DerivationOutputResult.objects.filter(output__derivation__attr=attr)
+
+    print(Derivation.objects.filter(attr="hello").values_list("refs", flat=True))
+
+    # drv = Derivation.objects.get(attr=attr)
+    # print(drv.refs.all())
+
+    # def get_refs(drv):
+    #     for ref in drv.refs.all():
+    #         print(ref)
+    #         get_refs(ref)
+
+    # get_refs(drv)
 
 
 @transaction.atomic
 def index_eval(commit_sha: str):
 
-    gh = Github()
-    repo = gh.get_repo("NixOS/nixpkgs")
-    commit = repo.get_commit(commit_sha)
+    # gh = Github()
+    # repo = gh.get_repo("NixOS/nixpkgs")
+    # commit = repo.get_commit(commit_sha)
 
     try:
         evaluation = Evaluation.objects.get(commit=commit_sha)
     except Evaluation.DoesNotExist:
         evaluation = Evaluation.objects.create(
             commit=commit_sha,
-            timestamp=dateutil.parser.parse(
-                commit.raw_data["commit"]["committer"]["date"]
-            ),
+            # timestamp=dateutil.parser.parse(
+            #     commit.raw_data["commit"]["committer"]["date"]
+            # ),
+            timestamp=datetime.utcnow(),
         )
 
-    for attr, pkg in ijson.kvitems(open("./output"), ""):
-        if "error" in pkg:
-            continue
+    seen: typing.Set[str] = set()
 
-        attr = attr.rsplit(".", 1)[0]
+    def gen_drvs(
+        attr: typing.Optional[str], drv_path: str
+    ) -> typing.Generator[typing.Tuple[typing.Optional[str], str, typing.Any], None, None]:
+        drv = parse_drv(drv_path)
 
-        print(attr)
+        yield (attr, drv_path, drv)
+        seen.add(drv_path)
 
-        drv, created = Derivation.objects.get_or_create(
-            drv=pkg["drvPath"].split("/")[-1]
+        for drvpath in drv["inputDrvs"]:
+            if drvpath not in seen:
+                yield from gen_drvs(None, drvpath)
+
+    def gen_drvs_attrs() -> typing.Generator[typing.Tuple[typing.Optional[str], str, typing.Any], None, None]:
+        for attr, pkg in ijson.kvitems(open("./output"), ""):
+            if "error" in pkg:
+                continue
+
+            print(attr)
+            attr = attr.rsplit(".", 1)[0]
+            yield from gen_drvs(attr, pkg["drvPath"])
+
+    for attr, drv_path, drv in gen_drvs_attrs():
+        print(drv_path)
+
+        d, created = Derivation.objects.get_or_create(
+            drv=drv_path.split("/")[-1]
         )
         if created:
-            drv.system = pkg["system"]
-            drv.attr = attr
-            for ref in get_drv_refs(pkg["drvPath"]):
-                drv.refs.add(ref.split("/")[-1])
+            d.system = drv["platform"]
+        if not d.attr and attr:
+            d.attr = attr
 
-        drv.evaluations.add(evaluation)
-        drv.save()
+        for ref in drv["inputDrvs"]:
+            d.refs.add(ref.split("/")[-1])
 
-        for output, store_path in pkg["outputs"].items():
-            store_path = store_path.split("/")[-1]
-            DerivationOutput.objects.get_or_create(
-                derivation=drv,
-                input_hash=decode_nix_b32(store_path.split("-", 1)[0]),
-                output=output,
-                store_path=store_path,
-            )
+        d.save()
+
+        for output, store_path in drv["outputs"].items():
+            store_path = store_path["path"].split("/")[-1]
+            input_hash = decode_nix_b32(store_path.split("-", 1)[0])
+
+            try:
+                DerivationOutput.objects.get(input_hash=input_hash)
+            except DerivationOutput.DoesNotExist:
+                DerivationOutput.objects.create(
+                    derivation=d,
+                    input_hash=input_hash,
+                    output=output,
+                    store_path=store_path,
+                )
 
 
 @transaction.atomic

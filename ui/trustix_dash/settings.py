@@ -34,17 +34,21 @@ TRUSTIX_RPC = "unix:../sock"
 
 # Application definition
 
-INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-] + (['debug_toolbar'] if DEBUG else []) + [
-    "dash_main",
-    "trustix_dash",
-]
+INSTALLED_APPS = (
+    [
+        "django.contrib.admin",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "django.contrib.sessions",
+        "django.contrib.messages",
+        "django.contrib.staticfiles",
+    ]
+    + (["debug_toolbar"] if DEBUG else [])
+    + [
+        "dash_main",
+        "trustix_dash",
+    ]
+)
 
 MIDDLEWARE = (
     [
@@ -64,7 +68,7 @@ MIDDLEWARE = (
 STATIC_ROOT = "./static_root"
 
 INTERNAL_IPS = [
-    '127.0.0.1',
+    "127.0.0.1",
 ]
 
 ROOT_URLCONF = "trustix_dash.urls"
