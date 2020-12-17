@@ -2,3 +2,5 @@
 /trustix
 /registry/registry.go
 /.environment
+__pycache__
+db.sqlite3
