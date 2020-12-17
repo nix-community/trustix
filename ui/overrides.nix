@@ -13,6 +13,10 @@
     buildInputs = [ self.flit-core ];
   });
 
+  pynix = super.pynix.overridePythonAttrs (old: {
+    buildInputs = [ self.poetry ];
+  });
+
   daphne = super.daphne.overridePythonAttrs (old: {
     postPatch = ''
       substituteInPlace setup.py --replace 'setup_requires=["pytest-runner"],' ""

@@ -14,10 +14,7 @@ from proto import trustix_pb2
 import grpc
 from django.conf import settings
 import typing
-from datetime import datetime
-from concurrent import futures
-
-from .util import decode_nix_b32, parse_drv
+import pynix
 
 
 channel = grpc.insecure_channel(settings.TRUSTIX_RPC)
@@ -63,7 +60,8 @@ def index_eval(commit_sha: str):
     def gen_drvs(
         attr: typing.Optional[str], drv_path: str
     ) -> typing.Generator[typing.Tuple[typing.Optional[str], str, typing.Any], None, None]:
-        drv = parse_drv(drv_path)
+        with open(drv_path) as f:
+            drv = pynix.drvparse(f.read())
 
         yield (attr, drv_path, drv)
         seen.add(drv_path)
@@ -99,7 +97,7 @@ def index_eval(commit_sha: str):
 
         for output, store_path in drv["outputs"].items():
             store_path = store_path["path"].split("/")[-1]
-            input_hash = decode_nix_b32(store_path.split("-", 1)[0])
+            input_hash = pynix.b32decode(store_path.split("-", 1)[0])
 
             try:
                 DerivationOutput.objects.get(input_hash=input_hash)

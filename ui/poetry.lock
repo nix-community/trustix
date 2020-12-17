@@ -671,6 +671,20 @@ test = ["pytest (>=4.0.1,<5.0.0)", "pytest-cov (>=2.6.0,<3.0.0)", "pytest-runner
 
 [[package]]
 category = "main"
+description = ""
+develop = true
+name = "pynix"
+optional = false
+python-versions = "^3.8"
+version = "0.1.0"
+
+[package.source]
+reference = ""
+type = "directory"
+url = "pynix"
+
+[[package]]
+category = "main"
 description = "Python wrapper module around the OpenSSL library"
 name = "pyopenssl"
 optional = false
@@ -942,7 +956,7 @@ test = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
-content-hash = "7680aedefa39bdf68ea54c30313af17e50c6cf53ded823447c3dd95a7612c058"
+content-hash = "e30d98cf3676d5ba81e58ba7e62cf7a45d2b148608a05e4e03725186a5c77ea4"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -1425,6 +1439,7 @@ pyjwt = [
     {file = "PyJWT-1.7.1-py2.py3-none-any.whl", hash = "sha256:5c6eca3c2940464d106b99ba83b00c6add741c9becaec087fb7ccdefea71350e"},
     {file = "PyJWT-1.7.1.tar.gz", hash = "sha256:8d59a976fb773f3e6a39c85636357c4f0e242707394cadadd9814f5cbaa20e96"},
 ]
+pynix = []
 pyopenssl = [
     {file = "pyOpenSSL-20.0.0-py2.py3-none-any.whl", hash = "sha256:898aefbde331ba718570244c3b01dcddb1b31a3b336613436a45e52e27d9a82d"},
     {file = "pyOpenSSL-20.0.0.tar.gz", hash = "sha256:92f08eccbd73701cf744e8ffd6989aa7842d48cbe3fea8a7c031c5647f590ac5"},

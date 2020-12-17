@@ -1,5 +1,4 @@
 from django.db import models
-from .util import decode_nix_b32
 
 
 class Log(models.Model):
