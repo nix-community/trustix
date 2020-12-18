@@ -11,12 +11,13 @@ from tortoise.exceptions import DoesNotExist
 from tortoise import transactions
 from tortoise.query_utils import Q
 import ijson  # type: ignore
-from trustix_rpc.proto import trustix_pb2_grpc, trustix_pb2
+from proto import trustix_pb2_grpc, trustix_pb2  # type: ignore
 import grpc  # type: ignore
 from async_lru import alru_cache  # type: ignore
 import typing
 import pynix
 import aiofiles
+import os.path
 import asyncio
 
 
@@ -120,14 +121,33 @@ async def index_eval(commit_sha: str):  # noqa: C901
         ],
         None,
     ]:
-        async with aiofiles.open("./output") as f:  # type: ignore
-            async for attr, pkg in ijson.kvitems_async(f, ""):
-                if "error" in pkg:
-                    continue
+        expr_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hydra_eval")
 
-                attr = attr.rsplit(".", 1)[0]
-                async for drv in gen_drvs(attr, pkg["drvPath"]):
-                    yield drv
+        env = os.environ.copy()
+        try:
+            del env["NIX_PATH"]
+        except KeyError:
+            pass
+
+        proc = await asyncio.create_subprocess_exec(
+            *[
+                "hydra-eval-jobs",
+                "-I",
+                f"nixpkgs=https://github.com/NixOS/nixpkgs/archive/{commit_sha}.tar.gz",
+                "-I",
+                expr_dir,
+                os.path.join(expr_dir, "outpaths.nix"),
+            ],
+            env=env,
+            stdout=asyncio.subprocess.PIPE,
+        )
+        async for attr, pkg in ijson.kvitems_async(proc.stdout, ""):
+            if "error" in pkg:
+                continue
+
+            attr = attr.rsplit(".", 1)[0]
+            async for drv in gen_drvs(attr, pkg["drvPath"]):
+                yield drv
 
     async for (attr, drv, refs_direct, refs_all, drv_path) in gen_drvs_attrs():
         if attr:
