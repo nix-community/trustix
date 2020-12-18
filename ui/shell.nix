@@ -17,6 +17,7 @@ pkgs.mkShell {
     pkgs.poetry
     pythonEnv
     pkgs.hydra-unstable  # For the hydra evaluator
+    pkgs.sqlite
 
     pkgs.yajl
     pkgs.pkgconfig

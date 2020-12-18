@@ -1,3 +1,4 @@
+{ systems }:
 let
   path = <nixpkgs>;
 
@@ -5,17 +6,12 @@ let
   hydraJobs = import (path + "/pkgs/top-level/release.nix")
     # Compromise: accuracy vs. resources needed for evaluation.
     {
-      supportedSystems = [
-        "aarch64-linux"
-        "i686-linux"
-        "x86_64-linux"
-        "x86_64-darwin"
-      ];
+      supportedSystems = systems;
 
       nixpkgsArgs = {
         config = {
-          allowBroken = true;
-          allowUnfree = true;
+          allowBroken = false;
+          allowUnfree = false;
           allowInsecurePredicate = x: true;
           checkMeta = false;
 
@@ -52,5 +48,7 @@ let
     "moduleSystem" "lib-tests" # these just confuse the output
   ];
 
+  system = "x86_64-linux";
 in
-  tweak (builtins.removeAttrs hydraJobs blacklist)
+  { hello.${system} = (import path { inherit system; }).hello; }
+  # tweak (builtins.removeAttrs hydraJobs blacklist)

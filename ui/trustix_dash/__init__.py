@@ -1,4 +1,4 @@
-from trustix_dash import fields as trustix_fields
+from trustix_dash.models import fields as trustix_fields
 from trustix_dash.models import (
     Log,
     Evaluation,
@@ -6,6 +6,9 @@ from trustix_dash.models import (
     DerivationAttr,
     DerivationOutput,
     DerivationOutputResult,
+    DerivationRefRecursive,
+    DerivationRefDirect,
+    DerivationEval,
 )
 from tortoise.exceptions import DoesNotExist
 from tortoise import transactions
@@ -19,9 +22,17 @@ import pynix
 import aiofiles
 import os.path
 import asyncio
+import json
 
 
 TRUSTIX_RPC = "unix:../sock"
+
+
+SUPPORTED_SYSTEMS: typing.List[str] = [
+    "aarch64-linux",
+    "x86_64-linux",
+    "x86_64-darwin",
+]
 
 
 channel = grpc.insecure_channel(TRUSTIX_RPC)
@@ -30,23 +41,22 @@ stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 
 async def get_derivation_outputs(drv: str) -> typing.List[DerivationOutputResult]:
     async def filter(q_filter):
-        return await (
+        qs = (
             Derivation.filter(q_filter)
             .prefetch_related("derivationoutputs")
             .prefetch_related("derivationoutputs__derivationoutputresults")
         )
+        return (await qs)
 
-    coros: typing.List[typing.Coroutine] = []
-    for q_filter in (Q(refs_all=drv), Q(drv=drv)):
-        coros.append(filter(q_filter))
+    coros: typing.List[typing.Coroutine] = [
+        filter(q_filter) for q_filter in (Q(from_ref_recursive__referrer=drv), Q(drv=drv))
+    ]
 
-    print(coros)
-    for item in await asyncio.gather(*coros):
-        print(item)
-    # items = []
-    # return items
+    items: typing.List[DerivationOutputResult] = []
+    for items_ in await asyncio.gather(*coros):
+        items.extend(items_)
 
-    return []
+    return items
 
 
 @transactions.atomic()
@@ -121,7 +131,9 @@ async def index_eval(commit_sha: str):  # noqa: C901
         ],
         None,
     ]:
-        expr_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hydra_eval")
+        expr_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "hydra_eval"
+        )
 
         env = os.environ.copy()
         try:
@@ -137,6 +149,9 @@ async def index_eval(commit_sha: str):  # noqa: C901
                 "-I",
                 expr_dir,
                 os.path.join(expr_dir, "outpaths.nix"),
+                "--arg",
+                "systems",
+                json.dumps(SUPPORTED_SYSTEMS).replace(",", ""),
             ],
             env=env,
             stdout=asyncio.subprocess.PIPE,
@@ -145,7 +160,6 @@ async def index_eval(commit_sha: str):  # noqa: C901
             if "error" in pkg:
                 continue
 
-            attr = attr.rsplit(".", 1)[0]
             async for drv in gen_drvs(attr, pkg["drvPath"]):
                 yield drv
 
@@ -171,14 +185,26 @@ async def index_eval(commit_sha: str):  # noqa: C901
                 await DerivationAttr.create(derivation=d, attr=attr)
 
         coros: typing.List[typing.Coroutine] = []
-        coros.append(d.evaluations.add(evaluation))
+        coros.append(DerivationEval.create(drv=d, eval=evaluation))
         if attr:
             coros.append(get_or_create_attr())
 
         if created:
-            coros.append(d.refs_direct.add(*fake_drvs(*refs_direct)))
             coros.append(
-                d.refs_all.add(*fake_drvs(*refs_all)),
+                DerivationRefDirect.bulk_create(
+                    [
+                        DerivationRefDirect(referrer=d, drv=ref_drv)
+                        for ref_drv in fake_drvs(*refs_direct)
+                    ]
+                )
+            )
+            coros.append(
+                DerivationRefRecursive.bulk_create(
+                    [
+                        DerivationRefRecursive(referrer=d, drv=ref_drv)
+                        for ref_drv in fake_drvs(*refs_all)
+                    ]
+                )
             )
 
             async def get_or_create_output(

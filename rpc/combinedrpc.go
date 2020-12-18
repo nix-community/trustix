@@ -75,40 +75,55 @@ func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest)
 	var wg sync.WaitGroup
 	var mux sync.Mutex
 
+	getSTH := l.sthmanager.Get
+
 	for name, _ := range l.logs.Map() {
 		name := name
 
 		wg.Add(1)
 
-		conf, ok := l.configs[name]
-		if !ok {
-			return nil, fmt.Errorf("Could not find config for log with name: %s", name)
-		}
+		go func() {
 
-		log := &pb.Log{}
+			conf, ok := l.configs[name]
+			if !ok {
+				log.Errorf("Could not find config for log with name: %s", name)
+				return
+			}
 
-		log.Name = &name
-		log.Mode = &conf.Mode
+			l := &pb.Log{}
 
-		value, ok := pb.LogSigner_KeyTypes_value[conf.Signer.KeyType]
-		if !ok {
-			return nil, fmt.Errorf("Invalid enum value")
-		}
-		log.Signer = &pb.LogSigner{
-			KeyType: pb.LogSigner_KeyTypes(value).Enum(),
-			Public:  &conf.Signer.PublicKey,
-		}
+			l.Name = &name
+			l.Mode = &conf.Mode
 
-		log.Meta = conf.Meta
+			value, ok := pb.LogSigner_KeyTypes_value[conf.Signer.KeyType]
+			if !ok {
+				panic("Invalid enum value")
+			}
+			l.Signer = &pb.LogSigner{
+				KeyType: pb.LogSigner_KeyTypes(value).Enum(),
+				Public:  &conf.Signer.PublicKey,
+			}
 
-		logs = append(logs, log)
+			l.Meta = conf.Meta
+
+			sth, err := getSTH(name)
+			if err != nil {
+				log.Errorf("could not get STH for log '%s': %v", name, err)
+				return
+			}
+			l.STH = sth
+
+			mux.Lock()
+			logs = append(logs, l)
+			mux.Unlock()
+
+		}()
 	}
 
 	return &pb.LogsResponse{
 		Logs: logs,
 	}, nil
 }
-
 
 func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *pb.GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error) {
 	log, err := l.logs.Get(*in.LogName)
@@ -120,45 +135,6 @@ func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *pb.Get
 		Start:  in.Start,
 		Finish: in.Finish,
 	})
-}
-
-func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {
-	resp := &pb.LogsResponse{
-		Logs: make(map[string]*pb.LogMeta),
-	}
-
-	var wg sync.WaitGroup
-	var mux sync.Mutex
-
-	getSTH := l.sthmanager.Get
-
-	for name, _ := range l.logs.Map() {
-		name := name
-
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
-			sth, err := getSTH(name)
-			if err != nil {
-				log.Error(fmt.Errorf("could not get STH: %v", err))
-				return
-			}
-
-			mux.Lock()
-			resp.Logs[name] = &pb.LogMeta{
-				STH: sth,
-			}
-			mux.Unlock()
-
-		}()
-	}
-
-	wg.Wait()
-
-	return resp, nil
->>>>>>> cfce538 (ui: Index all logged builds in the SQL database)
 }
 
 func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.EntriesResponse, error) {
