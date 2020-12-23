@@ -59,7 +59,7 @@ Very similar
 
 ### Nix using Trustix
 
-The purely functional software deployment model is ideal for reproducability & independent verification of software builds.
+The purely functional software deployment model is ideal for reproducibility & independent verification of software builds.
 Builds are described with an _exact_ set of specified inputs, making it much more likely that those inputs will map to specific outputs.
 
 Compared to most other package managers Nix enforces hashing of every input to a build process and sandboxes the build.

@@ -31,7 +31,7 @@ This build can now be considered trusted and we can use the binary substitution.
 Let's say again that we have 4 builders configured: =Alice=, =Bob=, =Chuck= & =Dan=.
 
 =Alice=, =Bob=, =Chuck= & =Dan= have all built the =hello= derivation but has not arrived at the same output hash!
-We can now identify that =Chuck= is up to no good and may decide to distrust this builder from future substutions completely.
+We can now identify that =Chuck= is up to no good and may decide to distrust this builder from future substitutions completely.
 
-- Track build reproducability across a large number of builders
-As a nice side-effect of the systems general design we can now track reproducability across all builders participating in the global namespace.
+- Track build reproducibility across a large number of builders
+As a nice side-effect of the systems general design we can now track reproducibility across all builders participating in the global namespace.
