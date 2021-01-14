@@ -36,6 +36,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/bakins/logrus-middleware"
 	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -212,7 +213,12 @@ var binaryCacheCommand = &cobra.Command{
 			}
 		}
 
-		http.Handle("/", http.HandlerFunc(handler))
+		l := logrusmiddleware.Middleware{
+			Name:   "trustix-binary-cache-proxy",
+			Logger: log.New(),
+		}
+
+		http.Handle("/", l.Handler(http.HandlerFunc(handler), "/"))
 		log.Fatal(http.ListenAndServe(":8080", nil))
 
 		return nil
