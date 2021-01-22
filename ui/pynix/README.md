@@ -17,6 +17,6 @@ assert input == output
 import pynix
 
 # Returns a dict with the same shape as nix show-derivation uses
-d = pynix.drvparse("/nix/store/s6rn4jz1sin56rf4qj5b5v8jxjm32hlk-hello-2.10.drv")
+d = pynix.drvparse(open("/nix/store/s6rn4jz1sin56rf4qj5b5v8jxjm32hlk-hello-2.10.drv").read())
 assert isinstance(d, dict)
 ```
