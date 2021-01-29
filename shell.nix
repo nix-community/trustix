@@ -1,5 +1,5 @@
 let
-  pkgs = import ./nix;
+  pkgs = import <nixpkgs> { overlays = import ./nix/overlays.nix; };
 
   pythonEnv = pkgs.python3.withPackages (ps: [ ps.grpcio ps.grpcio-tools ps.setuptools ]);
 

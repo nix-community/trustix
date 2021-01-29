@@ -1,5 +1,5 @@
 let
-  pkgs = import ../../nix;
+  pkgs = import <nixpkgs> { overlays = import ../../nix/overlays.nix; };
   inherit (pkgs) poetry2nix;
 
   pythonEnv = poetry2nix.mkPoetryEnv {
