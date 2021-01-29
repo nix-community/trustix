@@ -24,12 +24,14 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/base32"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -42,17 +44,50 @@ import (
 	"github.com/tweag/trustix/contrib/nix/nar"
 )
 
-var nixHookCommand = &cobra.Command{
-	Use:   "post-build-hook",
-	Short: "Submit hashes for inclusion in the log (Nix post-build hook)",
+func runCommand(command ...string) (string, error) {
+	cmd := exec.Command(command[0], command[1:]...)
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
+
+	err := cmd.Run()
+	if err != nil {
+		return "", err
+	}
+
+	return stdout.String(), nil
+}
+
+var submitClosureCommand = &cobra.Command{
+	Use:   "submit-closure",
+	Short: "Submit an entire closur for inclusion in the log (development/testing ONLY)",
+	Long: `Submit an entire closur for inclusion in the log.
+           This is meant for development use ONLY as it will submit all packages, even substituted ones.`,
+	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		upstreamCache := "https://cache.nixos.org"
+		storePaths := []string{}
+		{
+			requisites := make(map[string]struct{})
+			for _, arg := range args {
+				stdout, err := runCommand("nix-store", "--query", "--requisites", arg)
+				if err != nil {
+					log.Fatalf("Could not query requisites: %v", err)
+				}
+				for _, path := range strings.Split(stdout, "\n") {
+					requisites[path] = struct{}{}
+				}
+			}
 
-		storePaths := strings.Split(os.Getenv("OUT_PATHS"), " ")
-		if len(storePaths) < 1 {
-			log.Fatal("OUT_PATHS is empty, expected at least one path to submit")
+			for key, _ := range requisites {
+				storePaths = append(storePaths, key)
+			}
+
+			if len(storePaths) < 1 {
+				log.Fatal("Store paths is empty, expected at least one path to submit")
+			}
 		}
+
+		upstreamCache := "https://cache.nixos.org"
 
 		req := &api.SubmitRequest{}
 
@@ -105,7 +140,17 @@ var nixHookCommand = &cobra.Command{
 					return
 				}
 				defer resp.Body.Close()
+
+				if resp.StatusCode >= 400 {
+					errChan <- fmt.Errorf("Received status code %d for store path '%s'", resp.StatusCode, storePath)
+					return
+				}
+
 				body, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					errChan <- err
+					return
+				}
 
 				narinfo, err := nar.ParseNarInfo(string(body))
 				if err != nil {

@@ -61,6 +61,7 @@ func initCommands() {
 
 	rootCmd.AddCommand(nixHookCommand)
 	rootCmd.AddCommand(binaryCacheCommand)
+	rootCmd.AddCommand(submitClosureCommand)
 }
 
 func Execute() {
