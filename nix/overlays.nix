@@ -7,7 +7,7 @@ let
 in [
   (import "${(builtins.fetchGit {
     url = "https://github.com/tweag/gomod2nix.git";
-    rev = "929d740884811b388acc0f037efba7b5bc5745e8";
+    rev = "f8ad3b8024896b3c7f571f068c168643708822de";
   })}/overlay.nix")
   (import "${(builtins.fetchGit {
     url = "https://github.com/nix-community/poetry2nix.git";

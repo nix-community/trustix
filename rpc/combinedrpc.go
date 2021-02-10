@@ -83,6 +83,7 @@ func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest)
 		wg.Add(1)
 
 		go func() {
+			defer wg.Done()
 
 			conf, ok := l.configs[name]
 			if !ok {
@@ -119,6 +120,8 @@ func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest)
 
 		}()
 	}
+
+	wg.Wait()
 
 	return &pb.LogsResponse{
 		Logs: logs,
@@ -468,4 +471,22 @@ func (l *TrustixCombinedRPCServer) DecideStream(srv pb.TrustixCombinedRPC_Decide
 	}
 
 	return nil
+}
+
+func (l *TrustixCombinedRPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
+
+	log.Info("Received Value request")
+
+	for name, logApi := range l.logs.Map() {
+		resp, err := logApi.GetValue(ctx, in)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"logName": name,
+			}).Info("Error receiving value")
+		} else {
+			return resp, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Value could not be retreived")
 }

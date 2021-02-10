@@ -12,6 +12,7 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
+// Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
 // TrustixCombinedRPCClient is the client API for TrustixCombinedRPC service.
@@ -28,6 +29,8 @@ type TrustixCombinedRPCClient interface {
 	// Compare(inputHash)
 	Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
 	DecideStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_DecideStreamClient, error)
+	// Get stored value by digest
+	GetValue(ctx context.Context, in *api.ValueRequest, opts ...grpc.CallOption) (*api.ValueResponse, error)
 }
 
 type trustixCombinedRPCClient struct {
@@ -66,7 +69,7 @@ func (c *trustixCombinedRPCClient) Get(ctx context.Context, in *KeyRequest, opts
 }
 
 func (c *trustixCombinedRPCClient) GetStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_GetStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_TrustixCombinedRPC_serviceDesc.Streams[0], "/trustix.TrustixCombinedRPC/GetStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &TrustixCombinedRPC_ServiceDesc.Streams[0], "/trustix.TrustixCombinedRPC/GetStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +109,7 @@ func (c *trustixCombinedRPCClient) Decide(ctx context.Context, in *KeyRequest, o
 }
 
 func (c *trustixCombinedRPCClient) DecideStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_DecideStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_TrustixCombinedRPC_serviceDesc.Streams[1], "/trustix.TrustixCombinedRPC/DecideStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &TrustixCombinedRPC_ServiceDesc.Streams[1], "/trustix.TrustixCombinedRPC/DecideStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -136,6 +139,15 @@ func (x *trustixCombinedRPCDecideStreamClient) Recv() (*DecisionResponse, error)
 	return m, nil
 }
 
+func (c *trustixCombinedRPCClient) GetValue(ctx context.Context, in *api.ValueRequest, opts ...grpc.CallOption) (*api.ValueResponse, error) {
+	out := new(api.ValueResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/GetValue", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TrustixCombinedRPCServer is the server API for TrustixCombinedRPC service.
 // All implementations must embed UnimplementedTrustixCombinedRPCServer
 // for forward compatibility
@@ -150,6 +162,8 @@ type TrustixCombinedRPCServer interface {
 	// Compare(inputHash)
 	Decide(context.Context, *KeyRequest) (*DecisionResponse, error)
 	DecideStream(TrustixCombinedRPC_DecideStreamServer) error
+	// Get stored value by digest
+	GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error)
 	mustEmbedUnimplementedTrustixCombinedRPCServer()
 }
 
@@ -175,6 +189,9 @@ func (UnimplementedTrustixCombinedRPCServer) Decide(context.Context, *KeyRequest
 func (UnimplementedTrustixCombinedRPCServer) DecideStream(TrustixCombinedRPC_DecideStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method DecideStream not implemented")
 }
+func (UnimplementedTrustixCombinedRPCServer) GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetValue not implemented")
+}
 func (UnimplementedTrustixCombinedRPCServer) mustEmbedUnimplementedTrustixCombinedRPCServer() {}
 
 // UnsafeTrustixCombinedRPCServer may be embedded to opt out of forward compatibility for this service.
@@ -185,7 +202,7 @@ type UnsafeTrustixCombinedRPCServer interface {
 }
 
 func RegisterTrustixCombinedRPCServer(s grpc.ServiceRegistrar, srv TrustixCombinedRPCServer) {
-	s.RegisterService(&_TrustixCombinedRPC_serviceDesc, srv)
+	s.RegisterService(&TrustixCombinedRPC_ServiceDesc, srv)
 }
 
 func _TrustixCombinedRPC_Logs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -312,7 +329,28 @@ func (x *trustixCombinedRPCDecideStreamServer) Recv() (*KeyRequest, error) {
 	return m, nil
 }
 
-var _TrustixCombinedRPC_serviceDesc = grpc.ServiceDesc{
+func _TrustixCombinedRPC_GetValue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(api.ValueRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixCombinedRPCServer).GetValue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixCombinedRPC/GetValue",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixCombinedRPCServer).GetValue(ctx, req.(*api.ValueRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// TrustixCombinedRPC_ServiceDesc is the grpc.ServiceDesc for TrustixCombinedRPC service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var TrustixCombinedRPC_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "trustix.TrustixCombinedRPC",
 	HandlerType: (*TrustixCombinedRPCServer)(nil),
 	Methods: []grpc.MethodDesc{
@@ -331,6 +369,10 @@ var _TrustixCombinedRPC_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Decide",
 			Handler:    _TrustixCombinedRPC_Decide_Handler,
+		},
+		{
+			MethodName: "GetValue",
+			Handler:    _TrustixCombinedRPC_GetValue_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

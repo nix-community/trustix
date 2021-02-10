@@ -27,7 +27,6 @@ import (
 	"bytes"
 	"crypto"
 	"crypto/ed25519"
-	"encoding/base32"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -41,6 +40,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/client"
+	"github.com/tweag/trustix/contrib/nix/nar"
 	"github.com/tweag/trustix/contrib/nix/schema"
 	pb "github.com/tweag/trustix/proto"
 )
@@ -112,8 +112,6 @@ var binaryCacheCommand = &cobra.Command{
 
 		c := pb.NewTrustixCombinedRPCClient(conn)
 
-		encoding := base32.NewEncoding("0123456789abcdfghijklmnpqrsvwxyz")
-
 		caches, err := getCaches(c)
 		if err != nil {
 			panic(err)
@@ -139,7 +137,7 @@ var binaryCacheCommand = &cobra.Command{
 
 				if strings.HasSuffix(r.URL.Path, ".narinfo") {
 
-					storeHash, err := encoding.DecodeString(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/"), ".narinfo"))
+					storeHash, err := NixB32Encoding.DecodeString(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/"), ".narinfo"))
 					if err != nil {
 						panic(err)
 					}
@@ -172,35 +170,98 @@ var binaryCacheCommand = &cobra.Command{
 						panic(err)
 					}
 
-					w.Header().Set("Content-Type", "text/x-nix-narinfo")
-					fmt.Fprintf(w, narinfo.ToString(fmt.Sprintf("Sig: %s:%s", keyPrefix, base64.StdEncoding.EncodeToString(sig))))
+					{
+						tokens := strings.Split(*narinfo.StorePath, "/")
+						storeBase := tokens[len(tokens)-1]
+						storePrefix := strings.Split(storeBase, "-")[0]
+
+						var narHash string
+						{
+							tokens := strings.Split(*narinfo.NarHash, ":")
+							narHash = tokens[len(tokens)-1]
+						}
+
+						w.Header().Set("Content-Type", "text/x-nix-narinfo")
+						fmt.Fprintf(w, narinfo.ToString(
+							fmt.Sprintf("URL: nar/%s/%s", storePrefix, narHash),
+							fmt.Sprintf("Sig: %s:%s", keyPrefix, base64.StdEncoding.EncodeToString(sig)),
+						))
+					}
 
 					return
 
 				} else if strings.HasPrefix(r.URL.Path, "/nar") {
+
+					var storePrefix string
+					var narHash string
+					{
+						tokens := strings.Split(r.URL.Path, "/")
+						if len(tokens) != 4 {
+							panic(fmt.Errorf("Malformed URL, expected 4 tokens, got %d", len(tokens)))
+						}
+
+						storePrefix = tokens[2]
+						narHash = tokens[3]
+					}
+
 					for _, cache := range caches {
-						URL, err := url.Parse(cache)
-						if err != nil {
-							panic(err)
-						}
-						URL.Path = r.URL.Path
-						u := URL.String()
 
-						resp, err := http.Get(u)
-						if err != nil {
-							panic(err)
-						}
-						if !(resp.StatusCode >= 200 && resp.StatusCode < 400) {
-							continue
+						var narinfo *nar.NarInfo
+						{
+							URL, err := url.Parse(cache)
+							if err != nil {
+								panic(err)
+							}
+							URL.Path = fmt.Sprintf("%s.narinfo", storePrefix)
+							u := URL.String()
+
+							resp, err := http.Get(u)
+							if err != nil {
+								panic(err)
+							}
+							if !(resp.StatusCode >= 200 && resp.StatusCode < 400) {
+								continue
+							}
+
+							narinfoBytes, err := ioutil.ReadAll(resp.Body)
+							if err != nil {
+								panic(err)
+							}
+
+							narinfo, err = nar.ParseNarInfo(narinfoBytes)
+							if err != nil {
+								panic(err)
+							}
 						}
 
-						w.WriteHeader(200)
-						_, err = io.Copy(w, resp.Body)
-						if err != nil {
-							panic(err)
-						}
+						if strings.Split(narinfo.NarHash, ":")[1] == narHash {
 
-						return
+							URL, err := url.Parse(cache)
+							if err != nil {
+								panic(err)
+							}
+							URL.Path = narinfo.URL
+							u := URL.String()
+
+							resp, err := http.Get(u)
+							if err != nil {
+								panic(err)
+							}
+
+							if !(resp.StatusCode >= 200 && resp.StatusCode < 400) {
+								continue
+							}
+
+							w.WriteHeader(200)
+							w.Header().Add("Content-Type", resp.Header.Get("Content-Type"))
+
+							_, err = io.Copy(w, resp.Body)
+							if err != nil {
+								panic(err)
+							}
+
+							return
+						}
 					}
 				} else {
 					w.WriteHeader(400)

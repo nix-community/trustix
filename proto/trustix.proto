@@ -24,6 +24,9 @@ service TrustixCombinedRPC {
   rpc Decide (KeyRequest) returns (DecisionResponse) {}
   rpc DecideStream (stream KeyRequest) returns (stream DecisionResponse) {}
 
+  // Get stored value by digest
+  rpc GetValue (ValueRequest) returns (ValueResponse) {}
+
 }
 
 message LogsRequest {

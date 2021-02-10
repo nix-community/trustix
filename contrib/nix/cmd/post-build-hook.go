@@ -24,30 +24,21 @@
 package cmd
 
 import (
-	"encoding/base32"
-	"fmt"
 	"io/ioutil"
-	"net/http"
-	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 
-	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/client"
-	"github.com/tweag/trustix/contrib/nix/nar"
 )
 
 var nixHookCommand = &cobra.Command{
 	Use:   "post-build-hook",
 	Short: "Submit hashes for inclusion in the log (Nix post-build hook)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		upstreamCache := "https://cache.nixos.org"
 
 		storePaths := strings.Split(os.Getenv("OUT_PATHS"), " ")
 		if len(storePaths) < 1 {
@@ -59,8 +50,6 @@ var nixHookCommand = &cobra.Command{
 		errChan := make(chan error, len(storePaths))
 		wg := new(sync.WaitGroup)
 		mux := new(sync.Mutex)
-
-		encoding := base32.NewEncoding("0123456789abcdfghijklmnpqrsvwxyz")
 
 		tmpDir, err := ioutil.TempDir("", "nix-trustix")
 		if err != nil {
@@ -81,54 +70,18 @@ var nixHookCommand = &cobra.Command{
 			go func() {
 				defer wg.Done()
 
-				storeHashStr := strings.Split(filepath.Base(storePath), "-")[0]
-				storeHash, err := encoding.DecodeString(storeHashStr)
-				if err != nil {
-					errChan <- err
-					return
-				}
-				if len(storeHash) == 0 {
-					errChan <- fmt.Errorf("Empty decoded store path hash")
-					return
-				}
+				var err error
 
-				URL, err := url.Parse(upstreamCache)
-				if err != nil {
-					errChan <- err
-					return
-				}
-				URL.Path = fmt.Sprintf("%s.narinfo", storeHashStr)
-
-				resp, err := http.Get(URL.String())
-				if err != nil {
-					errChan <- err
-					return
-				}
-				defer resp.Body.Close()
-				body, err := ioutil.ReadAll(resp.Body)
-
-				narinfo, err := nar.ParseNarInfo(string(body))
-				if err != nil {
-					errChan <- err
-					return
-				}
-
-				log.WithFields(log.Fields{
-					"storePath": storePath,
-				}).Debug("Submitting mapping")
-
-				narinfoBytes, err := proto.Marshal(narinfo)
+				item, err := createKVPair(storePath)
 				if err != nil {
 					errChan <- err
 					return
 				}
 
 				mux.Lock()
-				req.Items = append(req.Items, &api.KeyValuePair{
-					Key:   storeHash,
-					Value: narinfoBytes,
-				})
+				req.Items = append(req.Items, item)
 				mux.Unlock()
+
 			}()
 		}
 

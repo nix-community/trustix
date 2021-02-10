@@ -25,26 +25,36 @@ package nar
 
 import (
 	"fmt"
-	"github.com/tweag/trustix/contrib/nix/schema"
 	"strconv"
 	"strings"
 )
 
-func ParseNarInfo(input string) (*schema.NarInfo, error) {
+type NarInfo struct {
+	StorePath   string
+	URL         string
+	Compression string
+	FileHash    string
+	FileSize    uint64
+	NarHash     string
+	NarSize     uint64
+	References  []string
+	Deriver     string
+	Sig         string
+	System      string
+	CA          string
+}
 
-	n := &schema.NarInfo{}
+func ParseNarInfo(input []byte) (*NarInfo, error) {
 
-	parseUint := func(in string) (*uint64, error) {
-		i, err := strconv.ParseUint(in, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		return &i, nil
+	n := &NarInfo{}
+
+	parseUint := func(in string) (uint64, error) {
+		return strconv.ParseUint(in, 10, 64)
 	}
 
 	var err error
 
-	for _, line := range strings.Split(input, "\n") {
+	for _, line := range strings.Split(string(input), "\n") {
 		tok := strings.SplitN(line, ": ", 2)
 		if len(tok) <= 1 {
 			continue
@@ -57,20 +67,20 @@ func ParseNarInfo(input string) (*schema.NarInfo, error) {
 
 		switch tok[0] {
 		case "StorePath":
-			n.StorePath = &value
+			n.StorePath = value
 		case "URL":
-			n.URL = &value
+			n.URL = value
 		case "Compression":
-			n.Compression = &value
+			n.Compression = value
 		case "FileHash":
-			n.FileHash = &value
+			n.FileHash = value
 		case "FileSize":
 			n.FileSize, err = parseUint(value)
 			if err != nil {
 				return nil, err
 			}
 		case "NarHash":
-			n.NarHash = &value
+			n.NarHash = value
 		case "NarSize":
 			n.NarSize, err = parseUint(value)
 			if err != nil {
@@ -78,8 +88,17 @@ func ParseNarInfo(input string) (*schema.NarInfo, error) {
 			}
 		case "References":
 			n.References = strings.Split(value, " ")
+		case "Deriver":
+			n.Deriver = value
+		case "Sig":
+			n.Sig = value
+		case "System":
+			n.System = value
+		case "CA":
+			n.CA = value
+		default:
+			return nil, fmt.Errorf("Unknown field: %s", tok[0])
 		}
-
 	}
 
 	return n, nil

@@ -24,38 +24,14 @@
 package cmd
 
 import (
-	"bytes"
-	"encoding/base32"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
-	"sync"
 
-	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/client"
-	"github.com/tweag/trustix/contrib/nix/nar"
 )
-
-func runCommand(command ...string) (string, error) {
-	cmd := exec.Command(command[0], command[1:]...)
-	var stdout bytes.Buffer
-	cmd.Stdout = &stdout
-
-	err := cmd.Run()
-	if err != nil {
-		return "", err
-	}
-
-	return stdout.String(), nil
-}
 
 var submitClosureCommand = &cobra.Command{
 	Use:   "submit-closure",
@@ -69,11 +45,14 @@ var submitClosureCommand = &cobra.Command{
 		{
 			requisites := make(map[string]struct{})
 			for _, arg := range args {
-				stdout, err := runCommand("nix-store", "--query", "--requisites", arg)
+				out, err := exec.Command("nix-store", "--query", "--requisites", arg).Output()
 				if err != nil {
 					log.Fatalf("Could not query requisites: %v", err)
 				}
-				for _, path := range strings.Split(stdout, "\n") {
+				for _, path := range strings.Split(string(out), "\n") {
+					if path == "" {
+						continue
+					}
 					requisites[path] = struct{}{}
 				}
 			}
@@ -87,101 +66,20 @@ var submitClosureCommand = &cobra.Command{
 			}
 		}
 
-		upstreamCache := "https://cache.nixos.org"
-
-		req := &api.SubmitRequest{}
-
-		errChan := make(chan error, len(storePaths))
-		wg := new(sync.WaitGroup)
-		mux := new(sync.Mutex)
-
-		encoding := base32.NewEncoding("0123456789abcdfghijklmnpqrsvwxyz")
-
-		tmpDir, err := ioutil.TempDir("", "nix-trustix")
-		if err != nil {
-			return err
-		}
-		err = os.RemoveAll(tmpDir)
-		if err != nil {
-			return err
-		}
+		items := []*api.KeyValuePair{}
 
 		for _, storePath := range storePaths {
-			storePath := storePath
-			if storePath == "" {
-				continue
+
+			item, err := createKVPair(storePath)
+			if err != nil {
+				log.Fatal(err)
 			}
 
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-
-				storeHashStr := strings.Split(filepath.Base(storePath), "-")[0]
-				storeHash, err := encoding.DecodeString(storeHashStr)
-				if err != nil {
-					errChan <- err
-					return
-				}
-				if len(storeHash) == 0 {
-					errChan <- fmt.Errorf("Empty decoded store path hash")
-					return
-				}
-
-				URL, err := url.Parse(upstreamCache)
-				if err != nil {
-					errChan <- err
-					return
-				}
-				URL.Path = fmt.Sprintf("%s.narinfo", storeHashStr)
-
-				resp, err := http.Get(URL.String())
-				if err != nil {
-					errChan <- err
-					return
-				}
-				defer resp.Body.Close()
-
-				if resp.StatusCode >= 400 {
-					errChan <- fmt.Errorf("Received status code %d for store path '%s'", resp.StatusCode, storePath)
-					return
-				}
-
-				body, err := ioutil.ReadAll(resp.Body)
-				if err != nil {
-					errChan <- err
-					return
-				}
-
-				narinfo, err := nar.ParseNarInfo(string(body))
-				if err != nil {
-					errChan <- err
-					return
-				}
-
-				log.WithFields(log.Fields{
-					"storePath": storePath,
-				}).Debug("Submitting mapping")
-
-				narinfoBytes, err := proto.Marshal(narinfo)
-				if err != nil {
-					errChan <- err
-					return
-				}
-
-				mux.Lock()
-				req.Items = append(req.Items, &api.KeyValuePair{
-					Key:   storeHash,
-					Value: narinfoBytes,
-				})
-				mux.Unlock()
-			}()
+			items = append(items, item)
 		}
 
-		wg.Wait()
-		close(errChan)
-
-		for err := range errChan {
-			log.Fatalf("Could not hash store path: %v", err)
+		req := &api.SubmitRequest{
+			Items: items,
 		}
 
 		conn, err := client.CreateClientConn(dialAddress, nil)

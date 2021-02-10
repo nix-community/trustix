@@ -7,13 +7,14 @@ message NarInfo {
   // Note that we include all narinfo fields in this file for completeness but omit the ones we don't use
 
   required string StorePath = 1;
-  required string URL = 2;
-  required string Compression = 3;
-  required string FileHash = 4;
-  required uint64 FileSize = 5;
-  required string NarHash = 6;
-  required uint64 NarSize = 7;
-  repeated string References = 8;
+  required string NarHash = 2;
+  required uint64 NarSize = 3;
+  repeated string References = 4;
+
+  // required string Compression = 2;
+  // required string URL = 6;
+  // required string FileHash = 4;
+  // required uint64 FileSize = 5;
   // optional string Deriver = 9;
   // optional string System = 10;
   // optional string Sig = 11;

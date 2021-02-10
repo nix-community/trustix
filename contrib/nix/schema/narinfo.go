@@ -64,11 +64,11 @@ func (n *NarInfo) Sign(signer crypto.Signer) ([]byte, error) {
 
 func (n *NarInfo) ToString(extraLines ...string) string {
 	var b strings.Builder
+
 	b.WriteString(fmt.Sprintf("StorePath: %s\n", *n.StorePath))
-	b.WriteString(fmt.Sprintf("URL: %s\n", *n.URL))
-	b.WriteString(fmt.Sprintf("Compression: %s\n", *n.Compression))
-	b.WriteString(fmt.Sprintf("FileHash: %s\n", *n.FileHash))
-	b.WriteString(fmt.Sprintf("FileSize: %d\n", *n.FileSize))
+	b.WriteString(fmt.Sprintf("Compression: %s\n", "none"))
+	b.WriteString(fmt.Sprintf("FileHash: %s\n", *n.NarHash))
+	b.WriteString(fmt.Sprintf("FileSize: %d\n", *n.NarSize))
 	b.WriteString(fmt.Sprintf("NarHash: %s\n", *n.NarHash))
 	b.WriteString(fmt.Sprintf("NarSize: %d\n", *n.NarSize))
 	b.WriteString(fmt.Sprintf("References: %s\n", strings.Join(n.References, " ")))
