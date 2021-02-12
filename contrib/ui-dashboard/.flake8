@@ -6,8 +6,15 @@ max-line-length = 80
 max-complexity = 18
 select = B,C,E,F,W,T4,B9
 
-per-file-ignores =
-    nixops/__main__.py:E402
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    node_modules,
+    trustix_proto,
+    trustix_schema,
+    trustix_api,
 
 # # We need to configure the mypy.ini because the flake8-mypy's default
 # # options don't properly override it, so if we don't specify it we get

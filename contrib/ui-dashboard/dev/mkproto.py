@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from pprint import pprint
 import subprocess
 import tempfile
 import os.path
