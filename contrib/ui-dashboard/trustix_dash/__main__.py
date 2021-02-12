@@ -1,4 +1,8 @@
-from trustix_dash import index_logs, index_eval, get_derivation_outputs
+from trustix_dash import (
+    # index_logs,
+    index_eval,
+    # get_derivation_outputs,
+)
 from tortoise import run_async
 from tortoise import Tortoise
 

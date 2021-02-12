@@ -1,7 +1,3 @@
-from tortoise import models
-from tortoise import fields
-
-
 app_name = "trustix_dash"
 
 
