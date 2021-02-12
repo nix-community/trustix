@@ -14,7 +14,7 @@ from tortoise.exceptions import DoesNotExist
 from tortoise import transactions
 from tortoise.query_utils import Q
 import ijson  # type: ignore
-from proto import trustix_pb2_grpc, trustix_pb2  # type: ignore
+from trustix_proto import trustix_pb2_grpc, trustix_pb2  # type: ignore
 import grpc  # type: ignore
 from async_lru import alru_cache  # type: ignore
 import typing
@@ -46,10 +46,11 @@ async def get_derivation_outputs(drv: str) -> typing.List[DerivationOutputResult
             .prefetch_related("derivationoutputs")
             .prefetch_related("derivationoutputs__derivationoutputresults")
         )
-        return (await qs)
+        return await qs
 
     coros: typing.List[typing.Coroutine] = [
-        filter(q_filter) for q_filter in (Q(from_ref_recursive__referrer=drv), Q(drv=drv))
+        filter(q_filter)
+        for q_filter in (Q(from_ref_recursive__referrer=drv), Q(drv=drv))
     ]
 
     items: typing.List[DerivationOutputResult] = []

@@ -1,5 +1,5 @@
 let
-  pkgs = import ../../nix;
+  pkgs = import <nixpkgs> {};
   inherit (pkgs) poetry2nix;
 
   pythonEnv = poetry2nix.mkPoetryEnv { projectDir = ./.; };
