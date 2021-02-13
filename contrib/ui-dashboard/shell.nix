@@ -9,6 +9,13 @@ let
     );
   };
 
+  # Prevent the entirety of hydra to be in $PATH/runtime closure
+  # We only want the evaluator
+  hydra-eval-jobs = pkgs.runCommand "hydra-eval-jobs-${pkgs.hydra-unstable.version}" { } ''
+    mkdir -p $out/bin
+    cp -s ${pkgs.hydra-unstable}/bin/hydra-eval-jobs $out/bin/
+  '';
+
 in
 pkgs.mkShell {
 
@@ -16,7 +23,8 @@ pkgs.mkShell {
     pkgs.nixpkgs-fmt
     pkgs.poetry
     pythonEnv
-    pkgs.hydra-unstable  # For the hydra evaluator
+
+    hydra-eval-jobs
     pkgs.sqlite
 
     pkgs.yajl
