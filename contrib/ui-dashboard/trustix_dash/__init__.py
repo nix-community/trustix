@@ -25,7 +25,7 @@ import asyncio
 import json
 
 
-TRUSTIX_RPC = "unix:../sock"
+TRUSTIX_RPC = "unix:../../sock"
 
 
 SUPPORTED_SYSTEMS: typing.List[str] = [
@@ -77,7 +77,7 @@ async def index_eval(commit_sha: str):  # noqa: C901
         """
         ret: typing.List[Derivation] = []
         for ref in refs:
-            drv = Derivation(drv=ref.split("/")[-1])
+            drv = Derivation(drv=ref)
             drv._saved_in_db = True
             ret.append(drv)
         return ret
@@ -168,7 +168,7 @@ async def index_eval(commit_sha: str):  # noqa: C901
         if attr:
             print(f"Indexing {attr}")
 
-        derivation_id = drv_path.split("/")[-1]
+        derivation_id = drv_path
 
         try:
             created = False
@@ -211,8 +211,8 @@ async def index_eval(commit_sha: str):  # noqa: C901
             async def get_or_create_output(
                 output: str, store_path_meta: typing.Dict[str, str]
             ):
-                store_path = store_path_meta["path"].split("/")[-1]
-                input_hash = pynix.b32decode(store_path.split("-", 1)[0])
+                store_path = store_path_meta["path"]
+                input_hash = pynix.b32decode(store_path.split("/")[-1].split("-", 1)[0])
                 try:
                     await DerivationOutput.get(input_hash=input_hash)
                 except DoesNotExist:
@@ -259,7 +259,7 @@ async def index_log(log, sth):
             except DoesNotExist:
                 await DerivationOutputResult.create(
                     output_id=trustix_fields.BinaryField.encode_value(leaf.Key),
-                    output_hash=leaf.Value,
+                    output_hash=leaf.ValueDigest,
                     log=log,
                 )
 
@@ -277,10 +277,11 @@ async def index_log(log, sth):
 async def index_logs():
     req = trustix_pb2.LogsRequest()
     resp = stub.Logs(req)  # TODO: Async
-    for logname, meta in resp.Logs.items():
-        try:
-            log = await Log.get(name=logname)
-        except DoesNotExist:
-            log = await Log.create(name=logname, tree_size=0)
 
-        await index_log(log, meta.STH)
+    for log_resp in resp.Logs:
+        try:
+            log = await Log.get(name=log_resp.Name)
+        except DoesNotExist:
+            log = await Log.create(name=log_resp.Name, tree_size=0)
+
+        await index_log(log, log_resp.STH)

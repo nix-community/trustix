@@ -17,7 +17,7 @@ __all__ = (
 
 class Derivation(models.Model):
     drv = fields.CharField(
-        max_length=40,
+        max_length=120,
         index=True,
         pk=True,
         unique=True,
@@ -111,7 +111,7 @@ class DerivationOutput(models.Model):
         f"{app_name}.Derivation", on_delete=fields.CASCADE
     )
     output = fields.CharField(
-        max_length=40,
+        max_length=120,
         index=True,
     )
     store_path = fields.CharField(

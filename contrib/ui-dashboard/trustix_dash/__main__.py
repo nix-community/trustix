@@ -1,7 +1,7 @@
 from trustix_dash import (
-    # index_logs,
+    index_logs,
     index_eval,
-    # get_derivation_outputs,
+    get_derivation_outputs,
 )
 from tortoise import run_async
 from tortoise import Tortoise
@@ -24,27 +24,24 @@ async def init():
         }
     )
 
-    # # TODO: Remove and use aerich instead
-    # await Tortoise.generate_schemas(safe=True)
+    # TODO: Remove and use aerich instead (blocked by https://github.com/tortoise/aerich/issues/63 )
+    await Tortoise.generate_schemas(safe=True)
 
-    # import pdb, traceback, sys
-    # try:
-    #     obj = await get_derivation_outputs("s6rn4jz1sin56rf4qj5b5v8jxjm32hlk-hello-2.10.drv")
-    # except:
-    #     extype, value, tb = sys.exc_info()
-    #     traceback.print_exc()
-    #     pdb.post_mortem(tb)
-    # else:
-    #     print(obj)
+    await index_logs()
 
-    # print(
-    #     await get_derivation_outputs("s6rn4jz1sin56rf4qj5b5v8jxjm32hlk-hello-2.10.drv")
-    # )
-
-    # await index_logs()
-
-    commit_sha = "e9158eca70ae59e73fae23be5d13d3fa0cfc78b4"
+    commit_sha = "fb6f9b7eb0aa8629776ea32d2be6eaf660a22535"
     await index_eval(commit_sha)
 
+    import pdb, traceback, sys
+    try:
+        obj = await get_derivation_outputs("/nix/store/r4vd7wq0j9py6vrzsv7r4ggpcg95jkys-hello-2.10.drv")
+    except:
+        extype, value, tb = sys.exc_info()
+        traceback.print_exc()
+        pdb.post_mortem(tb)
+    else:
+        print(obj)
 
-run_async(init())
+
+if __name__ == '__main__':
+    run_async(init())
