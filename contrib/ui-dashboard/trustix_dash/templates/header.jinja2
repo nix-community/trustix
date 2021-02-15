@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width,initial-scale=1'>
+
+	<title>{{ title }}</title>
+  </head>
+
+  <body>
+
+    <div class="flex-container">
+
+      <h2>{{ title }}</h2>
+
+      <input type="text" placeholder="{{ drv_placeholder }}" />
+
+      <select placeholder="Evaluation">
+        {% for eval in evaluations %}
+          <option value={{eval}} {% if eval == selected_evaluation%}selected{% endif %}>{{eval}}</option>
+        {% endfor %}
+      </select>
+
+      <button type="is-primary">Submit</button>
+
+      <hr />
+
+    </div>

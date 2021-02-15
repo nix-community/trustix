@@ -39,27 +39,6 @@ channel = grpc.insecure_channel(TRUSTIX_RPC)
 stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 
 
-async def get_derivation_outputs(drv: str) -> typing.List[DerivationOutputResult]:
-    async def filter(q_filter):
-        qs = (
-            Derivation.filter(q_filter)
-            .prefetch_related("derivationoutputs")
-            .prefetch_related("derivationoutputs__derivationoutputresults")
-        )
-        return await qs
-
-    coros: typing.List[typing.Coroutine] = [
-        filter(q_filter)
-        for q_filter in (Q(from_ref_recursive__referrer=drv), Q(drv=drv))
-    ]
-
-    items: typing.List[DerivationOutputResult] = []
-    for items_ in await asyncio.gather(*coros):
-        items.extend(items_)
-
-    return items
-
-
 @transactions.atomic()
 async def index_eval(commit_sha: str):  # noqa: C901
 

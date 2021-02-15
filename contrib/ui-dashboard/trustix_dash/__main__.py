@@ -33,8 +33,11 @@ async def init():
     await index_eval(commit_sha)
 
     import pdb, traceback, sys
+
     try:
-        obj = await get_derivation_outputs("/nix/store/r4vd7wq0j9py6vrzsv7r4ggpcg95jkys-hello-2.10.drv")
+        obj = await get_derivation_outputs(
+            "/nix/store/r4vd7wq0j9py6vrzsv7r4ggpcg95jkys-hello-2.10.drv"
+        )
     except:
         extype, value, tb = sys.exc_info()
         traceback.print_exc()
@@ -43,5 +46,5 @@ async def init():
         print(obj)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_async(init())
