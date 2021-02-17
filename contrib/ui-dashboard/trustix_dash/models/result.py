@@ -19,8 +19,9 @@ class DerivationOutputResult(models.Model):
         on_delete=fields.CASCADE,
     )
 
-    def __str__(self):
-        return f"{self.log_id}({self.output.derivation_id, self.output.output})"
+    # def __str__(self):
+    #     return f"{self.output_id}"
+    #     # return f"{self.log_id}({self.output.derivation_id, self.output.output})"
 
     class Meta(BaseMeta):
         unique_together = (("output", "log"),)

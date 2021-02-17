@@ -1,5 +1,47 @@
 {% extends "base.jinja2" %}
 
 {% block main %}
-  <p>Derivation page</p>
+
+  <h3>Unreproduced paths</h3>
+  <ul>
+    {% for drv, outputs in unreproduced_paths.items() %}
+      <li>
+        <code>{{drv}}</code>
+        <ul>
+          {% for output in outputs %}
+            <li>{{output}}</li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h3>Reproduced paths</h3>
+  <ul>
+    {% for drv, outputs in reproduced_paths.items() %}
+      <li>
+        <code>{{drv}}</code>
+        <ul>
+          {% for output in outputs %}
+            <li>{{output}}</li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h3>Missing paths (not built by any known log)</h3>
+  <ul>
+    {% for drv, outputs in missing_paths.items() %}
+      <li>
+        <code>{{drv}}</code>
+        <ul>
+          {% for output in outputs %}
+            <li>{{output}}</li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+
 {% endblock %}

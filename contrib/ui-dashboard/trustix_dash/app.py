@@ -1,4 +1,3 @@
-# from fastapi.staticfiles import StaticFiles
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi.templating import (
     Jinja2Templates,
@@ -19,12 +18,11 @@ from trustix_dash.models import (
     DerivationAttr,
 )
 from tortoise import Tortoise
-# from pydantic import (
-#     BaseModel,
-# )
+import urllib.parse
 import os.path
 
 from trustix_dash.api import (
+    get_derivation_outputs,
     evaluation_list,
 )
 
@@ -97,9 +95,38 @@ async def index(request: Request):
     return templates.TemplateResponse("index.jinja2", ctx)
 
 
-@app.get("/drv/{store_path}", response_class=HTMLResponse)
-async def drv(request: Request):
-    ctx = await make_context(request)
+@app.get("/drv/{drv_path}", response_class=HTMLResponse)
+async def drv(request: Request, drv_path: str):
+
+    drv_path = urllib.parse.unquote(drv_path)
+    drvs = await get_derivation_outputs(drv_path)
+
+    unreproduced_paths: Dict[str, List[str]] = {}
+    reproduced_paths: Dict[str, List[str]] = {}
+    missing_paths: Dict[str, List[str]] = {}  # Paths not built by any known log
+
+    for drv in drvs:
+        for output in drv.derivationoutputs:  # type: ignore
+            output_hashes = set(result.output_hash for result in output.derivationoutputresults)
+
+            if not output_hashes:
+                missing_paths.setdefault(drv.drv, []).append(output.output)  # type: ignore
+
+            elif len(output_hashes) == 1:
+                reproduced_paths.setdefault(drv.drv, []).append(output.output)  # type: ignore
+
+            elif len(output_hashes) > 1:
+                unreproduced_paths.setdefault(drv.drv, []).append(output.output)  # type: ignore
+
+            else:
+                raise RuntimeError("Logic error")
+
+    ctx = await make_context(request, extra={
+        "unreproduced_paths": unreproduced_paths,
+        "reproduced_paths": reproduced_paths,
+        "missing_paths": missing_paths,
+    })
+
     return templates.TemplateResponse("drv.jinja2", ctx)
 
 
