@@ -36,7 +36,6 @@ import (
 	"strings"
 
 	"github.com/bakins/logrus-middleware"
-	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/client"
@@ -137,14 +136,14 @@ var binaryCacheCommand = &cobra.Command{
 
 				if strings.HasSuffix(r.URL.Path, ".narinfo") {
 
-					storeHash, err := NixB32Encoding.DecodeString(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/"), ".narinfo"))
-					if err != nil {
-						panic(err)
-					}
+					// storeHash, err := NixB32Encoding.DecodeString(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/"), ".narinfo"))
+					// if err != nil {
+					// 	panic(err)
+					// }
 
-					resp, err := c.Decide(r.Context(), &pb.KeyRequest{
-						Key: storeHash,
-					})
+					// resp, err := c.Decide(r.Context(), &pb.KeyRequest{
+					// 	Key: storeHash,
+					// })
 					if err != nil {
 						log.WithFields(log.Fields{
 							"path": r.URL.Path,
@@ -155,7 +154,7 @@ var binaryCacheCommand = &cobra.Command{
 					}
 
 					narinfo := &schema.NarInfo{}
-					err = proto.Unmarshal(resp.Decision.Value, narinfo)
+					// err = proto.Unmarshal(resp.Decision.Value, narinfo)
 					if err != nil {
 						log.WithFields(log.Fields{
 							"path": r.URL.Path,
@@ -171,13 +170,13 @@ var binaryCacheCommand = &cobra.Command{
 					}
 
 					{
-						tokens := strings.Split(*narinfo.StorePath, "/")
+						tokens := strings.Split(narinfo.StorePath, "/")
 						storeBase := tokens[len(tokens)-1]
 						storePrefix := strings.Split(storeBase, "-")[0]
 
 						var narHash string
 						{
-							tokens := strings.Split(*narinfo.NarHash, ":")
+							tokens := strings.Split(narinfo.NarHash, ":")
 							narHash = tokens[len(tokens)-1]
 						}
 

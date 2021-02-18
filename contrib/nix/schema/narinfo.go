@@ -28,31 +28,32 @@ import (
 	"crypto"
 	"crypto/rand"
 	"fmt"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
 
+type NarInfo struct {
+	StorePath  string   `json:"path"`
+	NarHash    string   `json:"narHash"`
+	NarSize    uint64   `json:"narSize"`
+	References []string `json:"references"`
+}
+
 func (n *NarInfo) Fingerprint() []byte {
 	var b bytes.Buffer
 
-	storeDir := filepath.Dir(*n.StorePath)
-
 	b.WriteString("1;")
-	b.WriteString(*n.StorePath)
+	b.WriteString(n.StorePath)
 	b.WriteString(";")
 
-	b.WriteString(*n.NarHash) // TODO: Verify correctness
+	// TODO: Verify whether to strip prefix or not
+	b.WriteString(n.NarHash)
 	b.WriteString(";")
 
-	b.WriteString(strconv.FormatUint(*n.NarSize, 10))
+	b.WriteString(strconv.FormatUint(n.NarSize, 10))
 	b.WriteString(";")
 
-	refs := make([]string, len(n.References))
-	for i := 0; i < len(n.References); i++ {
-		refs[i] = storeDir + "/" + n.References[i]
-	}
-	b.WriteString(strings.Join(refs, ","))
+	b.WriteString(strings.Join(n.References, ","))
 
 	return b.Bytes()
 }
@@ -65,12 +66,12 @@ func (n *NarInfo) Sign(signer crypto.Signer) ([]byte, error) {
 func (n *NarInfo) ToString(extraLines ...string) string {
 	var b strings.Builder
 
-	b.WriteString(fmt.Sprintf("StorePath: %s\n", *n.StorePath))
+	b.WriteString(fmt.Sprintf("StorePath: %s\n", n.StorePath))
 	b.WriteString(fmt.Sprintf("Compression: %s\n", "none"))
-	b.WriteString(fmt.Sprintf("FileHash: %s\n", *n.NarHash))
-	b.WriteString(fmt.Sprintf("FileSize: %d\n", *n.NarSize))
-	b.WriteString(fmt.Sprintf("NarHash: %s\n", *n.NarHash))
-	b.WriteString(fmt.Sprintf("NarSize: %d\n", *n.NarSize))
+	b.WriteString(fmt.Sprintf("FileHash: %s\n", n.NarHash))
+	b.WriteString(fmt.Sprintf("FileSize: %d\n", n.NarSize))
+	b.WriteString(fmt.Sprintf("NarHash: %s\n", n.NarHash))
+	b.WriteString(fmt.Sprintf("NarSize: %d\n", n.NarSize))
 	b.WriteString(fmt.Sprintf("References: %s\n", strings.Join(n.References, " ")))
 
 	for _, l := range extraLines {

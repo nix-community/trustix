@@ -25,16 +25,15 @@ package cmd
 
 import (
 	"encoding/base32"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 
-	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/contrib/nix/schema"
@@ -69,53 +68,37 @@ func createKVPair(storePath string) (*api.KeyValuePair, error) {
 		}
 	}
 
-	var references []string
+	var narinfo *schema.NarInfo
 	{
-		out, err := exec.Command("nix-store", "--query", "--references", storePath).Output()
+		out, err := exec.Command("nix", "path-info", "--json", storePath).Output()
 		if err != nil {
 			return nil, err
 		}
 
-		for _, p := range strings.Split(strings.TrimSpace(string(out)), "\n") {
-			tokens := strings.Split(p, "/")
-			references = append(references, tokens[len(tokens)-1])
-		}
-		sort.Strings(references)
-	}
-
-	var narHash string
-	{
-		out, err := exec.Command("nix-store", "--query", "--hash", storePath).Output()
+		var narinfos []*schema.NarInfo
+		err = json.Unmarshal(out, &narinfos)
 		if err != nil {
-			return nil, fmt.Errorf("Could not query hash: %v", err)
+			log.Fatalf("Could not get path info: %v", err)
 		}
 
-		narHash = strings.TrimSpace(string(out))
-	}
-
-	var narSize uint64
-	{
-		out, err := exec.Command("nix-store", "--query", "--size", storePath).Output()
-		if err != nil {
-			return nil, fmt.Errorf("Could not query size: %v", err)
+		if len(narinfos) != 1 {
+			log.Fatalf("Unexpected number of narinfos returned: %d", len(narinfos))
 		}
 
-		narSize, err = strconv.ParseUint(strings.TrimSpace(string(out)), 10, 64)
-		if err != nil {
-			log.Fatal(err)
-		}
+		narinfo = narinfos[0]
+
+		sort.Strings(narinfo.References)
 	}
 
 	log.WithFields(log.Fields{
 		"storePath": storePath,
 	}).Debug("Submitting mapping")
 
-	narinfoBytes, err := proto.Marshal(&schema.NarInfo{
-		StorePath:  &storePath,
-		NarHash:    &narHash,
-		NarSize:    &narSize,
-		References: references,
-	})
+	narinfoBytes, err := json.Marshal(narinfo)
+	if err != nil {
+		log.Fatalf("Could not marshal narinfo: %v", err)
+	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
