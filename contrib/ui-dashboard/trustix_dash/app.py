@@ -19,9 +19,12 @@ from trustix_dash.models import (
 )
 from tortoise import Tortoise
 import urllib.parse
+import asyncio
 import os.path
+import shlex
 
 from trustix_dash.api import (
+    get_derivation_output_results,
     get_derivation_outputs,
     evaluation_list,
 )
@@ -59,10 +62,10 @@ async def close_orm():
 
 
 async def make_context(
-        request: Request,
-        title: str = "",
-        selected_evaluation: Optional[str] = None,
-        extra: Optional[Dict] = None,
+    request: Request,
+    title: str = "",
+    selected_evaluation: Optional[str] = None,
+    extra: Optional[Dict] = None,
 ) -> Dict:
 
     evaluations = await evaluation_list()
@@ -107,7 +110,12 @@ async def drv(request: Request, drv_path: str):
 
     for drv in drvs:
         for output in drv.derivationoutputs:  # type: ignore
-            output_hashes = set(result.output_hash for result in output.derivationoutputresults)
+            output_hashes = set(
+                result.output_hash for result in output.derivationoutputresults
+            )
+
+            if output_hashes:
+                print([result.id for result in output.derivationoutputresults])
 
             if not output_hashes:
                 missing_paths.setdefault(drv.drv, []).append(output.output)  # type: ignore
@@ -121,11 +129,14 @@ async def drv(request: Request, drv_path: str):
             else:
                 raise RuntimeError("Logic error")
 
-    ctx = await make_context(request, extra={
-        "unreproduced_paths": unreproduced_paths,
-        "reproduced_paths": reproduced_paths,
-        "missing_paths": missing_paths,
-    })
+    ctx = await make_context(
+        request,
+        extra={
+            "unreproduced_paths": unreproduced_paths,
+            "reproduced_paths": reproduced_paths,
+            "missing_paths": missing_paths,
+        },
+    )
 
     return templates.TemplateResponse("drv.jinja2", ctx)
 
@@ -142,3 +153,26 @@ async def suggest(request: Request, attr: str):
 
     resp = await DerivationAttr.filter(attr__startswith=attr).only("attr")
     return [drv_attr.attr for drv_attr in resp]
+
+
+@app.get("/diff/{output1}/{output2}", response_class=HTMLResponse)
+async def diff(request: Request, output1: int, output2: int):
+    result1, result2 = await get_derivation_output_results(output1, output2)
+
+    store_path_1 = (await result1.output).store_path
+    store_path_2 = (await result2.output).store_path
+
+    proc = await asyncio.create_subprocess_shell(
+        shlex.join(["diffoscope", "--html", "-", store_path_1, store_path_2]),
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+
+    stdout, stderr = await proc.communicate()
+
+    # Diffoscope returns non-zero on paths being different
+    # Instead use stderr as a heurestic if the call went well or not
+    if stderr:
+        raise ValueError(stderr)
+
+    return stdout

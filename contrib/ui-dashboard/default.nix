@@ -12,7 +12,7 @@ let
 in poetry2nix.mkPoetryApplication {
   projectDir = ./.;
 
-  propagatedBuildInputs = [ hydra-eval-jobs ];
+  propagatedBuildInputs = [ hydra-eval-jobs pkgs.diffoscope ];
 
   # Don't propagate anything, hydra-eval-jobs is already wrapped in $PATH
   postFixup = "rm $out/nix-support/propagated-build-inputs";

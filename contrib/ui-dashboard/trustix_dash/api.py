@@ -32,6 +32,7 @@ async def channels_list() -> List[str]:
     ]
 
 
+# TODO: Verify return type
 async def get_derivation_outputs(drv: str) -> List[DerivationOutputResult]:
     async def filter(q_filter):
         qs = (
@@ -51,3 +52,18 @@ async def get_derivation_outputs(drv: str) -> List[DerivationOutputResult]:
         items.extend(items_)
 
     return items
+
+
+async def get_derivation_output_results(*ids: int) -> List[DerivationOutputResult]:
+    if not ids:
+        return []
+
+    results: List[DerivationOutputResult] = await DerivationOutputResult.filter(
+        id__in=ids
+    )
+    if len(results) != len(ids):
+        raise ValueError(
+            "{} ids passed but only returned {} results".format(len(ids), len(results))
+        )
+
+    return results

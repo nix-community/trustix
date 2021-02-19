@@ -27,6 +27,8 @@ pkgs.mkShell {
     hydra-eval-jobs
     pkgs.sqlite
 
+    pkgs.diffoscope
+
     pkgs.yajl
     pkgs.pkgconfig
   ];
