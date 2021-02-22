@@ -29,6 +29,8 @@ pkgs.mkShell {
 
     pkgs.diffoscope
 
+    pkgs.hivemind
+
     pkgs.yajl
     pkgs.pkgconfig
   ];
