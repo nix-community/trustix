@@ -28,6 +28,7 @@ import (
 	"crypto"
 	"crypto/ed25519"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -42,6 +43,7 @@ import (
 	"github.com/tweag/trustix/contrib/nix/nar"
 	"github.com/tweag/trustix/contrib/nix/schema"
 	pb "github.com/tweag/trustix/proto"
+	"github.com/ulikunitz/xz"
 )
 
 func getCaches(c pb.TrustixCombinedRPCClient) ([]string, error) {
@@ -136,14 +138,14 @@ var binaryCacheCommand = &cobra.Command{
 
 				if strings.HasSuffix(r.URL.Path, ".narinfo") {
 
-					// storeHash, err := NixB32Encoding.DecodeString(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/"), ".narinfo"))
-					// if err != nil {
-					// 	panic(err)
-					// }
+					storeHash, err := NixB32Encoding.DecodeString(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/"), ".narinfo"))
+					if err != nil {
+						panic(err)
+					}
 
-					// resp, err := c.Decide(r.Context(), &pb.KeyRequest{
-					// 	Key: storeHash,
-					// })
+					resp, err := c.Decide(r.Context(), &pb.KeyRequest{
+						Key: storeHash,
+					})
 					if err != nil {
 						log.WithFields(log.Fields{
 							"path": r.URL.Path,
@@ -154,7 +156,7 @@ var binaryCacheCommand = &cobra.Command{
 					}
 
 					narinfo := &schema.NarInfo{}
-					// err = proto.Unmarshal(resp.Decision.Value, narinfo)
+					err = json.Unmarshal(resp.Decision.Value, narinfo)
 					if err != nil {
 						log.WithFields(log.Fields{
 							"path": r.URL.Path,
@@ -251,10 +253,24 @@ var binaryCacheCommand = &cobra.Command{
 								continue
 							}
 
+							var responseReader io.Reader
+							switch narinfo.Compression {
+							case "none":
+								responseReader = resp.Body
+							case "xz":
+								responseReader, err = xz.NewReader(resp.Body)
+								if err != nil {
+									w.WriteHeader(500)
+									panic(err)
+								}
+							default:
+								w.WriteHeader(500)
+								panic(fmt.Errorf("Unhandled NAR compression '%s'", narinfo.Compression))
+							}
+
 							w.WriteHeader(200)
 							w.Header().Add("Content-Type", resp.Header.Get("Content-Type"))
-
-							_, err = io.Copy(w, resp.Body)
+							_, err = io.Copy(w, responseReader)
 							if err != nil {
 								panic(err)
 							}
