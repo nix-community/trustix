@@ -1,4 +1,5 @@
-from tortoise.contrib.fastapi import register_tortoise
+from trustix_proto import trustix_pb2_grpc  # type: ignore
+from trustix_api import api_pb2
 from fastapi.templating import (
     Jinja2Templates,
 )
@@ -19,15 +20,25 @@ from trustix_dash.models import (
 )
 from tortoise import Tortoise
 import urllib.parse
+import requests
+import tempfile
 import asyncio
 import os.path
 import shlex
+import json
+import grpc
 
 from trustix_dash.api import (
     get_derivation_output_results,
     get_derivation_outputs,
     evaluation_list,
 )
+
+BINARY_CACHE_PROXY = "http://localhost:8080"
+
+TRUSTIX_RPC = "unix:../../sock"
+channel = grpc.aio.insecure_channel(TRUSTIX_RPC)
+stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 
 
 templates = Jinja2Templates(
@@ -159,18 +170,76 @@ async def suggest(request: Request, attr: str):
 async def diff(request: Request, output1: int, output2: int):
     result1, result2 = await get_derivation_output_results(output1, output2)
 
-    store_path_1 = (await result1.output).store_path
-    store_path_2 = (await result2.output).store_path
+    # Uvloop has a nasty bug https://github.com/MagicStack/uvloop/issues/317
+    # To work around this we run the fetching/unpacking in a separate blocking thread
+    def fetch_unpack_nar(url, location):
+        import subprocess
 
-    proc = await asyncio.create_subprocess_shell(
-        shlex.join(["diffoscope", "--html", "-", store_path_1, store_path_2]),
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
+        loc_base = os.path.basename(location)
+        loc_dir = os.path.dirname(location)
 
-    stdout, stderr = await proc.communicate()
+        try:
+            os.mkdir(loc_dir)
+        except FileExistsError:
+            pass
 
-    # Diffoscope returns non-zero on paths being different
+        with requests.get(url, stream=True) as r:
+            r.raise_for_status()
+            p = subprocess.Popen(["nix-nar-unpack", loc_base], stdin=subprocess.PIPE, cwd=loc_dir)
+            for chunk in r.iter_content(chunk_size=512):
+                p.stdin.write(chunk)
+            p.stdin.close()
+            p.wait(timeout=0.5)
+
+        # Ensure correct mtime
+        for subl in ((os.path.join(dirpath, f) for f in (dirnames + filenames)) for (dirpath, dirnames, filenames) in os.walk(location)):
+            for path in subl:
+                os.utime(path, (1, 1))
+        os.utime(location, (1, 1))
+
+    async def process_result(result, tmpdir, outbase) -> str:
+        # Fetch narinfo
+        narinfo = json.loads(
+            (
+                await stub.GetValue(api_pb2.ValueRequest(Digest=result.output_hash))
+            ).Value
+        )
+        nar_hash = narinfo["narHash"].split(":")[-1]
+
+        # Get store prefix
+        output = await result.output
+
+        store_base = output.store_path.split("/")[-1]
+        store_prefix = store_base.split("-")[0]
+
+        unpack_dir = os.path.join(tmpdir, store_base, outbase)
+        nar_url = "/".join((BINARY_CACHE_PROXY, "nar", store_prefix, nar_hash))
+
+        await asyncio.get_running_loop().run_in_executor(
+            None, fetch_unpack_nar, nar_url, unpack_dir
+        )
+
+        return unpack_dir
+
+    # TODO: Async tempfile
+    with tempfile.TemporaryDirectory(prefix="trustix-ui-dash-diff") as tmpdir:
+        dir_a, dir_b = await asyncio.gather(
+            process_result(result1, tmpdir, "A"),
+            process_result(result2, tmpdir, "B"),
+        )
+
+        dir_a_rel = os.path.join(os.path.basename(os.path.dirname(dir_a)), "A")
+        dir_b_rel = os.path.join(os.path.basename(os.path.dirname(dir_b)), "B")
+
+        proc = await asyncio.create_subprocess_shell(
+            shlex.join(["diffoscope", "--html", "-", dir_a_rel, dir_b_rel]),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=tmpdir,
+        )
+        stdout, stderr = await proc.communicate()
+
+    # Diffoscope returns non-zero on paths that have a diff
     # Instead use stderr as a heurestic if the call went well or not
     if stderr:
         raise ValueError(stderr)

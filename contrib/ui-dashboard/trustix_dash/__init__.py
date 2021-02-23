@@ -12,7 +12,6 @@ from trustix_dash.models import (
 )
 from tortoise.exceptions import DoesNotExist
 from tortoise import transactions
-from tortoise.query_utils import Q
 import ijson  # type: ignore
 from trustix_proto import trustix_pb2_grpc, trustix_pb2  # type: ignore
 import grpc  # type: ignore

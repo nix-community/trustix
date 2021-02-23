@@ -19,6 +19,7 @@ async_lru = "^1.0.2"
 uvicorn = {extras = ["standard"], version = "^0.13.4"}
 fastapi = {extras = ["standard"], version = "^0.63.0"}
 Jinja2 = "^2.11.3"
+aiohttp = {extras = ["speedups"], version = "^3.7.4"}
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.790"
