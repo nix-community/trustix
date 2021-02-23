@@ -16,6 +16,8 @@ let
     cp -s ${pkgs.hydra-unstable}/bin/hydra-eval-jobs $out/bin/
   '';
 
+  nix-nar-unpack = pkgs.callPackage ../nix-nar-unpack { };
+
 in
 pkgs.mkShell {
 
@@ -23,6 +25,8 @@ pkgs.mkShell {
     pkgs.nixpkgs-fmt
     pkgs.poetry
     pythonEnv
+
+    nix-nar-unpack
 
     hydra-eval-jobs
     pkgs.sqlite
