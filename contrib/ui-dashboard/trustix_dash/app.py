@@ -14,8 +14,10 @@ from typing import (
     Optional,
     Dict,
     List,
+    Set,
 )
 from trustix_dash.models import (
+    DerivationOutput,
     DerivationAttr,
 )
 from tortoise import Tortoise
@@ -26,7 +28,7 @@ import asyncio
 import os.path
 import shlex
 import json
-import grpc
+import grpc  # type: ignore
 
 from trustix_dash.api import (
     get_derivation_output_results,
@@ -120,22 +122,20 @@ async def drv(request: Request, drv_path: str):
     missing_paths: Dict[str, List[str]] = {}  # Paths not built by any known log
 
     for drv in drvs:
+        output: DerivationOutput
         for output in drv.derivationoutputs:  # type: ignore
-            output_hashes = set(
-                result.output_hash for result in output.derivationoutputresults
+            output_hashes: Set[bytes] = set(
+                result.output_hash for result in output.derivationoutputresults  # type: ignore
             )
 
-            if output_hashes:
-                print([result.id for result in output.derivationoutputresults])
-
             if not output_hashes:
-                missing_paths.setdefault(drv.drv, []).append(output.output)  # type: ignore
+                missing_paths.setdefault(drv.drv, []).append(output.output)
 
             elif len(output_hashes) == 1:
-                reproduced_paths.setdefault(drv.drv, []).append(output.output)  # type: ignore
+                reproduced_paths.setdefault(drv.drv, []).append(output.output)
 
             elif len(output_hashes) > 1:
-                unreproduced_paths.setdefault(drv.drv, []).append(output.output)  # type: ignore
+                unreproduced_paths.setdefault(drv.drv, []).append(output.output)
 
             else:
                 raise RuntimeError("Logic error")

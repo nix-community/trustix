@@ -32,8 +32,7 @@ async def channels_list() -> List[str]:
     ]
 
 
-# TODO: Verify return type
-async def get_derivation_outputs(drv: str) -> List[DerivationOutputResult]:
+async def get_derivation_outputs(drv: str) -> List[Derivation]:
     async def filter(q_filter):
         qs = (
             Derivation.filter(q_filter)
@@ -47,7 +46,7 @@ async def get_derivation_outputs(drv: str) -> List[DerivationOutputResult]:
         for q_filter in (Q(from_ref_recursive__referrer=drv), Q(drv=drv))
     ]
 
-    items: List[DerivationOutputResult] = []
+    items: List[Derivation] = []
     for items_ in await asyncio.gather(*coros):
         items.extend(items_)
 
