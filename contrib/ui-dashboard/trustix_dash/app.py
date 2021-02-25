@@ -17,8 +17,11 @@ from typing import (
     Set,
 )
 from trustix_dash.models import (
+    DerivationOutputResult,
     DerivationOutput,
     DerivationAttr,
+    Derivation,
+    Log,
 )
 from tortoise import Tortoise
 import urllib.parse
@@ -26,6 +29,7 @@ import requests
 import tempfile
 import asyncio
 import os.path
+import codecs
 import shlex
 import json
 import grpc  # type: ignore
@@ -117,9 +121,23 @@ async def drv(request: Request, drv_path: str):
     drv_path = urllib.parse.unquote(drv_path)
     drvs = await get_derivation_outputs(drv_path)
 
-    unreproduced_paths: Dict[str, List[str]] = {}
-    reproduced_paths: Dict[str, List[str]] = {}
-    missing_paths: Dict[str, List[str]] = {}  # Paths not built by any known log
+    # Description: drv -> output -> output_hash -> List[result]
+    PATH_T = Dict[str, Dict[str, Dict[str, List[DerivationOutputResult]]]]
+    unreproduced_paths: PATH_T = {}
+    reproduced_paths: PATH_T = {}
+    # Paths only built by one log
+    unknown_paths: PATH_T = {}
+    # Paths not built by any known log
+    missing_paths: PATH_T = {}
+
+    log_ids: Set[int] = set()
+
+    def append_output(paths_d: PATH_T, drv: Derivation, output: DerivationOutput):
+        """Append an output to the correct datastructure (paths_d)"""
+        current = paths_d.setdefault(drv.drv, {}).setdefault(output.output, {})
+        for result in output.derivationoutputresults:  # type: ignore
+            current.setdefault(codecs.encode(result.output_hash, "hex").decode(), []).append(result)
+            log_ids.add(result.log_id)
 
     for drv in drvs:
         output: DerivationOutput
@@ -129,23 +147,33 @@ async def drv(request: Request, drv_path: str):
             )
 
             if not output_hashes:
-                missing_paths.setdefault(drv.drv, []).append(output.output)
+                append_output(missing_paths, drv, output)
+
+            elif len(output_hashes) == 1 and len(output.derivationoutputresults) > 1:  # type: ignore
+                append_output(reproduced_paths, drv, output)
 
             elif len(output_hashes) == 1:
-                reproduced_paths.setdefault(drv.drv, []).append(output.output)
+                append_output(unknown_paths, drv, output)
 
             elif len(output_hashes) > 1:
-                unreproduced_paths.setdefault(drv.drv, []).append(output.output)
+                append_output(unreproduced_paths, drv, output)
 
             else:
                 raise RuntimeError("Logic error")
+
+    logs: Dict[int, Log] = {
+        log.id: log for log in  # type: ignore
+        await Log.filter(id__in=log_ids)
+    }
 
     ctx = await make_context(
         request,
         extra={
             "unreproduced_paths": unreproduced_paths,
             "reproduced_paths": reproduced_paths,
+            "unknown_paths": unknown_paths,
             "missing_paths": missing_paths,
+            "logs": logs,
         },
     )
 

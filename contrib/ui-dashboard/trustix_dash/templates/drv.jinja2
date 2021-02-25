@@ -1,47 +1,58 @@
 {% extends "base.jinja2" %}
 
+{% macro render_paths_d(paths_d) %}
+  <ul>
+    {% for drv, outputs in paths_d.items() %}
+      <li>
+        <code>{{drv}}</code>
+        <ul>
+          {% for output, paths in outputs.items() %}
+            <li>
+              <code>{{output}}</code>
+
+              <form action="/TODO">
+                <ul>
+                  {% for output_hash, results in paths.items() %}
+
+                    {% if paths|length > 1 %}
+                      <input type="checkbox" name="output_hash" value="{{output_hash}}">
+                      <label for="output_hash">{{output_hash}}</label>
+                    {% endif %}
+
+                    <ul>
+                      {% for result in results %}
+                        <li>{{logs.get(result.log_id, "<Unknown log>")}}</li>
+                      {% endfor %}
+                    </ul>
+
+                  {% endfor %}
+                </ul>
+
+                {% if paths|length > 1 %}
+                  <input type="submit" value="Compare" />
+                {% endif %}
+              </form>
+
+            </li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
 {% block main %}
 
   <h3>Unreproduced paths</h3>
-  <ul>
-    {% for drv, outputs in unreproduced_paths.items() %}
-      <li>
-        <code>{{drv}}</code>
-        <ul>
-          {% for output in outputs %}
-            <li>{{output}}</li>
-          {% endfor %}
-        </ul>
-      </li>
-    {% endfor %}
-  </ul>
+  {{ render_paths_d(unreproduced_paths) }}
 
   <h3>Reproduced paths</h3>
-  <ul>
-    {% for drv, outputs in reproduced_paths.items() %}
-      <li>
-        <code>{{drv}}</code>
-        <ul>
-          {% for output in outputs %}
-            <li>{{output}}</li>
-          {% endfor %}
-        </ul>
-      </li>
-    {% endfor %}
-  </ul>
+  {{ render_paths_d(reproduced_paths) }}
+
+  <h3>Unknown paths (only built by one log)</h3>
+  {{ render_paths_d(unknown_paths) }}
 
   <h3>Missing paths (not built by any known log)</h3>
-  <ul>
-    {% for drv, outputs in missing_paths.items() %}
-      <li>
-        <code>{{drv}}</code>
-        <ul>
-          {% for output in outputs %}
-            <li>{{output}}</li>
-          {% endfor %}
-        </ul>
-      </li>
-    {% endfor %}
-  </ul>
+  {{ render_paths_d(missing_paths) }}
 
 {% endblock %}
