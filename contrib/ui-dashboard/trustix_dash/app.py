@@ -28,6 +28,7 @@ from trustix_dash.models import (
 )
 from tortoise import Tortoise
 import urllib.parse
+import Levenshtein
 import requests
 import tempfile
 import asyncio
@@ -226,7 +227,11 @@ async def suggest(request: Request, attr: str):
         raise ValueError("Prefix too short")
 
     resp = await DerivationAttr.filter(attr__startswith=attr).only("attr")
-    return [drv_attr.attr for drv_attr in resp]
+    return sorted(
+        (drv_attr.attr for drv_attr in resp),
+        key=lambda x: Levenshtein.ratio(attr, x),
+        reverse=True,
+    )
 
 
 @app.post("/diff/", response_class=HTMLResponse)

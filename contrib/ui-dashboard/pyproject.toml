@@ -21,6 +21,7 @@ fastapi = {extras = ["standard"], version = "^0.63.0"}
 Jinja2 = "^2.11.3"
 aiohttp = {extras = ["speedups"], version = "^3.7.4"}
 python-multipart = "^0.0.5"
+python-Levenshtein = "^0.12.2"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.790"
