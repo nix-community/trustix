@@ -1,34 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-	<meta charset='utf-8'>
-	<meta name='viewport' content='width=device-width,initial-scale=1'>
+<div>
 
-	<title>{{ title }}</title>
+  <h2><a href="/">{{ title }}</a></h2>
 
-    <link href="/static/style.css" rel="stylesheet">
+  <form action="/search" method="POST">
+    <input type="text" name="term" placeholder="{{ drv_placeholder }}" autocomplete="on" />
 
-  </head>
+    <select placeholder="Evaluation">
+      {% for eval in evaluations %}
+        <option value={{eval}} {% if eval == selected_evaluation%}selected{% endif %}>{{eval}}</option>
+      {% endfor %}
+    </select>
 
-  <body>
+    <button type="is-primary">Submit</button>
 
-    <div class="flex-container">
+  </form>
 
-      <h2><a href="/">{{ title }}</a></h2>
+  <hr />
 
-      <form action="/search" method="POST">
-        <input type="text" name="term" placeholder="{{ drv_placeholder }}" autocomplete="on" />
-
-        <select placeholder="Evaluation">
-          {% for eval in evaluations %}
-            <option value={{eval}} {% if eval == selected_evaluation%}selected{% endif %}>{{eval}}</option>
-          {% endfor %}
-        </select>
-
-        <button type="is-primary">Submit</button>
-
-      </form>
-
-      <hr />
-
-    </div>
+</div>
