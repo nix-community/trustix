@@ -4,26 +4,27 @@
   <ul>
     {% for drv, outputs in paths_d.items() %}
       <li>
-        <code>{{drv}}</code>
+        <p class="monospace">{{drv}}</p>
         <ul>
           {% for output, paths in outputs.items() %}
             <li>
-              <code>{{output}}</code>
-
-              <form action="/diff" method="POST">
-                <ul>
+              <p class="monospace">{{output}}</p>
+              <form action="/diff" method="POST" class="{% if paths|length > 1 %}unreproduced{% endif %}">
+                <ul class="drv-outputs">
                   {% for output_hash, results in paths.items() %}
 
-                    {% if paths|length > 1 %}
-                      <input type="checkbox" name="output_hash" value="{{output_hash}}">
-                      <label for="output_hash">{{output_hash}}</label>
-                    {% endif %}
+                    <div class="drv-output" x-data-outputhash="{{output_hash}}">
+                      {% if paths|length > 1 %}
+                        <input type="checkbox" {% if paths|length == 2 %}checked onclick="return false;"{% endif %} name="output_hash" value="{{output_hash}}">
+                        <label for="output_hash">{{output_hash}}</label>
+                      {% endif %}
 
-                    <ul>
-                      {% for result in results %}
-                        <li>{{logs.get(result.log_id, "<Unknown log>")}}</li>
-                      {% endfor %}
-                    </ul>
+                      <ul class="log-names">
+                        {% for result in results %}
+                          <li class="log-name">{{logs.get(result.log_id, "<Unknown log>")}}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
 
                   {% endfor %}
                 </ul>
@@ -40,6 +41,12 @@
     {% endfor %}
   </ul>
 {% endmacro %}
+
+{% block deferred %}
+  <script type="text/javascript">
+    {% include "drv-pie-render.js" %}
+  </script>
+{% endblock %}
 
 {% block main %}
 

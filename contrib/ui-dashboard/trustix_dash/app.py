@@ -53,7 +53,8 @@ stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 templates = Jinja2Templates(
     directory=os.path.join(os.path.dirname(__file__), "templates")
 )
-templates.env.globals["quote_drv_url"] = template_lib.quote_drv_url
+templates.env.globals["drv_url_quote"] = template_lib.drv_url_quote
+templates.env.globals["json_render"] = template_lib.json_render
 
 
 app = FastAPI()
@@ -115,9 +116,12 @@ async def make_context(
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    ctx = await make_context(request, extra={
-        "attr": DEFAULT_ATTR,
-    })
+    ctx = await make_context(
+        request,
+        extra={
+            "attr": DEFAULT_ATTR,
+        },
+    )
     return templates.TemplateResponse("index.jinja2", ctx)
 
 
@@ -125,7 +129,6 @@ async def index(request: Request):
 async def drv(request: Request, drv_path: str):
 
     drv_path = urllib.parse.unquote(drv_path)
-    print(drv_path)
     drvs = await get_derivation_outputs(drv_path)
 
     # Description: drv -> output -> output_hash -> List[result]
@@ -143,7 +146,9 @@ async def drv(request: Request, drv_path: str):
         """Append an output to the correct datastructure (paths_d)"""
         current = paths_d.setdefault(drv.drv, {}).setdefault(output.output, {})
         for result in output.derivationoutputresults:  # type: ignore
-            current.setdefault(codecs.encode(result.output_hash, "hex").decode(), []).append(result)
+            current.setdefault(
+                codecs.encode(result.output_hash, "hex").decode(), []
+            ).append(result)
             log_ids.add(result.log_id)
 
     for drv in drvs:
@@ -169,8 +174,7 @@ async def drv(request: Request, drv_path: str):
                 raise RuntimeError("Logic error")
 
     logs: Dict[int, Log] = {
-        log.id: log for log in  # type: ignore
-        await Log.filter(id__in=log_ids)
+        log.id: log for log in await Log.filter(id__in=log_ids)  # type: ignore
     }
 
     ctx = await make_context(
@@ -248,14 +252,19 @@ async def diff(request: Request, output_hash: List[str] = Form(...)):
 
         with requests.get(url, stream=True) as r:
             r.raise_for_status()
-            p = subprocess.Popen(["nix-nar-unpack", loc_base], stdin=subprocess.PIPE, cwd=loc_dir)
+            p = subprocess.Popen(
+                ["nix-nar-unpack", loc_base], stdin=subprocess.PIPE, cwd=loc_dir
+            )
             for chunk in r.iter_content(chunk_size=512):
                 p.stdin.write(chunk)
             p.stdin.close()
             p.wait(timeout=0.5)
 
         # Ensure correct mtime
-        for subl in ((os.path.join(dirpath, f) for f in (dirnames + filenames)) for (dirpath, dirnames, filenames) in os.walk(location)):
+        for subl in (
+            (os.path.join(dirpath, f) for f in (dirnames + filenames))
+            for (dirpath, dirnames, filenames) in os.walk(location)
+        ):
             for path in subl:
                 os.utime(path, (1, 1))
         os.utime(location, (1, 1))
@@ -263,9 +272,7 @@ async def diff(request: Request, output_hash: List[str] = Form(...)):
     async def process_result(result, tmpdir, outbase) -> str:
         # Fetch narinfo
         narinfo = json.loads(
-            (
-                await stub.GetValue(api_pb2.ValueRequest(Digest=result.output_hash))
-            ).Value
+            (await stub.GetValue(api_pb2.ValueRequest(Digest=result.output_hash))).Value
         )
         nar_hash = narinfo["narHash"].split(":")[-1]
 
