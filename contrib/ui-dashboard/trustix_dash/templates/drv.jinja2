@@ -54,16 +54,24 @@
 
 {% block main %}
 
-  <h3>Unreproduced paths</h3>
-  {{ render_paths_d(unreproduced_paths) }}
+  {% if unreproduced_paths %}
+    <h3>Unreproduced paths</h3>
+    {{ render_paths_d(unreproduced_paths) }}
+  {% endif %}
 
-  <h3>Reproduced paths</h3>
-  {{ render_paths_d(reproduced_paths) }}
+  {% if reproduced_paths %}
+    <h3>Reproduced paths</h3>
+    {{ render_paths_d(reproduced_paths) }}
+  {% endif %}
 
-  <h3>Unknown paths (only built by one log)</h3>
-  {{ render_paths_d(unknown_paths) }}
+  {% if unknown_paths %}
+    <h3>Unknown paths (only built by one log)</h3>
+    {{ render_paths_d(unknown_paths) }}
+  {% endif %}
 
-  <h3>Missing paths (not built by any known log)</h3>
-  {{ render_paths_d(missing_paths) }}
+  {% if missing_paths %}
+    <h3>Missing paths (not built by any known log)</h3>
+    {{ render_paths_d(missing_paths) }}
+  {% endif %}
 
 {% endblock %}
