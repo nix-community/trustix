@@ -403,18 +403,11 @@ span.mfw {
     color: #730000
 }
 
-a.kopimi,
-a.kopimi img.kopimi {
-    display: block;
-    margin-left: auto;
-    margin-right: auto
-}
-
-a.kopimi img.kopimi {
-    height: 2em
-}
-
 p.fakepre {
     font-family: monospace;
     font-size: .9em
+}
+
+button.drv-compare {
+    float: right;
 }
