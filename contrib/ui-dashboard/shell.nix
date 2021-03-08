@@ -16,7 +16,8 @@ let
     cp -s ${pkgs.hydra-unstable}/bin/hydra-eval-jobs $out/bin/
   '';
 
-  nix-nar-unpack = pkgs.callPackage ../nix-nar-unpack { };
+
+  nix-nar-unpack = import ../nix-nar-unpack { };
 
 in
 pkgs.mkShell {

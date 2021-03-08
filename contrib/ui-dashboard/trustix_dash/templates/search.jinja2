@@ -1,0 +1,16 @@
+{% extends "base.jinja2" %}
+
+{% block main %}
+
+  {% for attr, derivations in derivations_by_attr.items() %}
+    <h3>{{attr}}</h3>
+
+    <ul>
+      {% for derivation in derivations %}
+        <li><a href="/drv/{{quote_drv_url(derivation)}}">{{derivation}}</a></li>
+      {% endfor %}
+    </ul>
+
+  {% endfor %}
+
+{% endblock %}

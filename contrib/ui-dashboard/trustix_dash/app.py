@@ -9,6 +9,7 @@ from fastapi.responses import (
 from fastapi import (
     FastAPI,
     Request,
+    Form,
 )
 from typing import (
     Optional,
@@ -16,6 +17,7 @@ from typing import (
     List,
     Set,
 )
+from trustix_dash import template_lib
 from trustix_dash.models import (
     DerivationOutputResult,
     DerivationOutput,
@@ -50,6 +52,7 @@ stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 templates = Jinja2Templates(
     directory=os.path.join(os.path.dirname(__file__), "templates")
 )
+templates.env.globals["quote_drv_url"] = template_lib.quote_drv_url
 
 
 app = FastAPI()
@@ -119,6 +122,7 @@ async def index(request: Request):
 async def drv(request: Request, drv_path: str):
 
     drv_path = urllib.parse.unquote(drv_path)
+    print(drv_path)
     drvs = await get_derivation_outputs(drv_path)
 
     # Description: drv -> output -> output_hash -> List[result]
@@ -180,9 +184,29 @@ async def drv(request: Request, drv_path: str):
     return templates.TemplateResponse("drv.jinja2", ctx)
 
 
-# @app.post("/search")
-# async def search(request: Request, attr: Optional[str] = None):
-#     return {}
+@app.post("/search/")
+async def search(request: Request, term: str = Form(...)):
+    from trustix_dash.models import DerivationAttr
+
+    if len(term) < 3:
+        raise ValueError("Search term too short")
+
+    qs = DerivationAttr.filter(attr__startswith=term)
+
+    results = await qs
+
+    derivations_by_attr: Dict[str, Set[str]] = {}
+    for result in results:
+        derivations_by_attr.setdefault(result.attr, set()).add(result.derivation_id)
+
+    ctx = await make_context(
+        request,
+        extra={
+            "derivations_by_attr": derivations_by_attr,
+        },
+    )
+
+    return templates.TemplateResponse("search.jinja2", ctx)
 
 
 @app.get("/suggest/{attr}", response_model=List[str])

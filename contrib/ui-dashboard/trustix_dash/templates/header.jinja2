@@ -11,17 +11,20 @@
 
     <div class="flex-container">
 
-      <h2>{{ title }}</h2>
+      <h2><a href="/">{{ title }}</a></h2>
 
-      <input type="text" placeholder="{{ drv_placeholder }}" />
+      <form action="/search" method="POST">
+        <input type="text" name="term" placeholder="{{ drv_placeholder }}" />
 
-      <select placeholder="Evaluation">
-        {% for eval in evaluations %}
-          <option value={{eval}} {% if eval == selected_evaluation%}selected{% endif %}>{{eval}}</option>
-        {% endfor %}
-      </select>
+        <select placeholder="Evaluation">
+          {% for eval in evaluations %}
+            <option value={{eval}} {% if eval == selected_evaluation%}selected{% endif %}>{{eval}}</option>
+          {% endfor %}
+        </select>
 
-      <button type="is-primary">Submit</button>
+        <button type="is-primary">Submit</button>
+
+      </form>
 
       <hr />
 
