@@ -218,9 +218,17 @@ async def suggest(request: Request, attr: str):
     return [drv_attr.attr for drv_attr in resp]
 
 
-@app.get("/diff/{output1}/{output2}", response_class=HTMLResponse)
-async def diff(request: Request, output1: int, output2: int):
-    result1, result2 = await get_derivation_output_results(output1, output2)
+@app.post("/diff/", response_class=HTMLResponse)
+async def diff(request: Request, output_hash: List[str] = Form(...)):
+
+    if len(output_hash) < 1:
+        raise ValueError("Need at least 2 entries to diff")
+    if len(output_hash) > 2:
+        raise ValueError("Received more than 2 entries to diff")
+
+    output_hash_1, output_hash_2 = [codecs.decode(h, "hex") for h in output_hash]
+
+    result1, result2 = await get_derivation_output_results(output_hash_1, output_hash_2)
 
     # Uvloop has a nasty bug https://github.com/MagicStack/uvloop/issues/317
     # To work around this we run the fetching/unpacking in a separate blocking thread

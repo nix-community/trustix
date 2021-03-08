@@ -53,16 +53,16 @@ async def get_derivation_outputs(drv: str) -> List[Derivation]:
     return items
 
 
-async def get_derivation_output_results(*ids: int) -> List[DerivationOutputResult]:
-    if not ids:
+async def get_derivation_output_results(*output_hash: str) -> List[DerivationOutputResult]:
+    if not output_hash:
         return []
 
     results: List[DerivationOutputResult] = await DerivationOutputResult.filter(
-        id__in=ids
+        output_hash__in=output_hash
     )
-    if len(results) != len(ids):
+    if len(results) != len(output_hash):
         raise ValueError(
-            "{} ids passed but only returned {} results".format(len(ids), len(results))
+            "{} ids passed but only returned {} results".format(len(output_hash), len(results))
         )
 
     return results

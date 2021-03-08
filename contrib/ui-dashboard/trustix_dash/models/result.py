@@ -13,6 +13,7 @@ class DerivationOutputResult(models.Model):
         db_constraint=False,
         index=True,
     )
+    # TODO: Turn into indexed CharField
     output_hash = trustix_fields.BinaryField(max_length=40)
     log = fields.ForeignKeyField(
         f"{app_name}.Log",
