@@ -4,11 +4,11 @@
   <ul>
     {% for drv, outputs in paths_d.items() %}
       <li>
-        <p class="monospace">{{drv}}</p>
+        <p class="fakepre">{{drv}}</p>
         <ul>
           {% for output, paths in outputs.items() %}
             <li>
-              <p class="monospace">{{output}}</p>
+              <p class="fakepre">{{output}}</p>
               <form action="/diff" method="POST" class="{% if paths|length > 1 %}unreproduced{% endif %}">
                 <ul class="drv-outputs">
                   {% for output_hash, results in paths.items() %}

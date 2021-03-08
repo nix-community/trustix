@@ -16,6 +16,9 @@
 
     const chart = c3.generate({
       bindto: chartDiv,
+      padding: {
+        left: 0,
+      },
       data: {
         type : 'pie',
         onclick: (d, i) => {

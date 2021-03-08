@@ -1,5 +1,6 @@
 from trustix_proto import trustix_pb2_grpc  # type: ignore
 from trustix_api import api_pb2
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import (
     Jinja2Templates,
 )
@@ -50,14 +51,17 @@ channel = grpc.aio.insecure_channel(TRUSTIX_RPC)
 stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 
 
-templates = Jinja2Templates(
-    directory=os.path.join(os.path.dirname(__file__), "templates")
-)
+SCRIPT_DIR = os.path.dirname(__file__)
+
+templates = Jinja2Templates(directory=os.path.join(SCRIPT_DIR, "templates"))
 templates.env.globals["drv_url_quote"] = template_lib.drv_url_quote
 templates.env.globals["json_render"] = template_lib.json_render
 
 
 app = FastAPI()
+app.mount(
+    "/static", StaticFiles(directory=os.path.join(SCRIPT_DIR, "static")), name="static"
+)
 
 
 @app.on_event("startup")
