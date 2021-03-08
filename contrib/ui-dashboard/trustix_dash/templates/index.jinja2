@@ -1,5 +1,26 @@
 {% extends "base.jinja2" %}
 
 {% block main %}
-  <p>Index page</p>
+
+  <h3>Reproducibility for {{attr}}</h3>
+  <div id="chart"></div>
+  <script type="text/javascript">
+
+    var chart = c3.generate({
+        bindto: '#chart',
+        axis: {
+          y: {
+            padding: {top: 3, bottom: 0},
+            max: 100,
+            min: 0,
+          },
+        },
+        data: {
+          columns: [
+            ["{{attr}}", 50, 100, 25],
+          ]
+        }
+    });
+  </script>
+
 {% endblock %}

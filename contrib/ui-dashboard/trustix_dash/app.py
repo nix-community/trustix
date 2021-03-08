@@ -43,6 +43,7 @@ from trustix_dash.api import (
 )
 
 BINARY_CACHE_PROXY = "http://localhost:8080"
+DEFAULT_ATTR = "hello.x86_64-linux"
 
 TRUSTIX_RPC = "unix:../../sock"
 channel = grpc.aio.insecure_channel(TRUSTIX_RPC)
@@ -103,7 +104,7 @@ async def make_context(
         "selected_evaluation": selected_evaluation,
         "request": request,
         "title": "Trustix R13Y" + (" ".join((" - ", title)) if title else ""),
-        "drv_placeholder": "hello.x86_64-linux",
+        "drv_placeholder": DEFAULT_ATTR,
     }
 
     if extra:
@@ -114,7 +115,9 @@ async def make_context(
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    ctx = await make_context(request)
+    ctx = await make_context(request, extra={
+        "attr": DEFAULT_ATTR,
+    })
     return templates.TemplateResponse("index.jinja2", ctx)
 
 
