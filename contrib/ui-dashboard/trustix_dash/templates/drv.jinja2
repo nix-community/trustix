@@ -4,7 +4,11 @@
   <ul>
     {% for drv, outputs in paths_d.items() %}
       <li>
-        <p class="fakepre">{{drv}}</p>
+        <p class="fakepre">
+          <a href="/drv/{{drv_url_quote(drv)}}">
+            {{drv}}
+          </a>
+        </p>
         <ul>
           {% for output, paths in outputs.items() %}
             <li>
