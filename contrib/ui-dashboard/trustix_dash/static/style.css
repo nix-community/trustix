@@ -3,8 +3,10 @@ body {
     color: #454545;
     font-size: 16px;
     margin: 2em auto;
+    margin-top: 0;
     max-width: 800px;
     padding: 1em;
+    padding-top: 0;
     line-height: 1.4;
     text-align: justify
 }
