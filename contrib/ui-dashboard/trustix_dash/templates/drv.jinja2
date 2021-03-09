@@ -5,9 +5,13 @@
     {% for drv, outputs in paths_d.items() %}
       <li>
         <p class="fakepre">
-          <a href="/drv/{{drv_url_quote(drv)}}">
+          {% if drv != drv_path %}
+            <a href="/drv/{{drv_url_quote(drv)}}">
+              {{drv}}
+            </a>
+          {% else %}
             {{drv}}
-          </a>
+          {% endif %}
         </p>
         <ul>
           {% for output, paths in outputs.items() %}
