@@ -26,8 +26,62 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.js" charset="utf-8"></script>
 
     {# Search autocomplete #}
-    <script type="text/javascript">
 
+    <script src="https://cdn.jsdelivr.net/npm/ejs@3.1.6/ejs.min.js"></script>
+    <script type="text/javascript">
+      (() => {
+        const suggestDiv = document.querySelector("form#search-form > div#search-suggest")
+        const elem = document.querySelector("form#search-form > input[type=text]")
+        const form = document.querySelector("form#search-form")
+
+        suggestDiv.style["min-width"] = `${elem.offsetWidth}px`
+
+        const template = ejs.compile(`
+          <ul>
+            <% suggestions.forEach(function(suggestion){ %>
+              <li x-data-attr="<%= suggestion %>"><a href="#"><%= suggestion %></a></li>
+            <% }); %>
+          </ul>
+        `)
+
+        elem.addEventListener('blur', (event) => {
+          // Prevent disappearing before we have a chance to react to the click event
+          setTimeout(() => {
+            suggestDiv.hidden = true
+          }, 200);
+        })
+
+        elem.onkeyup = (e) => {
+          const value = elem.value
+          if (value.length < 3) {
+            suggestDiv.hidden = true
+            return
+          }
+
+          fetch(`/suggest/${value}`)
+            .then(resp => resp.json())
+            .then(suggestions => {
+              if (suggestions.length <= 0) {
+                return
+              }
+
+              suggestDiv.innerHTML = template({
+                suggestions: suggestions,
+              })
+
+              suggestDiv.hidden = false
+
+              Array.from(suggestDiv.querySelectorAll("ul > li")).map((suggestElem) => {
+                suggestElem.addEventListener("click", (e) => {
+                  elem.value = suggestElem.getAttribute("x-data-attr")
+                  form.submit()
+                })
+              })
+
+            })
+        }
+
+      })()
     </script>
 
     {% block deferred %}

@@ -413,3 +413,16 @@ p.fakepre {
 button.drv-compare {
     float: right;
 }
+
+/* Search suggestions */
+div#search-suggest {
+    position: absolute;
+    border: 1px solid #454545;
+    background-color: #fff;
+}
+
+div#search-suggest > ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px;
+}

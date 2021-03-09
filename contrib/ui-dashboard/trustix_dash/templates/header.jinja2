@@ -2,17 +2,10 @@
 
   <h2><a href="/">{{ title }}</a></h2>
 
-  <form action="/search" method="POST">
-    <input type="text" name="term" placeholder="{{ drv_placeholder }}" autocomplete="on" />
-
-    <select placeholder="Evaluation">
-      {% for eval in evaluations %}
-        <option value={{eval}} {% if eval == selected_evaluation%}selected{% endif %}>{{eval}}</option>
-      {% endfor %}
-    </select>
-
-    <button type="is-primary">Submit</button>
-
+  <form id="search-form" action="/search" method="POST">
+    <input type="text" name="term" placeholder="{{ drv_placeholder }}" autocomplete="off" />
+    <div id="search-suggest" hidden></div>
+    <button type="is-primary">Search</button>
   </form>
 
   <hr />
