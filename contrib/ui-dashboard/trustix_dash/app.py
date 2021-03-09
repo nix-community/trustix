@@ -40,7 +40,7 @@ import json
 import grpc  # type: ignore
 
 from trustix_dash.api import (
-    get_derivation_output_results,
+    get_derivation_output_results_unique,
     get_derivation_outputs,
     evaluation_list,
 )
@@ -254,17 +254,31 @@ async def suggest(request: Request, attr: str):
     )
 
 
-@app.post("/diff/", response_class=HTMLResponse)
-async def diff(request: Request, output_hash: List[str] = Form(...)):
+@app.post("/diff_form/", response_class=HTMLResponse)
+async def diff_form(request: Request, output_hash: List[str] = Form(...)):
 
     if len(output_hash) < 1:
         raise ValueError("Need at least 2 entries to diff")
     if len(output_hash) > 2:
         raise ValueError("Received more than 2 entries to diff")
 
-    output_hash_1, output_hash_2 = [codecs.decode(h, "hex") for h in output_hash]
+    return RedirectResponse(
+        app.url_path_for(
+            "diff", output_hash_1_hex=output_hash[0], output_hash_2_hex=output_hash[1]
+        )
+    )
 
-    result1, result2 = await get_derivation_output_results(output_hash_1, output_hash_2)
+
+@app.get("/diff/{output_hash_1_hex}/{output_hash_2_hex}", response_class=HTMLResponse)
+@app.post("/diff/{output_hash_1_hex}/{output_hash_2_hex}", response_class=HTMLResponse)
+async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str):
+
+    output_hash_1 = codecs.decode(output_hash_1_hex, "hex")
+    output_hash_2 = codecs.decode(output_hash_2_hex, "hex")
+
+    result1, result2 = await get_derivation_output_results_unique(
+        output_hash_1, output_hash_2
+    )
 
     # Uvloop has a nasty bug https://github.com/MagicStack/uvloop/issues/317
     # To work around this we run the fetching/unpacking in a separate blocking thread

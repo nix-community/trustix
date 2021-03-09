@@ -17,15 +17,19 @@
           {% for output, paths in outputs.items() %}
             <li>
               <p x-data-tooltip="The derivation output" class="fakepre">{{output}}</p>
-              <form action="/diff" method="POST" class="{% if paths|length > 1 %}unreproduced{% endif %}">
+              <form action="{{url_reverse("diff_form")}}" method="POST" class="{% if paths|length > 1 %}unreproduced{% endif %}">
                 <ul class="drv-outputs">
                   {% for output_hash, results in paths.items() %}
 
                     <div class="drv-output" x-data-outputhash="{{output_hash}}">
-                      {% if paths|length > 1 %}
-                        <input type="checkbox" {% if paths|length == 2 %}checked onclick="return false;"{% endif %} name="output_hash" value="{{output_hash}}">
-                        <label x-data-tooltip="Narinfo hash" for="output_hash">{{output_hash}}</label>
-                      {% endif %}
+                      <input type="checkbox"
+                             {% if paths|length == 2 %}
+                               checked onclick="return false;"
+                             {% elif paths|length == 1 %}
+                               disabled
+                             {% endif %}
+                             name="output_hash" value="{{output_hash}}">
+                      <label x-data-tooltip="Narinfo hash" for="output_hash">{{output_hash}}</label>
 
                       <ul class="log-names">
                         {% for result in results %}
