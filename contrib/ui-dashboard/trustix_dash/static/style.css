@@ -39,131 +39,6 @@ html.contrast span.mfw {
     color: #4d0000
 }
 
-@media screen and (prefers-color-scheme:light) {
-    html.inverted {
-        background-color: #000
-    }
-    html.inverted body {
-        color: #d9d9d9
-    }
-    html.inverted #contrast,
-    html.inverted #invmode {
-        color: #fff;
-        background-color: #000
-    }
-    html.inverted blockquote {
-        color: #d3c9be
-    }
-    html.inverted blockquote:before {
-        color: #b8b8b8
-    }
-    html.inverted a {
-        color: #00a2e7
-    }
-    html.inverted a:visited {
-        color: #ca1a70
-    }
-    html.inverted span.wr {
-        color: #d24637
-    }
-    html.inverted span.mfw {
-        color: #b00000
-    }
-    html.inverted.contrast {
-        background-color: #000
-    }
-    html.inverted.contrast body {
-        color: #fff
-    }
-    html.inverted.contrast #contrast,
-    html.inverted.contrast #invmode {
-        color: #fff;
-        background-color: #000
-    }
-    html.inverted.contrast blockquote {
-        color: #f8f6f5
-    }
-    html.inverted.contrast blockquote:before {
-        color: #e5e5e5
-    }
-    html.inverted.contrast a {
-        color: #44c7ff
-    }
-    html.inverted.contrast a:visited {
-        color: #e9579e
-    }
-    html.inverted.contrast span.wr {
-        color: #db695d
-    }
-    html.inverted.contrast span.mfw {
-        color: #ff0d0d
-    }
-}
-
-@media (prefers-color-scheme:dark) {
-    html:not(.inverted) {
-        background-color: #000
-    }
-    html:not(.inverted) body {
-        color: #d9d9d9
-    }
-    html:not(.inverted) #contrast,
-    html:not(.inverted) #invmode {
-        color: #fff;
-        background-color: #000
-    }
-    html:not(.inverted) blockquote {
-        color: #d3c9be
-    }
-    html:not(.inverted) blockquote:before {
-        color: #b8b8b8
-    }
-    html:not(.inverted) a {
-        color: #00a2e7
-    }
-    html:not(.inverted) a:visited {
-        color: #ca1a70
-    }
-    html:not(.inverted) span.wr {
-        color: #d24637
-    }
-    html:not(.inverted) span.mfw {
-        color: #b00000
-    }
-    html:not(.inverted).contrast {
-        background-color: #000
-    }
-    html:not(.inverted).contrast body {
-        color: #fff
-    }
-    html:not(.inverted).contrast #contrast,
-    html:not(.inverted).contrast #invmode {
-        color: #fff;
-        background-color: #000
-    }
-    html:not(.inverted).contrast blockquote {
-        color: #f8f6f5
-    }
-    html:not(.inverted).contrast blockquote:before {
-        color: #e5e5e5
-    }
-    html:not(.inverted).contrast a {
-        color: #44c7ff
-    }
-    html:not(.inverted).contrast a:visited {
-        color: #e9579e
-    }
-    html:not(.inverted).contrast span.wr {
-        color: #db695d
-    }
-    html:not(.inverted).contrast span.mfw {
-        color: #ff0d0d
-    }
-    html.inverted html {
-        background-color: #fefefe
-    }
-}
-
 a {
     color: #07a
 }
@@ -333,8 +208,7 @@ button.cont-inv {
     top: 10px
 }
 
-#contrast,
-#invmode {
+#contrast {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -343,17 +217,8 @@ button.cont-inv {
     user-select: none
 }
 
-#invmode {
-    color: #fff;
-    background-color: #000;
-    position: fixed;
-    top: 34px;
-    text-decoration: underline
-}
-
 @media screen and (max-width:1080px) {
-    #contrast,
-    #invmode {
+    #contrast {
         position: absolute
     }
 }
