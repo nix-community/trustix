@@ -7,16 +7,16 @@
         <p class="fakepre">
           {% if drv != drv_path %}
             <a href="{{url_reverse("drv", drv_path=drv_url_quote(drv))}}">
-              {{drv}}
+              <span x-data-tooltip="Derivation path">{{drv}}</span>
             </a>
           {% else %}
-            {{drv}}
+            <span x-data-tooltip="Derivation path">{{drv}}</span>
           {% endif %}
         </p>
         <ul>
           {% for output, paths in outputs.items() %}
             <li>
-              <p class="fakepre">{{output}}</p>
+              <p x-data-tooltip="The derivation output" class="fakepre">{{output}}</p>
               <form action="/diff" method="POST" class="{% if paths|length > 1 %}unreproduced{% endif %}">
                 <ul class="drv-outputs">
                   {% for output_hash, results in paths.items() %}
@@ -24,12 +24,12 @@
                     <div class="drv-output" x-data-outputhash="{{output_hash}}">
                       {% if paths|length > 1 %}
                         <input type="checkbox" {% if paths|length == 2 %}checked onclick="return false;"{% endif %} name="output_hash" value="{{output_hash}}">
-                        <label for="output_hash">{{output_hash}}</label>
+                        <label x-data-tooltip="Narinfo hash" for="output_hash">{{output_hash}}</label>
                       {% endif %}
 
                       <ul class="log-names">
                         {% for result in results %}
-                          <li class="log-name">{{logs.get(result.log_id, "<Unknown log>")}}</li>
+                          <li x-data-tooltip="Log (builder) name" class="log-name">{{logs.get(result.log_id, "<Unknown log>")}}</li>
                         {% endfor %}
                       </ul>
                     </div>
