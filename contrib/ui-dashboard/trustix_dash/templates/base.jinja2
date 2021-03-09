@@ -51,35 +51,41 @@
           }, 200);
         })
 
-        elem.onkeyup = (e) => {
+        let searchTimeout = setTimeout(() => null, 0)
+
+        elem.addEventListener("keyup", (e) => {
           const value = elem.value
           if (value.length < 3) {
             suggestDiv.hidden = true
+            clearTimeout(searchTimeout)
             return
           }
 
-          fetch(`/suggest/${value}`)
-            .then(resp => resp.json())
-            .then(suggestions => {
-              if (suggestions.length <= 0) {
-                return
-              }
+          clearTimeout(searchTimeout)
+          searchTimeout = setTimeout(() => {
 
-              suggestDiv.innerHTML = template({
-                suggestions: suggestions,
-              })
+            fetch(`/suggest/${value}`)
+              .then(resp => resp.json())
+              .then(suggestions => {
+                if (suggestions.length <= 0) {
+                  return
+                }
 
-              suggestDiv.hidden = false
+                suggestDiv.innerHTML = template({
+                  suggestions: suggestions,
+                })
 
-              Array.from(suggestDiv.querySelectorAll("ul > li")).map((suggestElem) => {
-                suggestElem.addEventListener("click", (e) => {
-                  elem.value = suggestElem.getAttribute("x-data-attr")
-                  form.submit()
+                suggestDiv.hidden = false
+
+                Array.from(suggestDiv.querySelectorAll("ul > li")).map((suggestElem) => {
+                  suggestElem.addEventListener("click", (e) => {
+                    elem.value = suggestElem.getAttribute("x-data-attr")
+                    form.submit()
+                  })
                 })
               })
-
-            })
-        }
+          }, 200)
+        })
 
       })()
     </script>
