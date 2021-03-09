@@ -5,6 +5,7 @@ from fastapi.templating import (
     Jinja2Templates,
 )
 from fastapi.responses import (
+    RedirectResponse,
     HTMLResponse,
 )
 from fastapi import (
@@ -210,8 +211,13 @@ async def drv(request: Request, drv_path: str):
     return templates.TemplateResponse("drv.jinja2", ctx)
 
 
-@app.post("/search/")
-async def search(request: Request, term: str = Form(...)):
+@app.post("/search_form/")
+async def search_form(request: Request, term: str = Form(...)):
+    return RedirectResponse(app.url_path_for("search", term=term))
+
+
+@app.post("/search/{term}")
+async def search(request: Request, term: str):
     from trustix_dash.models import DerivationAttr
 
     if len(term) < 3:

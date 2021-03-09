@@ -2,7 +2,7 @@
 
   <h2><a href="{{url_reverse("index")}}">{{ title }}</a></h2>
 
-  <form id="search-form" action="/search" method="POST">
+  <form id="search-form" action="{{url_reverse("search_form")}}" method="POST">
     <input type="text" name="term" placeholder="{{ drv_placeholder }}" autocomplete="off" />
     <div id="search-suggest" hidden></div>
     <button type="is-primary">Search</button>
