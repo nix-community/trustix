@@ -6,7 +6,18 @@
       const main = document.querySelector("main")
 
       const heading = document.createElement("h3")
-      heading.innerText = "Reproducibility for {{attr}}"
+      heading.appendChild((() => {
+        const elem = document.createElement("span")
+        elem.innerText = "Reproducibility for "
+        return elem
+      })())
+      heading.appendChild((() => {
+        const elem = document.createElement("a")
+        elem.setAttribute("href", "#")
+        elem.setAttribute("x-data-tooltip", "Derivation attribute")
+        elem.innerText = "{{attr}}"
+        return elem
+      })())
       main.appendChild(heading)
 
       const chartDiv = document.createElement("div");
