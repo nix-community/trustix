@@ -54,15 +54,17 @@ stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 
 SCRIPT_DIR = os.path.dirname(__file__)
 
-templates = Jinja2Templates(directory=os.path.join(SCRIPT_DIR, "templates"))
-templates.env.globals["drv_url_quote"] = template_lib.drv_url_quote
-templates.env.globals["json_render"] = template_lib.json_render
-
 
 app = FastAPI()
 app.mount(
     "/static", StaticFiles(directory=os.path.join(SCRIPT_DIR, "static")), name="static"
 )
+
+
+templates = Jinja2Templates(directory=os.path.join(SCRIPT_DIR, "templates"))
+templates.env.globals["drv_url_quote"] = template_lib.drv_url_quote
+templates.env.globals["json_render"] = template_lib.json_render
+templates.env.globals["url_reverse"] = app.url_path_for
 
 
 @app.on_event("startup")

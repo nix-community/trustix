@@ -1,6 +1,6 @@
 <div>
 
-  <h2><a href="/">{{ title }}</a></h2>
+  <h2><a href="{{url_reverse("index")}}">{{ title }}</a></h2>
 
   <form id="search-form" action="/search" method="POST">
     <input type="text" name="term" placeholder="{{ drv_placeholder }}" autocomplete="off" />

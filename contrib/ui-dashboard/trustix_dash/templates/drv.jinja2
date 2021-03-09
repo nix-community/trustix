@@ -6,7 +6,7 @@
       <li>
         <p class="fakepre">
           {% if drv != drv_path %}
-            <a href="/drv/{{drv_url_quote(drv)}}">
+            <a href="{{url_reverse("drv", drv_path=drv_url_quote(drv))}}">
               {{drv}}
             </a>
           {% else %}
