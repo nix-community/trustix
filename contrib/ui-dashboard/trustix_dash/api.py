@@ -10,28 +10,6 @@ from typing import (
 )
 
 
-async def evaluation_list() -> List[str]:
-    """
-    Get a list of default evaluations to show in the UI
-    """
-
-    return [
-        "eval1",
-        "eval2",
-    ]
-
-
-async def channels_list() -> List[str]:
-    """
-    Get a list of default channels to show in the UI
-    """
-
-    return [
-        "chan1",
-        "chan2",
-    ]
-
-
 async def get_derivation_outputs(drv: str) -> List[Derivation]:
     async def filter(q_filter):
         qs = (

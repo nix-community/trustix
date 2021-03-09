@@ -42,7 +42,6 @@ import grpc  # type: ignore
 from trustix_dash.api import (
     get_derivation_output_results_unique,
     get_derivation_outputs,
-    evaluation_list,
 )
 
 BINARY_CACHE_PROXY = "http://localhost:8080"
@@ -91,26 +90,13 @@ async def close_orm():
     await Tortoise.close_connections()
 
 
-async def make_context(
+def make_context(
     request: Request,
     title: str = "",
-    selected_evaluation: Optional[str] = None,
     extra: Optional[Dict] = None,
 ) -> Dict:
 
-    evaluations = await evaluation_list()
-    if selected_evaluation and selected_evaluation not in evaluations:
-        evaluations.insert(0, selected_evaluation)
-
-    if not selected_evaluation:
-        try:
-            selected_evaluation = evaluations[0]
-        except IndexError:
-            pass
-
     ctx = {
-        "evaluations": evaluations,
-        "selected_evaluation": selected_evaluation,
         "request": request,
         "title": "Trustix R13Y" + (" ".join((" - ", title)) if title else ""),
         "drv_placeholder": DEFAULT_ATTR,
@@ -124,7 +110,7 @@ async def make_context(
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    ctx = await make_context(
+    ctx = make_context(
         request,
         extra={
             "attr": DEFAULT_ATTR,
@@ -191,7 +177,7 @@ async def drv(request: Request, drv_path: str):
 
     num_reproduced = sum(len(v) for v in reproduced_paths.values())
 
-    ctx = await make_context(
+    ctx = make_context(
         request,
         extra={
             "unreproduced_paths": unreproduced_paths,
@@ -231,7 +217,7 @@ async def search(request: Request, term: str):
     for result in results:
         derivations_by_attr.setdefault(result.attr, set()).add(result.derivation_id)
 
-    ctx = await make_context(
+    ctx = make_context(
         request,
         extra={
             "derivations_by_attr": derivations_by_attr,
