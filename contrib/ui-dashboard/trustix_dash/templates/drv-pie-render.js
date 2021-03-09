@@ -25,6 +25,17 @@
           form.querySelector(`input[type=checkbox][name='output_hash'][value='${d.id}']`).click()
         },
         columns: columns,
+        onmouseout: (d) => {
+          Array.from(document.querySelectorAll("div.drv-output.glow-border")).map(elem => {
+            elem.classList.remove("glow-border")
+          })
+        },
+        onmouseover: (d) => {
+          Array.from(document.querySelectorAll("div.drv-output.glow-border")).map(elem => {
+            elem.classList.remove("glow-border")
+          })
+          document.querySelector(`div.drv-output[x-data-outputhash='${d.id}']`).classList.add("glow-border")
+        },
       }
     });
 

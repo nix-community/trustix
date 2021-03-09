@@ -291,3 +291,10 @@ div#search-suggest > ul {
     padding: 0;
     margin: 10px;
 }
+
+.glow-border {
+    outline: none;
+    box-shadow: 0 0 7px #456;
+    border: 1px solid #456;
+    border-radius: 5px;
+}
