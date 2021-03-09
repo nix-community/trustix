@@ -156,12 +156,16 @@ async def drv(request: Request, drv_path: str):
             ).append(result)
             log_ids.add(result.log_id)
 
+    num_outputs: int = 0
+
     for drv in drvs:
         output: DerivationOutput
         for output in drv.derivationoutputs:  # type: ignore
             output_hashes: Set[bytes] = set(
                 result.output_hash for result in output.derivationoutputresults  # type: ignore
             )
+
+            num_outputs += 1
 
             if not output_hashes:
                 append_output(missing_paths, drv, output)
@@ -182,6 +186,8 @@ async def drv(request: Request, drv_path: str):
         log.id: log for log in await Log.filter(id__in=log_ids)  # type: ignore
     }
 
+    num_reproduced = sum(len(v) for v in reproduced_paths.values())
+
     ctx = await make_context(
         request,
         extra={
@@ -189,7 +195,13 @@ async def drv(request: Request, drv_path: str):
             "reproduced_paths": reproduced_paths,
             "unknown_paths": unknown_paths,
             "missing_paths": missing_paths,
+            "drv_path": drv_path,
             "logs": logs,
+            "statistics": {
+                "pct_reproduced": round(num_outputs / 100 * num_reproduced, 2),
+                "num_reproduced": num_reproduced,
+                "num_outputs": num_outputs,
+            },
         },
     )
 

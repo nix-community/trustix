@@ -54,6 +54,9 @@
 
 {% block main %}
 
+  <h2>{{drv_path}}</h2>
+  <p>{{statistics.num_reproduced}}/{{statistics.num_outputs}} ({{statistics.pct_reproduced}}%) verified to be reproducible</p>
+
   {% if unreproduced_paths %}
     <h3>Unreproduced paths</h3>
     {{ render_paths_d(unreproduced_paths) }}
