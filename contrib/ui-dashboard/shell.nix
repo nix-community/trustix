@@ -42,4 +42,10 @@ pkgs.mkShell {
     pkgs.pkgconfig
   ];
 
+  shellHook = ''
+    export TRUSTIX_RPC="unix:../../sock"
+    export TRUSTIX_BINARY_CACHE_PROXY="http://localhost:8080"
+    export DB_URI="postgres:///nix-trustix-dash?host=$TMPDIR/nix-trustix-dash-psql-sockets"
+  '';
+
 }

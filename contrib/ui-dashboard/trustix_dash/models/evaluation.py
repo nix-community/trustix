@@ -11,8 +11,7 @@ class Evaluation(models.Model):
         pk=True,
     )
 
-    # TODO: Reliably get a timestamp of eval (from hydra api?)
-    # timestamp = fields.DatetimeField()  # Commit timestamp
+    timestamp = fields.DatetimeField(auto_now_add=True)
 
     def __str__(self):
         return self.commit

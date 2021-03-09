@@ -23,10 +23,10 @@ async def init():
         }
     )
 
-    # # TODO: Remove and use aerich instead (blocked by https://github.com/tortoise/aerich/issues/63 )
-    # await Tortoise.generate_schemas(safe=True)
+    # TODO: Remove and use aerich instead (blocked by https://github.com/tortoise/aerich/issues/63 )
+    await Tortoise.generate_schemas(safe=True)
 
-    await index_logs()
+    # await index_logs()
 
     # commit_sha = "fb6f9b7eb0aa8629776ea32d2be6eaf660a22535"
     # await index_eval(commit_sha)

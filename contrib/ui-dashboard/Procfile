@@ -1,2 +1,3 @@
-app: uvicorn --reload-dir trustix_dash trustix_dash.app:app
 postgres: ./tools/postgresql
+createdb: ./tools/createdb
+app: uvicorn --debug --reload-dir trustix_api --reload-dir trustix_dash --reload-dir trustix_proto --reload-dir trustix_schema trustix_dash.app:app

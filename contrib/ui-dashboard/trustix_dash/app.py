@@ -43,12 +43,10 @@ from trustix_dash.api import (
     get_derivation_output_results_unique,
     get_derivation_outputs,
 )
+from trustix_dash.conf import settings
 
-BINARY_CACHE_PROXY = "http://localhost:8080"
-DEFAULT_ATTR = "hello.x86_64-linux"
 
-TRUSTIX_RPC = "unix:../../sock"
-channel = grpc.aio.insecure_channel(TRUSTIX_RPC)
+channel = grpc.aio.insecure_channel(settings.trustix_rpc)
 stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
 
 
@@ -72,7 +70,7 @@ async def startup_event():
     await Tortoise.init(
         {
             "connections": {
-                "default": "sqlite://db.sqlite3",
+                "default": "postgres:///nix-trustix-dash?host=/run/user/1000/nix-trustix-dash-psql-sockets",
             },
             "apps": {
                 "trustix_dash": {
@@ -99,7 +97,7 @@ def make_context(
     ctx = {
         "request": request,
         "title": "Trustix R13Y" + (" ".join((" - ", title)) if title else ""),
-        "drv_placeholder": DEFAULT_ATTR,
+        "drv_placeholder": settings.default_attr,
     }
 
     if extra:
@@ -113,7 +111,7 @@ async def index(request: Request):
     ctx = make_context(
         request,
         extra={
-            "attr": DEFAULT_ATTR,
+            "attr": settings.default_attr,
         },
     )
     return templates.TemplateResponse("index.jinja2", ctx)
@@ -312,7 +310,7 @@ async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str)
         store_prefix = store_base.split("-")[0]
 
         unpack_dir = os.path.join(tmpdir, store_base, outbase)
-        nar_url = "/".join((BINARY_CACHE_PROXY, "nar", store_prefix, nar_hash))
+        nar_url = "/".join((settings.binary_cache_proxy, "nar", store_prefix, nar_hash))
 
         await asyncio.get_running_loop().run_in_executor(
             None, fetch_unpack_nar, nar_url, unpack_dir
