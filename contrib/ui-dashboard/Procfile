@@ -1,2 +1,2 @@
-redis: redis-server
 app: uvicorn --reload-dir trustix_dash trustix_dash.app:app
+postgres: ./tools/postgresql

@@ -32,6 +32,8 @@ pkgs.mkShell {
     hydra-eval-jobs
     pkgs.sqlite
 
+    pkgs.postgresql
+
     pkgs.diffoscope
 
     pkgs.hivemind

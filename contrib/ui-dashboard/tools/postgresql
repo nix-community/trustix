@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+import subprocess
+import os.path
+import os
+
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATE_DIR = os.path.join(ROOT_DIR, "state")
+DATA_DIR = os.path.join(STATE_DIR, "psql-data")
+
+
+if __name__ == "__main__":
+
+    sockets_dir = os.path.join(os.environ["TMPDIR"], "nix-trustix-dash-psql-sockets")
+    if not os.path.exists(sockets_dir):
+        os.mkdir(sockets_dir)
+
+    if not os.path.exists(DATA_DIR):
+        subprocess.check_output(["initdb", DATA_DIR])
+        with open(os.path.join(DATA_DIR, "postgresql.conf"), "a") as f:
+            f.write("\n# Trustix options\n")
+            f.write(f"unix_socket_directories = '{sockets_dir}'\n")
+
+    os.execvp("postgres", ["postgres", "-D", DATA_DIR])
