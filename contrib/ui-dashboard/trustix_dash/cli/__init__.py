@@ -1,6 +1,7 @@
 from trustix_dash.lib import DeferStack
 from trustix_dash import (
     index_logs,
+    index_eval,
     on_startup,
     on_shutdown,
 )
@@ -19,9 +20,6 @@ index_eval_parser.add_argument(
     "--rev", default="nixos-unstable", help="Nixpkgs revision"
 )
 
-index_log_parser = subparsers.add_parser("index_log", help="Index log build outputs")
-index_log_parser.add_argument("log_name", help="Log name")
-
 index_logs_parser = subparsers.add_parser(
     "index_logs", help="Index log build outputs (all known logs)"
 )
@@ -39,9 +37,7 @@ def main():
             defer(on_shutdown)
 
             if subcommand == "index_eval":
-                pass
-            elif subcommand == "index_log":
-                pass
+                await index_eval(args.rev)
             elif subcommand == "index_logs":
                 await index_logs()
             else:
