@@ -58,6 +58,9 @@ if __name__ == "__main__":
                 with open(py_file) as f:
                     contents = f.read()
 
+                # Tell mypy to ignore this file
+                contents = "# type: ignore\n" + contents
+
                 for import_pkg in PACKAGES:
                     contents = contents.replace(
                         f"from {import_pkg} import",
