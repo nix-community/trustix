@@ -40,11 +40,9 @@ def run() -> typing.List[int]:
     for cmd in cmds:
         print(
             icon(),
-            "Running",
             color(
                 shlex.join([tok.replace(ROOT_DIR + os.path.sep, "") for tok in cmd]),
                 fg="green",
-                style="underline",
             ),
         )
         codes.append(run_cmd(cmd))
