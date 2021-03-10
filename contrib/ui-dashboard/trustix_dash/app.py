@@ -33,6 +33,7 @@ from trustix_dash.models import (
 )
 import urllib.parse
 import Levenshtein  # type: ignore
+import itertools
 import requests
 import tempfile
 import asyncio
@@ -221,9 +222,12 @@ async def suggest(request: Request, attr: str):
     if len(attr) < 3:
         raise ValueError("Prefix too short")
 
-    resp = await DerivationAttr.filter(attr__startswith=attr).only("attr")
     return sorted(
-        (drv_attr.attr for drv_attr in resp),
+        itertools.chain(
+            *await DerivationAttr.filter(attr__startswith=attr)
+            .distinct()
+            .values_list("attr")
+        ),
         key=lambda x: Levenshtein.ratio(attr, x),
         reverse=True,
     )
