@@ -47,6 +47,6 @@ if __name__ == "__main__":
     watch_mode = "--watch" in sys.argv
 
     if watch_mode:
-        watch_recursive(run)
+        watch_recursive(get_watch_files(), run)
     else:
         exit(max(run()))

@@ -73,7 +73,9 @@ def run_cmd(cmdline: typing.List[str]) -> int:
     return p.returncode
 
 
-def watch_recursive(handler: typing.Callable, delay: float = 0.5):
+def watch_recursive(
+    files: typing.List[str], handler: typing.Callable, delay: float = 0.5
+):
 
     evt = threading.Event()
 
@@ -96,7 +98,7 @@ def watch_recursive(handler: typing.Callable, delay: float = 0.5):
     handler_thread = threading.Thread(target=handler_loop, daemon=True)
     handler_thread.start()
 
-    for f in get_watch_files():
+    for f in files:
         observer.schedule(WatchHandler(), f, recursive=os.path.isdir(f))
 
     observer.start()

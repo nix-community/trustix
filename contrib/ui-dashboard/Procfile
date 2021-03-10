@@ -2,3 +2,4 @@ postgres: ./tools/postgresql
 createdb: ./tools/createdb
 app: ./tools/app
 check: ./tools/check --watch
+migrate: ./tools/migrate
