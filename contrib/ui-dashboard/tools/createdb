@@ -4,6 +4,7 @@ from lib import (
     PSQL_SOCKETS_DIR,
     PSQL_DB_NAME,
     wait_for_psql,
+    db_exists,
     exec_cmd,
 )
 
@@ -11,6 +12,7 @@ from lib import (
 if __name__ == "__main__":
     wait_for_psql()
 
-    subprocess.run(["createdb", PSQL_DB_NAME, "-h", PSQL_SOCKETS_DIR])
+    if not db_exists():
+        subprocess.run(["createdb", PSQL_DB_NAME, "-h", PSQL_SOCKETS_DIR])
 
     exec_cmd(["sleep", "infinity"])

@@ -33,16 +33,20 @@ def wait_for_psql():
         time.sleep(0.1)
 
 
+def db_exists() -> bool:
+    p = subprocess.run(
+        ["psql", "-h", PSQL_SOCKETS_DIR, PSQL_DB_NAME, "-c", "\\q"],
+        stderr=subprocess.PIPE,
+    )
+    return p.returncode == 0
+
+
 def wait_for_db():
     """Wait for postgresql to be up and running and the database to be created"""
     wait_for_psql()
 
     while True:
-        p = subprocess.run(
-            ["psql", "-h", PSQL_SOCKETS_DIR, PSQL_DB_NAME, "-c", "\\q"],
-            stderr=subprocess.PIPE,
-        )
-        if p.returncode == 0:
+        if db_exists():
             break
         time.sleep(0.1)
 
