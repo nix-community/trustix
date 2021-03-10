@@ -16,8 +16,7 @@ from tortoise import (
     Tortoise,
 )
 import ijson  # type: ignore
-from trustix_proto import trustix_pb2_grpc, trustix_pb2  # type: ignore
-import grpc  # type: ignore
+from trustix_proto import trustix_pb2  # type: ignore
 from async_lru import alru_cache  # type: ignore
 import typing
 import pynix
@@ -27,10 +26,7 @@ import asyncio
 import json
 
 from trustix_dash.conf import settings
-
-
-channel = grpc.insecure_channel(settings.trustix_rpc)
-stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)  # type: ignore
+from trustix_dash.proto import get_combined_rpc
 
 
 async def on_startup():
@@ -224,8 +220,7 @@ async def index_log(log, sth):
 
     start = chunks[0]
     for finish in chunks[1:]:
-        # TODO: Async
-        resp = stub.GetLogEntries(
+        resp = await get_combined_rpc().GetLogEntries(
             trustix_pb2.GetLogEntriesRequestNamed(
                 LogName=log.name,
                 Start=start,
@@ -257,7 +252,7 @@ async def index_log(log, sth):
 
 async def index_logs():
     req = trustix_pb2.LogsRequest()
-    resp = stub.Logs(req)  # TODO: Async
+    resp = await get_combined_rpc().Logs(req)
 
     for log_resp in resp.Logs:
         try:
