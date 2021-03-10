@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "trustix-dash"
+name = "trustix-nix-dash"
 version = "0.1.0"
 description = ""
 authors = ["adisbladis <adam.hose@tweag.io>"]
@@ -32,6 +32,9 @@ ipython = "^7.19.0"
 grpcio-tools = "^1.34.0"
 watchdog = "^2.0.2"
 ansicolors = "^1.1.8"
+
+[tool.poetry.scripts]
+trustix_nix_dash = 'trustix_dash.cli:main'
 
 [build-system]
 requires = ["poetry>=0.12"]
