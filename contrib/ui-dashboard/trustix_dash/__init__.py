@@ -35,7 +35,7 @@ SUPPORTED_SYSTEMS: typing.List[str] = [
 
 
 channel = grpc.insecure_channel(TRUSTIX_RPC)
-stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
+stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)  # type: ignore
 
 
 @transactions.atomic()

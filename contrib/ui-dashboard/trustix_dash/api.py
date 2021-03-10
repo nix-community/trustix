@@ -6,6 +6,7 @@ from trustix_dash.models import (
 from tortoise.query_utils import Q
 from typing import (
     Coroutine,
+    Dict,
     List,
 )
 
@@ -32,13 +33,13 @@ async def get_derivation_outputs(drv: str) -> List[Derivation]:
 
 
 async def get_derivation_output_results_unique(
-    *output_hash: str,
+    *output_hash: bytes,
 ) -> List[DerivationOutputResult]:
     if not output_hash:
         return []
 
-    results = {
-        result.output_hash: result
+    results: Dict[bytes, DerivationOutputResult] = {
+        result.output_hash: result  # type: ignore
         for result in await DerivationOutputResult.filter(output_hash__in=output_hash)
     }
 
@@ -49,4 +50,4 @@ async def get_derivation_output_results_unique(
             )
         )
 
-    return [results.get(h) for h in output_hash]
+    return [results[h] for h in output_hash]

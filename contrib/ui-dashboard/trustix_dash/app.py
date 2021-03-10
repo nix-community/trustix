@@ -29,7 +29,7 @@ from trustix_dash.models import (
 )
 from tortoise import Tortoise
 import urllib.parse
-import Levenshtein
+import Levenshtein  # type: ignore
 import requests
 import tempfile
 import asyncio
@@ -47,7 +47,7 @@ from trustix_dash.conf import settings
 
 
 channel = grpc.aio.insecure_channel(settings.trustix_rpc)
-stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)
+stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)  # type: ignore
 
 
 SCRIPT_DIR = os.path.dirname(__file__)
@@ -200,7 +200,8 @@ async def search(request: Request, term: str):
 
     derivations_by_attr: Dict[str, Set[str]] = {}
     for result in results:
-        derivations_by_attr.setdefault(result.attr, set()).add(result.derivation_id)
+        derivation_id: str = result.derivation_id  # type: ignore
+        derivations_by_attr.setdefault(result.attr, set()).add(derivation_id)
 
     ctx = make_context(
         request,
@@ -244,8 +245,8 @@ async def diff_form(request: Request, output_hash: List[str] = Form(...)):
 @app.post("/diff/{output_hash_1_hex}/{output_hash_2_hex}", response_class=HTMLResponse)
 async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str):
 
-    output_hash_1 = codecs.decode(output_hash_1_hex, "hex")
-    output_hash_2 = codecs.decode(output_hash_2_hex, "hex")
+    output_hash_1 = codecs.decode(output_hash_1_hex, "hex")  # type: ignore
+    output_hash_2 = codecs.decode(output_hash_2_hex, "hex")  # type: ignore
 
     result1, result2 = await get_derivation_output_results_unique(
         output_hash_1, output_hash_2
@@ -286,7 +287,7 @@ async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str)
     async def process_result(result, tmpdir, outbase) -> str:
         # Fetch narinfo
         narinfo = json.loads(
-            (await stub.GetValue(api_pb2.ValueRequest(Digest=result.output_hash))).Value
+            (await stub.GetValue(api_pb2.ValueRequest(Digest=result.output_hash))).Value  # type: ignore
         )
         nar_hash = narinfo["narHash"].split(":")[-1]
 
