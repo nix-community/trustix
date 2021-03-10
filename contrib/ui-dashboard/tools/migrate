@@ -10,8 +10,14 @@ import os.path
 
 if __name__ == "__main__":
     wait_for_db()
+
+    def callback():
+        run_cmd(["aerich", "upgrade"])
+
+    callback()  # Run at least once on startup
+
     watch_recursive(
         [os.path.join(ROOT_DIR, "migrations")],
-        lambda: run_cmd(["aerich", "upgrade"]),
+        callback,
         delay=2,
     )
