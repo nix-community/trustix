@@ -21,6 +21,23 @@ PSQL_SOCKETS_DIR = os.path.join(os.environ["TMPDIR"], "nix-trustix-dash-psql-soc
 PSQL_DB_NAME = "nix-trustix-dash"
 
 
+_icons = [
+    "🤪",
+    "👻",
+    "😁",
+    "🥕",
+    "🌮",
+    "🍆",
+    "🥦",
+    "🔥",
+    "🙃",
+    "🥳",
+    "🥸",
+    "🧙",
+    "🚀",
+]
+
+
 def ensure_dir(path: str):
     if not os.path.exists(PSQL_SOCKETS_DIR):
         os.mkdir(PSQL_SOCKETS_DIR)
@@ -112,3 +129,15 @@ def watch_recursive(
     finally:
         observer.stop()
         observer.join()
+
+
+def _djb2_hash(s: str) -> int:
+    h: int = 5381
+    for x in s:
+        h = ((h << 5) + h) + ord(x)
+    return h & 0xFFFFFFFF
+
+
+def icon(s: str) -> str:
+    """Return a deterministic icon based on an input string"""
+    return _icons[_djb2_hash(s) % len(_icons)]

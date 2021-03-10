@@ -4,28 +4,13 @@ from lib import (
     get_watch_files,
     ROOT_DIR,
     run_cmd,
+    icon,
 )
 from colors import color  # type: ignore
 import os.path
 import typing
-import random
 import shlex
 import sys
-
-
-def icon() -> str:
-    return random.choice(
-        [
-            "🤪",
-            "👻",
-            "😁",
-            "🥕",
-            "🌮",
-            "🍆",
-            "🥦",
-            "🔥",
-        ]
-    )
 
 
 def run() -> typing.List[int]:
@@ -38,10 +23,13 @@ def run() -> typing.List[int]:
     ]
 
     for cmd in cmds:
+        cmd_string = shlex.join(
+            [tok.replace(ROOT_DIR + os.path.sep, "") for tok in cmd]
+        )
         print(
-            icon(),
+            icon(cmd_string),
             color(
-                shlex.join([tok.replace(ROOT_DIR + os.path.sep, "") for tok in cmd]),
+                cmd_string,
                 fg="green",
             ),
         )
