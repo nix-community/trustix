@@ -9,6 +9,16 @@ class SettingsModel(BaseModel):
     binary_cache_proxy: str = os.environ["TRUSTIX_BINARY_CACHE_PROXY"]
     db_uri: str = os.environ["DB_URI"]
 
+    supported_systems: typing.List[str] = (
+        os.environ["SUPPORTED_SYSTEMS"].split(":")
+        if "SUPPORTED_SYSTEMS" in os.environ
+        else [
+            "aarch64-linux",
+            "x86_64-linux",
+            "x86_64-darwin",
+        ]
+    )
+
     @property
     def tortoise_config(self) -> typing.Dict:
         return {

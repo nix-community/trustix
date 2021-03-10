@@ -22,19 +22,10 @@ import aiofiles
 import os.path
 import asyncio
 import json
+from trustix_dash.conf import settings
 
 
-TRUSTIX_RPC = "unix:../../sock"
-
-
-SUPPORTED_SYSTEMS: typing.List[str] = [
-    "aarch64-linux",
-    "x86_64-linux",
-    "x86_64-darwin",
-]
-
-
-channel = grpc.insecure_channel(TRUSTIX_RPC)
+channel = grpc.insecure_channel(settings.trustix_rpc)
 stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)  # type: ignore
 
 
@@ -130,7 +121,7 @@ async def index_eval(commit_sha: str):  # noqa: C901
                 os.path.join(expr_dir, "outpaths.nix"),
                 "--arg",
                 "systems",
-                json.dumps(SUPPORTED_SYSTEMS).replace(",", ""),
+                json.dumps(settings.supported_systems).replace(",", ""),
             ],
             env=env,
             stdout=asyncio.subprocess.PIPE,
