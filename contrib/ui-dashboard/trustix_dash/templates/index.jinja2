@@ -1,24 +1,41 @@
 {% extends "base.jinja2" %}
 
+{% block main %}
+
+  <div x-data-attr="{{attr}}">
+
+    <h3>
+      Reproducibility for <a x-data-tooltip="Derivation attribute" href="#">{{attr}}</a>
+    </h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Derivation</th>
+          <th>Reproducibility</th>
+          <th>Outputs</th>
+          <th>Reproduced outputs</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for drv, info in attr_stats.items() %}
+          <tr>
+            <td>{{drv}}</td>
+            <td>{{info.statistics.pct_reproduced}}</td>
+            <td>{{info.statistics.num_outputs}}</td>
+            <td>{{info.statistics.num_reproduced}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}
+
 {% block deferred %}
   <script type="text/javascript">
     (() => {
       const main = document.querySelector("main")
-
-      const heading = document.createElement("h3")
-      heading.appendChild((() => {
-        const elem = document.createElement("span")
-        elem.innerText = "Reproducibility for "
-        return elem
-      })())
-      heading.appendChild((() => {
-        const elem = document.createElement("a")
-        elem.setAttribute("href", "#")
-        elem.setAttribute("x-data-tooltip", "Derivation attribute")
-        elem.innerText = "{{attr}}"
-        return elem
-      })())
-      main.appendChild(heading)
 
       const chartDiv = document.createElement("div");
       chartDiv.setAttribute("class", "index-line-chart")

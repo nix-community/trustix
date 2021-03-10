@@ -31,9 +31,9 @@ from trustix_dash.models import (
     Derivation,
     Log,
 )
+from collections import OrderedDict
 import urllib.parse
 import Levenshtein  # type: ignore
-import itertools
 import requests
 import tempfile
 import asyncio
@@ -46,6 +46,10 @@ import grpc  # type: ignore
 from trustix_dash.api import (
     get_derivation_output_results_unique,
     get_derivation_outputs,
+)
+from trustix_dash.lib import (
+    flatten,
+    unique,
 )
 from trustix_dash.conf import settings
 
@@ -97,21 +101,8 @@ def make_context(
     return ctx
 
 
-@app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    ctx = make_context(
-        request,
-        extra={
-            "attr": settings.default_attr,
-        },
-    )
-    return templates.TemplateResponse("index.jinja2", ctx)
+async def drv_data(drv_path: str):
 
-
-@app.get("/drv/{drv_path}", response_class=HTMLResponse)
-async def drv(request: Request, drv_path: str):
-
-    drv_path = urllib.parse.unquote(drv_path)
     drvs = await get_derivation_outputs(drv_path)
 
     # Description: drv -> output -> output_hash -> List[result]
@@ -166,23 +157,57 @@ async def drv(request: Request, drv_path: str):
 
     num_reproduced = sum(len(v) for v in reproduced_paths.values())
 
+    # TODO: Get first evaluation timestamp
+
+    return {
+        "unreproduced_paths": unreproduced_paths,
+        "reproduced_paths": reproduced_paths,
+        "unknown_paths": unknown_paths,
+        "missing_paths": missing_paths,
+        "drv_path": drv_path,
+        "logs": logs,
+        "statistics": {
+            "pct_reproduced": round(num_outputs / 100 * num_reproduced, 2),
+            "num_reproduced": num_reproduced,
+            "num_outputs": num_outputs,
+        },
+    }
+
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+
+    drvs = list(
+        unique(
+            flatten(
+                await Derivation.filter(derivationattrs__attr=settings.default_attr)
+                .limit(100)
+                .order_by("derivationevals__eval__timestamp")
+                .values_list("drv")
+            )
+        )
+    )
+    attr_stats = OrderedDict(
+        zip(drvs, await asyncio.gather(*[drv_data(drv) for drv in drvs]))
+    )
+
     ctx = make_context(
         request,
         extra={
-            "unreproduced_paths": unreproduced_paths,
-            "reproduced_paths": reproduced_paths,
-            "unknown_paths": unknown_paths,
-            "missing_paths": missing_paths,
-            "drv_path": drv_path,
-            "logs": logs,
-            "statistics": {
-                "pct_reproduced": round(num_outputs / 100 * num_reproduced, 2),
-                "num_reproduced": num_reproduced,
-                "num_outputs": num_outputs,
-            },
+            "attr": settings.default_attr,
+            "attr_stats": attr_stats,
         },
     )
 
+    return templates.TemplateResponse("index.jinja2", ctx)
+
+
+@app.get("/drv/{drv_path}", response_class=HTMLResponse)
+async def drv(request: Request, drv_path: str):
+    ctx = make_context(
+        request,
+        extra=await drv_data(urllib.parse.unquote(drv_path)),
+    )
     return templates.TemplateResponse("drv.jinja2", ctx)
 
 
@@ -193,8 +218,6 @@ async def search_form(request: Request, term: str = Form(...)):
 
 @app.post("/search/{term}")
 async def search(request: Request, term: str):
-    from trustix_dash.models import DerivationAttr
-
     if len(term) < 3:
         raise ValueError("Search term too short")
 
@@ -223,8 +246,8 @@ async def suggest(request: Request, attr: str):
         raise ValueError("Prefix too short")
 
     return sorted(
-        itertools.chain(
-            *await DerivationAttr.filter(attr__startswith=attr)
+        flatten(
+            await DerivationAttr.filter(attr__startswith=attr)
             .distinct()
             .values_list("attr")
         ),
