@@ -1,5 +1,12 @@
 #!/usr/bin/env python
-# set -xeuo pipefail
-# mypy .
-# flake8 .
-# black --check .
+from lib import (
+    get_fmt_files,
+    ROOT_DIR,
+    run_cmd,
+)
+
+
+if __name__ == "__main__":
+    run_cmd(["mypy", ROOT_DIR])
+    run_cmd(["flake8", ROOT_DIR])
+    run_cmd(["black", "--check"] + get_fmt_files())

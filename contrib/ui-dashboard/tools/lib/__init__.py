@@ -55,3 +55,12 @@ def get_fmt_files() -> typing.List[str]:
 
 def exec_cmd(cmdline: typing.List[str]):
     os.execvp(cmdline[0], cmdline)
+
+
+def run_cmd(cmdline: typing.List[str]):
+    print("Running", cmdline)
+    p = subprocess.run(cmdline)
+    # We don't want to use check=True as that would give a confusing stack trace
+    # Simply exit with the status code of the failed command
+    if p.returncode != 0:
+        exit(p.returncode)
