@@ -11,7 +11,10 @@ from trustix_dash.models import (
     DerivationEval,
 )
 from tortoise.exceptions import DoesNotExist
-from tortoise import transactions
+from tortoise import (
+    transactions,
+    Tortoise,
+)
 import ijson  # type: ignore
 from trustix_proto import trustix_pb2_grpc, trustix_pb2  # type: ignore
 import grpc  # type: ignore
@@ -22,11 +25,20 @@ import aiofiles
 import os.path
 import asyncio
 import json
+
 from trustix_dash.conf import settings
 
 
 channel = grpc.insecure_channel(settings.trustix_rpc)
 stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)  # type: ignore
+
+
+async def on_startup():
+    await Tortoise.init(settings.tortoise_config)
+
+
+async def on_shutdown():
+    await Tortoise.close_connections()
 
 
 @transactions.atomic()

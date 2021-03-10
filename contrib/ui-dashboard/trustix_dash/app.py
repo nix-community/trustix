@@ -19,7 +19,11 @@ from typing import (
     List,
     Set,
 )
-from trustix_dash import template_lib
+from trustix_dash import (
+    template_lib,
+    on_startup,
+    on_shutdown,
+)
 from trustix_dash.models import (
     DerivationOutputResult,
     DerivationOutput,
@@ -27,7 +31,6 @@ from trustix_dash.models import (
     Derivation,
     Log,
 )
-from tortoise import Tortoise
 import urllib.parse
 import Levenshtein  # type: ignore
 import requests
@@ -67,12 +70,12 @@ templates.env.globals["url_reverse"] = app.url_path_for
 
 @app.on_event("startup")
 async def startup_event():
-    await Tortoise.init(settings.tortoise_config)
+    await on_startup()
 
 
 @app.on_event("shutdown")
-async def close_orm():
-    await Tortoise.close_connections()
+async def shutdown_event():
+    await on_shutdown()
 
 
 def make_context(
