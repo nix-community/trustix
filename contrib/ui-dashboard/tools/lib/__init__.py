@@ -1,7 +1,12 @@
+from watchdog.events import FileSystemEventHandler  # type: ignore
+from watchdog.observers import Observer  # type: ignore
 import subprocess
+import threading
+import traceback
 import os.path
 import typing
 import time
+import sys
 import os
 
 
@@ -42,25 +47,62 @@ def wait_for_db():
         time.sleep(0.1)
 
 
-def get_fmt_files() -> typing.List[str]:
-    """Return a list of files/directories to format using black"""
-    ret: typing.List[str] = [
+def get_watch_files() -> typing.List[str]:
+    return [
         os.path.join(TOOLS_DIR, f)
         for f in os.listdir(TOOLS_DIR)
         if not f.startswith(".") and not f.startswith("#") and not os.path.isdir(f)
+    ] + [
+        os.path.join(ROOT_DIR, f)
+        for f in (
+            "trustix_api",
+            "trustix_dash",
+            "trustix_proto",
+            "pynix",
+            os.path.join("tools", "lib"),
+        )
     ]
-    ret.append(ROOT_DIR)
-    return ret
 
 
 def exec_cmd(cmdline: typing.List[str]):
     os.execvp(cmdline[0], cmdline)
 
 
-def run_cmd(cmdline: typing.List[str]):
-    print("Running", cmdline)
+def run_cmd(cmdline: typing.List[str]) -> int:
     p = subprocess.run(cmdline)
-    # We don't want to use check=True as that would give a confusing stack trace
-    # Simply exit with the status code of the failed command
-    if p.returncode != 0:
-        exit(p.returncode)
+    return p.returncode
+
+
+def watch_recursive(handler: typing.Callable, delay: float = 0.5):
+
+    evt = threading.Event()
+
+    def handler_loop():
+        while True:
+            evt.wait()
+            time.sleep(delay)
+            evt.clear()
+            try:
+                handler()
+            except Exception:
+                traceback.print_exc(file=sys.stderr)
+
+    class WatchHandler(FileSystemEventHandler):
+        def on_any_event(self, event):
+            evt.set()
+
+    observer = Observer()
+
+    handler_thread = threading.Thread(target=handler_loop, daemon=True)
+    handler_thread.start()
+
+    for f in get_watch_files():
+        observer.schedule(WatchHandler(), f, recursive=os.path.isdir(f))
+
+    observer.start()
+    try:
+        while True:
+            time.sleep(0.1)
+    finally:
+        observer.stop()
+        observer.join()

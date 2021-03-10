@@ -1,12 +1,52 @@
 #!/usr/bin/env python
 from lib import (
-    get_fmt_files,
+    watch_recursive,
+    get_watch_files,
     ROOT_DIR,
     run_cmd,
 )
+from colors import color  # type: ignore
+import typing
+import random
+import shlex
+import sys
+
+
+def icon() -> str:
+    return random.choice(
+        [
+            "🤪",
+            "👻",
+            "😁",
+            "🥕",
+            "🌮",
+            "🍆",
+            "🥦",
+            "🔥",
+        ]
+    )
+
+
+def run() -> typing.List[int]:
+    codes: typing.List[int] = []
+
+    cmds = [
+        ["mypy", ROOT_DIR],
+        ["flake8", ROOT_DIR],
+        ["black", "--quiet", "--check"] + get_watch_files(),
+    ]
+
+    for cmd in cmds:
+        print(icon(), "Running", color(shlex.join(cmd), fg="green", style="underline"))
+        codes.append(run_cmd(cmd))
+
+    return codes
 
 
 if __name__ == "__main__":
-    run_cmd(["mypy", ROOT_DIR])
-    run_cmd(["flake8", ROOT_DIR])
-    run_cmd(["black", "--check"] + get_fmt_files())
+    watch_mode = "--watch" in sys.argv
+
+    if watch_mode:
+        watch_recursive(run)
+    else:
+        exit(max(run()))
