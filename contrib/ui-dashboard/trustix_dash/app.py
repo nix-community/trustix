@@ -67,20 +67,7 @@ templates.env.globals["url_reverse"] = app.url_path_for
 
 @app.on_event("startup")
 async def startup_event():
-    await Tortoise.init(
-        {
-            "connections": {
-                "default": "postgres:///nix-trustix-dash?host=/run/user/1000/nix-trustix-dash-psql-sockets",
-            },
-            "apps": {
-                "trustix_dash": {
-                    "models": ["trustix_dash.models"],
-                }
-            },
-            "use_tz": False,
-            "timezone": "UTC",
-        }
-    )
+    await Tortoise.init(settings.tortoise_config)
 
 
 @app.on_event("shutdown")

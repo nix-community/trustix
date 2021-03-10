@@ -1,6 +1,6 @@
 [[package]]
 name = "aerich"
-version = "0.4.4"
+version = "0.5.0"
 description = "A database migrations tool for Tortoise ORM."
 category = "main"
 optional = false
@@ -9,8 +9,9 @@ python-versions = ">=3.7,<4.0"
 [package.dependencies]
 click = "*"
 ddlparse = "*"
+dictdiffer = "*"
 pydantic = "*"
-tortoise-orm = "*"
+tortoise-orm = ">=0.16.21,<0.17.0"
 
 [package.extras]
 dbdrivers = ["aiomysql", "asyncpg"]
@@ -252,6 +253,20 @@ description = "Decorators for Humans"
 category = "dev"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
+
+[[package]]
+name = "dictdiffer"
+version = "0.8.1"
+description = "Dictdiffer is a library that helps you to diff and patch dictionaries."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+all = ["Sphinx (>=1.4.4)", "sphinx-rtd-theme (>=0.1.9)", "check-manifest (>=0.25)", "coverage (>=4.0)", "isort (>=4.2.2)", "mock (>=1.3.0)", "pydocstyle (>=1.0.0)", "pytest-cov (>=1.8.0)", "pytest-pep8 (>=1.0.6)", "pytest (>=2.8.0)", "tox (>=3.7.0)", "numpy (>=1.11.0)"]
+docs = ["Sphinx (>=1.4.4)", "sphinx-rtd-theme (>=0.1.9)"]
+numpy = ["numpy (>=1.11.0)"]
+tests = ["check-manifest (>=0.25)", "coverage (>=4.0)", "isort (>=4.2.2)", "mock (>=1.3.0)", "pydocstyle (>=1.0.0)", "pytest-cov (>=1.8.0)", "pytest-pep8 (>=1.0.6)", "pytest (>=2.8.0)", "tox (>=3.7.0)"]
 
 [[package]]
 name = "fastapi"
@@ -941,12 +956,12 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "643c0fde246a3465749e1be129405f7722f5ab3a5ddb96c6bcb2e88f60410d70"
+content-hash = "8b9b431182809fcfe1d8a152dd773369dfe14cffd2ffb3d72e5a4b8a6adb5d7b"
 
 [metadata.files]
 aerich = [
-    {file = "aerich-0.4.4-py3-none-any.whl", hash = "sha256:259b8a3b9bc21839e7ef6466d5000309b1e0a86d9569cd7bcf481aa50426d429"},
-    {file = "aerich-0.4.4.tar.gz", hash = "sha256:4a2e6452ba4a44b4877f62dd8acd978f319cd21834480cefe6710bf3150a5cda"},
+    {file = "aerich-0.5.0-py3-none-any.whl", hash = "sha256:d6613b2e6dfb165831d5e6e608290b2a72719490fac97e7a0dffee2113969bb9"},
+    {file = "aerich-0.5.0.tar.gz", hash = "sha256:d7356740a340820b142ca76fc1f76869cd8e22721f0f104f2cb6ec2b5d210bd0"},
 ]
 aiodns = [
     {file = "aiodns-2.0.0-py2.py3-none-any.whl", hash = "sha256:aaa5ac584f40fe778013df0aa6544bf157799bd3f608364b451840ed2c8688de"},
@@ -1181,6 +1196,10 @@ ddlparse = [
 decorator = [
     {file = "decorator-4.4.2-py2.py3-none-any.whl", hash = "sha256:41fa54c2a0cc4ba648be4fd43cff00aedf5b9465c9bf18d64325bc225f08f760"},
     {file = "decorator-4.4.2.tar.gz", hash = "sha256:e3a62f0520172440ca0dcc823749319382e377f37f140a0b99ef45fecb84bfe7"},
+]
+dictdiffer = [
+    {file = "dictdiffer-0.8.1-py2.py3-none-any.whl", hash = "sha256:d79d9a39e459fe33497c858470ca0d2e93cb96621751de06d631856adfd9c390"},
+    {file = "dictdiffer-0.8.1.tar.gz", hash = "sha256:1adec0d67cdf6166bda96ae2934ddb5e54433998ceab63c984574d187cc563d2"},
 ]
 fastapi = [
     {file = "fastapi-0.63.0-py3-none-any.whl", hash = "sha256:98d8ea9591d8512fdadf255d2a8fa56515cdd8624dca4af369da73727409508e"},

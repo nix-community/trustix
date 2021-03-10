@@ -2,26 +2,14 @@ from trustix_dash import (
     index_logs,
     index_eval,
 )
+from trustix_dash.conf import settings
 from tortoise import run_async
 from tortoise import Tortoise
 
 
 async def init():
 
-    await Tortoise.init(
-        {
-            "connections": {
-                "default": "sqlite://db.sqlite3",
-            },
-            "apps": {
-                "trustix_dash": {
-                    "models": ["trustix_dash.models"],
-                }
-            },
-            "use_tz": False,
-            "timezone": "UTC",
-        }
-    )
+    await Tortoise.init(settings.tortoise_config)
 
     # TODO: Remove and use aerich instead (blocked by https://github.com/tortoise/aerich/issues/63 )
     await Tortoise.generate_schemas(safe=True)
