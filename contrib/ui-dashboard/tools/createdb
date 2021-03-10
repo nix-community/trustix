@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 import subprocess
-import os.path
-import time
-import os
+from lib import (
+    PSQL_SOCKETS_DIR,
+    PSQL_DB_NAME,
+    wait_for_psql,
+    exec_cmd,
+)
 
 
 if __name__ == "__main__":
-    sockets_dir = os.path.join(os.environ["TMPDIR"], "nix-trustix-dash-psql-sockets")
-    socket = os.path.join(sockets_dir, ".s.PGSQL.5432")
-    while not os.path.exists(sockets_dir):
-        time.sleep(0.1)
+    wait_for_psql()
 
-    time.sleep(1)
-    subprocess.run(["createdb", "nix-trustix-dash", "-h", sockets_dir])
+    subprocess.run(["createdb", PSQL_DB_NAME, "-h", PSQL_SOCKETS_DIR])
 
-    while True:
-        time.sleep(1000)
+    exec_cmd(["sleep", "infinity"])
