@@ -39,6 +39,9 @@ from trustix_dash.api import (
     search_derivations,
     suggest_attrs,
 )
+from trustix_dash.api.models import (
+    DerivationReproducibility,
+)
 
 from trustix_dash.proto import (
     get_combined_rpc,
@@ -121,7 +124,7 @@ async def attr(request: Request, attr: str):
     return templates.TemplateResponse("attr.jinja2", ctx)
 
 
-@app.get("/drv/{drv_path}", response_class=HTMLResponse)
+@app.get("/drv/{drv_path}", response_model=DerivationReproducibility)
 async def drv(request: Request, drv_path: str):
     ctx = make_context(
         request,

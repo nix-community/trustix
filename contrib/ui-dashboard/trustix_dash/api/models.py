@@ -4,6 +4,9 @@ from pynix import b32encode
 from typing import (
     Dict,
     List,
+    Type,
+    Set,
+    Any,
 )
 from pydantic import BaseModel
 import codecs
@@ -53,6 +56,7 @@ class DerivationReproducibilityStats(BaseModel):
 
 
 class DerivationReproducibility(BaseModel):
+
     unreproduced_paths: PATH_T
     reproduced_paths: PATH_T
     unknown_paths: PATH_T
@@ -63,3 +67,29 @@ class DerivationReproducibility(BaseModel):
     logs: Dict[int, Log]
 
     statistics: DerivationReproducibilityStats
+
+    class Config:
+        @staticmethod
+        def schema_extra(
+            schema: Dict[str, Any], model: Type["DerivationReproducibility"]
+        ) -> None:
+
+            massage_keys: Set[str] = set(
+                [
+                    "unreproduced_paths",
+                    "reproduced_paths",
+                    "unknown_paths",
+                    "missing_paths",
+                ]
+            )
+
+            key_descr: List[str] = ["drv", "output", "output_hash"]
+
+            for key, prop in schema.get("properties", {}).items():
+                if key not in massage_keys:
+                    continue
+
+                p = prop
+                for title in key_descr:
+                    p = p["additionalProperties"]
+                    p["title"] = title
