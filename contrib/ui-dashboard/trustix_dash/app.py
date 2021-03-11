@@ -110,7 +110,7 @@ def render_template_or_html(
         return model
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def index(request: Request):
     return await attrs(request, ",".join(settings.default_attrs))
 
@@ -146,7 +146,7 @@ async def attrs(request: Request, attrs: str):
     )
 
 
-@app.post("/search_form/")
+@app.post("/search_form/", include_in_schema=False, response_class=RedirectResponse)
 async def search_form(request: Request, term: str = Form(...)):
     return RedirectResponse(app.url_path_for("search", term=term), status_code=303)
 
@@ -171,7 +171,7 @@ async def suggest(request: Request, attr_prefix: str):
     return await suggest_attrs(attr_prefix)
 
 
-@app.post("/diff_form/", response_class=RedirectResponse)
+@app.post("/diff_form/", response_class=RedirectResponse, include_in_schema=False)
 async def diff_form(request: Request, output_hash: List[str] = Form(...)):
 
     if len(output_hash) < 1:
