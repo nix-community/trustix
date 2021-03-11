@@ -92,7 +92,7 @@ def make_context(
     ctx = {
         "request": request,
         "title": "Trustix R13Y" + (" ".join((" - ", title)) if title else ""),
-        "drv_placeholder": settings.default_attr,
+        "drv_placeholder": settings.placeholder_attr,
     }
 
     if extra:
@@ -174,31 +174,33 @@ async def drv_data(drv_path: str):
     }
 
 
-@app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-
+async def attr_data(attr: str):
     drvs = list(
         unique(
             flatten(
-                await Derivation.filter(derivationattrs__attr=settings.default_attr)
+                await Derivation.filter(derivationattrs__attr=attr)
                 .limit(100)
                 .order_by("derivationevals__eval__timestamp")
                 .values_list("drv")
             )
         )
     )
-    attr_stats = OrderedDict(
+    return OrderedDict(
         zip(drvs, await asyncio.gather(*[drv_data(drv) for drv in drvs]))
     )
 
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    attrs = settings.default_attrs
     ctx = make_context(
         request,
         extra={
-            "attr": settings.default_attr,
-            "attr_stats": attr_stats,
+            "attr_stats": OrderedDict(
+                zip(attrs, await asyncio.gather(*[attr_data(attr) for attr in attrs]))
+            ),
         },
     )
-
     return templates.TemplateResponse("index.jinja2", ctx)
 
 
