@@ -1,4 +1,3 @@
-from trustix_proto import trustix_pb2_grpc  # type: ignore
 from trustix_api import api_pb2
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import (
@@ -32,7 +31,6 @@ import os.path
 import codecs
 import shlex
 import json
-import grpc  # type: ignore
 
 from trustix_dash.api import (
     get_derivation_output_results_unique,
@@ -42,11 +40,11 @@ from trustix_dash.api import (
     suggest_attrs,
 )
 
+from trustix_dash.proto import (
+    get_combined_rpc,
+)
+
 from trustix_dash.conf import settings
-
-
-channel = grpc.aio.insecure_channel(settings.trustix_rpc)
-stub = trustix_pb2_grpc.TrustixCombinedRPCStub(channel)  # type: ignore
 
 
 SCRIPT_DIR = os.path.dirname(__file__)
@@ -218,7 +216,7 @@ async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str)
     async def process_result(result, tmpdir, outbase) -> str:
         # Fetch narinfo
         narinfo = json.loads(
-            (await stub.GetValue(api_pb2.ValueRequest(Digest=result.output_hash))).Value  # type: ignore
+            (await get_combined_rpc().GetValue(api_pb2.ValueRequest(Digest=result.output_hash))).Value  # type: ignore
         )
         nar_hash = narinfo["narHash"].split(":")[-1]
 
