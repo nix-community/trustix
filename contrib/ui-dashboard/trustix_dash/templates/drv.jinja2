@@ -54,12 +54,6 @@
   </ul>
 {% endmacro %}
 
-{% block deferred %}
-  <script type="text/javascript">
-    {% include "includes/drv-pie-render.js" %}
-  </script>
-{% endblock %}
-
 {% block main %}
 
   <h2 x-data-tooltip="Derivation path">{{drv_path}}</h2>
