@@ -170,12 +170,12 @@ async def diff_form(request: Request, output_hash: List[str] = Form(...)):
     return RedirectResponse(
         app.url_path_for(
             "diff", output_hash_1_hex=output_hash[0], output_hash_2_hex=output_hash[1]
-        )
+        ),
+        status_code=303,
     )
 
 
 @app.get("/diff/{output_hash_1_hex}/{output_hash_2_hex}", response_class=HTMLResponse)
-@app.post("/diff/{output_hash_1_hex}/{output_hash_2_hex}", response_class=HTMLResponse)
 async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str):
 
     output_hash_1 = codecs.decode(output_hash_1_hex, "hex")  # type: ignore
