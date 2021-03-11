@@ -4,7 +4,7 @@ body {
     font-size: 16px;
     margin: 2em auto;
     margin-top: 0;
-    max-width: 800px;
+    max-width: 1000px;
     padding: 1em;
     padding-top: 0;
     line-height: 1.4;
@@ -277,6 +277,11 @@ p.fakepre {
 
 input.drv-compare {
     float: right;
+}
+
+/* Reproducibility table */
+table {
+    width: 100%;
 }
 
 /* Search suggestions */

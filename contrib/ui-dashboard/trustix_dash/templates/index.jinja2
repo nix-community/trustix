@@ -12,52 +12,33 @@
       <thead>
         <tr>
           <th>Derivation</th>
-          <th>Reproducibility</th>
-          <th>Outputs</th>
+          <th x-data-tooltip="Reproducibility in percent">Reproducibility</th>
+          <th x-data-tooltip="Total number of outputs in the transitive closure">Outputs</th>
           <th>Reproduced outputs</th>
         </tr>
       </thead>
       <tbody>
         {% for drv, info in attr_stats.items() %}
-          <tr>
-            <td>{{drv}}</td>
-            <td>{{info.statistics.pct_reproduced}}</td>
-            <td>{{info.statistics.num_outputs}}</td>
-            <td>{{info.statistics.num_reproduced}}</td>
+          <tr x-data-drv="{{drv}}">
+            <td x-data-type="drv">
+              <a href="{{url_reverse("drv", drv_path=drv_url_quote(drv))}}">
+                {{drv}}
+              </a>
+            </td>
+            <td x-data-type="pct_reproduced">{{info.statistics.pct_reproduced}}</td>
+            <td x-data-type="num_outputs">{{info.statistics.num_outputs}}</td>
+            <td x-data-type="num_reproduced">{{info.statistics.num_reproduced}}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+
   </div>
 
 {% endblock %}
 
 {% block deferred %}
   <script type="text/javascript">
-    (() => {
-      const main = document.querySelector("main")
-
-      const chartDiv = document.createElement("div");
-      chartDiv.setAttribute("class", "index-line-chart")
-      main.appendChild(chartDiv)
-
-      const chart = c3.generate({
-          bindto: chartDiv,
-          axis: {
-            y: {
-              padding: {top: 3, bottom: 0},
-              max: 100,
-              min: 0,
-            },
-          },
-          data: {
-            columns: [
-              ["{{attr}}", 50, 100, 25],
-            ]
-          }
-      });
-
-    })()
+    {% include "attr-chart-render.js" %}
   </script>
-
 {% endblock %}
