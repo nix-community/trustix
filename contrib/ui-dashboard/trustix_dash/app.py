@@ -98,9 +98,13 @@ def make_context(
 T = TypeVar("T")
 
 
-def render_template_or_html(
+def render_model(
     request: Request, template: str, ctx_callback: Callable[[], Dict], model: T
 ) -> Union[HTMLResponse, T]:
+    """
+    Polymorphic response depending on the accept header
+    In the case of text/html we render the template and otherwise we use a JSON response
+    """
     accept_html: bool = "text/html" in [
         mime.split(";")[0] for mime in request.headers["accept"].split(",")
     ]
@@ -117,15 +121,18 @@ async def index(request: Request):
 
 @app.get("/drv/{drv_path}", response_model=DerivationReproducibility)
 async def drv(request: Request, drv_path: str):
-    ctx = make_context(
+    data = await get_derivation_reproducibility(urllib.parse.unquote(drv_path))
+    return render_model(
         request,
-        extra={
-            "data": await get_derivation_reproducibility(
-                urllib.parse.unquote(drv_path)
-            ),
-        },
+        "drv.jinja2",
+        lambda: make_context(
+            request,
+            extra={
+                "data": data,
+            },
+        ),
+        data,
     )
-    return templates.TemplateResponse("drv.jinja2", ctx)
 
 
 @app.get(
@@ -133,7 +140,7 @@ async def drv(request: Request, drv_path: str):
 )
 async def attrs(request: Request, attrs: str):
     data = await get_attrs_reproducibility(settings.default_attrs)
-    return render_template_or_html(
+    return render_model(
         request,
         "attrs.jinja2",
         lambda: make_context(
