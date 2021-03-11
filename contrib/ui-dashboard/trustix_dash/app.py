@@ -199,6 +199,12 @@ async def diff_form(request: Request, output_hash: List[str] = Form(...)):
 @app.get("/diff/{output_hash_1_hex}/{output_hash_2_hex}", response_class=HTMLResponse)
 async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str):
 
+    # Reorder inputs
+    # This is to get a deterministic cache key
+    output_hash_1_hex, output_hash_2_hex = sorted(
+        [output_hash_1_hex, output_hash_2_hex]
+    )
+
     output_hash_1 = codecs.decode(output_hash_1_hex, "hex")  # type: ignore
     output_hash_2 = codecs.decode(output_hash_2_hex, "hex")  # type: ignore
 
