@@ -41,3 +41,14 @@ async def get_attr_reproducibility(attr: str) -> Dict[str, DerivationReproducibi
             ),
         )
     )
+
+
+async def get_attrs_reproducibility(
+    attrs: List[str],
+) -> Dict[str, Dict[str, DerivationReproducibility]]:
+    return OrderedDict(
+        zip(
+            attrs,
+            await asyncio.gather(*[get_attr_reproducibility(attr) for attr in attrs]),
+        )
+    )

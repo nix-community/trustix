@@ -14,6 +14,9 @@ from fastapi import (
 )
 from typing import (
     Optional,
+    Callable,
+    TypeVar,
+    Union,
     Dict,
     List,
 )
@@ -22,7 +25,6 @@ from trustix_dash import (
     on_startup,
     on_shutdown,
 )
-from collections import OrderedDict
 import urllib.parse
 import requests
 import tempfile
@@ -35,7 +37,7 @@ import json
 from trustix_dash.api import (
     get_derivation_output_results_unique,
     get_derivation_reproducibility,
-    get_attr_reproducibility,
+    get_attrs_reproducibility,
     search_derivations,
     suggest_attrs,
 )
@@ -93,35 +95,24 @@ def make_context(
     return ctx
 
 
+T = TypeVar("T")
+
+
+def render_template_or_html(
+    request: Request, template: str, ctx_callback: Callable[[], Dict], model: T
+) -> Union[HTMLResponse, T]:
+    accept_html: bool = "text/html" in [
+        mime.split(";")[0] for mime in request.headers["accept"].split(",")
+    ]
+    if accept_html:
+        return templates.TemplateResponse(template, ctx_callback())
+    else:
+        return model
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    attrs = settings.default_attrs
-    ctx = make_context(
-        request,
-        extra={
-            "attr_stats": OrderedDict(
-                zip(
-                    attrs,
-                    await asyncio.gather(
-                        *[get_attr_reproducibility(attr) for attr in attrs]
-                    ),
-                )
-            ),
-        },
-    )
-    return templates.TemplateResponse("index.jinja2", ctx)
-
-
-@app.get("/attr/{attr}", response_class=HTMLResponse)
-async def attr(request: Request, attr: str):
-    ctx = make_context(
-        request,
-        extra={
-            "attr": attr,
-            "attr_data": await get_attr_reproducibility(attr),
-        },
-    )
-    return templates.TemplateResponse("attr.jinja2", ctx)
+    return await attrs(request, ",".join(settings.default_attrs))
 
 
 @app.get("/drv/{drv_path}", response_model=DerivationReproducibility)
@@ -135,6 +126,24 @@ async def drv(request: Request, drv_path: str):
         },
     )
     return templates.TemplateResponse("drv.jinja2", ctx)
+
+
+@app.get(
+    "/attrs/{attrs}", response_model=Dict[str, Dict[str, DerivationReproducibility]]
+)
+async def attrs(request: Request, attrs: str):
+    data = await get_attrs_reproducibility(settings.default_attrs)
+    return render_template_or_html(
+        request,
+        "attrs.jinja2",
+        lambda: make_context(
+            request,
+            extra={
+                "attr_stats": data,
+            },
+        ),
+        data,
+    )
 
 
 @app.post("/search_form/")
@@ -162,7 +171,7 @@ async def suggest(request: Request, attr_prefix: str):
     return await suggest_attrs(attr_prefix)
 
 
-@app.post("/diff_form/", response_class=HTMLResponse)
+@app.post("/diff_form/", response_class=RedirectResponse)
 async def diff_form(request: Request, output_hash: List[str] = Form(...)):
 
     if len(output_hash) < 1:
