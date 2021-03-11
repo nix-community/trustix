@@ -14,9 +14,7 @@
     })
   }
 
-  (() => {
-
-    const div = document.querySelector("div[x-data-attr]")
+  Array.from(document.querySelectorAll("div[x-data-attr]")).map((div) => {
     const attr = div.getAttribute("x-data-attr")
 
     const table = div.querySelector("table")
@@ -64,6 +62,6 @@
         },
       },
     });
-  })()
+  })
 
 })()
