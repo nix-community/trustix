@@ -1,4 +1,4 @@
-{% extends "base.jinja2" %}
+{% extends "includes/base.jinja2" %}
 
 {% block main %}
 
@@ -42,6 +42,6 @@
 
 {% block deferred %}
   <script type="text/javascript">
-    {% include "attr-chart-render.js" %}
+    {% include "includes/attr-chart-render.js" %}
   </script>
 {% endblock %}

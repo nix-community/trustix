@@ -1,4 +1,4 @@
-{% extends "base.jinja2" %}
+{% extends "includes/base.jinja2" %}
 
 {% macro render_paths_d(paths_d) %}
   <ul>
@@ -56,13 +56,13 @@
 
 {% block deferred %}
   <script type="text/javascript">
-    {% include "drv-pie-render.js" %}
+    {% include "includes/drv-pie-render.js" %}
   </script>
 {% endblock %}
 
 {% block main %}
 
-  <h2>{{drv_path}}</h2>
+  <h2 x-data-tooltip="Derivation path">{{drv_path}}</h2>
   <p>{{statistics.num_reproduced}}/{{statistics.num_outputs}} ({{statistics.pct_reproduced}}%) verified to be reproducible</p>
 
   {% if unreproduced_paths %}
