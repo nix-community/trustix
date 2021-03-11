@@ -142,7 +142,7 @@ async def search_form(request: Request, term: str = Form(...)):
 @app.post("/search/{term}")
 async def search(request: Request, term: str):
 
-    derivations_by_attr = search_derivations(term)
+    derivations_by_attr = await search_derivations(term)
 
     ctx = make_context(
         request,
