@@ -4,13 +4,18 @@
   "description": "An npm environment to manage frontend dependencies",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node build.js"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@popperjs/core": "^2.9.1",
     "c3": "^0.7.20",
-    "ejs": "^3.1.6"
+    "ejs": "^3.1.6",
+    "tippy.js": "^6.3.1"
+  },
+  "devDependencies": {
+    "unbundle": "^9.0.1"
   }
 }

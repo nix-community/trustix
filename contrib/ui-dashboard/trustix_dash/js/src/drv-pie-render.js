@@ -1,4 +1,6 @@
 (() => {
+  import c3 from 'c3';
+
   Array.from(document.querySelectorAll("form.unreproduced")).map(form => {
 
     const chartDiv = document.createElement("div");

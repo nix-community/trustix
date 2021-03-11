@@ -1,4 +1,5 @@
 (() => {
+  const c3 = import("c3")
 
   const selectData = (tr, type, extra) => {
     let selector = `td[x-data-type='${type}']`
