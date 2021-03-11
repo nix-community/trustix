@@ -1,6 +1,9 @@
 from trustix_dash.api.derivation import (
     get_derivation_reproducibility,
 )
+from trustix_dash.api.models import (
+    DerivationReproducibility,
+)
 from trustix_dash.models import (
     Derivation,
 )
@@ -10,10 +13,17 @@ from trustix_dash.lib import (
 )
 from collections import OrderedDict
 import asyncio
+from typing import (
+    List,
+    Dict,
+)
 
 
-async def get_attr_reproducibility(attr: str):
-    drvs = list(
+__all__ = ("get_attr_reproducibility",)
+
+
+async def get_attr_reproducibility(attr: str) -> Dict[str, DerivationReproducibility]:
+    drvs: List[str] = list(
         unique(
             flatten(
                 await Derivation.filter(derivationattrs__attr=attr)

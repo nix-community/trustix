@@ -1,4 +1,5 @@
-from trustix_dash.models import DerivationOutputResult
+from trustix_dash.api.models import DerivationOutputResult
+from trustix_dash import models as db_models
 from typing import (
     Dict,
     List,
@@ -14,9 +15,11 @@ async def get_derivation_output_results_unique(
     if not output_hash:
         return []
 
-    results: Dict[bytes, DerivationOutputResult] = {
+    results: Dict[bytes, db_models.DerivationOutputResult] = {
         result.output_hash: result  # type: ignore
-        for result in await DerivationOutputResult.filter(output_hash__in=output_hash)
+        for result in await db_models.DerivationOutputResult.filter(
+            output_hash__in=output_hash
+        )
     }
 
     if len(results) != len(output_hash):
@@ -26,4 +29,4 @@ async def get_derivation_output_results_unique(
             )
         )
 
-    return [results[h] for h in output_hash]
+    return [DerivationOutputResult.from_db(results[h]) for h in output_hash]

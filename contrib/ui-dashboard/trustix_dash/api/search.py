@@ -18,7 +18,7 @@ __all__ = (
 )
 
 
-async def search_derivations(term: str):
+async def search_derivations(term: str) -> Dict[str, Set[str]]:
     if len(term) < 3:
         raise ValueError("Search term too short")
 
@@ -45,4 +45,3 @@ async def suggest_attrs(attr_prefix: str) -> List[str]:
         key=lambda x: Levenshtein.ratio(attr_prefix, x),
         reverse=True,
     )
-    pass
