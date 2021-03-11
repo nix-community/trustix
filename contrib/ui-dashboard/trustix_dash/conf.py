@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 import typing
+import os.path
 import os
 
 
@@ -17,6 +18,16 @@ class SettingsModel(BaseModel):
     )
 
     placeholder_attr: str = "hello.x86_64-linux"
+
+    # Npm managed
+    js_store: str = os.environ.get(
+        "EXTERNAL_STORE",
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "js",
+            "dist",
+        ),
+    )
 
     supported_systems: typing.List[str] = (
         os.environ["SUPPORTED_SYSTEMS"].split(":")

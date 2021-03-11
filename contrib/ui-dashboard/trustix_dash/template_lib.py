@@ -1,3 +1,4 @@
+from markupsafe import Markup
 import urllib.parse
 import json
 
@@ -8,3 +9,7 @@ def drv_url_quote(drv_path: str) -> str:
 
 def json_render(x) -> str:
     return json.dumps(x)
+
+
+def js_url(filename: str) -> Markup:
+    return Markup("/".join(("", "js", filename)))

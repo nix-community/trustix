@@ -1,5 +1,6 @@
+import * as ejs from 'ejs'
+
 (() => {
-  import ejs from 'ejs'
 
   const suggestDiv = document.querySelector("form#search-form > div#search-suggest")
   const elem = document.querySelector("form#search-form > input[type=text]")

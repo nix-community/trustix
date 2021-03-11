@@ -1,5 +1,4 @@
 from trustix_api import api_pb2
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import (
     Jinja2Templates,
 )
@@ -35,6 +34,8 @@ import codecs
 import shlex
 import json
 
+from trustix_dash.staticfiles import StaticFiles
+
 from trustix_dash.api import (
     get_derivation_output_results_unique,
     get_derivation_reproducibility,
@@ -60,12 +61,14 @@ app = FastAPI()
 app.mount(
     "/static", StaticFiles(directory=os.path.join(SCRIPT_DIR, "static")), name="static"
 )
+app.mount("/js", StaticFiles(directory=settings.js_store), name="js")
 
 
 templates = Jinja2Templates(directory=os.path.join(SCRIPT_DIR, "templates"))
 templates.env.globals["drv_url_quote"] = template_lib.drv_url_quote
 templates.env.globals["json_render"] = template_lib.json_render
 templates.env.globals["url_reverse"] = app.url_path_for
+templates.env.globals["js_url"] = template_lib.js_url
 
 
 @app.on_event("startup")
