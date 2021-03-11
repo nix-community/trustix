@@ -25,11 +25,7 @@ from trustix_dash import (
     on_shutdown,
 )
 from trustix_dash.models import (
-    DerivationOutputResult,
-    DerivationOutput,
     DerivationAttr,
-    Derivation,
-    Log,
 )
 from collections import OrderedDict
 import urllib.parse
@@ -45,11 +41,12 @@ import grpc  # type: ignore
 
 from trustix_dash.api import (
     get_derivation_output_results_unique,
-    get_derivation_outputs,
+    get_derivation_reproducibility,
+    get_attr_reproducibility,
 )
+
 from trustix_dash.lib import (
     flatten,
-    unique,
 )
 from trustix_dash.conf import settings
 
@@ -101,95 +98,6 @@ def make_context(
     return ctx
 
 
-async def drv_data(drv_path: str):
-
-    drvs = await get_derivation_outputs(drv_path)
-
-    # Description: drv -> output -> output_hash -> List[result]
-    PATH_T = Dict[str, Dict[str, Dict[str, List[DerivationOutputResult]]]]
-    unreproduced_paths: PATH_T = {}
-    reproduced_paths: PATH_T = {}
-    # Paths only built by one log
-    unknown_paths: PATH_T = {}
-    # Paths not built by any known log
-    missing_paths: PATH_T = {}
-
-    log_ids: Set[int] = set()
-
-    def append_output(paths_d: PATH_T, drv: Derivation, output: DerivationOutput):
-        """Append an output to the correct datastructure (paths_d)"""
-        current = paths_d.setdefault(drv.drv, {}).setdefault(output.output, {})
-        for result in output.derivationoutputresults:  # type: ignore
-            current.setdefault(
-                codecs.encode(result.output_hash, "hex").decode(), []
-            ).append(result)
-            log_ids.add(result.log_id)
-
-    num_outputs: int = 0
-
-    for drv in drvs:
-        output: DerivationOutput
-        for output in drv.derivationoutputs:  # type: ignore
-            output_hashes: Set[bytes] = set(
-                result.output_hash for result in output.derivationoutputresults  # type: ignore
-            )
-
-            num_outputs += 1
-
-            if not output_hashes:
-                append_output(missing_paths, drv, output)
-
-            elif len(output_hashes) == 1 and len(output.derivationoutputresults) > 1:  # type: ignore
-                append_output(reproduced_paths, drv, output)
-
-            elif len(output_hashes) == 1:
-                append_output(unknown_paths, drv, output)
-
-            elif len(output_hashes) > 1:
-                append_output(unreproduced_paths, drv, output)
-
-            else:
-                raise RuntimeError("Logic error")
-
-    logs: Dict[int, Log] = {
-        log.id: log for log in await Log.filter(id__in=log_ids)  # type: ignore
-    }
-
-    num_reproduced = sum(len(v) for v in reproduced_paths.values())
-
-    # TODO: Get first evaluation timestamp
-
-    return {
-        "unreproduced_paths": unreproduced_paths,
-        "reproduced_paths": reproduced_paths,
-        "unknown_paths": unknown_paths,
-        "missing_paths": missing_paths,
-        "drv_path": drv_path,
-        "logs": logs,
-        "statistics": {
-            "pct_reproduced": round(num_outputs / 100 * num_reproduced, 2),
-            "num_reproduced": num_reproduced,
-            "num_outputs": num_outputs,
-        },
-    }
-
-
-async def attr_data(attr: str):
-    drvs = list(
-        unique(
-            flatten(
-                await Derivation.filter(derivationattrs__attr=attr)
-                .limit(100)
-                .order_by("derivationevals__eval__timestamp")
-                .values_list("drv")
-            )
-        )
-    )
-    return OrderedDict(
-        zip(drvs, await asyncio.gather(*[drv_data(drv) for drv in drvs]))
-    )
-
-
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     attrs = settings.default_attrs
@@ -197,7 +105,12 @@ async def index(request: Request):
         request,
         extra={
             "attr_stats": OrderedDict(
-                zip(attrs, await asyncio.gather(*[attr_data(attr) for attr in attrs]))
+                zip(
+                    attrs,
+                    await asyncio.gather(
+                        *[get_attr_reproducibility(attr) for attr in attrs]
+                    ),
+                )
             ),
         },
     )
@@ -210,7 +123,7 @@ async def attr(request: Request, attr: str):
         request,
         extra={
             "attr": attr,
-            "attr_data": await attr_data(attr),
+            "attr_data": await get_attr_reproducibility(attr),
         },
     )
     return templates.TemplateResponse("attr.jinja2", ctx)
@@ -220,7 +133,7 @@ async def attr(request: Request, attr: str):
 async def drv(request: Request, drv_path: str):
     ctx = make_context(
         request,
-        extra=await drv_data(urllib.parse.unquote(drv_path)),
+        extra=await get_derivation_reproducibility(urllib.parse.unquote(drv_path)),
     )
     return templates.TemplateResponse("drv.jinja2", ctx)
 
