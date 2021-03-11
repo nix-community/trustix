@@ -3,3 +3,4 @@ createdb: ./tools/createdb
 app: ./tools/app
 check: ./tools/check --watch
 migrate: ./tools/migrate
+js: bash -c "cd trustix_dash/js && rm -rf node_modules && nix-shell --run 'npm-watch build'"

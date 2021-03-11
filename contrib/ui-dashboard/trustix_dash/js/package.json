@@ -1,11 +1,20 @@
 {
-  "name": "trustix-nix-dash",
+  "name": "trustix-nix-dash-js",
   "version": "0.1.0",
   "description": "An npm environment to manage frontend dependencies",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node build.js"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "js",
+      "quiet": false
+    }
   },
   "author": "",
   "license": "MIT",
@@ -16,6 +25,7 @@
     "tippy.js": "^6.3.1"
   },
   "devDependencies": {
+    "npm-watch": "^0.9.0",
     "unbundle": "^9.0.1"
   }
 }
