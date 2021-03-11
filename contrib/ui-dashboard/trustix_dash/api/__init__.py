@@ -7,10 +7,16 @@ from trustix_dash.api.output import (
 from trustix_dash.api.attr import (
     get_attr_reproducibility,
 )
+from trustix_dash.api.search import (
+    search_derivations,
+    suggest_attrs,
+)
 
 
 __all__ = (
     "get_derivation_reproducibility",
     "get_derivation_output_results_unique",
     "get_attr_reproducibility",
+    "search_derivations",
+    "suggest_attrs",
 )

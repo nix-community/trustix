@@ -17,19 +17,14 @@ from typing import (
     Optional,
     Dict,
     List,
-    Set,
 )
 from trustix_dash import (
     template_lib,
     on_startup,
     on_shutdown,
 )
-from trustix_dash.models import (
-    DerivationAttr,
-)
 from collections import OrderedDict
 import urllib.parse
-import Levenshtein  # type: ignore
 import requests
 import tempfile
 import asyncio
@@ -43,11 +38,10 @@ from trustix_dash.api import (
     get_derivation_output_results_unique,
     get_derivation_reproducibility,
     get_attr_reproducibility,
+    search_derivations,
+    suggest_attrs,
 )
 
-from trustix_dash.lib import (
-    flatten,
-)
 from trustix_dash.conf import settings
 
 
@@ -145,17 +139,8 @@ async def search_form(request: Request, term: str = Form(...)):
 
 @app.post("/search/{term}")
 async def search(request: Request, term: str):
-    if len(term) < 3:
-        raise ValueError("Search term too short")
 
-    qs = DerivationAttr.filter(attr__startswith=term)
-
-    results = await qs
-
-    derivations_by_attr: Dict[str, Set[str]] = {}
-    for result in results:
-        derivation_id: str = result.derivation_id  # type: ignore
-        derivations_by_attr.setdefault(result.attr, set()).add(derivation_id)
+    derivations_by_attr = search_derivations(term)
 
     ctx = make_context(
         request,
@@ -167,20 +152,9 @@ async def search(request: Request, term: str):
     return templates.TemplateResponse("search.jinja2", ctx)
 
 
-@app.get("/suggest/{attr}", response_model=List[str])
-async def suggest(request: Request, attr: str):
-    if len(attr) < 3:
-        raise ValueError("Prefix too short")
-
-    return sorted(
-        flatten(
-            await DerivationAttr.filter(attr__startswith=attr)
-            .distinct()
-            .values_list("attr")
-        ),
-        key=lambda x: Levenshtein.ratio(attr, x),
-        reverse=True,
-    )
+@app.get("/suggest/{attr_prefix}", response_model=List[str])
+async def suggest(request: Request, attr_prefix: str):
+    return suggest_attrs(attr_prefix)
 
 
 @app.post("/diff_form/", response_class=HTMLResponse)
