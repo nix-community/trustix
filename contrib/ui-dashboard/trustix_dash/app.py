@@ -19,6 +19,7 @@ from typing import (
     Union,
     Dict,
     List,
+    Set,
 )
 from trustix_dash import (
     template_lib,
@@ -158,19 +159,20 @@ async def search_form(request: Request, term: str = Form(...)):
     return RedirectResponse(app.url_path_for("search", term=term), status_code=303)
 
 
-@app.get("/search/{term}")
+@app.get("/search/{term}", response_model=Dict[str, Set[str]])
 async def search(request: Request, term: str):
-
-    derivations_by_attr = await search_derivations(term)
-
-    ctx = make_context(
+    data = await search_derivations(term)
+    return render_model(
         request,
-        extra={
-            "derivations_by_attr": derivations_by_attr,
-        },
+        "search.jinja2",
+        lambda: make_context(
+            request,
+            extra={
+                "derivations_by_attr": data,
+            },
+        ),
+        data,
     )
-
-    return templates.TemplateResponse("search.jinja2", ctx)
 
 
 @app.get("/suggest/{attr_prefix}", response_model=List[str])
