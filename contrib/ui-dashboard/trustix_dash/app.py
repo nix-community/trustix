@@ -156,7 +156,7 @@ async def search(request: Request, term: str):
 
 @app.get("/suggest/{attr_prefix}", response_model=List[str])
 async def suggest(request: Request, attr_prefix: str):
-    return suggest_attrs(attr_prefix)
+    return await suggest_attrs(attr_prefix)
 
 
 @app.post("/diff_form/", response_class=HTMLResponse)
