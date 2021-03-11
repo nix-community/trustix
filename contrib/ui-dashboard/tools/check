@@ -33,7 +33,17 @@ def run() -> typing.List[int]:
                 fg="green",
             ),
         )
-        codes.append(run_cmd(cmd))
+        code = run_cmd(cmd)
+        if code != 0:
+            print(
+                icon(cmd_string),
+                color(
+                    cmd_string,
+                    fg="red",
+                ),
+                f"Exited with status {code}",
+            )
+        codes.append(code)
 
     return codes
 
