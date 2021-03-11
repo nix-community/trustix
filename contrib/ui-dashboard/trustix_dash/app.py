@@ -125,7 +125,11 @@ async def attr(request: Request, attr: str):
 async def drv(request: Request, drv_path: str):
     ctx = make_context(
         request,
-        extra=await get_derivation_reproducibility(urllib.parse.unquote(drv_path)),
+        extra={
+            "data": await get_derivation_reproducibility(
+                urllib.parse.unquote(drv_path)
+            ),
+        },
     )
     return templates.TemplateResponse("drv.jinja2", ctx)
 

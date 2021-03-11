@@ -33,7 +33,7 @@
 
                       <ul class="log-names">
                         {% for result in results %}
-                          <li x-data-tooltip="Log (builder) name" class="log-name">{{logs.get(result.log_id, "<Unknown log>")}}</li>
+                          <li x-data-tooltip="Log (builder) name" class="log-name">{{data.logs.get(result.log_id, {"name": "<Unknown log>"}).name}}</li>
                         {% endfor %}
                       </ul>
                     </div>
@@ -63,26 +63,26 @@
 {% block main %}
 
   <h2 x-data-tooltip="Derivation path">{{drv_path}}</h2>
-  <p>{{statistics.num_reproduced}}/{{statistics.num_outputs}} ({{statistics.pct_reproduced}}%) verified to be reproducible</p>
+  <p>{{data.statistics.num_reproduced}}/{{data.statistics.num_outputs}} ({{data.statistics.pct_reproduced}}%) verified to be reproducible</p>
 
-  {% if unreproduced_paths %}
+  {% if data.unreproduced_paths %}
     <h3>Unreproduced paths</h3>
-    {{ render_paths_d(unreproduced_paths) }}
+    {{ render_paths_d(data.unreproduced_paths) }}
   {% endif %}
 
-  {% if reproduced_paths %}
+  {% if data.reproduced_paths %}
     <h3>Reproduced paths</h3>
-    {{ render_paths_d(reproduced_paths) }}
+    {{ render_paths_d(data.reproduced_paths) }}
   {% endif %}
 
-  {% if unknown_paths %}
+  {% if data.unknown_paths %}
     <h3>Unknown paths (only built by one log)</h3>
-    {{ render_paths_d(unknown_paths) }}
+    {{ render_paths_d(data.unknown_paths) }}
   {% endif %}
 
-  {% if missing_paths %}
+  {% if data.missing_paths %}
     <h3>Missing paths (not built by any known log)</h3>
-    {{ render_paths_d(missing_paths) }}
+    {{ render_paths_d(data.missing_paths) }}
   {% endif %}
 
 {% endblock %}
