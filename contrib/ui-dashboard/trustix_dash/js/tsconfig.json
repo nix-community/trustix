@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "es2015",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "rootDir": "./src",
+    "outDir": "build",
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "lib": [
+      "es2015",
+      "DOM"
+    ],
+  },
+  "exclude": ["node_modules", "dist"]
+}

@@ -2,11 +2,11 @@ import * as ejs from 'ejs'
 
 (() => {
 
-  const suggestDiv = document.querySelector("form#search-form > div#search-suggest")
-  const elem = document.querySelector("form#search-form > input[type=text]")
-  const form = document.querySelector("form#search-form")
+  const suggestDiv: HTMLDivElement = document.querySelector("form#search-form > div#search-suggest")
+  const elem: HTMLInputElement = document.querySelector("form#search-form > input[type=text]")
+  const form: HTMLFormElement = document.querySelector("form#search-form")
 
-  suggestDiv.style["min-width"] = `${elem.offsetWidth}px`
+  suggestDiv.style.setProperty("min-width", `${elem.offsetWidth}px`)
 
   const template = ejs.compile(`
     <ul>
@@ -16,16 +16,16 @@ import * as ejs from 'ejs'
     </ul>
   `)
 
-  elem.addEventListener('blur', (event) => {
+  elem.addEventListener('blur', () => {
     // Prevent disappearing before we have a chance to react to the click event
     setTimeout(() => {
       suggestDiv.hidden = true
     }, 200);
   })
 
-  let searchTimeout = setTimeout(() => null, 0)
+  let searchTimeout = setTimeout((): void => null, 0)
 
-  elem.addEventListener("keyup", (e) => {
+  elem.addEventListener("keyup", (): void => {
     const value = elem.value
     if (value.length < 3) {
       suggestDiv.hidden = true
@@ -49,8 +49,8 @@ import * as ejs from 'ejs'
 
           suggestDiv.hidden = false
 
-          Array.from(suggestDiv.querySelectorAll("ul > li")).map((suggestElem) => {
-            suggestElem.addEventListener("click", (e) => {
+          suggestDiv.querySelectorAll("ul > li").forEach((suggestElem) => {
+            suggestElem.addEventListener("click", () => {
               elem.value = suggestElem.getAttribute("x-data-attr")
               form.submit()
             })

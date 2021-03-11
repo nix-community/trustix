@@ -34,17 +34,9 @@
 
     {# <script type="module" src="{{js_url("drv-pie-render.js")}}"></script> #}
 
-    <script type="text/javascript">
-      const require = () => {}
-      const process = {
-        env: {
-          NODE_ENV: "production",
-        },
-      }  // Poor mans polyfill
-    </script>
-    <script type="module" src="{{js_url("attr-chart-render.js")}}"></script>
+    {# <script type="module" src="{{js_url("attr-chart-render.js")}}"></script> #}
     <script type="module" src="{{js_url("tooltips.js")}}"></script>
-    <script type="module" src="{{js_url("suggestions.js")}}"></script>
+    {# <script type="module" src="{{js_url("suggestions.js")}}"></script> #}
 
     {% block deferred %}
     {% endblock %}
