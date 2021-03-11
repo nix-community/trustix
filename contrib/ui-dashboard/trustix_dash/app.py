@@ -136,10 +136,10 @@ async def drv(request: Request, drv_path: str):
 
 @app.post("/search_form/")
 async def search_form(request: Request, term: str = Form(...)):
-    return RedirectResponse(app.url_path_for("search", term=term))
+    return RedirectResponse(app.url_path_for("search", term=term), status_code=303)
 
 
-@app.post("/search/{term}")
+@app.get("/search/{term}")
 async def search(request: Request, term: str):
 
     derivations_by_attr = await search_derivations(term)
