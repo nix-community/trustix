@@ -204,6 +204,18 @@ async def index(request: Request):
     return templates.TemplateResponse("index.jinja2", ctx)
 
 
+@app.get("/attr/{attr}", response_class=HTMLResponse)
+async def attr(request: Request, attr: str):
+    ctx = make_context(
+        request,
+        extra={
+            "attr": attr,
+            "attr_data": await attr_data(attr),
+        },
+    )
+    return templates.TemplateResponse("attr.jinja2", ctx)
+
+
 @app.get("/drv/{drv_path}", response_class=HTMLResponse)
 async def drv(request: Request, drv_path: str):
     ctx = make_context(
