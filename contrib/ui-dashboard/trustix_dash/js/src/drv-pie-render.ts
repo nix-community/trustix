@@ -1,6 +1,7 @@
 import * as c3 from 'c3';
+import 'c3/c3.css'
 
-(() => {
+export function renderDrvCharts(): void {
 
   document.querySelectorAll("form.unreproduced").forEach((form) => {
 
@@ -44,4 +45,4 @@ import * as c3 from 'c3';
     });
 
   })
-})()
+}

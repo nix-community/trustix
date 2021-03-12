@@ -1,1 +1,1 @@
-ts: tsc -w
+ts: npm-watch

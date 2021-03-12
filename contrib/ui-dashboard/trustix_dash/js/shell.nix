@@ -6,6 +6,13 @@ let
   };
 
 in shellDrv.overrideAttrs(old: {
+
+  shellHook = ''
+    if [[ "$(readlink -f node_modules)" == ${builtins.storeDir}* ]]; then
+      rm -f node_modules
+    fi
+  '' + old.shellHook;
+
   buildInputs = old.buildInputs ++ [
     pkgs.hivemind
   ];

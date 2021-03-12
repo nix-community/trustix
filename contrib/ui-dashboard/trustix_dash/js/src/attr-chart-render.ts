@@ -1,6 +1,7 @@
 import * as c3 from 'c3'
+import 'c3/c3.css'
 
-(() => {
+export function renderAttrCharts(): void {
 
   const selectData = (tr: HTMLTableRowElement, type: string, extra?: string): HTMLElement => {
     let selector = `td[x-data-type='${type}']`
@@ -16,7 +17,7 @@ import * as c3 from 'c3'
     })
   }
 
-  Array.from(document.querySelectorAll("div[x-data-attr]")).map((div) => {
+  document.querySelectorAll("div[x-data-attr]").forEach((div) => {
     const attr = div.getAttribute("x-data-attr")
 
     const table = div.querySelector("table")
@@ -66,4 +67,4 @@ import * as c3 from 'c3'
     });
   })
 
-})()
+}

@@ -1,6 +1,6 @@
 import * as ejs from 'ejs'
 
-(() => {
+export function initSuggestions(): void {
 
   const suggestDiv: HTMLDivElement = document.querySelector("form#search-form > div#search-suggest")
   const elem: HTMLInputElement = document.querySelector("form#search-form > input[type=text]")
@@ -59,4 +59,4 @@ import * as ejs from 'ejs'
     }, 200)
   })
 
-})()
+}
