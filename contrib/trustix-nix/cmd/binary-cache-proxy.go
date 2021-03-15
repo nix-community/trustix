@@ -42,8 +42,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/client"
-	"github.com/tweag/trustix/contrib/nix/nar"
-	"github.com/tweag/trustix/contrib/nix/schema"
+	"github.com/tweag/trustix/contrib/trustix-nix/nar"
+	"github.com/tweag/trustix/contrib/trustix-nix/schema"
 	pb "github.com/tweag/trustix/proto"
 	"github.com/ulikunitz/xz"
 )

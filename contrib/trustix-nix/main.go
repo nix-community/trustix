@@ -21,9 +21,9 @@
 // SOFTWARE.
 //
 
-package main // import "github.com/tweag/trustix/contrib/nix"
+package main // import "github.com/tweag/trustix/contrib/trustix-nix"
 
-import "github.com/tweag/trustix/contrib/nix/cmd"
+import "github.com/tweag/trustix/contrib/trustix-nix/cmd"
 
 func main() {
 	cmd.Execute()
