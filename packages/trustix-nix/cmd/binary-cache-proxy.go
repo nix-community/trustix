@@ -43,8 +43,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix-nix/nar"
 	"github.com/tweag/trustix/packages/trustix-nix/schema"
+	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
 	"github.com/tweag/trustix/packages/trustix/client"
-	pb "github.com/tweag/trustix/packages/trustix/proto"
 	"github.com/ulikunitz/xz"
 )
 

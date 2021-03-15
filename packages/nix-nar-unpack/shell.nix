@@ -1,9 +1,8 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import ../../nix }:
 
 pkgs.mkShell {
   buildInputs = [
     pkgs.rustc
     pkgs.cargo
-    pkgs.niv
   ];
 }
