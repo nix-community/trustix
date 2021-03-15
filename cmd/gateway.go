@@ -24,8 +24,10 @@
 package cmd
 
 import (
+	"net"
 	"net/http"
 
+	"github.com/coreos/go-systemd/activation"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -53,6 +55,54 @@ var gatewayCommand = &cobra.Command{
 			return err
 		}
 
-		return http.ListenAndServe(":8081", mux)
+		var listeners []net.Listener
+
+		{
+			systemdListeners, err := activation.Listeners()
+			if err != nil {
+				panic(err)
+			}
+
+			for _, lis := range systemdListeners {
+				log.WithFields(log.Fields{
+					"address": lis.Addr(),
+				}).Info("Using socket activated listener")
+
+				listeners = append(listeners, lis)
+			}
+		}
+
+		for _, addr := range listenAddresses {
+			lis, err := net.Listen("tcp", addr)
+			if err != nil {
+				log.Fatalf("failed to listen: %v", err)
+			}
+
+			log.WithFields(log.Fields{
+				"address": addr,
+			}).Info("Listening to address")
+
+			listeners = append(listeners, lis)
+		}
+
+		if len(listeners) == 0 {
+			log.Fatal("No listeners configured")
+		}
+
+		errChan := make(chan error)
+		for _, listener := range listeners {
+			go func(l net.Listener) {
+				err := http.Serve(l, mux)
+				if err != nil {
+					errChan <- err
+				}
+			}(listener)
+		}
+		for err := range errChan {
+			log.Fatalf("Error in HTTP handler: %v", err)
+			panic(err)
+		}
+
+		return nil
 	},
 }
