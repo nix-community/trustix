@@ -1,6 +1,0 @@
-postgres: ./tools/postgresql
-createdb: ./tools/createdb
-app: ./tools/app
-check: ./tools/check --watch
-migrate: ./tools/migrate
-js: bash -c "cd trustix_dash/js && nix-shell --run hivemind"

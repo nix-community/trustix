@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+import lib
+import sys
+
+
+if __name__ == "__main__":
+    print(getattr(lib, sys.argv[1]))
