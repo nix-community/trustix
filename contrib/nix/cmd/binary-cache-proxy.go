@@ -32,11 +32,13 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/bakins/logrus-middleware"
+	"github.com/coreos/go-systemd/activation"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/client"
@@ -45,6 +47,8 @@ import (
 	pb "github.com/tweag/trustix/proto"
 	"github.com/ulikunitz/xz"
 )
+
+var listenAddresses []string
 
 func getCaches(c pb.TrustixCombinedRPCClient) ([]string, error) {
 	ctx, cancel := client.CreateContext(30)
@@ -294,9 +298,60 @@ var binaryCacheCommand = &cobra.Command{
 			Logger: log.New(),
 		}
 
-		http.Handle("/", l.Handler(http.HandlerFunc(handler), "/"))
-		log.Fatal(http.ListenAndServe(":8080", nil))
+		loggedHandler := l.Handler(http.HandlerFunc(handler), "/")
+
+		var listeners []net.Listener
+
+		{
+			systemdListeners, err := activation.Listeners()
+			if err != nil {
+				panic(err)
+			}
+
+			for _, lis := range systemdListeners {
+				log.WithFields(log.Fields{
+					"address": lis.Addr(),
+				}).Info("Using socket activated listener")
+
+				listeners = append(listeners, lis)
+			}
+		}
+
+		for _, addr := range listenAddresses {
+			lis, err := net.Listen("tcp", addr)
+			if err != nil {
+				log.Fatalf("failed to listen: %v", err)
+			}
+
+			log.WithFields(log.Fields{
+				"address": addr,
+			}).Info("Listening to address")
+
+			listeners = append(listeners, lis)
+		}
+
+		if len(listeners) == 0 {
+			panic(fmt.Errorf("No listeners configured"))
+		}
+
+		errChan := make(chan error)
+
+		for _, listener := range listeners {
+			go func(l net.Listener) {
+				err := http.Serve(l, loggedHandler)
+				if err != nil {
+					errChan <- err
+				}
+			}(listener)
+		}
+		for err := range errChan {
+			panic(err)
+		}
 
 		return nil
 	},
+}
+
+func initBinaryCache() {
+	binaryCacheCommand.Flags().StringSliceVar(&listenAddresses, "listen", []string{}, "Listen to address")
 }

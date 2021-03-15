@@ -60,7 +60,10 @@ func initCommands() {
 	log.SetOutput(os.Stderr)
 
 	rootCmd.AddCommand(nixHookCommand)
+
 	rootCmd.AddCommand(binaryCacheCommand)
+	initBinaryCache()
+
 	rootCmd.AddCommand(submitClosureCommand)
 }
 
