@@ -35,8 +35,8 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/tweag/trustix/api"
 	"github.com/tweag/trustix/packages/trustix-nix/schema"
+	"github.com/tweag/trustix/packages/trustix/api"
 )
 
 var NixB32Encoding = base32.NewEncoding("0123456789abcdfghijklmnpqrsvwxyz")

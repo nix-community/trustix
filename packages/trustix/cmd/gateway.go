@@ -24,73 +24,21 @@
 package cmd
 
 import (
-	"io/ioutil"
-	"os"
-	"strings"
-	"sync"
+	"net"
+	"net/http"
 
+	"github.com/coreos/go-systemd/activation"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/client"
 )
 
-var nixHookCommand = &cobra.Command{
-	Use:   "post-build-hook",
-	Short: "Submit hashes for inclusion in the log (Nix post-build hook)",
+var gatewayCommand = &cobra.Command{
+	Use:   "gateway",
+	Short: "Trustix gateway translating REST calls to gRPC",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		storePaths := strings.Split(os.Getenv("OUT_PATHS"), " ")
-		if len(storePaths) < 1 {
-			log.Fatal("OUT_PATHS is empty, expected at least one path to submit")
-		}
-
-		req := &api.SubmitRequest{}
-
-		errChan := make(chan error, len(storePaths))
-		wg := new(sync.WaitGroup)
-		mux := new(sync.Mutex)
-
-		tmpDir, err := ioutil.TempDir("", "nix-trustix")
-		if err != nil {
-			return err
-		}
-		err = os.RemoveAll(tmpDir)
-		if err != nil {
-			return err
-		}
-
-		for _, storePath := range storePaths {
-			storePath := storePath
-			if storePath == "" {
-				continue
-			}
-
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-
-				var err error
-
-				item, err := createKVPair(storePath)
-				if err != nil {
-					errChan <- err
-					return
-				}
-
-				mux.Lock()
-				req.Items = append(req.Items, item)
-				mux.Unlock()
-
-			}()
-		}
-
-		wg.Wait()
-		close(errChan)
-
-		for err := range errChan {
-			log.Fatalf("Could not hash store path: %v", err)
-		}
 
 		conn, err := client.CreateClientConn(dialAddress, nil)
 		if err != nil {
@@ -98,13 +46,61 @@ var nixHookCommand = &cobra.Command{
 		}
 		defer conn.Close()
 
-		ctx, cancel := client.CreateContext(30)
+		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		c := api.NewTrustixLogAPIClient(conn)
-		_, err = c.Submit(ctx, req)
+		mux := runtime.NewServeMux()
+		err = api.RegisterTrustixLogAPIHandler(ctx, mux, conn)
 		if err != nil {
-			log.Fatalf("could not submit: %v", err)
+			return err
+		}
+
+		var listeners []net.Listener
+
+		{
+			systemdListeners, err := activation.Listeners()
+			if err != nil {
+				panic(err)
+			}
+
+			for _, lis := range systemdListeners {
+				log.WithFields(log.Fields{
+					"address": lis.Addr(),
+				}).Info("Using socket activated listener")
+
+				listeners = append(listeners, lis)
+			}
+		}
+
+		for _, addr := range listenAddresses {
+			lis, err := net.Listen("tcp", addr)
+			if err != nil {
+				log.Fatalf("failed to listen: %v", err)
+			}
+
+			log.WithFields(log.Fields{
+				"address": addr,
+			}).Info("Listening to address")
+
+			listeners = append(listeners, lis)
+		}
+
+		if len(listeners) == 0 {
+			log.Fatal("No listeners configured")
+		}
+
+		errChan := make(chan error)
+		for _, listener := range listeners {
+			go func(l net.Listener) {
+				err := http.Serve(l, mux)
+				if err != nil {
+					errChan <- err
+				}
+			}(listener)
+		}
+		for err := range errChan {
+			log.Fatalf("Error in HTTP handler: %v", err)
+			panic(err)
 		}
 
 		return nil

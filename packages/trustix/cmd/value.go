@@ -24,8 +24,9 @@
 package cmd
 
 import (
-	"os/exec"
-	"strings"
+	"encoding/hex"
+	"fmt"
+	"os"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -33,53 +34,19 @@ import (
 	"github.com/tweag/trustix/packages/trustix/client"
 )
 
-var submitClosureCommand = &cobra.Command{
-	Use:   "submit-closure",
-	Short: "Submit an entire closur for inclusion in the log (development/testing ONLY)",
-	Long: `Submit an entire closur for inclusion in the log.
-           This is meant for development use ONLY as it will submit all packages, even substituted ones.`,
-	Args: cobra.MinimumNArgs(1),
+var valueDigest string
+
+var getValueCommand = &cobra.Command{
+	Use:   "get-value",
+	Short: "Get computed value based on content digest",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		storePaths := []string{}
-		{
-			requisites := make(map[string]struct{})
-			for _, arg := range args {
-				out, err := exec.Command("nix-store", "--query", "--requisites", arg).Output()
-				if err != nil {
-					log.Fatalf("Could not query requisites: %v", err)
-				}
-				for _, path := range strings.Split(string(out), "\n") {
-					if path == "" {
-						continue
-					}
-					requisites[path] = struct{}{}
-				}
-			}
-
-			for key, _ := range requisites {
-				storePaths = append(storePaths, key)
-			}
-
-			if len(storePaths) < 1 {
-				log.Fatal("Store paths is empty, expected at least one path to submit")
-			}
+		if valueDigest == "" {
+			return fmt.Errorf("Missing input/output hash")
 		}
 
-		items := []*api.KeyValuePair{}
-
-		for _, storePath := range storePaths {
-
-			item, err := createKVPair(storePath)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			items = append(items, item)
-		}
-
-		req := &api.SubmitRequest{
-			Items: items,
+		digest, err := hex.DecodeString(valueDigest)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		conn, err := client.CreateClientConn(dialAddress, nil)
@@ -88,15 +55,26 @@ var submitClosureCommand = &cobra.Command{
 		}
 		defer conn.Close()
 
-		ctx, cancel := client.CreateContext(30)
+		c := api.NewTrustixLogAPIClient(conn)
+		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		c := api.NewTrustixLogAPIClient(conn)
-		_, err = c.Submit(ctx, req)
+		resp, err := c.GetValue(ctx, &api.ValueRequest{
+			Digest: digest,
+		})
 		if err != nil {
-			log.Fatalf("could not submit: %v", err)
+			log.Fatal(err)
+		}
+
+		_, err = os.Stdout.Write(resp.Value)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		return nil
 	},
+}
+
+func initGetValue() {
+	getValueCommand.Flags().StringVar(&valueDigest, "digest", "", "Value content digest")
 }

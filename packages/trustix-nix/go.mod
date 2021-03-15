@@ -11,11 +11,11 @@ require (
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v1.0.0
 	github.com/stretchr/testify v1.5.1
-	github.com/tweag/trustix v0.0.0-20201216011910-cb45e22716fa
+	github.com/tweag/trustix/packages/trustix v0.0.0-20201216011910-cb45e22716fa
 	github.com/ulikunitz/xz v0.5.10
 	google.golang.org/grpc v1.35.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
 	google.golang.org/protobuf v1.25.0
 )
 
-replace github.com/tweag/trustix => ../../.
+replace github.com/tweag/trustix/packages/trustix => ../trustix

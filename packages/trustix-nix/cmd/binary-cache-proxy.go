@@ -41,10 +41,10 @@ import (
 	"github.com/coreos/go-systemd/activation"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tweag/trustix/client"
 	"github.com/tweag/trustix/packages/trustix-nix/nar"
 	"github.com/tweag/trustix/packages/trustix-nix/schema"
-	pb "github.com/tweag/trustix/proto"
+	"github.com/tweag/trustix/packages/trustix/client"
+	pb "github.com/tweag/trustix/packages/trustix/proto"
 	"github.com/ulikunitz/xz"
 )
 

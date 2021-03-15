@@ -1,0 +1,120 @@
+syntax = "proto2";
+
+import "schema/sth.proto";
+import "schema/logleaf.proto";
+
+option go_package = "github.com/tweag/trustix/packages/trustix/api";
+
+package trustix;
+
+message STHRequest {
+}
+
+message GetLogConsistencyProofRequest {
+  required uint64 FirstSize = 1;
+  required uint64 SecondSize = 2;
+}
+
+message ProofResponse {
+  repeated bytes Proof = 1;
+}
+
+message GetLogAuditProofRequest {
+  required uint64 Index = 1;
+  required uint64 TreeSize = 2;
+}
+
+message GetLogEntriesRequest {
+  required uint64 Start = 1;
+  required uint64 Finish = 2;
+}
+
+message GetMapValueRequest {
+  required bytes Key = 1;
+  required bytes MapRoot = 2;
+}
+
+message SparseCompactMerkleProof {
+  repeated bytes SideNodes = 1;
+  required bytes NonMembershipLeafData = 2;
+  required bytes BitMask = 3;
+  required uint64 NumSideNodes = 4;
+}
+
+message MapValueResponse {
+  // Note that the Value field is actually a MapEntry
+  // but we need to return the marshaled version
+  // as that's what the proof is created from
+  required bytes Value = 1;
+  required SparseCompactMerkleProof Proof = 2;
+}
+
+message LogEntriesResponse {
+  repeated LogLeaf Leaves = 1;
+}
+
+message KeyValuePair {
+  required bytes Key = 1;
+  required bytes Value = 2;
+}
+
+message SubmitRequest {
+  repeated KeyValuePair Items = 1;
+}
+
+message SubmitResponse {
+  enum Status {
+    OK = 0;
+  }
+ required Status status = 1;
+}
+
+message FlushRequest {
+}
+
+message FlushResponse {
+}
+
+message ValueRequest {
+  required bytes Digest = 1;
+}
+
+message ValueResponse {
+  required bytes Value = 1;
+}
+
+service TrustixLogAPI {
+
+  // Aggregate
+
+  rpc GetSTH (STHRequest) returns (STH) {}
+
+  rpc Submit (SubmitRequest) returns (SubmitResponse) {}
+
+  rpc Flush (FlushRequest) returns (FlushResponse) {}
+
+  // Content-addressed values
+
+  rpc GetValue(ValueRequest) returns (ValueResponse) {}
+
+  // Log
+
+  rpc GetLogConsistencyProof(GetLogConsistencyProofRequest) returns (ProofResponse) {}
+
+  rpc GetLogAuditProof(GetLogAuditProofRequest) returns (ProofResponse) {}
+
+  rpc GetLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
+
+  // Map
+
+  rpc GetMapValue(GetMapValueRequest) returns (MapValueResponse) {}
+
+  // Maphead log
+
+  rpc GetMHLogConsistencyProof(GetLogConsistencyProofRequest) returns (ProofResponse) {}
+
+  rpc GetMHLogAuditProof(GetLogAuditProofRequest) returns (ProofResponse) {}
+
+  rpc GetMHLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
+
+}

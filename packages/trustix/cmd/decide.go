@@ -24,62 +24,26 @@
 package cmd
 
 import (
-	"os/exec"
-	"strings"
+	"encoding/hex"
+	"fmt"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/client"
+	pb "github.com/tweag/trustix/packages/trustix/proto"
 )
 
-var submitClosureCommand = &cobra.Command{
-	Use:   "submit-closure",
-	Short: "Submit an entire closur for inclusion in the log (development/testing ONLY)",
-	Long: `Submit an entire closur for inclusion in the log.
-           This is meant for development use ONLY as it will submit all packages, even substituted ones.`,
-	Args: cobra.MinimumNArgs(1),
+var decideCommand = &cobra.Command{
+	Use:   "decide",
+	Short: "Decide output hash from the logs (multiple)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		storePaths := []string{}
-		{
-			requisites := make(map[string]struct{})
-			for _, arg := range args {
-				out, err := exec.Command("nix-store", "--query", "--requisites", arg).Output()
-				if err != nil {
-					log.Fatalf("Could not query requisites: %v", err)
-				}
-				for _, path := range strings.Split(string(out), "\n") {
-					if path == "" {
-						continue
-					}
-					requisites[path] = struct{}{}
-				}
-			}
-
-			for key, _ := range requisites {
-				storePaths = append(storePaths, key)
-			}
-
-			if len(storePaths) < 1 {
-				log.Fatal("Store paths is empty, expected at least one path to submit")
-			}
+		if keyHex == "" {
+			return fmt.Errorf("Missing input/output hash")
 		}
 
-		items := []*api.KeyValuePair{}
-
-		for _, storePath := range storePaths {
-
-			item, err := createKVPair(storePath)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			items = append(items, item)
-		}
-
-		req := &api.SubmitRequest{
-			Items: items,
+		inputBytes, err := hex.DecodeString(keyHex)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		conn, err := client.CreateClientConn(dialAddress, nil)
@@ -88,15 +52,37 @@ var submitClosureCommand = &cobra.Command{
 		}
 		defer conn.Close()
 
-		ctx, cancel := client.CreateContext(30)
+		c := pb.NewTrustixCombinedRPCClient(conn)
+
+		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		c := api.NewTrustixLogAPIClient(conn)
-		_, err = c.Submit(ctx, req)
+		log.WithFields(log.Fields{
+			"key": keyHex,
+		}).Debug("Requesting output mappings for")
+		r, err := c.Decide(ctx, &pb.KeyRequest{
+			Key: inputBytes,
+		})
 		if err != nil {
-			log.Fatalf("could not submit: %v", err)
+			log.Fatalf("could not query: %v", err)
+		}
+
+		for _, miss := range r.Misses {
+			fmt.Println(fmt.Sprintf("Did not find hash in log '%s'", miss))
+		}
+
+		for _, unmatched := range r.Mismatches {
+			fmt.Println(fmt.Sprintf("Found mismatched digest '%s' in log '%s'", hex.EncodeToString(unmatched.Digest), *unmatched.LogName))
+		}
+
+		if r.Decision != nil {
+			fmt.Println(fmt.Sprintf("Decided on output digest '%s' with confidence %d", hex.EncodeToString(r.Decision.Digest), *r.Decision.Confidence))
 		}
 
 		return nil
 	},
+}
+
+func initDecide() {
+	decideCommand.Flags().StringVar(&keyHex, "input-hash", "", "Input hash in hex encoding")
 }

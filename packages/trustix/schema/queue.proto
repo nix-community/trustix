@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+option go_package = "github.com/tweag/trustix/packages/trustix/schema";
+
+message SubmitQueue {
+  // Min is the _current_ (last popped) ID
+  required uint64 Min = 1;
+
+  // Max is the last written item
+  required uint64 Max = 2;
+}

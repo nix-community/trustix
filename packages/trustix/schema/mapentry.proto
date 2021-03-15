@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+option go_package = "github.com/tweag/trustix/packages/trustix/schema";
+
+message MapEntry {
+  required bytes Digest = 1;
+  required uint64 Index = 2;
+}

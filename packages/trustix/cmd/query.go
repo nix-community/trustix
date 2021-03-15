@@ -24,62 +24,28 @@
 package cmd
 
 import (
-	"os/exec"
-	"strings"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/client"
+	"github.com/tweag/trustix/packages/trustix/schema"
 )
 
-var submitClosureCommand = &cobra.Command{
-	Use:   "submit-closure",
-	Short: "Submit an entire closur for inclusion in the log (development/testing ONLY)",
-	Long: `Submit an entire closur for inclusion in the log.
-           This is meant for development use ONLY as it will submit all packages, even substituted ones.`,
-	Args: cobra.MinimumNArgs(1),
+var queryCommand = &cobra.Command{
+	Use:   "query",
+	Short: "Query hashes from the log",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		storePaths := []string{}
-		{
-			requisites := make(map[string]struct{})
-			for _, arg := range args {
-				out, err := exec.Command("nix-store", "--query", "--requisites", arg).Output()
-				if err != nil {
-					log.Fatalf("Could not query requisites: %v", err)
-				}
-				for _, path := range strings.Split(string(out), "\n") {
-					if path == "" {
-						continue
-					}
-					requisites[path] = struct{}{}
-				}
-			}
-
-			for key, _ := range requisites {
-				storePaths = append(storePaths, key)
-			}
-
-			if len(storePaths) < 1 {
-				log.Fatal("Store paths is empty, expected at least one path to submit")
-			}
+		if keyHex == "" {
+			return fmt.Errorf("Missing input/output hash")
 		}
 
-		items := []*api.KeyValuePair{}
-
-		for _, storePath := range storePaths {
-
-			item, err := createKVPair(storePath)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			items = append(items, item)
-		}
-
-		req := &api.SubmitRequest{
-			Items: items,
+		inputBytes, err := hex.DecodeString(keyHex)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		conn, err := client.CreateClientConn(dialAddress, nil)
@@ -88,15 +54,39 @@ var submitClosureCommand = &cobra.Command{
 		}
 		defer conn.Close()
 
-		ctx, cancel := client.CreateContext(30)
+		c := api.NewTrustixLogAPIClient(conn)
+		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		c := api.NewTrustixLogAPIClient(conn)
-		_, err = c.Submit(ctx, req)
+		log.Debug("Requesting STH")
+		sth, err := c.GetSTH(ctx, &api.STHRequest{})
 		if err != nil {
-			log.Fatalf("could not submit: %v", err)
+			log.Fatalf("could not get STH: %v", err)
 		}
+
+		log.WithFields(log.Fields{
+			"key": keyHex,
+		}).Debug("Requesting output mapping for")
+		r, err := c.GetMapValue(ctx, &api.GetMapValueRequest{
+			Key:     inputBytes,
+			MapRoot: sth.MapRoot,
+		})
+		if err != nil {
+			log.Fatalf("could not query: %v", err)
+		}
+
+		mapEntry := &schema.MapEntry{}
+		err = json.Unmarshal(r.Value, mapEntry)
+		if err != nil {
+			log.Fatalf("Could not unmarshal value")
+		}
+
+		fmt.Println(fmt.Sprintf("Output digest: %s", hex.EncodeToString(mapEntry.Digest)))
 
 		return nil
 	},
+}
+
+func initQuery() {
+	queryCommand.Flags().StringVar(&keyHex, "input-hash", "", "Input hash in hex encoding")
 }
