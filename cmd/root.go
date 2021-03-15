@@ -59,7 +59,7 @@ var once sync.Once
 var configPath string
 var stateDirectory string
 
-var listenAddress string
+var listenAddresses []string
 var dialAddress string
 
 var timeout int
@@ -347,12 +347,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Create sockets
-		for _, addr := range []string{listenAddress} {
-
-			if addr == "" {
-				continue
-			}
-
+		for _, addr := range listenAddresses {
 			u, err := url.Parse(addr)
 			if err != nil {
 				log.Fatalf("Could not parse url: %v", err)
@@ -426,7 +421,7 @@ var rootCmd = &cobra.Command{
 func initCommands() {
 	rootCmd.Flags().StringVar(&configPath, "config", "", "Path to config.toml")
 
-	rootCmd.PersistentFlags().StringVar(&listenAddress, "listen", "", "Listen to address")
+	rootCmd.PersistentFlags().StringSliceVar(&listenAddresses, "listen", []string{}, "Listen to address")
 	rootCmd.PersistentFlags().IntVar(&timeout, "timeout", 20, "Timeout in seconds")
 
 	trustixSock := os.Getenv("TRUSTIX_SOCK")
