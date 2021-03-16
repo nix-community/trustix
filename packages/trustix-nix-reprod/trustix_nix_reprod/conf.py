@@ -4,20 +4,23 @@ import os.path
 import os
 
 
+_default_attrs: typing.List[str] = (
+    os.environ["DEFAULT_ATTRS"].split(":")
+    if "DEFAULT_ATTRS" in os.environ
+    else [
+        "hello.x86_64-linux",
+    ]
+)
+
+
 class SettingsModel(BaseModel):
     trustix_rpc: str = os.environ["TRUSTIX_RPC"]
     binary_cache_proxy: str = os.environ["TRUSTIX_BINARY_CACHE_PROXY"]
     db_uri: str = os.environ["DB_URI"]
 
-    default_attrs: typing.List[str] = (
-        os.environ["DEFAULT_ATTRS"].split(":")
-        if "DEFAULT_ATTRS" in os.environ
-        else [
-            "hello.x86_64-linux",
-        ]
-    )
+    default_attrs: typing.List[str] = _default_attrs
 
-    placeholder_attr: str = "hello.x86_64-linux"
+    placeholder_attr: str = _default_attrs[0] if _default_attrs else "hello.x86_64-linux"
 
     # Npm managed
     js_store: str = os.environ.get(
