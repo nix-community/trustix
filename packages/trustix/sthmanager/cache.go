@@ -31,9 +31,10 @@ import (
 
 	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
+	apipb "github.com/tweag/trustix/packages/trustix-proto/api"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/api"
 	vlog "github.com/tweag/trustix/packages/trustix/log"
-	"github.com/tweag/trustix/packages/trustix/schema"
 	"github.com/tweag/trustix/packages/trustix/signer"
 	sthlib "github.com/tweag/trustix/packages/trustix/sth"
 	"github.com/tweag/trustix/packages/trustix/storage"
@@ -71,7 +72,7 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 			}
 		}
 
-		sth, err := logapi.GetSTH(context.Background(), new(api.STHRequest))
+		sth, err := logapi.GetSTH(context.Background(), new(apipb.STHRequest))
 		if err != nil {
 			return err
 		}
@@ -108,7 +109,7 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 			return fmt.Errorf("STH signature invalid")
 		}
 
-		resp, err := logapi.GetLogConsistencyProof(context.Background(), &api.GetLogConsistencyProofRequest{
+		resp, err := logapi.GetLogConsistencyProof(context.Background(), &apipb.GetLogConsistencyProofRequest{
 			FirstSize:  &oldTreeSize,
 			SecondSize: &newTreeSize,
 		})

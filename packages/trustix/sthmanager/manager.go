@@ -27,7 +27,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/tweag/trustix/packages/trustix/schema"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 )
 
 type STHManager struct {

@@ -34,11 +34,11 @@ import (
 
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
-	"github.com/tweag/trustix/packages/trustix/api"
+	"github.com/tweag/trustix/packages/trustix-proto/api"
+	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/config"
 	"github.com/tweag/trustix/packages/trustix/decider"
-	pb "github.com/tweag/trustix/packages/trustix/proto"
-	"github.com/tweag/trustix/packages/trustix/schema"
 	"github.com/tweag/trustix/packages/trustix/sthmanager"
 )
 

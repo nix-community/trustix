@@ -26,40 +26,41 @@ package api
 import (
 	"context"
 
-	"github.com/tweag/trustix/packages/trustix/schema"
+	"github.com/tweag/trustix/packages/trustix-proto/api"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 )
 
 type TrustixLogAPI interface {
 	// GetSTH - Get a signed tree head
-	GetSTH(context.Context, *STHRequest) (*schema.STH, error)
+	GetSTH(context.Context, *api.STHRequest) (*schema.STH, error)
 
 	// Get log consistency proof
-	GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
+	GetLogConsistencyProof(context.Context, *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error)
 
 	// Get leaf audit proof
-	GetLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
+	GetLogAuditProof(context.Context, *api.GetLogAuditProofRequest) (*api.ProofResponse, error)
 
 	// Get log entries (batched)
-	GetLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
+	GetLogEntries(context.Context, *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error)
 
 	// Get value from the map
-	GetMapValue(context.Context, *GetMapValueRequest) (*MapValueResponse, error)
+	GetMapValue(context.Context, *api.GetMapValueRequest) (*api.MapValueResponse, error)
 
 	// Submit a value to the log
-	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
+	Submit(context.Context, *api.SubmitRequest) (*api.SubmitResponse, error)
 
 	// Flush the queue and write new heads
-	Flush(context.Context, *FlushRequest) (*FlushResponse, error)
+	Flush(context.Context, *api.FlushRequest) (*api.FlushResponse, error)
 
 	// Get content-addressed computation outputs
-	GetValue(context.Context, *ValueRequest) (*ValueResponse, error)
+	GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error)
 
 	// Get map head log consistency proof
-	GetMHLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
+	GetMHLogConsistencyProof(context.Context, *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error)
 
 	// Get map head log leaf audit proof
-	GetMHLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
+	GetMHLogAuditProof(context.Context, *api.GetLogAuditProofRequest) (*api.ProofResponse, error)
 
 	// Get map head log entries (batched)
-	GetMHLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
+	GetMHLogEntries(context.Context, *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error)
 }

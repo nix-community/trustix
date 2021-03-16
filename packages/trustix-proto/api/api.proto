@@ -3,7 +3,7 @@ syntax = "proto2";
 import "schema/sth.proto";
 import "schema/logleaf.proto";
 
-option go_package = "github.com/tweag/trustix/packages/trustix/api";
+option go_package = "github.com/tweag/trustix/packages/trustix-proto/api";
 
 package trustix;
 

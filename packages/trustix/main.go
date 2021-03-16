@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-package main // import "github.com/tweag/trustix"
+package main // import "github.com/tweag/trustix/packages/trustix"
 
 import (
 	"runtime"

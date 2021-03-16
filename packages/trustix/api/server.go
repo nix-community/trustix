@@ -26,13 +26,14 @@ package api
 import (
 	"context"
 
+	"github.com/tweag/trustix/packages/trustix-proto/api"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
-	"github.com/tweag/trustix/packages/trustix/schema"
 )
 
 // TrustixAPIServer wraps kvStoreLogApi and turns it into a gRPC implementation
 type TrustixAPIServer struct {
-	UnimplementedTrustixLogAPIServer
+	api.UnimplementedTrustixLogAPIServer
 	impl TrustixLogAPI
 }
 
@@ -42,27 +43,27 @@ func NewTrustixAPIServer(impl TrustixLogAPI) (*TrustixAPIServer, error) {
 	}, nil
 }
 
-func (s *TrustixAPIServer) GetSTH(ctx context.Context, req *STHRequest) (*schema.STH, error) {
+func (s *TrustixAPIServer) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {
 	return s.impl.GetSTH(ctx, req)
 }
 
-func (s *TrustixAPIServer) GetLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
+func (s *TrustixAPIServer) GetLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {
 	return s.impl.GetLogConsistencyProof(ctx, req)
 }
 
-func (s *TrustixAPIServer) GetLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (*ProofResponse, error) {
+func (s *TrustixAPIServer) GetLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (*api.ProofResponse, error) {
 	return s.impl.GetLogAuditProof(ctx, req)
 }
 
-func (s *TrustixAPIServer) GetLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+func (s *TrustixAPIServer) GetLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 	return s.impl.GetLogEntries(ctx, req)
 }
 
-func (s *TrustixAPIServer) GetMapValue(ctx context.Context, req *GetMapValueRequest) (*MapValueResponse, error) {
+func (s *TrustixAPIServer) GetMapValue(ctx context.Context, req *api.GetMapValueRequest) (*api.MapValueResponse, error) {
 	return s.impl.GetMapValue(ctx, req)
 }
 
-func (s *TrustixAPIServer) Submit(ctx context.Context, req *SubmitRequest) (*SubmitResponse, error) {
+func (s *TrustixAPIServer) Submit(ctx context.Context, req *api.SubmitRequest) (*api.SubmitResponse, error) {
 
 	err := auth.CanWrite(ctx)
 	if err != nil {
@@ -72,7 +73,7 @@ func (s *TrustixAPIServer) Submit(ctx context.Context, req *SubmitRequest) (*Sub
 	return s.impl.Submit(ctx, req)
 }
 
-func (s *TrustixAPIServer) Flush(ctx context.Context, req *FlushRequest) (*FlushResponse, error) {
+func (s *TrustixAPIServer) Flush(ctx context.Context, req *api.FlushRequest) (*api.FlushResponse, error) {
 	err := auth.CanWrite(ctx)
 	if err != nil {
 		return nil, err
@@ -81,18 +82,18 @@ func (s *TrustixAPIServer) Flush(ctx context.Context, req *FlushRequest) (*Flush
 	return s.impl.Flush(ctx, req)
 }
 
-func (s *TrustixAPIServer) GetValue(ctx context.Context, req *ValueRequest) (*ValueResponse, error) {
+func (s *TrustixAPIServer) GetValue(ctx context.Context, req *api.ValueRequest) (*api.ValueResponse, error) {
 	return s.impl.GetValue(ctx, req)
 }
 
-func (s *TrustixAPIServer) GetMHLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
+func (s *TrustixAPIServer) GetMHLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {
 	return s.impl.GetMHLogConsistencyProof(ctx, req)
 }
 
-func (s *TrustixAPIServer) GetMHLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (*ProofResponse, error) {
+func (s *TrustixAPIServer) GetMHLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (*api.ProofResponse, error) {
 	return s.impl.GetMHLogAuditProof(ctx, req)
 }
 
-func (s *TrustixAPIServer) GetMHLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+func (s *TrustixAPIServer) GetMHLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 	return s.impl.GetMHLogEntries(ctx, req)
 }

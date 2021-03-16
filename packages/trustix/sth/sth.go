@@ -30,8 +30,8 @@ import (
 	"encoding/binary"
 
 	"github.com/lazyledger/smt"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	vlog "github.com/tweag/trustix/packages/trustix/log"
-	"github.com/tweag/trustix/packages/trustix/schema"
 	"github.com/tweag/trustix/packages/trustix/signer"
 )
 

@@ -4,7 +4,7 @@ import "schema/mapentry.proto";
 import "schema/sth.proto";
 import "api/api.proto";
 
-option go_package = "github.com/tweag/trustix/packages/trustix/proto";
+option go_package = "github.com/tweag/trustix/packages/trustix-proto/proto";
 
 package trustix;
 

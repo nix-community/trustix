@@ -27,7 +27,7 @@ import (
 	"fmt"
 
 	proto "github.com/golang/protobuf/proto"
-	"github.com/tweag/trustix/packages/trustix/schema"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/storage"
 )
 

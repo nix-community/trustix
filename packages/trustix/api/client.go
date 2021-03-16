@@ -26,62 +26,63 @@ package api
 import (
 	"context"
 
-	"github.com/tweag/trustix/packages/trustix/schema"
+	"github.com/tweag/trustix/packages/trustix-proto/api"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"google.golang.org/grpc"
 )
 
 // TrustixAPIGRPCClient is a gRPC based implementation of TrustixLogAPI wrapping a gRPC ClientConn
 type TrustixAPIGRPCClient struct {
-	client TrustixLogAPIClient
+	client api.TrustixLogAPIClient
 }
 
 func NewTrustixAPIGRPCClient(conn *grpc.ClientConn) (*TrustixAPIGRPCClient, error) {
-	c := NewTrustixLogAPIClient(conn)
+	c := api.NewTrustixLogAPIClient(conn)
 	return &TrustixAPIGRPCClient{
 		client: c,
 	}, nil
 }
 
-func (s *TrustixAPIGRPCClient) GetSTH(ctx context.Context, req *STHRequest) (*schema.STH, error) {
+func (s *TrustixAPIGRPCClient) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {
 	return s.client.GetSTH(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
+func (s *TrustixAPIGRPCClient) GetLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {
 	return s.client.GetLogConsistencyProof(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (*ProofResponse, error) {
+func (s *TrustixAPIGRPCClient) GetLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (*api.ProofResponse, error) {
 	return s.client.GetLogAuditProof(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+func (s *TrustixAPIGRPCClient) GetLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 	return s.client.GetLogEntries(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetMapValue(ctx context.Context, req *GetMapValueRequest) (*MapValueResponse, error) {
+func (s *TrustixAPIGRPCClient) GetMapValue(ctx context.Context, req *api.GetMapValueRequest) (*api.MapValueResponse, error) {
 	return s.client.GetMapValue(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) Submit(ctx context.Context, req *SubmitRequest) (*SubmitResponse, error) {
+func (s *TrustixAPIGRPCClient) Submit(ctx context.Context, req *api.SubmitRequest) (*api.SubmitResponse, error) {
 	return s.client.Submit(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) Flush(ctx context.Context, in *FlushRequest) (*FlushResponse, error) {
+func (s *TrustixAPIGRPCClient) Flush(ctx context.Context, in *api.FlushRequest) (*api.FlushResponse, error) {
 	return s.client.Flush(ctx, in)
 }
 
-func (s *TrustixAPIGRPCClient) GetValue(ctx context.Context, in *ValueRequest) (*ValueResponse, error) {
+func (s *TrustixAPIGRPCClient) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
 	return s.client.GetValue(ctx, in)
 }
 
-func (s *TrustixAPIGRPCClient) GetMHLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (*ProofResponse, error) {
+func (s *TrustixAPIGRPCClient) GetMHLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {
 	return s.client.GetMHLogConsistencyProof(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetMHLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (*ProofResponse, error) {
+func (s *TrustixAPIGRPCClient) GetMHLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (*api.ProofResponse, error) {
 	return s.client.GetMHLogAuditProof(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) GetMHLogEntries(ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+func (s *TrustixAPIGRPCClient) GetMHLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 	return s.client.GetMHLogEntries(ctx, req)
 }

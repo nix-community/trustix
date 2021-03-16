@@ -40,14 +40,15 @@ import (
 	"github.com/coreos/go-systemd/activation"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tweag/trustix/packages/trustix/api"
+	"github.com/tweag/trustix/packages/trustix-proto/api"
+	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
+	apiimpl "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/client"
 	conf "github.com/tweag/trustix/packages/trustix/config"
 	"github.com/tweag/trustix/packages/trustix/decider"
-	pb "github.com/tweag/trustix/packages/trustix/proto"
 	"github.com/tweag/trustix/packages/trustix/rpc"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
-	"github.com/tweag/trustix/packages/trustix/schema"
 	"github.com/tweag/trustix/packages/trustix/signer"
 	"github.com/tweag/trustix/packages/trustix/sthmanager"
 	"github.com/tweag/trustix/packages/trustix/storage"
@@ -174,12 +175,12 @@ var rootCmd = &cobra.Command{
 						return err
 					}
 
-					logAPI, err := api.NewKVStoreAPI(store, sig)
+					logAPI, err := apiimpl.NewKVStoreAPI(store, sig)
 					if err != nil {
 						return err
 					}
 
-					logAPIServer, err = api.NewTrustixAPIServer(logAPI)
+					logAPIServer, err = apiimpl.NewTrustixAPIServer(logAPI)
 					if err != nil {
 						return err
 					}
@@ -208,7 +209,7 @@ var rootCmd = &cobra.Command{
 						return err
 					}
 
-					c, err := api.NewTrustixAPIGRPCClient(conn)
+					c, err := apiimpl.NewTrustixAPIGRPCClient(conn)
 					if err != nil {
 						return err
 					}

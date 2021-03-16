@@ -21,24 +21,12 @@
 // SOFTWARE.
 //
 
-package log
+// +build tools
+
+package tools
 
 import (
-	proto "github.com/golang/protobuf/proto"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway"
+	_ "google.golang.org/grpc/cmd/protoc-gen-go-grpc"
+	_ "google.golang.org/protobuf/cmd/protoc-gen-go"
 )
-
-func NewLeaf(digest []byte, value []byte) (*schema.LogLeaf, error) {
-	return &schema.LogLeaf{
-		LeafDigest: digest,
-	}, nil
-}
-
-func LeafFromBytes(data []byte) (*schema.LogLeaf, error) {
-	l := &schema.LogLeaf{}
-	err := proto.Unmarshal(data, l)
-	if err != nil {
-		return nil, err
-	}
-	return l, nil
-}

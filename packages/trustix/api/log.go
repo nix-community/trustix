@@ -29,13 +29,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/tweag/trustix/packages/trustix-proto/api"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	vlog "github.com/tweag/trustix/packages/trustix/log"
-	"github.com/tweag/trustix/packages/trustix/schema"
 	"github.com/tweag/trustix/packages/trustix/storage"
 )
 
-func getLogConsistencyProof(prefix string, txn storage.Transaction, ctx context.Context, req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
-	resp = &ProofResponse{}
+func getLogConsistencyProof(prefix string, txn storage.Transaction, ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
+	resp = &api.ProofResponse{}
 
 	vLog, err := vlog.NewVerifiableLog(prefix, txn, *req.SecondSize)
 	if err != nil {
@@ -52,7 +53,7 @@ func getLogConsistencyProof(prefix string, txn storage.Transaction, ctx context.
 	return resp, nil
 }
 
-func getLogAuditProof(prefix string, txn storage.Transaction, ctx context.Context, req *GetLogAuditProofRequest) (resp *ProofResponse, err error) {
+func getLogAuditProof(prefix string, txn storage.Transaction, ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
 
 	vLog, err := vlog.NewVerifiableLog(prefix, txn, *req.TreeSize)
 	if err != nil {
@@ -69,9 +70,9 @@ func getLogAuditProof(prefix string, txn storage.Transaction, ctx context.Contex
 	return resp, nil
 }
 
-func getLogEntries(prefix string, txn storage.Transaction, ctx context.Context, req *GetLogEntriesRequest) (*LogEntriesResponse, error) {
+func getLogEntries(prefix string, txn storage.Transaction, ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 
-	resp := &LogEntriesResponse{
+	resp := &api.LogEntriesResponse{
 		Leaves: []*schema.LogLeaf{},
 	}
 

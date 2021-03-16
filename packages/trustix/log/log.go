@@ -26,7 +26,7 @@ package log
 import (
 	"crypto/sha256"
 
-	"github.com/tweag/trustix/packages/trustix/schema"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/storage"
 )
 

@@ -37,9 +37,10 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
+	"github.com/tweag/trustix/packages/trustix-proto/api"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	ca "github.com/tweag/trustix/packages/trustix/cavaluestore"
 	vlog "github.com/tweag/trustix/packages/trustix/log"
-	"github.com/tweag/trustix/packages/trustix/schema"
 	sthsig "github.com/tweag/trustix/packages/trustix/sth"
 	"github.com/tweag/trustix/packages/trustix/storage"
 )
@@ -175,12 +176,12 @@ func (kv *kvStoreLogApi) getSTH(txn storage.Transaction) (*schema.STH, error) {
 	return sth, nil
 }
 
-func (kv *kvStoreLogApi) GetSTH(ctx context.Context, req *STHRequest) (*schema.STH, error) {
+func (kv *kvStoreLogApi) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {
 	return kv.sth, nil
 }
 
-func (kv *kvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
-	resp = &ProofResponse{}
+func (kv *kvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
+	resp = &api.ProofResponse{}
 	err = kv.store.View(func(txn storage.Transaction) error {
 		resp, err = getLogConsistencyProof("log", txn, ctx, req)
 		if err != nil {
@@ -195,8 +196,8 @@ func (kv *kvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *GetLog
 	return resp, nil
 }
 
-func (kv *kvStoreLogApi) GetLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (resp *ProofResponse, err error) {
-	resp = &ProofResponse{}
+func (kv *kvStoreLogApi) GetLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
+	resp = &api.ProofResponse{}
 	err = kv.store.View(func(txn storage.Transaction) error {
 		resp, err = getLogAuditProof("log", txn, ctx, req)
 		if err != nil {
@@ -211,8 +212,8 @@ func (kv *kvStoreLogApi) GetLogAuditProof(ctx context.Context, req *GetLogAuditP
 	return resp, nil
 }
 
-func (kv *kvStoreLogApi) GetLogEntries(ctx context.Context, req *GetLogEntriesRequest) (resp *LogEntriesResponse, err error) {
-	resp = &LogEntriesResponse{
+func (kv *kvStoreLogApi) GetLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (resp *api.LogEntriesResponse, err error) {
+	resp = &api.LogEntriesResponse{
 		Leaves: []*schema.LogLeaf{},
 	}
 
@@ -230,9 +231,9 @@ func (kv *kvStoreLogApi) GetLogEntries(ctx context.Context, req *GetLogEntriesRe
 	return resp, nil
 }
 
-func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *GetMapValueRequest) (*MapValueResponse, error) {
+func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *api.GetMapValueRequest) (*api.MapValueResponse, error) {
 
-	resp := &MapValueResponse{}
+	resp := &api.MapValueResponse{}
 
 	err := kv.store.View(func(txn storage.Transaction) error {
 		tree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), req.MapRoot)
@@ -254,7 +255,7 @@ func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *GetMapValueReques
 		numSideNodes := uint64(proof.NumSideNodes)
 		resp.Value = v
 
-		resp.Proof = &SparseCompactMerkleProof{
+		resp.Proof = &api.SparseCompactMerkleProof{
 			SideNodes:             proof.SideNodes,
 			NonMembershipLeafData: proof.NonMembershipLeafData,
 			BitMask:               proof.BitMask,
@@ -270,7 +271,7 @@ func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *GetMapValueReques
 	return resp, nil
 }
 
-func (kv *kvStoreLogApi) Submit(ctx context.Context, req *SubmitRequest) (*SubmitResponse, error) {
+func (kv *kvStoreLogApi) Submit(ctx context.Context, req *api.SubmitRequest) (*api.SubmitResponse, error) {
 	kv.queueMux.Lock()
 	defer kv.queueMux.Unlock()
 
@@ -326,13 +327,13 @@ func (kv *kvStoreLogApi) Submit(ctx context.Context, req *SubmitRequest) (*Submi
 		return nil, err
 	}
 
-	status := SubmitResponse_OK
-	return &SubmitResponse{
+	status := api.SubmitResponse_OK
+	return &api.SubmitResponse{
 		Status: &status,
 	}, nil
 }
 
-func (kv *kvStoreLogApi) Flush(ctx context.Context, in *FlushRequest) (*FlushResponse, error) {
+func (kv *kvStoreLogApi) Flush(ctx context.Context, in *api.FlushRequest) (*api.FlushResponse, error) {
 	for {
 		q, err := kv.submitBatch()
 		if err != nil {
@@ -340,12 +341,12 @@ func (kv *kvStoreLogApi) Flush(ctx context.Context, in *FlushRequest) (*FlushRes
 		}
 
 		if *q.Min >= *q.Max {
-			return &FlushResponse{}, nil
+			return &api.FlushResponse{}, nil
 		}
 	}
 }
 
-func (kv *kvStoreLogApi) GetValue(ctx context.Context, in *ValueRequest) (*ValueResponse, error) {
+func (kv *kvStoreLogApi) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
 	var value []byte
 	err := kv.store.View(func(txn storage.Transaction) error {
 		v, err := ca.Get(txn, in.Digest)
@@ -357,7 +358,7 @@ func (kv *kvStoreLogApi) GetValue(ctx context.Context, in *ValueRequest) (*Value
 		return nil, err
 	}
 
-	return &ValueResponse{
+	return &api.ValueResponse{
 		Value: value,
 	}, nil
 }
@@ -388,7 +389,7 @@ func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 
 		maxBatchSize := uint64(500)
 
-		items := []*KeyValuePair{}
+		items := []*api.KeyValuePair{}
 		max := minUint64(*q.Max-1, *q.Min+maxBatchSize)
 		for itemId := *q.Min; itemId <= max; itemId++ {
 			q.Min = &itemId
@@ -399,7 +400,7 @@ func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 				continue
 			}
 
-			item := &KeyValuePair{}
+			item := &api.KeyValuePair{}
 			err = proto.Unmarshal(itemBytes, item)
 			if err != nil {
 				log.Error(err)
@@ -442,7 +443,7 @@ func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 	return q, nil
 }
 
-func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePair) error {
+func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*api.KeyValuePair) error {
 	kv.submitMux.Lock()
 	defer kv.submitMux.Unlock()
 
@@ -554,8 +555,8 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*KeyValuePa
 	return nil
 }
 
-func (kv *kvStoreLogApi) GetMHLogConsistencyProof(ctx context.Context, req *GetLogConsistencyProofRequest) (resp *ProofResponse, err error) {
-	resp = &ProofResponse{}
+func (kv *kvStoreLogApi) GetMHLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
+	resp = &api.ProofResponse{}
 	err = kv.store.View(func(txn storage.Transaction) error {
 		resp, err = getLogConsistencyProof("log", txn, ctx, req)
 		if err != nil {
@@ -570,8 +571,8 @@ func (kv *kvStoreLogApi) GetMHLogConsistencyProof(ctx context.Context, req *GetL
 	return resp, nil
 }
 
-func (kv *kvStoreLogApi) GetMHLogAuditProof(ctx context.Context, req *GetLogAuditProofRequest) (resp *ProofResponse, err error) {
-	resp = &ProofResponse{}
+func (kv *kvStoreLogApi) GetMHLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
+	resp = &api.ProofResponse{}
 	err = kv.store.View(func(txn storage.Transaction) error {
 		resp, err = getLogAuditProof("log", txn, ctx, req)
 		if err != nil {
@@ -586,8 +587,8 @@ func (kv *kvStoreLogApi) GetMHLogAuditProof(ctx context.Context, req *GetLogAudi
 	return resp, nil
 }
 
-func (kv *kvStoreLogApi) GetMHLogEntries(ctx context.Context, req *GetLogEntriesRequest) (resp *LogEntriesResponse, err error) {
-	resp = &LogEntriesResponse{
+func (kv *kvStoreLogApi) GetMHLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (resp *api.LogEntriesResponse, err error) {
+	resp = &api.LogEntriesResponse{
 		Leaves: []*schema.LogLeaf{},
 	}
 

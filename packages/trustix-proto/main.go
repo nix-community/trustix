@@ -21,24 +21,7 @@
 // SOFTWARE.
 //
 
-package log
+package main // import "github.com/tweag/trustix/packages/trustix"
 
-import (
-	proto "github.com/golang/protobuf/proto"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-)
-
-func NewLeaf(digest []byte, value []byte) (*schema.LogLeaf, error) {
-	return &schema.LogLeaf{
-		LeafDigest: digest,
-	}, nil
-}
-
-func LeafFromBytes(data []byte) (*schema.LogLeaf, error) {
-	l := &schema.LogLeaf{}
-	err := proto.Unmarshal(data, l)
-	if err != nil {
-		return nil, err
-	}
-	return l, nil
+func main() {
 }

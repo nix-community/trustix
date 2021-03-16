@@ -23,7 +23,7 @@ in import sources.nixpkgs {
     # Local packages
     (self: super: let
       inherit (super) lib;
-      dirNames = lib.attrNames (lib.filterAttrs (n: v: true) (builtins.readDir ../packages));
+      dirNames = lib.attrNames (lib.filterAttrs (pkgDir: type: type == "directory" && builtins.pathExists (../packages + "/${pkgDir}/default.nix")) (builtins.readDir ../packages));
     in (
       builtins.listToAttrs (map
       (pkgDir: {

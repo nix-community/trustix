@@ -29,8 +29,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
 	"github.com/tweag/trustix/packages/trustix/client"
-	pb "github.com/tweag/trustix/packages/trustix/proto"
 )
 
 var decideCommand = &cobra.Command{

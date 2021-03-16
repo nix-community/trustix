@@ -4,7 +4,7 @@ package proto
 
 import (
 	context "context"
-	api "github.com/tweag/trustix/packages/trustix/api"
+	api "github.com/tweag/trustix/packages/trustix-proto/api"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

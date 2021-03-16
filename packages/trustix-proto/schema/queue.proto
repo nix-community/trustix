@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-option go_package = "github.com/tweag/trustix/packages/trustix/schema";
+option go_package = "github.com/tweag/trustix/packages/trustix-proto/schema";
 
 message SubmitQueue {
   // Min is the _current_ (last popped) ID

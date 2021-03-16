@@ -26,7 +26,7 @@ package sthmanager
 import (
 	"fmt"
 
-	"github.com/tweag/trustix/packages/trustix/schema"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 )
 
 type dummySthCache struct {

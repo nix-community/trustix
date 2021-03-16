@@ -4,7 +4,7 @@ package api
 
 import (
 	context "context"
-	schema "github.com/tweag/trustix/packages/trustix/schema"
+	schema "github.com/tweag/trustix/packages/trustix-proto/schema"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
