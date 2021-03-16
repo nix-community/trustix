@@ -20,7 +20,7 @@ __all__ = (
 
 
 def _orjson_dumps(v, *, default) -> str:
-    return orjson.dumps(v, default=default).decode()
+    return orjson.dumps(v, default=default, option=orjson.OPT_NON_STR_KEYS).decode()
 
 
 class BaseModel(_BaseModel):

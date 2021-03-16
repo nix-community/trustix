@@ -33,7 +33,7 @@
 
                       <ul class="log-names">
                         {% for result in results %}
-                          <li x-data-tooltip="Log (builder) name" class="log-name">{{data.logs.get(result.log_id, {"name": "<Unknown log>"}).name}}</li>
+                          <li x-data-tooltip="Log (builder) name" class="log-name">{{model.logs.get(result.log_id, {"name": "<Unknown log>"}).name}}</li>
                         {% endfor %}
                       </ul>
                     </div>
