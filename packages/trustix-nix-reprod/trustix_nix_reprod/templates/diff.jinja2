@@ -1,0 +1,11 @@
+{% extends "includes/base.jinja2" %}
+
+{% block main %}
+  {% for narinfo in model.narinfo.values() %}
+    <h3>{{output_hash}}</h3>
+    <code>
+      {{narinfo}}
+    </code>
+  {% endfor %}
+  {{ diffoscope_render(model.diffoscope) }}
+{% endblock %}

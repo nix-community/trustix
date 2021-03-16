@@ -120,3 +120,8 @@ class AttrsResponse(BaseModel):
 
 class DerivationOutputResultsUniqueResponse(BaseModel):
     results: List[DerivationOutputResult]
+
+
+class DiffResponse(BaseModel):
+    narinfo: Dict[str, Dict]
+    diffoscope: Dict

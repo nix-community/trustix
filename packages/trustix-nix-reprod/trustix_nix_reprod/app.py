@@ -1,4 +1,3 @@
-from trustix_python.api import api_pb2
 from fastapi.templating import (
     Jinja2Templates,
 )
@@ -24,35 +23,27 @@ from trustix_nix_reprod import (
     on_shutdown,
 )
 import urllib.parse
-import requests
-import tempfile
-import asyncio
 import os.path
-import codecs
-import shlex
-import json
 
 from trustix_nix_reprod.staticfiles import StaticFiles
 
 from pydantic import BaseModel as BaseModel
 
 from trustix_nix_reprod.api import (
-    get_derivation_output_results_unique,
     get_derivation_reproducibility,
     get_attrs_reproducibility,
     search_derivations,
     suggest_attrs,
 )
+from trustix_nix_reprod.api import diff as diff_api
 from trustix_nix_reprod.api.models import (
     DerivationReproducibility,
     SuggestResponse,
     SearchResponse,
     AttrsResponse,
+    DiffResponse,
 )
 
-from trustix_nix_reprod.proto import (
-    get_combined_rpc,
-)
 
 from trustix_nix_reprod.conf import settings
 
@@ -72,6 +63,7 @@ templates.env.globals["drv_url_quote"] = template_lib.drv_url_quote
 templates.env.globals["json_render"] = template_lib.json_render
 templates.env.globals["url_reverse"] = app.url_path_for
 templates.env.globals["js_url"] = template_lib.js_url
+templates.env.globals["diffoscope_render"] = template_lib.diffoscope_render
 
 
 @app.on_event("startup")
@@ -183,98 +175,17 @@ async def diff_form(request: Request, output_hash: List[str] = Form(...)):
     )
 
 
-# TODO: Cache
-@app.get("/diff/{output_hash_1_hex}/{output_hash_2_hex}", response_class=HTMLResponse)
+@app.get("/diff/{output_hash_1_hex}/{output_hash_2_hex}", response_model=DiffResponse)
 async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str):
-
     # Reorder inputs
     # This is to get a deterministic cache key
     output_hash_1_hex, output_hash_2_hex = sorted(
         [output_hash_1_hex, output_hash_2_hex]
     )
-
-    output_hash_1 = codecs.decode(output_hash_1_hex, "hex")  # type: ignore
-    output_hash_2 = codecs.decode(output_hash_2_hex, "hex")  # type: ignore
-
-    result1, result2 = (await get_derivation_output_results_unique(
-        output_hash_1, output_hash_2
-    )).results
-
-    # Uvloop has a nasty bug https://github.com/MagicStack/uvloop/issues/317
-    # To work around this we run the fetching/unpacking in a separate blocking thread
-    def fetch_unpack_nar(url, location):
-        import subprocess
-
-        loc_base = os.path.basename(location)
-        loc_dir = os.path.dirname(location)
-
-        try:
-            os.mkdir(loc_dir)
-        except FileExistsError:
-            pass
-
-        with requests.get(url, stream=True) as r:
-            r.raise_for_status()
-            p = subprocess.Popen(
-                ["nix-nar-unpack", loc_base], stdin=subprocess.PIPE, cwd=loc_dir
-            )
-            for chunk in r.iter_content(chunk_size=512):
-                p.stdin.write(chunk)
-            p.stdin.close()
-            p.wait(timeout=0.5)
-
-        # Ensure correct mtime
-        for subl in (
-            (os.path.join(dirpath, f) for f in (dirnames + filenames))
-            for (dirpath, dirnames, filenames) in os.walk(location)
-        ):
-            for path in subl:
-                os.utime(path, (1, 1))
-        os.utime(location, (1, 1))
-
-    async def process_result(result, tmpdir, outbase) -> str:
-        # Fetch narinfo
-        narinfo = json.loads(
-            (await get_combined_rpc().GetValue(api_pb2.ValueRequest(Digest=result.output_hash))).Value  # type: ignore
-        )
-        nar_hash = narinfo["narHash"].split(":")[-1]
-
-        # Get store prefix
-        output = await result.output
-
-        store_base = output.store_path.split("/")[-1]
-        store_prefix = store_base.split("-")[0]
-
-        unpack_dir = os.path.join(tmpdir, store_base, outbase)
-        nar_url = "/".join((settings.binary_cache_proxy, "nar", store_prefix, nar_hash))
-
-        await asyncio.get_running_loop().run_in_executor(
-            None, fetch_unpack_nar, nar_url, unpack_dir
-        )
-
-        return unpack_dir
-
-    # TODO: Async tempfile
-    with tempfile.TemporaryDirectory(prefix="trustix-ui-dash-diff") as tmpdir:
-        dir_a, dir_b = await asyncio.gather(
-            process_result(result1, tmpdir, "A"),
-            process_result(result2, tmpdir, "B"),
-        )
-
-        dir_a_rel = os.path.join(os.path.basename(os.path.dirname(dir_a)), "A")
-        dir_b_rel = os.path.join(os.path.basename(os.path.dirname(dir_b)), "B")
-
-        proc = await asyncio.create_subprocess_shell(
-            shlex.join(["diffoscope", "--html", "-", dir_a_rel, dir_b_rel]),
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            cwd=tmpdir,
-        )
-        stdout, stderr = await proc.communicate()
-
-    # Diffoscope returns non-zero on paths that have a diff
-    # Instead use stderr as a heurestic if the call went well or not
-    if stderr:
-        raise ValueError(stderr)
-
-    return stdout
+    data = await diff_api(output_hash_1_hex, output_hash_2_hex)
+    return render_model(
+        request,
+        "diff.jinja2",
+        lambda: make_context(request, data),
+        data,
+    )

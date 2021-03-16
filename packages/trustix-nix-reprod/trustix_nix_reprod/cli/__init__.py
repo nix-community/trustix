@@ -36,11 +36,16 @@ def main():
             await on_startup()
             defer(on_shutdown)
 
-            if subcommand == "index_eval":
-                await index_eval(args.rev)
-            elif subcommand == "index_logs":
-                await index_logs()
-            else:
-                raise RuntimeError("Logic error")
+            from trustix_nix_reprod.models import DerivationOutputResult
+            import codecs
+            for r in await DerivationOutputResult.filter():
+                print(codecs.encode(r.output_hash, "hex").decode())
+
+            # if subcommand == "index_eval":
+            #     await index_eval(args.rev)
+            # elif subcommand == "index_logs":
+            #     await index_logs()
+            # else:
+            #     raise RuntimeError("Logic error")
 
     asyncio.run(_main())

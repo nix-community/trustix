@@ -12,6 +12,7 @@ from trustix_nix_reprod.api.search import (
     search_derivations,
     suggest_attrs,
 )
+from trustix_nix_reprod.api.diff import diff
 
 
 __all__ = (
@@ -21,4 +22,5 @@ __all__ = (
     "get_attr_reproducibility",
     "search_derivations",
     "suggest_attrs",
+    "diff",
 )

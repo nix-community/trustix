@@ -14,8 +14,7 @@ _default_attrs: typing.List[str] = (
 
 
 class CacheTTLSettingsModel(BaseModel):
-    diff: int = 10
-    diffoscope: int = 10
+    diff: int = 1800
     drv_reprod: int = 10
     suggest: int = 10
     search: int = 10
