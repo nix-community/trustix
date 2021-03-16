@@ -4,3 +4,4 @@ app: ./tools/app
 check: ./tools/check --watch
 migrate: ./tools/migrate
 js: bash -c "cd trustix_nix_reprod/js && nix-shell --run hivemind"
+redis: ./tools/redis

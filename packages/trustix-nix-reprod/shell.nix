@@ -27,7 +27,8 @@ pkgs.mkShell {
     pkgs.nix-nar-unpack
 
     pkgs.hydra-eval-jobs
-    pkgs.sqlite
+
+    pkgs.redis
 
     pkgs.postgresql
 

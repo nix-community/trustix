@@ -183,6 +183,7 @@ async def diff_form(request: Request, output_hash: List[str] = Form(...)):
     )
 
 
+# TODO: Cache
 @app.get("/diff/{output_hash_1_hex}/{output_hash_2_hex}", response_class=HTMLResponse)
 async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str):
 
@@ -195,9 +196,9 @@ async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str)
     output_hash_1 = codecs.decode(output_hash_1_hex, "hex")  # type: ignore
     output_hash_2 = codecs.decode(output_hash_2_hex, "hex")  # type: ignore
 
-    result1, result2 = await get_derivation_output_results_unique(
+    result1, result2 = (await get_derivation_output_results_unique(
         output_hash_1, output_hash_2
-    )
+    )).results
 
     # Uvloop has a nasty bug https://github.com/MagicStack/uvloop/issues/317
     # To work around this we run the fetching/unpacking in a separate blocking thread

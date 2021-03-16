@@ -1,3 +1,5 @@
+from trustix_nix_reprod.conf import settings
+from trustix_nix_reprod.cache import cached
 from trustix_nix_reprod.models import (
     DerivationAttr,
 )
@@ -21,7 +23,9 @@ __all__ = (
 )
 
 
+@cached(model=SearchResponse, ttl=settings.cache_ttl.search)
 async def search_derivations(term: str) -> SearchResponse:
+
     if len(term) < 3:
         raise ValueError("Search term too short")
 
@@ -35,6 +39,7 @@ async def search_derivations(term: str) -> SearchResponse:
     return SearchResponse(derivations_by_attr=derivations_by_attr)
 
 
+@cached(model=SuggestResponse, ttl=settings.cache_ttl.suggest)
 async def suggest_attrs(attr_prefix: str) -> SuggestResponse:
     if len(attr_prefix) < 3:
         raise ValueError("Prefix too short")

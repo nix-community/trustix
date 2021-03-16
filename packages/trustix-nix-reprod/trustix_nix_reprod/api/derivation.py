@@ -12,6 +12,8 @@ from trustix_nix_reprod.api.models import (
     Log,
 )
 from trustix_nix_reprod import models as db_models
+from trustix_nix_reprod.cache import cached
+from trustix_nix_reprod.conf import settings
 from tortoise.query_utils import Q
 import asyncio
 
@@ -40,6 +42,7 @@ async def _get_derivation_outputs(drv: str) -> List[db_models.Derivation]:
     return items
 
 
+@cached(model=DerivationReproducibility, ttl=settings.cache_ttl.drv_reprod)
 async def get_derivation_reproducibility(drv_path: str) -> DerivationReproducibility:
 
     drvs = await _get_derivation_outputs(drv_path)

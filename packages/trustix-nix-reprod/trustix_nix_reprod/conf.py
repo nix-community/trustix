@@ -13,10 +13,20 @@ _default_attrs: typing.List[str] = (
 )
 
 
+class CacheTTLSettingsModel(BaseModel):
+    diff: int = 10
+    diffoscope: int = 10
+    drv_reprod: int = 10
+    suggest: int = 10
+    search: int = 10
+
+
 class SettingsModel(BaseModel):
     trustix_rpc: str = os.environ["TRUSTIX_RPC"]
     binary_cache_proxy: str = os.environ["TRUSTIX_BINARY_CACHE_PROXY"]
     db_uri: str = os.environ["DB_URI"]
+
+    redis_uri: str = os.environ.get("REDIS_URI", "redis://localhost")
 
     default_attrs: typing.List[str] = _default_attrs
 
@@ -41,6 +51,8 @@ class SettingsModel(BaseModel):
             "x86_64-darwin",
         ]
     )
+
+    cache_ttl: CacheTTLSettingsModel = CacheTTLSettingsModel()
 
     @property
     def tortoise_config(self) -> typing.Dict:

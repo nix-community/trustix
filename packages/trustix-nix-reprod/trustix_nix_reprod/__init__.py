@@ -27,6 +27,7 @@ import json
 
 from trustix_nix_reprod.conf import settings
 from trustix_nix_reprod.proto import get_combined_rpc
+from trustix_nix_reprod.cache import connection as cache_connection
 
 
 async def on_startup():
@@ -35,6 +36,7 @@ async def on_startup():
 
 async def on_shutdown():
     await Tortoise.close_connections()
+    await cache_connection.close()
 
 
 @transactions.atomic()

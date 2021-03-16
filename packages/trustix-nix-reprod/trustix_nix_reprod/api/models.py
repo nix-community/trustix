@@ -116,3 +116,7 @@ class SuggestResponse(BaseModel):
 
 class AttrsResponse(BaseModel):
     attr_stats: Dict[str, Dict[str, DerivationReproducibility]]
+
+
+class DerivationOutputResultsUniqueResponse(BaseModel):
+    results: List[DerivationOutputResult]
