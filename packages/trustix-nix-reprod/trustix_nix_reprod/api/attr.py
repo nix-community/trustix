@@ -20,7 +20,10 @@ from typing import (
 )
 
 
-__all__ = ("get_attr_reproducibility",)
+__all__ = (
+    "get_attrs_reproducibility",
+    "get_attr_reproducibility",
+)
 
 
 async def get_attr_reproducibility(attr: str) -> Dict[str, DerivationReproducibility]:
