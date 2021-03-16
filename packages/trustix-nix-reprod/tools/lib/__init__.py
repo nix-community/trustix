@@ -74,14 +74,7 @@ def get_watch_files() -> typing.List[str]:
         os.path.join(TOOLS_DIR, f)
         for f in os.listdir(TOOLS_DIR)
         if not f.startswith(".") and not f.startswith("#") and not os.path.isdir(f)
-    ] + [
-        os.path.join(ROOT_DIR, f)
-        for f in (
-            "pynix",
-            os.path.join("tools", "lib"),
-        )
     ]
-
 
 def exec_cmd(cmdline: typing.List[str]):
     os.execvp(cmdline[0], cmdline)
