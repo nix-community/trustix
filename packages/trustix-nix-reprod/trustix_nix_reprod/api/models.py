@@ -8,14 +8,26 @@ from typing import (
     Set,
     Any,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel as _BaseModel
 import codecs
+import orjson
 
 
 __all__ = (
     "DerivationReproducibilityStats",
     "DerivationReproducibility",
 )
+
+
+def _orjson_dumps(v, *, default) -> str:
+    return orjson.dumps(v, default=default).decode()
+
+
+class BaseModel(_BaseModel):
+
+    class Config:
+        json_loads = orjson.loads
+        json_dumps = _orjson_dumps
 
 
 class DerivationOutputResult(BaseModel):
@@ -63,7 +75,6 @@ class DerivationReproducibility(BaseModel):
     missing_paths: PATH_T
     drv_path: str
 
-    # # TODO Log -> Pydantic
     logs: Dict[int, Log]
 
     statistics: DerivationReproducibilityStats
@@ -93,3 +104,15 @@ class DerivationReproducibility(BaseModel):
                 for title in key_descr:
                     p = p["additionalProperties"]
                     p["title"] = title
+
+
+class SearchResponse(BaseModel):
+    derivations_by_attr: Dict[str, Set[str]]
+
+
+class SuggestResponse(BaseModel):
+    attrs: List[str]
+
+
+class AttrsResponse(BaseModel):
+    attr_stats: Dict[str, Dict[str, DerivationReproducibility]]

@@ -10,7 +10,7 @@ export function initSuggestions(): void {
 
   const template = ejs.compile(`
     <ul>
-      <% suggestions.forEach(function(suggestion){ %>
+      <% suggestions.attrs.forEach(function(suggestion){ %>
         <li x-data-attr="<%= suggestion %>"><a href="#"><%= suggestion %></a></li>
       <% }); %>
     </ul>

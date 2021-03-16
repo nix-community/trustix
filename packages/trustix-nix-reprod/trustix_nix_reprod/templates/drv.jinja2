@@ -57,26 +57,26 @@
 {% block main %}
 
   <h2 x-data-tooltip="Derivation path">{{drv_path}}</h2>
-  <p>{{data.statistics.num_reproduced}}/{{data.statistics.num_outputs}} ({{data.statistics.pct_reproduced}}%) verified to be reproducible</p>
+  <p>{{model.statistics.num_reproduced}}/{{model.statistics.num_outputs}} ({{model.statistics.pct_reproduced}}%) verified to be reproducible</p>
 
-  {% if data.unreproduced_paths %}
+  {% if model.unreproduced_paths %}
     <h3>Unreproduced paths</h3>
-    {{ render_paths_d(data.unreproduced_paths) }}
+    {{ render_paths_d(model.unreproduced_paths) }}
   {% endif %}
 
-  {% if data.reproduced_paths %}
+  {% if model.reproduced_paths %}
     <h3>Reproduced paths</h3>
-    {{ render_paths_d(data.reproduced_paths) }}
+    {{ render_paths_d(model.reproduced_paths) }}
   {% endif %}
 
-  {% if data.unknown_paths %}
+  {% if model.unknown_paths %}
     <h3>Unknown paths (only built by one log)</h3>
-    {{ render_paths_d(data.unknown_paths) }}
+    {{ render_paths_d(model.unknown_paths) }}
   {% endif %}
 
-  {% if data.missing_paths %}
+  {% if model.missing_paths %}
     <h3>Missing paths (not built by any known log)</h3>
-    {{ render_paths_d(data.missing_paths) }}
+    {{ render_paths_d(model.missing_paths) }}
   {% endif %}
 
 {% endblock %}

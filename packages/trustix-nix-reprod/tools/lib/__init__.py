@@ -76,6 +76,7 @@ def get_watch_files() -> typing.List[str]:
         if not f.startswith(".") and not f.startswith("#") and not os.path.isdir(f)
     ]
 
+
 def exec_cmd(cmdline: typing.List[str]):
     os.execvp(cmdline[0], cmdline)
 

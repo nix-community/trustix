@@ -2,7 +2,7 @@
 
 {% block main %}
 
-  {% for attr, attr_data in attr_stats.items() %}
+  {% for attr, attr_data in model.attr_stats.items() %}
     {% include "includes/attr.jinja2" %}
   {% endfor %}
 

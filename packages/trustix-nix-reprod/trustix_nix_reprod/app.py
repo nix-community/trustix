@@ -12,13 +12,11 @@ from fastapi import (
     Form,
 )
 from typing import (
-    Optional,
     Callable,
     TypeVar,
     Union,
     Dict,
     List,
-    Set,
 )
 from trustix_nix_reprod import (
     template_lib,
@@ -36,6 +34,8 @@ import json
 
 from trustix_nix_reprod.staticfiles import StaticFiles
 
+from pydantic import BaseModel as BaseModel
+
 from trustix_nix_reprod.api import (
     get_derivation_output_results_unique,
     get_derivation_reproducibility,
@@ -45,6 +45,9 @@ from trustix_nix_reprod.api import (
 )
 from trustix_nix_reprod.api.models import (
     DerivationReproducibility,
+    SuggestResponse,
+    SearchResponse,
+    AttrsResponse,
 )
 
 from trustix_nix_reprod.proto import (
@@ -83,18 +86,16 @@ async def shutdown_event():
 
 def make_context(
     request: Request,
+    model: BaseModel,
     title: str = "",
-    extra: Optional[Dict] = None,
 ) -> Dict:
 
     ctx = {
         "request": request,
         "title": "Trustix R13Y" + (" ".join((" - ", title)) if title else ""),
         "drv_placeholder": settings.placeholder_attr,
+        "model": model,
     }
-
-    if extra:
-        ctx.update(extra)
 
     return ctx
 
@@ -129,31 +130,19 @@ async def drv(request: Request, drv_path: str):
     return render_model(
         request,
         "drv.jinja2",
-        lambda: make_context(
-            request,
-            extra={
-                "data": data,
-            },
-        ),
+        lambda: make_context(request, data),
         data,
     )
 
 
-@app.get(
-    "/attrs/{attrs}", response_model=Dict[str, Dict[str, DerivationReproducibility]]
-)
+@app.get("/attrs/{attrs}", response_model=AttrsResponse)
 async def attrs(request: Request, attrs: str):
-    data = await get_attrs_reproducibility(settings.default_attrs)
+    model = await get_attrs_reproducibility(settings.default_attrs)
     return render_model(
         request,
         "attrs.jinja2",
-        lambda: make_context(
-            request,
-            extra={
-                "attr_stats": data,
-            },
-        ),
-        data,
+        lambda: make_context(request, model),
+        model,
     )
 
 
@@ -162,23 +151,18 @@ async def search_form(request: Request, term: str = Form(...)):
     return RedirectResponse(app.url_path_for("search", term=term), status_code=303)
 
 
-@app.get("/search/{term}", response_model=Dict[str, Set[str]])
+@app.get("/search/{term}", response_model=SearchResponse)
 async def search(request: Request, term: str):
     data = await search_derivations(term)
     return render_model(
         request,
         "search.jinja2",
-        lambda: make_context(
-            request,
-            extra={
-                "derivations_by_attr": data,
-            },
-        ),
+        lambda: make_context(request, data),
         data,
     )
 
 
-@app.get("/suggest/{attr_prefix}", response_model=List[str])
+@app.get("/suggest/{attr_prefix}", response_model=SuggestResponse)
 async def suggest(request: Request, attr_prefix: str):
     return await suggest_attrs(attr_prefix)
 
