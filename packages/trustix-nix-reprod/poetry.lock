@@ -1,6 +1,6 @@
 [[package]]
 name = "aerich"
-version = "0.5.0"
+version = "0.5.1"
 description = "A database migrations tool for Tortoise ORM."
 category = "main"
 optional = false
@@ -14,7 +14,8 @@ pydantic = "*"
 tortoise-orm = ">=0.16.21,<0.17.0"
 
 [package.extras]
-dbdrivers = ["aiomysql", "asyncpg"]
+aiomysql = ["aiomysql"]
+asyncpg = ["asyncpg"]
 
 [[package]]
 name = "aiodns"
@@ -563,7 +564,7 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.17"
+version = "3.0.18"
 description = "Library for building powerful interactive command lines in Python"
 category = "dev"
 optional = false
@@ -867,6 +868,19 @@ ipython-genutils = "*"
 test = ["pytest"]
 
 [[package]]
+name = "trustix-python"
+version = "0.1.0"
+description = ""
+category = "main"
+optional = false
+python-versions = "^3.8"
+develop = false
+
+[package.source]
+type = "directory"
+url = "../trustix-python"
+
+[[package]]
 name = "typed-ast"
 version = "1.4.2"
 description = "a fork of Python 2 and 3 ast modules with type comment support"
@@ -975,12 +989,12 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "95e3c782a35ef224b1aa9a393a2b2288939bf25efdf3736c41fc15d528a81139"
+content-hash = "67fe3346ce9782c22c1f05bd2b517a0492d6c630d39256787c72b096dcba25d6"
 
 [metadata.files]
 aerich = [
-    {file = "aerich-0.5.0-py3-none-any.whl", hash = "sha256:d6613b2e6dfb165831d5e6e608290b2a72719490fac97e7a0dffee2113969bb9"},
-    {file = "aerich-0.5.0.tar.gz", hash = "sha256:d7356740a340820b142ca76fc1f76869cd8e22721f0f104f2cb6ec2b5d210bd0"},
+    {file = "aerich-0.5.1-py3-none-any.whl", hash = "sha256:88a7272bb1cb47129d6b7adff3c8a38e16d9b8dfe5be77d087d5779606967a6f"},
+    {file = "aerich-0.5.1.tar.gz", hash = "sha256:f26601c6f54da6f178d3dd69b5f5e4280d6957a053680bd43b7c3ab6c7c34ef0"},
 ]
 aiodns = [
     {file = "aiodns-2.0.0-py2.py3-none-any.whl", hash = "sha256:aaa5ac584f40fe778013df0aa6544bf157799bd3f608364b451840ed2c8688de"},
@@ -1587,8 +1601,8 @@ pluggy = [
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 prompt-toolkit = [
-    {file = "prompt_toolkit-3.0.17-py3-none-any.whl", hash = "sha256:4cea7d09e46723885cb8bc54678175453e5071e9449821dce6f017b1d1fbfc1a"},
-    {file = "prompt_toolkit-3.0.17.tar.gz", hash = "sha256:9397a7162cf45449147ad6042fa37983a081b8a73363a5253dd4072666333137"},
+    {file = "prompt_toolkit-3.0.18-py3-none-any.whl", hash = "sha256:bf00f22079f5fadc949f42ae8ff7f05702826a97059ffcc6281036ad40ac6f04"},
+    {file = "prompt_toolkit-3.0.18.tar.gz", hash = "sha256:e1b4f11b9336a28fa11810bc623c357420f69dfdb6d2dac41ca2c21a55c033bc"},
 ]
 protobuf = [
     {file = "protobuf-3.15.6-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:1771ef20e88759c4d81db213e89b7a1fc53937968e12af6603c658ee4bcbfa38"},
@@ -1850,6 +1864,7 @@ traitlets = [
     {file = "traitlets-5.0.5-py3-none-any.whl", hash = "sha256:69ff3f9d5351f31a7ad80443c2674b7099df13cc41fc5fa6e2f6d3b0330b0426"},
     {file = "traitlets-5.0.5.tar.gz", hash = "sha256:178f4ce988f69189f7e523337a3e11d91c786ded9360174a3d9ca83e79bc5396"},
 ]
+trustix-python = []
 typed-ast = [
     {file = "typed_ast-1.4.2-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:7703620125e4fb79b64aa52427ec192822e9f45d37d4b6625ab37ef403e1df70"},
     {file = "typed_ast-1.4.2-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:c9aadc4924d4b5799112837b226160428524a9a45f830e0d0f184b19e4090487"},

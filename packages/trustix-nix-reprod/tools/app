@@ -9,13 +9,7 @@ if __name__ == "__main__":
             "uvicorn",
             "--debug",
             "--reload-dir",
-            "trustix_api",
-            "--reload-dir",
             "trustix_nix_reprod",
-            "--reload-dir",
-            "trustix_proto",
-            "--reload-dir",
-            "trustix_schema",
             "trustix_nix_reprod.app:app",
         ],
     )

@@ -3,8 +3,8 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from trustix_api import api_pb2 as api_dot_api__pb2
-from trustix_schema import sth_pb2 as schema_dot_sth__pb2
+from trustix_python.api import api_pb2 as api_dot_api__pb2
+from trustix_python.schema import sth_pb2 as schema_dot_sth__pb2
 
 
 class TrustixLogAPIStub(object):

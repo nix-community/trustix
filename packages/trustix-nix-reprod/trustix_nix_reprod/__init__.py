@@ -16,7 +16,7 @@ from tortoise import (
     Tortoise,
 )
 import ijson  # type: ignore
-from trustix_proto import trustix_pb2  # type: ignore
+from trustix_python.proto import trustix_pb2  # type: ignore
 from async_lru import alru_cache  # type: ignore
 import typing
 import pynix

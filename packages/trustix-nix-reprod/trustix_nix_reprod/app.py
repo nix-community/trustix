@@ -1,4 +1,4 @@
-from trustix_api import api_pb2
+from trustix_python.api import api_pb2
 from fastapi.templating import (
     Jinja2Templates,
 )

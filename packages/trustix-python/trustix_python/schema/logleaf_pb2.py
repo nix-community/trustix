@@ -17,9 +17,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     name="schema/logleaf.proto",
     package="",
     syntax="proto2",
-    serialized_options=b"Z\037github.com/tweag/trustix/schema",
+    serialized_options=b"Z6github.com/tweag/trustix/packages/trustix-proto/schema",
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\x14schema/logleaf.proto"?\n\x07LogLeaf\x12\x0b\n\x03Key\x18\x01 \x01(\x0c\x12\x13\n\x0bValueDigest\x18\x02 \x01(\x0c\x12\x12\n\nLeafDigest\x18\x03 \x02(\x0c\x42!Z\x1fgithub.com/tweag/trustix/schema',
+    serialized_pb=b'\n\x14schema/logleaf.proto"?\n\x07LogLeaf\x12\x0b\n\x03Key\x18\x01 \x01(\x0c\x12\x13\n\x0bValueDigest\x18\x02 \x01(\x0c\x12\x12\n\nLeafDigest\x18\x03 \x02(\x0c\x42\x38Z6github.com/tweag/trustix/packages/trustix-proto/schema',
 )
 
 

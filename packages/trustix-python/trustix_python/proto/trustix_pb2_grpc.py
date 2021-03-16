@@ -3,8 +3,8 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from trustix_api import api_pb2 as api_dot_api__pb2
-from trustix_proto import trustix_pb2 as proto_dot_trustix__pb2
+from trustix_python.api import api_pb2 as api_dot_api__pb2
+from trustix_python.proto import trustix_pb2 as proto_dot_trustix__pb2
 
 
 class TrustixCombinedRPCStub(object):

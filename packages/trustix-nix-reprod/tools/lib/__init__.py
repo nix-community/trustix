@@ -77,9 +77,6 @@ def get_watch_files() -> typing.List[str]:
     ] + [
         os.path.join(ROOT_DIR, f)
         for f in (
-            "trustix_api",
-            "trustix_nix_reprod",
-            "trustix_proto",
             "pynix",
             os.path.join("tools", "lib"),
         )

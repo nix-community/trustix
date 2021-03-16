@@ -17,7 +17,11 @@ PACKAGES: typing.List[str] = [
     "schema",
     "api",
 ]
-NAME_PREFIX = "trustix"
+IMPORT_PREFIX = "trustix_python"
+
+
+SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TARGET_PACKAGE = os.path.join(SCRIPT_DIR, "trustix_python")
 
 
 def dirname_recurse(filepath: str, depth: int) -> str:
@@ -29,7 +33,7 @@ def dirname_recurse(filepath: str, depth: int) -> str:
 
 if __name__ == "__main__":
     script_path = os.path.abspath(__file__)
-    root_dir = dirname_recurse(script_path, 4)
+    root_dir = os.path.join(dirname_recurse(script_path, 3), "trustix-proto")
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         for package in PACKAGES:
@@ -64,7 +68,7 @@ if __name__ == "__main__":
                 for import_pkg in PACKAGES:
                     contents = contents.replace(
                         f"from {import_pkg} import",
-                        f"from {NAME_PREFIX}_{import_pkg} import",
+                        f"from {IMPORT_PREFIX}.{import_pkg} import",
                     )
 
                 # Pre-format
@@ -79,8 +83,7 @@ if __name__ == "__main__":
                     f.write(contents)
 
             # Move the package into the correct directory in the source tree
-            rewritten_package = f"{NAME_PREFIX}_{package}"
-            package_path = os.path.join("..", rewritten_package)
+            package_path = os.path.join(TARGET_PACKAGE, package)
 
             if os.path.exists(package_path):
                 shutil.rmtree(package_path)

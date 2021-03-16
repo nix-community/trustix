@@ -17,9 +17,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     name="schema/sth.proto",
     package="",
     syntax="proto2",
-    serialized_options=b"Z\037github.com/tweag/trustix/schema",
+    serialized_options=b"Z6github.com/tweag/trustix/packages/trustix-proto/schema",
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\x10schema/sth.proto"p\n\x03STH\x12\x0f\n\x07LogRoot\x18\x01 \x02(\x0c\x12\x10\n\x08TreeSize\x18\x02 \x02(\x04\x12\x0f\n\x07MapRoot\x18\x03 \x02(\x0c\x12\x0e\n\x06MHRoot\x18\x04 \x02(\x0c\x12\x12\n\nMHTreeSize\x18\x05 \x02(\x04\x12\x11\n\tSignature\x18\x06 \x02(\x0c\x42!Z\x1fgithub.com/tweag/trustix/schema',
+    serialized_pb=b'\n\x10schema/sth.proto"p\n\x03STH\x12\x0f\n\x07LogRoot\x18\x01 \x02(\x0c\x12\x10\n\x08TreeSize\x18\x02 \x02(\x04\x12\x0f\n\x07MapRoot\x18\x03 \x02(\x0c\x12\x0e\n\x06MHRoot\x18\x04 \x02(\x0c\x12\x12\n\nMHTreeSize\x18\x05 \x02(\x04\x12\x11\n\tSignature\x18\x06 \x02(\x0c\x42\x38Z6github.com/tweag/trustix/packages/trustix-proto/schema',
 )
 
 

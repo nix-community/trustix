@@ -1,7 +1,7 @@
 from functools import lru_cache
 import grpc  # type: ignore
 
-from trustix_proto import trustix_pb2_grpc  # type: ignore
+from trustix_python.proto import trustix_pb2_grpc  # type: ignore
 from trustix_nix_reprod.conf import settings
 
 
