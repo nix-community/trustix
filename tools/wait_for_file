@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+file=$(echo "$1" | sed s/'unix:\/\/'/''/)
+
+while true; do
+    if test -e "$file"; then
+        break
+    fi
+    sleep 0.2
+done

@@ -1,0 +1,2 @@
+build: reflex -r '\.go$' go build
+daemon: echo trustix | entr -r ./trustix --config config.toml --state "$TRUSTIX_STATE_DIR" --listen "$TRUSTIX_RPC"
