@@ -30,6 +30,8 @@ class SettingsModel(BaseModel):
     binary_cache_proxy: str = os.environ["TRUSTIX_BINARY_CACHE_PROXY"]
     db_uri: str = os.environ["DB_URI"]
 
+    site_name: str = "Trustix R13Y"
+
     redis_uri: str = os.environ.get("REDIS_URI", "redis://localhost")
 
     default_attrs: typing.List[str] = _default_attrs

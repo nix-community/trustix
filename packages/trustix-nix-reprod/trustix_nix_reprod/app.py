@@ -87,7 +87,8 @@ def make_context(
 
     ctx = {
         "request": request,
-        "title": "Trustix R13Y" + (" ".join((" - ", title)) if title else ""),
+        "title": settings.site_name + (" ".join((" - ", title)) if title else ""),
+        "site_name": settings.site_name,
         "drv_placeholder": settings.placeholder_attr,
         "model": model,
     }
@@ -124,22 +125,34 @@ async def index(request: Request):
 
 @app.get("/drv/{drv_path}", response_model=DerivationReproducibility)
 async def drv(request: Request, drv_path: str):
-    data = await get_derivation_reproducibility(urllib.parse.unquote(drv_path))
+    drv_path_raw = urllib.parse.unquote(drv_path)
+    data = await get_derivation_reproducibility(drv_path_raw)
     return render_model(
         request,
         "drv.jinja2",
-        lambda: make_context(request, data),
+        lambda: make_context(
+            request,
+            data,
+            title=f"Derivation - {drv_path_raw}",
+        ),
         data,
     )
 
 
 @app.get("/attrs/{attrs}", response_model=AttrsResponse)
 async def attrs(request: Request, attrs: str):
-    model = await get_attrs_reproducibility(settings.default_attrs)
+
+    attrs_l = attrs.split(",")
+    model = await get_attrs_reproducibility(attrs_l)
+
     return render_model(
         request,
         "attrs.jinja2",
-        lambda: make_context(request, model),
+        lambda: make_context(
+            request,
+            model,
+            title="Attrs - " + ", ".join(attrs_l),
+        ),
         model,
     )
 
@@ -191,16 +204,21 @@ async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str)
     data = await diff_api(output_hash_1_hex, output_hash_2_hex)
 
     def diff_template_context():
-        return make_context(request, data, extra={
-            "narinfo_diff": json_diff(
-                data.narinfo[output_hash_1_hex],
-                data.narinfo[output_hash_2_hex],
-            )
-        })
+        return
 
     return render_model(
         request,
         "diff.jinja2",
-        diff_template_context,
+        lambda: make_context(
+            request,
+            data,
+            title="Diff",
+            extra={
+                "narinfo_diff": json_diff(
+                    data.narinfo[output_hash_1_hex],
+                    data.narinfo[output_hash_2_hex],
+                ),
+            }
+        ),
         data,
     )
