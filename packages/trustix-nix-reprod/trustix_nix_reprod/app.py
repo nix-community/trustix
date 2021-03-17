@@ -11,6 +11,7 @@ from fastapi import (
     Form,
 )
 from typing import (
+    Optional,
     Callable,
     TypeVar,
     Union,
@@ -35,6 +36,7 @@ from trustix_nix_reprod.api import (
     search_derivations,
     suggest_attrs,
 )
+from trustix_nix_reprod.diff import json_diff
 from trustix_nix_reprod.api import diff as diff_api
 from trustix_nix_reprod.api.models import (
     DerivationReproducibility,
@@ -80,6 +82,7 @@ def make_context(
     request: Request,
     model: BaseModel,
     title: str = "",
+    extra: Optional[Dict] = None,
 ) -> Dict:
 
     ctx = {
@@ -88,6 +91,9 @@ def make_context(
         "drv_placeholder": settings.placeholder_attr,
         "model": model,
     }
+
+    if extra:
+        ctx.update(extra)
 
     return ctx
 
@@ -183,9 +189,18 @@ async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str)
         [output_hash_1_hex, output_hash_2_hex]
     )
     data = await diff_api(output_hash_1_hex, output_hash_2_hex)
+
+    def diff_template_context():
+        return make_context(request, data, extra={
+            "narinfo_diff": json_diff(
+                data.narinfo[output_hash_1_hex],
+                data.narinfo[output_hash_2_hex],
+            )
+        })
+
     return render_model(
         request,
         "diff.jinja2",
-        lambda: make_context(request, data),
+        diff_template_context,
         data,
     )

@@ -4,7 +4,7 @@ body {
     font-size: 16px;
     margin: 2em auto;
     margin-top: 0;
-    max-width: 1000px;
+    max-width: 75%;
     padding: 1em;
     padding-top: 0;
     line-height: 1.4;
@@ -302,4 +302,28 @@ div#search-suggest > ul {
     box-shadow: 0 0 7px #456;
     border: 1px solid #456;
     border-radius: 5px;
+}
+
+/* Diffoscope */
+iframe.seamless {
+    background-color: transparent;
+    border: 0px none transparent;
+    padding: 0px;
+    overflow: hidden;
+    width: 100%;
+}
+
+/* narinfo diff table */
+table.narinfo-diff {
+    background-color: #E8E8E8;
+    border: outset #888 1px;
+}
+td.diffdeleted {
+    background: #FFCCCC;
+}
+td.diffadded {
+    background: #CCFFCC;
+}
+td.diffok {
+    background: #CCFFCC;
 }

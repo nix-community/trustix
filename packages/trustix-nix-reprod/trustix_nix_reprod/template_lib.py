@@ -6,6 +6,7 @@ from typing import Dict
 import urllib.parse
 import contextlib
 import json
+import re
 
 
 __all__ = (
@@ -20,8 +21,11 @@ def drv_url_quote(drv_path: str) -> str:
     return urllib.parse.quote(urllib.parse.quote(drv_path, safe=""))
 
 
-def json_render(x) -> str:
-    return json.dumps(x)
+def json_render(x) -> Markup:
+    if isinstance(x, list):
+        return Markup(", ".join([json.dumps(i, indent=2) for i in x]))
+
+    return Markup(json.dumps(x, indent=2))
 
 
 def js_url(filename: str) -> Markup:
@@ -35,7 +39,7 @@ def _make_diffoscope_printer(callback):
     yield fn
 
 
-def diffoscope_render(value: Dict) -> Markup:
+def diffoscope_render(value: Dict) -> str:
     """Convert diffoscope JSON output to HTML"""
 
     s = ""
@@ -49,4 +53,7 @@ def diffoscope_render(value: Dict) -> Markup:
     with mock.patch("diffoscope.presenters.html.html.make_printer", _make_diffoscope_printer):
         HTMLPresenter().output_html(callback, diff)
 
-    return Markup(s)
+    # Diffoscope leaks argv into title
+    s = re.sub(r"<title>.*?</title>", "<title>Trustix Diffoscope</title>", s, flags=re.DOTALL)
+
+    return s
