@@ -14,10 +14,15 @@ _default_attrs: typing.List[str] = (
 
 
 class CacheTTLSettingsModel(BaseModel):
-    diff: int = 1800
-    drv_reprod: int = 10
-    suggest: int = 10
-    search: int = 10
+    # Three days default
+    # These documents are relatively large but should be few,
+    # they are however very expensive to construct
+    diff: int = 3 * 24 * 60 * 60
+
+    # 30 minutes default
+    drv_reprod: int = 30 * 60
+    suggest: int = 30 * 60
+    search: int = 30 * 60
 
 
 class SettingsModel(BaseModel):
