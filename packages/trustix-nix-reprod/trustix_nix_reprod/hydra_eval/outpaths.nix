@@ -50,5 +50,5 @@ let
 
   system = "x86_64-linux";
 in
-  { hello.${system} = (import path { inherit system; }).hello; }
-  # tweak (builtins.removeAttrs hydraJobs blacklist)
+  # { hello.${system} = (import path { inherit system; }).hello; }
+  tweak (builtins.removeAttrs hydraJobs blacklist)
