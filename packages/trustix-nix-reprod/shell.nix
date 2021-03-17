@@ -32,8 +32,6 @@ pkgs.mkShell {
 
     pkgs.postgresql
 
-    pkgs.diffoscope
-
     pkgs.hivemind
 
     pkgs.yajl

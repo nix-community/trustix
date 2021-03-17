@@ -290,6 +290,23 @@ numpy = ["numpy (>=1.11.0)"]
 tests = ["check-manifest (>=0.25)", "coverage (>=4.0)", "isort (>=4.2.2)", "mock (>=1.3.0)", "pydocstyle (>=1.0.0)", "pytest-cov (>=1.8.0)", "pytest-pep8 (>=1.0.6)", "pytest (>=2.8.0)", "tox (>=3.7.0)"]
 
 [[package]]
+name = "diffoscope"
+version = "171"
+description = "in-depth comparison of files, archives, and directories"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+libarchive-c = "*"
+python-magic = "*"
+
+[package.extras]
+cmdline = ["argcomplete", "progressbar"]
+comparators = ["binwalk", "defusedxml", "guestfs", "jsondiff", "pypdf2", "python-debian", "pyxattr", "rpm-python", "tlsh"]
+distro_detection = ["distro"]
+
+[[package]]
 name = "fastapi"
 version = "0.63.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -472,6 +489,14 @@ MarkupSafe = ">=0.23"
 
 [package.extras]
 i18n = ["Babel (>=0.8)"]
+
+[[package]]
+name = "libarchive-c"
+version = "2.9"
+description = "Python interface to libarchive"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "markupsafe"
@@ -770,6 +795,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "python-magic"
+version = "0.4.22"
+description = "File type identification using libmagic"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
 name = "python-multipart"
 version = "0.0.5"
 description = "A streaming multipart parser for Python"
@@ -1017,7 +1050,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "ec494987456272162438d79135546b00e88bfe885f056c32a13cfb90779c55a4"
+content-hash = "d1b06dd403d14c3829190444665f6ce360a7348768d18b1d5aa2c53558ffa59c"
 
 [metadata.files]
 aerich = [
@@ -1269,6 +1302,9 @@ decorator = [
 dictdiffer = [
     {file = "dictdiffer-0.8.1-py2.py3-none-any.whl", hash = "sha256:d79d9a39e459fe33497c858470ca0d2e93cb96621751de06d631856adfd9c390"},
     {file = "dictdiffer-0.8.1.tar.gz", hash = "sha256:1adec0d67cdf6166bda96ae2934ddb5e54433998ceab63c984574d187cc563d2"},
+]
+diffoscope = [
+    {file = "diffoscope-171.tar.gz", hash = "sha256:a14af04a63dd526445b24f358b4856985e637891627b7a0fab90443990850f85"},
 ]
 fastapi = [
     {file = "fastapi-0.63.0-py3-none-any.whl", hash = "sha256:98d8ea9591d8512fdadf255d2a8fa56515cdd8624dca4af369da73727409508e"},
@@ -1525,6 +1561,10 @@ jedi = [
 jinja2 = [
     {file = "Jinja2-2.11.3-py2.py3-none-any.whl", hash = "sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419"},
     {file = "Jinja2-2.11.3.tar.gz", hash = "sha256:a6d58433de0ae800347cab1fa3043cebbabe8baa9d29e668f1c768cb87a333c6"},
+]
+libarchive-c = [
+    {file = "libarchive-c-2.9.tar.gz", hash = "sha256:9919344cec203f5db6596a29b5bc26b07ba9662925a05e24980b84709232ef60"},
+    {file = "libarchive_c-2.9-py2.py3-none-any.whl", hash = "sha256:84d5dbba635f4fe2819a8d5f45c63917daff488f0f01e7d5b6cae95f2bd51a28"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
@@ -1827,6 +1867,10 @@ python-dotenv = [
 ]
 python-levenshtein = [
     {file = "python-Levenshtein-0.12.2.tar.gz", hash = "sha256:dc2395fbd148a1ab31090dd113c366695934b9e85fe5a4b2a032745efd0346f6"},
+]
+python-magic = [
+    {file = "python-magic-0.4.22.tar.gz", hash = "sha256:ca884349f2c92ce830e3f498c5b7c7051fe2942c3ee4332f65213b8ebff15a62"},
+    {file = "python_magic-0.4.22-py2.py3-none-any.whl", hash = "sha256:8551e804c09a3398790bd9e392acb26554ae2609f29c72abb0b9dee9a5571eae"},
 ]
 python-multipart = [
     {file = "python-multipart-0.0.5.tar.gz", hash = "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"},
