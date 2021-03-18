@@ -4,6 +4,8 @@ buildGoApplication {
   pname = "trustix";
   version = "dev";
 
+  pwd = ./.;
+
   src = lib.cleanSourceWith {
     filter = name: type: ! lib.hasSuffix "tests" name;
     src = lib.cleanSource ./.;
