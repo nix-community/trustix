@@ -12,18 +12,11 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-type GitStorageConfig struct {
-	Remote   string `toml:"remote"`
-	Commiter string `toml:"commiter"`
-	Email    string `toml:"email"`
-}
-
 type NativeStorageConfig struct {
 }
 
 type StorageConfig struct {
 	Type   string               `toml:"type"`
-	Git    *GitStorageConfig    `toml:"git"`
 	Native *NativeStorageConfig `toml:"native"`
 }
 
