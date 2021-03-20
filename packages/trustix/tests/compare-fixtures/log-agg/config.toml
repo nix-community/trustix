@@ -4,47 +4,47 @@ engine = "percentage"
 [decider.percentage]
 minimum = 50
 
-[[log]]
+[[subscriber]]
 name = "trustix-test-follower1"
 mode = "trustix-follower"
 
-[log.transport]
+[subscriber.transport]
 type = "grpc"
 
-[log.transport.grpc]
+[subscriber.transport.grpc]
 remote = "unix:///build/1.sock"
 
-[log.signer]
+[subscriber.signer]
 type = "ed25519"
 key-type = "ed25519"
 public-key = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
-[[log]]
+[[subscriber]]
 name = "trustix-test-follower2"
 mode = "trustix-follower"
 
-[log.transport]
+[subscriber.transport]
 type = "grpc"
 
-[log.transport.grpc]
+[subscriber.transport.grpc]
 remote = "unix:///build/2.sock"
 
-[log.signer]
+[subscriber.signer]
 type = "ed25519"
 key-type = "ed25519"
 public-key = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
 
-[[log]]
+[[subscriber]]
 name = "trustix-test-follower3"
 mode = "trustix-follower"
 
-[log.transport]
+[subscriber.transport]
 type = "grpc"
 
-[log.transport.grpc]
+[subscriber.transport.grpc]
 remote = "unix:///build/3.sock"
 
-[log.signer]
+[subscriber.signer]
 type = "ed25519"
 key-type = "ed25519"
 public-key = "BneDQe44Wmeypis3B1KfLmipzd+B38UAzmuoH2Nvmso="

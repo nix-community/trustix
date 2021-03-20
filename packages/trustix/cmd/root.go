@@ -94,14 +94,6 @@ var rootCmd = &cobra.Command{
 
 		var logAPIServer api.TrustixLogAPIServer
 
-		errChan := make(chan error)
-		wg := new(sync.WaitGroup)
-
-		go func() {
-			wg.Wait()
-			close(errChan)
-		}()
-
 		sthmgr := sthmanager.NewSTHManager()
 		defer sthmgr.Close()
 		sthstore, err := storage.NewNativeStorage("STH", stateDirectory)
@@ -110,21 +102,81 @@ var rootCmd = &cobra.Command{
 		}
 
 		logMap := rpc.NewTrustixCombinedRPCServerMap()
-		configMap := make(map[string]*conf.LogConfig)
-		for _, logConfig := range config.Logs {
-			logConfig := logConfig
-			wg.Add(1)
+		{
 
-			mkLog := func() error {
-				log.WithFields(log.Fields{
-					"name":   logConfig.Name,
-					"pubkey": logConfig.Signer.PublicKey,
-					"mode":   logConfig.Mode,
-				}).Info("Adding log")
+			errChan := make(chan error)
+			wg := new(sync.WaitGroup)
 
-				switch logConfig.Mode {
+			go func() {
+				wg.Wait()
+				close(errChan)
+			}()
 
-				case "trustix-log":
+			for _, subscriberConfig := range config.Subscribers {
+				subConf := subscriberConfig
+				wg.Add(1)
+
+				go func() error {
+					defer wg.Done()
+
+					log.WithFields(log.Fields{
+						"name":   subConf.Name,
+						"pubkey": subConf.Signer.PublicKey,
+						// "mode":   subConf.Mode,
+					}).Info("Adding log subscriber")
+
+					var verifier signer.TrustixVerifier
+
+					signerConfig := subConf.Signer
+					switch signerConfig.Type {
+					case "ed25519":
+						verifier, err = signer.NewED25519Verifier(subConf.Signer.PublicKey)
+						if err != nil {
+							return err
+						}
+					default:
+						return fmt.Errorf("Verifier type '%s' is not supported.", signerConfig.Type)
+					}
+
+					conn, err := client.CreateClientConn(subConf.Transport.GRPC.Remote, verifier.Public())
+					if err != nil {
+						return err
+					}
+
+					c, err := apiimpl.NewTrustixAPIGRPCClient(conn)
+					if err != nil {
+						return err
+					}
+
+					logMap.Add(subConf.Name, c)
+
+					sthCache, err := sthmanager.NewSTHCache(subConf.Name, sthstore, c, verifier)
+					if err != nil {
+						return err
+					}
+
+					sthmgr.Set(subConf.Name, sthCache)
+
+					return nil
+				}()
+
+			}
+
+			for _, logConfig := range config.Logs {
+				logConfig := logConfig
+				wg.Add(1)
+
+				go func() error {
+					defer wg.Done()
+
+					log.WithFields(log.Fields{
+						"name":   logConfig.Name,
+						"pubkey": logConfig.Signer.PublicKey,
+						"mode":   logConfig.Mode,
+					}).Info("Adding log")
+
+					// TODO: Define a logger with fields already applied
+
 					log.WithFields(log.Fields{
 						"name": logConfig.Name,
 						"mode": logConfig.Mode,
@@ -133,7 +185,7 @@ var rootCmd = &cobra.Command{
 					signerConfig := logConfig.Signer
 
 					if signerConfig.Type == "" {
-						fmt.Errorf("Missing signer config field 'type'.")
+						return fmt.Errorf("Missing signer config field 'type'.")
 					}
 
 					var sig crypto.Signer
@@ -171,69 +223,23 @@ var rootCmd = &cobra.Command{
 					}
 
 					logMap.Add(logConfig.Name, logAPI)
-					sthmgr.Add(logConfig.Name, sthmanager.NewDummySTHCache(func() (*schema.STH, error) {
+					sthmgr.Set(logConfig.Name, sthmanager.NewDummySTHCache(func() (*schema.STH, error) {
 						return logAPI.GetSTH(context.Background(), new(api.STHRequest))
 					}))
 
-				case "trustix-follower":
-					var verifier signer.TrustixVerifier
+					return nil
+				}()
 
-					signerConfig := logConfig.Signer
-					switch signerConfig.Type {
-					case "ed25519":
-						verifier, err = signer.NewED25519Verifier(logConfig.Signer.PublicKey)
-						if err != nil {
-							return err
-						}
-					default:
-						return fmt.Errorf("Verifier type '%s' is not supported.", signerConfig.Type)
-					}
-
-					conn, err := client.CreateClientConn(logConfig.Transport.GRPC.Remote, verifier.Public())
-					if err != nil {
-						return err
-					}
-
-					c, err := apiimpl.NewTrustixAPIGRPCClient(conn)
-					if err != nil {
-						return err
-					}
-
-					logMap.Add(logConfig.Name, c)
-
-					sthCache, err := sthmanager.NewSTHCache(logConfig.Name, sthstore, c, verifier)
-					if err != nil {
-						return err
-					}
-
-					sthmgr.Add(logConfig.Name, sthCache)
-
-				default:
-					return fmt.Errorf("Mode '%s' could not be initialised for log name %s", logConfig.Mode, logConfig.Name)
-
-				}
-
-				configMap[logConfig.Name] = logConfig
-
-				return nil
 			}
 
-			go func() {
-				defer wg.Done()
-
-				err := mkLog()
+			for err := range errChan {
 				if err != nil {
-					errChan <- fmt.Errorf("Got error in log initialisation for log name '%s': %v", logConfig.Name, err)
+					return err
 				}
-			}()
-		}
-
-		for err := range errChan {
-			if err != nil {
-				return err
 			}
+			wg.Wait()
+
 		}
-		wg.Wait()
 
 		decider, err := func() (decider.LogDecider, error) {
 			deciders := []decider.LogDecider{}
@@ -267,11 +273,11 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		logServer := rpc.NewTrustixCombinedRPCServer(sthmgr, logMap, decider, configMap)
+		logServer := rpc.NewTrustixCombinedRPCServer(sthmgr, logMap, decider)
 
 		log.Debug("Creating gRPC servers")
 
-		errChan = make(chan error)
+		errChan := make(chan error)
 
 		createServer := func(lis net.Listener, insecure bool) (s *grpc.Server) {
 			_, isUnix := lis.(*net.UnixListener)

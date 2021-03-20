@@ -20,15 +20,6 @@ type StorageConfig struct {
 	Native *NativeStorageConfig `toml:"native"`
 }
 
-type GRPCTransportConfig struct {
-	Remote string `toml:"remote"`
-}
-
-type TransportConfig struct {
-	Type string               `toml:"type"`
-	GRPC *GRPCTransportConfig `toml:"grpc"`
-}
-
 type ED25519SignerConfig struct {
 	PrivateKeyPath string `toml:"private-key-path"`
 }
@@ -41,17 +32,17 @@ type SignerConfig struct {
 }
 
 type LogConfig struct {
-	Name      string            `toml:"name"`
-	Mode      string            `toml:"mode"`
-	Storage   *StorageConfig    `toml:"storage"`
-	Transport *TransportConfig  `toml:"transport"`
-	Signer    *SignerConfig     `toml:"signer"`
-	Meta      map[string]string `toml:"meta"`
+	Name    string            `toml:"name"`
+	Mode    string            `toml:"mode"`
+	Storage *StorageConfig    `toml:"storage"`
+	Signer  *SignerConfig     `toml:"signer"`
+	Meta    map[string]string `toml:"meta"`
 }
 
 type Config struct {
-	Deciders []*DeciderConfig `toml:"decider"`
-	Logs     []*LogConfig     `toml:"log"`
+	Deciders    []*DeciderConfig    `toml:"decider"`
+	Logs        []*LogConfig        `toml:"log"`
+	Subscribers []*SubscriberConfig `toml:"subscriber"`
 }
 
 func NewConfigFromFile(path string) (*Config, error) {

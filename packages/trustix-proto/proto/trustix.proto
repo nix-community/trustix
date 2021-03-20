@@ -42,7 +42,7 @@ message LogSigner {
 
 message Log {
   required string Name = 1;
-  required string Mode = 2;
+  // required string Mode = 2;
   required LogSigner Signer = 3;
   map<string, string> Meta = 4;
   required STH STH = 5;

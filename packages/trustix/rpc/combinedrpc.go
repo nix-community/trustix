@@ -22,7 +22,6 @@ import (
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/config"
 	"github.com/tweag/trustix/packages/trustix/decider"
 	"github.com/tweag/trustix/packages/trustix/sthmanager"
 )
@@ -32,15 +31,13 @@ type TrustixCombinedRPCServer struct {
 	logs       *TrustixCombinedRPCServerMap
 	decider    decider.LogDecider
 	sthmanager *sthmanager.STHManager
-	configs    map[string]*config.LogConfig
 }
 
-func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *TrustixCombinedRPCServerMap, decider decider.LogDecider, configMap map[string]*config.LogConfig) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *TrustixCombinedRPCServerMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
 	return &TrustixCombinedRPCServer{
 		logs:       logs,
 		decider:    decider,
 		sthmanager: sthmanager,
-		configs:    configMap,
 	}
 }
 
@@ -51,66 +48,6 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 		BitMask:               p.BitMask,
 		NumSideNodes:          int(*p.NumSideNodes),
 	}
-}
-
-func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {
-
-	logs := []*pb.Log{}
-
-	var wg sync.WaitGroup
-	var mux sync.Mutex
-
-	getSTH := l.sthmanager.Get
-
-	for name, _ := range l.logs.Map() {
-		name := name
-
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
-			conf, ok := l.configs[name]
-			if !ok {
-				log.Errorf("Could not find config for log with name: %s", name)
-				return
-			}
-
-			l := &pb.Log{}
-
-			l.Name = &name
-			l.Mode = &conf.Mode
-
-			value, ok := pb.LogSigner_KeyTypes_value[conf.Signer.KeyType]
-			if !ok {
-				panic("Invalid enum value")
-			}
-			l.Signer = &pb.LogSigner{
-				KeyType: pb.LogSigner_KeyTypes(value).Enum(),
-				Public:  &conf.Signer.PublicKey,
-			}
-
-			l.Meta = conf.Meta
-
-			sth, err := getSTH(name)
-			if err != nil {
-				log.Errorf("could not get STH for log '%s': %v", name, err)
-				return
-			}
-			l.STH = sth
-
-			mux.Lock()
-			logs = append(logs, l)
-			mux.Unlock()
-
-		}()
-	}
-
-	wg.Wait()
-
-	return &pb.LogsResponse{
-		Logs: logs,
-	}, nil
 }
 
 func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *pb.GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error) {
@@ -474,4 +411,21 @@ func (l *TrustixCombinedRPCServer) GetValue(ctx context.Context, in *api.ValueRe
 	}
 
 	return nil, fmt.Errorf("Value could not be retreived")
+}
+
+func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {
+	logs := []*pb.Log{}
+
+	for _, _ = range l.logs.Map() {
+		s := ""
+		logs = append(logs, &pb.Log{
+			Name:   &s,
+			Mode:   &s,
+			Signer: &pb.LogSigner{},
+		})
+	}
+
+	return &pb.LogsResponse{
+		Logs: logs,
+	}, nil
 }

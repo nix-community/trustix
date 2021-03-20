@@ -17,19 +17,26 @@ import (
 
 type STHManager struct {
 	logs map[string]STHCache
+	mux  *sync.RWMutex
 }
 
 func NewSTHManager() *STHManager {
 	return &STHManager{
 		logs: make(map[string]STHCache),
+		mux:  &sync.RWMutex{},
 	}
 }
 
-func (m *STHManager) Add(logName string, c STHCache) {
+func (m *STHManager) Set(logName string, c STHCache) {
+	m.mux.Lock()
 	m.logs[logName] = c
+	m.mux.Unlock()
 }
 
 func (m *STHManager) Get(logName string) (*schema.STH, error) {
+	m.mux.RLock()
+	defer m.mux.RUnlock()
+
 	cache, ok := m.logs[logName]
 	if !ok {
 		return nil, fmt.Errorf("Missing log '%s'", logName)

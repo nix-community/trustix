@@ -17,12 +17,13 @@ import (
 
 type TrustixCombinedRPCServerMap struct {
 	logMap map[string]api.TrustixLogAPI
-	mux    sync.Mutex
+	mux    *sync.RWMutex
 }
 
 func NewTrustixCombinedRPCServerMap() *TrustixCombinedRPCServerMap {
 	return &TrustixCombinedRPCServerMap{
 		logMap: make(map[string]api.TrustixLogAPI),
+		mux:    &sync.RWMutex{},
 	}
 }
 
@@ -34,8 +35,8 @@ func (m *TrustixCombinedRPCServerMap) Add(name string, log api.TrustixLogAPI) {
 }
 
 func (m *TrustixCombinedRPCServerMap) Get(name string) (api.TrustixLogAPI, error) {
-	m.mux.Lock()
-	defer m.mux.Unlock()
+	m.mux.RLock()
+	defer m.mux.RUnlock()
 
 	log, ok := m.logMap[name]
 	if !ok {
@@ -46,8 +47,8 @@ func (m *TrustixCombinedRPCServerMap) Get(name string) (api.TrustixLogAPI, error
 }
 
 func (m *TrustixCombinedRPCServerMap) Names() []string {
-	m.mux.Lock()
-	defer m.mux.Unlock()
+	m.mux.RLock()
+	defer m.mux.RUnlock()
 
 	keys := make([]string, len(m.logMap))
 	i := 0
@@ -59,8 +60,8 @@ func (m *TrustixCombinedRPCServerMap) Names() []string {
 }
 
 func (m *TrustixCombinedRPCServerMap) Map() map[string]api.TrustixLogAPI {
-	m.mux.Lock()
-	defer m.mux.Unlock()
+	m.mux.RLock()
+	defer m.mux.RUnlock()
 
 	logMap := make(map[string]api.TrustixLogAPI)
 	for name, log := range m.logMap {
