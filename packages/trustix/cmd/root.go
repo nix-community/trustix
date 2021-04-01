@@ -94,12 +94,19 @@ var rootCmd = &cobra.Command{
 				close(errChan)
 			}()
 
+			// Wrap to handle errors and propagate to channel
+			wrapLogInit := func(fn func() error) {
+				err := fn()
+				if err != nil {
+					errChan <- err
+				}
+			}
+
 			for _, subscriberConfig := range config.Subscribers {
 				subConf := subscriberConfig
 				wg.Add(1)
 
-				// TODO: Fix implicit error catching
-				go func() error {
+				go wrapLogInit(func() error {
 					defer wg.Done()
 
 					pubBytes, err := signer.Decode(subConf.Signer.PublicKey)
@@ -148,7 +155,7 @@ var rootCmd = &cobra.Command{
 					sthmgr.Set(logID, sthCache)
 
 					return nil
-				}()
+				})
 
 			}
 
@@ -156,7 +163,7 @@ var rootCmd = &cobra.Command{
 				logConfig := logConfig
 				wg.Add(1)
 
-				go func() error {
+				go wrapLogInit(func() error {
 					defer wg.Done()
 
 					var logID string
@@ -226,7 +233,7 @@ var rootCmd = &cobra.Command{
 					}))
 
 					return nil
-				}()
+				})
 
 			}
 
