@@ -33,16 +33,16 @@ type SignerConfig struct {
 
 type LogConfig struct {
 	// Name    string            `toml:"name"`
-	Mode    string            `toml:"mode"`
-	Storage *StorageConfig    `toml:"storage"`
-	Signer  *SignerConfig     `toml:"signer"`
-	Meta    map[string]string `toml:"meta"`
+	Mode   string            `toml:"mode"`
+	Signer *SignerConfig     `toml:"signer"`
+	Meta   map[string]string `toml:"meta"`
 }
 
 type Config struct {
 	Deciders    []*DeciderConfig    `toml:"decider"`
 	Logs        []*LogConfig        `toml:"log"`
 	Subscribers []*SubscriberConfig `toml:"subscriber"`
+	Storage     *StorageConfig      `toml:"storage"`
 }
 
 func NewConfigFromFile(path string) (*Config, error) {

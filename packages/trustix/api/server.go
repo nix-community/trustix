@@ -13,17 +13,20 @@ import (
 
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
+	ca "github.com/tweag/trustix/packages/trustix/cavaluestore"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
+	"github.com/tweag/trustix/packages/trustix/storage"
 )
 
 // TrustixAPIServer wraps kvStoreLogApi and turns it into a gRPC implementation
 // It is also responsible for extracting the relevant log implementation for calls that require routing
 type TrustixAPIServer struct {
 	api.UnimplementedTrustixLogAPIServer
+	store  storage.TrustixStorage
 	logMap *TrustixLogMap
 }
 
-func NewTrustixAPIServer(logMap *TrustixLogMap) (*TrustixAPIServer, error) {
+func NewTrustixAPIServer(logMap *TrustixLogMap, store storage.TrustixStorage) (*TrustixAPIServer, error) {
 	return &TrustixAPIServer{
 		logMap: logMap,
 	}, nil
@@ -100,12 +103,20 @@ func (s *TrustixAPIServer) Flush(ctx context.Context, req *api.FlushRequest) (*a
 }
 
 func (s *TrustixAPIServer) GetValue(ctx context.Context, req *api.ValueRequest) (*api.ValueResponse, error) {
-	log, err := s.logMap.Get("TODO")
+	var value []byte
+	err := s.store.View(func(txn storage.Transaction) error {
+		v, err := ca.Get(txn, req.Digest)
+		value = v
+		return err
+
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	return log.GetValue(ctx, req)
+	return &api.ValueResponse{
+		Value: value,
+	}, nil
 }
 
 func (s *TrustixAPIServer) GetMHLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {

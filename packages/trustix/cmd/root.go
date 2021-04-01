@@ -76,12 +76,22 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Could not create state directory: %s", stateDirectory)
 		}
 
+		var store storage.TrustixStorage
+		{
+			switch config.Storage.Type {
+			case "native":
+				store, err = storage.NewNativeStorage(stateDirectory)
+			case "memory":
+				store, err = storage.NewMemoryStorage()
+			}
+			if err != nil {
+				log.Fatalf("Could not initialise store: %v", err)
+			}
+		}
+
 		sthmgr := sthmanager.NewSTHManager()
 		defer sthmgr.Close()
-		sthstore, err := storage.NewNativeStorage("STH", stateDirectory)
-		if err != nil {
-			log.Fatal("Could not create local cache storage")
-		}
+		sthstore := store // TODO: Create a more narrow Store view
 
 		logMap := tapi.NewTrustixLogMap()
 		{
@@ -208,17 +218,6 @@ var rootCmd = &cobra.Command{
 						return fmt.Errorf("Signer type '%s' is not supported.", signerConfig.Type)
 					}
 
-					var store storage.TrustixStorage
-					switch logConfig.Storage.Type {
-					case "native":
-						store, err = storage.NewNativeStorage("log-"+logID, stateDirectory)
-					case "memory":
-						store, err = storage.NewMemoryStorage()
-					}
-					if err != nil {
-						return err
-					}
-
 					logAPI, err := tapi.NewKVStoreAPI(store, sig)
 					if err != nil {
 						return err
@@ -246,7 +245,7 @@ var rootCmd = &cobra.Command{
 
 		}
 
-		logAPIServer, err := tapi.NewTrustixAPIServer(logMap)
+		logAPIServer, err := tapi.NewTrustixAPIServer(logMap, store)
 		if err != nil {
 			return err
 		}

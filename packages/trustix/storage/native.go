@@ -53,8 +53,8 @@ func (t *nativeTxn) Delete(bucket []byte, key []byte) error {
 	return t.txn.Delete(createCompoundNativeKey(bucket, key))
 }
 
-func NewNativeStorage(name string, stateDirectory string) (*nativeStorage, error) {
-	path := path.Join(stateDirectory, name+".db")
+func NewNativeStorage(stateDirectory string) (*nativeStorage, error) {
+	path := path.Join(stateDirectory, "trustix.db")
 
 	options := badger.DefaultOptions(path)
 	options.Logger = nil
