@@ -417,7 +417,6 @@ func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest)
 	logs := []*pb.Log{}
 
 	for name, _ := range l.logs.Map() {
-		s := ""
 		logs = append(logs, &pb.Log{
 			Name:   &name,
 			Signer: &pb.LogSigner{},
@@ -428,3 +427,60 @@ func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest)
 		Logs: logs,
 	}, nil
 }
+
+// 	var wg sync.WaitGroup
+// 	var mux sync.Mutex
+
+// 	getSTH := l.sthmanager.Get
+
+// 	for name, _ := range l.logs.Map() {
+// 		name := name
+
+// 		wg.Add(1)
+
+// 		go func() {
+// 			defer wg.Done()
+
+// 			conf, ok := l.configs[name]
+// -			if !ok {
+// -				log.Errorf("Could not find config for log with name: %s", name)
+// -				return
+// -			}
+// -
+// -			l := &pb.Log{}
+// -
+// -			l.Name = &name
+// -			l.Mode = &conf.Mode
+// -
+// -			value, ok := pb.LogSigner_KeyTypes_value[conf.Signer.KeyType]
+// -			if !ok {
+// -				panic("Invalid enum value")
+// -			}
+// -			l.Signer = &pb.LogSigner{
+// -				KeyType: pb.LogSigner_KeyTypes(value).Enum(),
+// -				Public:  &conf.Signer.PublicKey,
+// -			}
+// -
+// -			l.Meta = conf.Meta
+// -
+// -			sth, err := getSTH(name)
+// -			if err != nil {
+// -				log.Errorf("could not get STH for log '%s': %v", name, err)
+// -				return
+// -			}
+// -			l.STH = sth
+// -
+// -			mux.Lock()
+// -			logs = append(logs, l)
+// -			mux.Unlock()
+// -
+// -		}()
+// -	}
+// -
+// -	wg.Wait()
+// -
+// -	return &pb.LogsResponse{
+// -		Logs: logs,
+// -	}, nil
+// -}
+// -
