@@ -8,11 +8,13 @@ option go_package = "github.com/tweag/trustix/packages/trustix-proto/api";
 package trustix;
 
 message STHRequest {
+  required string LogID = 1;
 }
 
 message GetLogConsistencyProofRequest {
-  required uint64 FirstSize = 1;
-  required uint64 SecondSize = 2;
+  required string LogID = 1;
+  required uint64 FirstSize = 2;
+  required uint64 SecondSize = 3;
 }
 
 message ProofResponse {
@@ -20,18 +22,21 @@ message ProofResponse {
 }
 
 message GetLogAuditProofRequest {
-  required uint64 Index = 1;
-  required uint64 TreeSize = 2;
+  required string LogID = 1;
+  required uint64 Index = 2;
+  required uint64 TreeSize = 3;
 }
 
 message GetLogEntriesRequest {
-  required uint64 Start = 1;
-  required uint64 Finish = 2;
+  required string LogID = 1;
+  required uint64 Start = 2;
+  required uint64 Finish = 3;
 }
 
 message GetMapValueRequest {
-  required bytes Key = 1;
-  required bytes MapRoot = 2;
+  required string LogID = 1;
+  required bytes Key = 2;
+  required bytes MapRoot = 3;
 }
 
 message SparseCompactMerkleProof {
@@ -59,7 +64,8 @@ message KeyValuePair {
 }
 
 message SubmitRequest {
-  repeated KeyValuePair Items = 1;
+  required string LogID = 1;
+  repeated KeyValuePair Items = 2;
 }
 
 message SubmitResponse {
@@ -70,6 +76,7 @@ message SubmitResponse {
 }
 
 message FlushRequest {
+  required string LogID = 1;
 }
 
 message FlushResponse {

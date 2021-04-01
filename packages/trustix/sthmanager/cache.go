@@ -32,14 +32,14 @@ type STHCache interface {
 
 type sthCache struct {
 	store     storage.TrustixStorage
-	logName   string
+	logID     string
 	closeChan chan interface{}
 }
 
-func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) (STHCache, error) {
+func NewSTHCache(logID string, store storage.TrustixStorage, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) (STHCache, error) {
 	c := &sthCache{
 		store:     store,
-		logName:   logName,
+		logID:     logID,
 		closeChan: make(chan interface{}),
 	}
 
@@ -95,6 +95,7 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 		}
 
 		resp, err := logapi.GetLogConsistencyProof(context.Background(), &apipb.GetLogConsistencyProofRequest{
+			LogID:      &logID,
 			FirstSize:  &oldTreeSize,
 			SecondSize: &newTreeSize,
 		})
@@ -116,7 +117,7 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 		err = c.Set(sth)
 
 		log.WithFields(log.Fields{
-			"logName":     logName,
+			"logID":       logID,
 			"oldTreeSize": *oldSTH.TreeSize,
 			"treeSize":    *sth.TreeSize,
 		}).Info("Updated STH")
@@ -142,8 +143,8 @@ func NewSTHCache(logName string, store storage.TrustixStorage, logapi api.Trusti
 			err := updateSTH()
 			if err != nil {
 				log.WithFields(log.Fields{
-					"logName": logName,
-					"error":   err,
+					"logID": logID,
+					"error": err,
 				}).Error("Could not update STH")
 			}
 		}
@@ -176,14 +177,14 @@ func (c *sthCache) Set(sth *schema.STH) error {
 	}
 
 	return c.store.Update(func(txn storage.Transaction) error {
-		return txn.Set([]byte(c.logName), []byte("HEAD"), buf)
+		return txn.Set([]byte(c.logID), []byte("HEAD"), buf)
 	})
 }
 
 func (c *sthCache) Get() (*schema.STH, error) {
 	var buf []byte
 	err := c.store.View(func(txn storage.Transaction) error {
-		v, err := txn.Get([]byte(c.logName), []byte("HEAD"))
+		v, err := txn.Get([]byte(c.logID), []byte("HEAD"))
 		buf = v
 		return err
 	})

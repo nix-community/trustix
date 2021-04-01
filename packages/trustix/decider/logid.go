@@ -12,26 +12,25 @@ import (
 	"fmt"
 )
 
-type lognameDecider struct {
-	logName string
+type logIDDecider struct {
+	logID string
 }
 
-// NewLogNameDecider - Matches a single name of a log
-// This mode is meant to be used as a fallback for e.g. cache.nixos.org
-func NewLogNameDecider(logName string) (LogDecider, error) {
-	return &lognameDecider{
-		logName: logName,
+// NewLogIDDecider - Matches entry from a single log id
+func NewLogIDDecider(logID string) (LogDecider, error) {
+	return &logIDDecider{
+		logID: logID,
 	}, nil
 }
 
-func (l *lognameDecider) Name() string {
-	return "logname"
+func (d *logIDDecider) Name() string {
+	return "logID"
 }
 
-func (l *lognameDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
+func (d *logIDDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
 	for i := range inputs {
 		input := inputs[i]
-		if input.LogName == l.logName {
+		if input.LogID == d.logID {
 			return &LogDeciderOutput{
 				OutputHash: input.OutputHash,
 				Confidence: 100,
@@ -39,5 +38,5 @@ func (l *lognameDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, e
 		}
 	}
 
-	return nil, fmt.Errorf("Could not find any match for log name %s", l.logName)
+	return nil, fmt.Errorf("Could not find any match for log name %s", d.logID)
 }

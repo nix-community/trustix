@@ -10,13 +10,13 @@ package trustix;
 
 // TrustixCombinedRPC
 service TrustixCombinedRPC {
-  // Get map[LogName]Log
+  // Get map[LogID]Log
   rpc Logs (LogsRequest) returns (LogsResponse) {}
 
   // TODO: I'm not sure if this belongs here in it's current shape...
   rpc GetLogEntries(GetLogEntriesRequestNamed) returns (LogEntriesResponse) {}
 
-  // Get map[LogName]OutputHash
+  // Get map[LogID]OutputHash
   rpc Get (KeyRequest) returns (EntriesResponse) {}
   rpc GetStream (stream KeyRequest) returns (stream EntriesResponse) {}
 
@@ -53,7 +53,7 @@ message LogsResponse {
 }
 
 message GetLogEntriesRequestNamed {
-  required string LogName = 1;
+  required string LogID = 1;
   required uint64 Start = 2;
   required uint64 Finish = 3;
 }
@@ -68,12 +68,12 @@ message EntriesResponse {
 }
 
 message LogValueResponse {
-  required string LogName = 1;
+  required string LogID = 1;
   required bytes Digest = 2;
 }
 
 message LogValueDecision {
-  repeated string LogNames = 1;
+  repeated string LogIDs = 1;
   required bytes Digest = 2;
   required int32 Confidence = 3;
   required bytes Value = 4;
@@ -85,6 +85,6 @@ message DecisionResponse {
   // Non-matches (hash mismatch)
   repeated LogValueResponse Mismatches = 2;
 
-  // Full misses (lognames missing log entry entirely)
+  // Full misses (log ids missing log entry entirely)
   repeated string Misses = 3;
 }

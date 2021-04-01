@@ -64,6 +64,7 @@ var submitClosureCommand = &cobra.Command{
 		}
 
 		req := &api.SubmitRequest{
+			LogID: &logID,
 			Items: items,
 		}
 

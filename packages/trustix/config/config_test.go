@@ -36,7 +36,7 @@ func TestConfig(t *testing.T) {
 
 	log := config.Logs[0]
 
-	assert.Equal(t, "trustix-test1", log.Name, "Unexpected name returned")
+	// assert.Equal(t, "trustix-test1", log.Name, "Unexpected name returned")
 
 	assert.Equal(t, "native", log.Storage.Type, "Unexpected storage type returned")
 

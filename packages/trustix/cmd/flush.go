@@ -30,7 +30,9 @@ var flushCommand = &cobra.Command{
 
 		c := api.NewTrustixLogAPIClient(conn)
 
-		_, err = c.Flush(ctx, &api.FlushRequest{})
+		_, err = c.Flush(ctx, &api.FlushRequest{
+			LogID: &logID,
+		})
 		if err != nil {
 			log.Fatalf("could not flush: %v", err)
 		}

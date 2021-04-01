@@ -39,7 +39,9 @@ var exportCommand = &cobra.Command{
 		defer cancel()
 
 		log.Debug("Requesting STH")
-		sth, err := c.GetSTH(ctx, &api.STHRequest{})
+		sth, err := c.GetSTH(ctx, &api.STHRequest{
+			LogID: &logID,
+		})
 		if err != nil {
 			log.Fatalf("could not get STH: %v", err)
 		}
@@ -69,6 +71,7 @@ var exportCommand = &cobra.Command{
 			pprev := prev
 			ii := i
 			req := &api.GetLogEntriesRequest{
+				LogID:  &logID,
 				Start:  &pprev,
 				Finish: &ii,
 			}
@@ -117,6 +120,7 @@ var exportCommand = &cobra.Command{
 			pprev := prev
 			ii := i
 			req := &api.GetLogEntriesRequest{
+				LogID:  &logID,
 				Start:  &pprev,
 				Finish: &ii,
 			}

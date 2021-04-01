@@ -10,7 +10,7 @@ package decider
 
 // LogDeciderInput
 type LogDeciderInput struct {
-	LogName    string
+	LogID      string
 	OutputHash string
 }
 

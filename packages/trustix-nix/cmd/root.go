@@ -22,6 +22,8 @@ var once sync.Once
 
 var dialAddress string
 
+var logID string
+
 var rootCmd = &cobra.Command{
 	Use:   "trustix-nix",
 	Short: "Trustix nix integration",
@@ -40,6 +42,7 @@ func initCommands() {
 	trustixSock = fmt.Sprintf("unix://%s", trustixSock)
 
 	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
+	rootCmd.PersistentFlags().StringVar(&logID, "log-id", "", "Log ID")
 
 	log.SetLevel(log.DebugLevel)
 	log.SetOutput(os.Stderr)

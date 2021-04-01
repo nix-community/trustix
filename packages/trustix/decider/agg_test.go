@@ -20,24 +20,24 @@ func TestAggSimple(t *testing.T) {
 
 	inputs := []*LogDeciderInput{
 		{
-			LogName:    "test1",
+			LogID:      "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210ab",
 		},
 		{
-			LogName:    "test2",
+			LogID:      "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210af",
 		},
 		{
-			LogName:    "test3",
+			LogID:      "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210a7",
 		},
 		{
-			LogName:    "test4",
+			LogID:      "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 	}
 
-	_decider, err := NewLogNameDecider("test3")
+	_decider, err := NewLogIDDecider("test3")
 	assert.Nil(err)
 
 	decider := NewAggDecider(_decider)
@@ -55,24 +55,24 @@ func TestAggNonMatch(t *testing.T) {
 
 	inputs := []*LogDeciderInput{
 		{
-			LogName:    "test1",
+			LogID:      "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210ab",
 		},
 		{
-			LogName:    "test2",
+			LogID:      "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210af",
 		},
 		{
-			LogName:    "test3",
+			LogID:      "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210a7",
 		},
 		{
-			LogName:    "test4",
+			LogID:      "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 	}
 
-	_decider, err := NewLogNameDecider("test5")
+	_decider, err := NewLogIDDecider("test5")
 	assert.Nil(err)
 
 	decider := NewAggDecider(_decider)

@@ -22,18 +22,19 @@ import (
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
+	tapi "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/decider"
 	"github.com/tweag/trustix/packages/trustix/sthmanager"
 )
 
 type TrustixCombinedRPCServer struct {
 	pb.UnimplementedTrustixCombinedRPCServer
-	logs       *TrustixCombinedRPCServerMap
+	logs       *tapi.TrustixLogMap
 	decider    decider.LogDecider
 	sthmanager *sthmanager.STHManager
 }
 
-func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *TrustixCombinedRPCServerMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *tapi.TrustixLogMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
 	return &TrustixCombinedRPCServer{
 		logs:       logs,
 		decider:    decider,
@@ -51,12 +52,13 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 }
 
 func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *pb.GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error) {
-	log, err := l.logs.Get(*in.LogName)
+	log, err := l.logs.Get(*in.LogID)
 	if err != nil {
 		return nil, err
 	}
 
 	return log.GetLogEntries(ctx, &api.GetLogEntriesRequest{
+		LogID:  in.LogID,
 		Start:  in.Start,
 		Finish: in.Finish,
 	})
@@ -73,8 +75,8 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 
 	getSTH := l.sthmanager.Get
 
-	for name, l := range l.logs.Map() {
-		name := name
+	for logID, l := range l.logs.Map() {
+		logID := logID
 		l := l
 
 		wg.Add(1)
@@ -83,17 +85,18 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 			defer wg.Done()
 
 			log.WithFields(log.Fields{
-				"key":     hexInput,
-				"logName": name,
+				"key":   hexInput,
+				"logID": logID,
 			}).Info("Querying log")
 
-			sth, err := getSTH(name)
+			sth, err := getSTH(logID)
 			if err != nil {
 				log.Error(fmt.Errorf("could not get STH: %v", err))
 				return
 			}
 
 			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
+				LogID:   &logID,
 				Key:     in.Key,
 				MapRoot: sth.MapRoot,
 			})
@@ -116,7 +119,7 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 			}
 
 			mux.Lock()
-			responses[name] = entry
+			responses[logID] = entry
 			mux.Unlock()
 		}()
 	}
@@ -212,8 +215,8 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 			defer wg.Done()
 
 			log.WithFields(log.Fields{
-				"key":     hexInput,
-				"logName": name,
+				"key":   hexInput,
+				"logID": name,
 			}).Info("Querying log")
 
 			sth, err := getSTH(name)
@@ -258,7 +261,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 			}
 
 			inputs = append(inputs, &decider.LogDeciderInput{
-				LogName:    name,
+				LogID:      name,
 				OutputHash: hex.EncodeToString(mapEntry.Digest),
 			})
 
@@ -287,16 +290,16 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 
 		confidence := int32(decision.Confidence)
 		if decision.OutputHash != "" {
-			logNames := []string{}
+			logIDs := []string{}
 			for _, input := range inputs {
 				if input.OutputHash == decision.OutputHash {
-					logNames = append(logNames, input.LogName)
+					logIDs = append(logIDs, input.LogID)
 				}
 			}
 
 			value := []byte{}
-			for _, name := range logNames {
-				resp, err := logMap[name].GetValue(ctx, &api.ValueRequest{
+			for _, id := range logIDs {
+				resp, err := logMap[id].GetValue(ctx, &api.ValueRequest{
 					Digest: outputHash,
 				})
 				if err != nil {
@@ -306,7 +309,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 			}
 
 			resp.Decision = &pb.LogValueDecision{
-				LogNames:   logNames,
+				LogIDs:     logIDs,
 				Digest:     outputHash,
 				Confidence: &confidence,
 				Value:      value,
@@ -328,8 +331,8 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 		}
 
 		resp.Mismatches = append(resp.Mismatches, &pb.LogValueResponse{
-			LogName: &input.LogName,
-			Digest:  digest,
+			LogID:  &input.LogID,
+			Digest: digest,
 		})
 	}
 
@@ -403,7 +406,7 @@ func (l *TrustixCombinedRPCServer) GetValue(ctx context.Context, in *api.ValueRe
 		resp, err := logApi.GetValue(ctx, in)
 		if err != nil {
 			log.WithFields(log.Fields{
-				"logName": name,
+				"logID": name,
 			}).Info("Error receiving value")
 		} else {
 			return resp, nil

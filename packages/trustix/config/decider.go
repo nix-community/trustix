@@ -27,8 +27,8 @@ type LuaDeciderConfig struct {
 	Script string `toml:"script"`
 }
 
-type LogNameDeciderConfig struct {
-	Name string `toml:"name"`
+type LogIDDeciderConfig struct {
+	ID string `toml:"id"`
 }
 
 type PercentageDeciderConfig struct {
@@ -38,6 +38,6 @@ type PercentageDeciderConfig struct {
 type DeciderConfig struct {
 	Engine     string                   `toml:"engine"`
 	Lua        *LuaDeciderConfig        `toml:"lua"`
-	LogName    *LogNameDeciderConfig    `toml:"logname"`
+	LogID      *LogIDDeciderConfig      `toml:"logid"`
 	Percentage *PercentageDeciderConfig `toml:"percentage"`
 }

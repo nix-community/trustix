@@ -27,19 +27,19 @@ func NewSTHManager() *STHManager {
 	}
 }
 
-func (m *STHManager) Set(logName string, c STHCache) {
+func (m *STHManager) Set(logID string, c STHCache) {
 	m.mux.Lock()
-	m.logs[logName] = c
+	m.logs[logID] = c
 	m.mux.Unlock()
 }
 
-func (m *STHManager) Get(logName string) (*schema.STH, error) {
+func (m *STHManager) Get(logID string) (*schema.STH, error) {
 	m.mux.RLock()
 	defer m.mux.RUnlock()
 
-	cache, ok := m.logs[logName]
+	cache, ok := m.logs[logID]
 	if !ok {
-		return nil, fmt.Errorf("Missing log '%s'", logName)
+		return nil, fmt.Errorf("Missing log '%s'", logID)
 	}
 
 	return cache.Get()

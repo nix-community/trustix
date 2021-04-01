@@ -61,8 +61,8 @@ func (l *luaDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error
 	// Create corresponding *LogDeciderInput
 	for i, in := range inputs {
 		state.NewTable()
-		state.PushString(in.LogName)
-		state.SetField(-2, "LogName")
+		state.PushString(in.LogID)
+		state.SetField(-2, "LogID")
 		state.PushString(in.OutputHash)
 		state.SetField(-2, "OutputHash")
 

@@ -14,30 +14,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLogNameSimple(t *testing.T) {
+func TestLogIDSimple(t *testing.T) {
 
 	assert := assert.New(t)
 
 	inputs := []*LogDeciderInput{
 		{
-			LogName:    "test1",
+			LogID:      "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210ab",
 		},
 		{
-			LogName:    "test2",
+			LogID:      "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210af",
 		},
 		{
-			LogName:    "test3",
+			LogID:      "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210a7",
 		},
 		{
-			LogName:    "test4",
+			LogID:      "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 	}
 
-	decider, err := NewLogNameDecider("test3")
+	decider, err := NewLogIDDecider("test3")
 	assert.Nil(err)
 
 	output, err := decider.Decide(inputs)
@@ -47,30 +47,30 @@ func TestLogNameSimple(t *testing.T) {
 
 }
 
-func TestLogNameNonMatch(t *testing.T) {
+func TestLogIDNonMatch(t *testing.T) {
 
 	assert := assert.New(t)
 
 	inputs := []*LogDeciderInput{
 		{
-			LogName:    "test1",
+			LogID:      "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210ab",
 		},
 		{
-			LogName:    "test2",
+			LogID:      "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210af",
 		},
 		{
-			LogName:    "test3",
+			LogID:      "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210a7",
 		},
 		{
-			LogName:    "test4",
+			LogID:      "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 	}
 
-	decider, err := NewLogNameDecider("test5")
+	decider, err := NewLogIDDecider("test5")
 	assert.Nil(err)
 
 	output, err := decider.Decide(inputs)

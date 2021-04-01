@@ -21,21 +21,22 @@
 // SOFTWARE.
 //
 
-package config
+package lib
 
-type GRPCTransportConfig struct {
-	Remote string `toml:"remote"`
-}
+import (
+	"crypto/sha256"
+	"encoding/hex"
+)
 
-type TransportConfig struct {
-	Type string               `toml:"type"`
-	GRPC *GRPCTransportConfig `toml:"grpc"`
-}
+// LogID - Generate a deterministic ID based on known facts
+func LogID(keyType string, publicKey []byte) string {
+	h := sha256.New()
 
-type SubscriberConfig struct {
-	// Name string `toml:"name"`
-	// Mode      string            `toml:"mode"`
-	Transport *TransportConfig  `toml:"transport"`
-	Signer    *SignerConfig     `toml:"signer"`
-	Meta      map[string]string `toml:"meta"`
+	h.Write([]byte(keyType))
+	h.Write([]byte(":"))
+
+	h.Write(publicKey)
+	h.Write([]byte(":"))
+
+	return hex.EncodeToString(h.Sum(nil))
 }

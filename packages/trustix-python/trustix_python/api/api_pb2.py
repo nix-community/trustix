@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax="proto2",
     serialized_options=b"Z3github.com/tweag/trustix/packages/trustix-proto/api",
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\rapi/api.proto\x12\x07trustix\x1a\x10schema/sth.proto\x1a\x14schema/logleaf.proto"\x0c\n\nSTHRequest"F\n\x1dGetLogConsistencyProofRequest\x12\x11\n\tFirstSize\x18\x01 \x02(\x04\x12\x12\n\nSecondSize\x18\x02 \x02(\x04"\x1e\n\rProofResponse\x12\r\n\x05Proof\x18\x01 \x03(\x0c":\n\x17GetLogAuditProofRequest\x12\r\n\x05Index\x18\x01 \x02(\x04\x12\x10\n\x08TreeSize\x18\x02 \x02(\x04"5\n\x14GetLogEntriesRequest\x12\r\n\x05Start\x18\x01 \x02(\x04\x12\x0e\n\x06\x46inish\x18\x02 \x02(\x04"2\n\x12GetMapValueRequest\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\x0f\n\x07MapRoot\x18\x02 \x02(\x0c"s\n\x18SparseCompactMerkleProof\x12\x11\n\tSideNodes\x18\x01 \x03(\x0c\x12\x1d\n\x15NonMembershipLeafData\x18\x02 \x02(\x0c\x12\x0f\n\x07\x42itMask\x18\x03 \x02(\x0c\x12\x14\n\x0cNumSideNodes\x18\x04 \x02(\x04"S\n\x10MapValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c\x12\x30\n\x05Proof\x18\x02 \x02(\x0b\x32!.trustix.SparseCompactMerkleProof".\n\x12LogEntriesResponse\x12\x18\n\x06Leaves\x18\x01 \x03(\x0b\x32\x08.LogLeaf"*\n\x0cKeyValuePair\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\r\n\x05Value\x18\x02 \x02(\x0c"5\n\rSubmitRequest\x12$\n\x05Items\x18\x01 \x03(\x0b\x32\x15.trustix.KeyValuePair"R\n\x0eSubmitResponse\x12.\n\x06status\x18\x01 \x02(\x0e\x32\x1e.trustix.SubmitResponse.Status"\x10\n\x06Status\x12\x06\n\x02OK\x10\x00"\x0e\n\x0c\x46lushRequest"\x0f\n\rFlushResponse"\x1e\n\x0cValueRequest\x12\x0e\n\x06\x44igest\x18\x01 \x02(\x0c"\x1e\n\rValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c\x32\xaf\x06\n\rTrustixLogAPI\x12%\n\x06GetSTH\x12\x13.trustix.STHRequest\x1a\x04.STH"\x00\x12;\n\x06Submit\x12\x16.trustix.SubmitRequest\x1a\x17.trustix.SubmitResponse"\x00\x12\x38\n\x05\x46lush\x12\x15.trustix.FlushRequest\x1a\x16.trustix.FlushResponse"\x00\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x12Z\n\x16GetLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12N\n\x10GetLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12M\n\rGetLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x12G\n\x0bGetMapValue\x12\x1b.trustix.GetMapValueRequest\x1a\x19.trustix.MapValueResponse"\x00\x12\\\n\x18GetMHLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12P\n\x12GetMHLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12O\n\x0fGetMHLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x42\x35Z3github.com/tweag/trustix/packages/trustix-proto/api',
+    serialized_pb=b'\n\rapi/api.proto\x12\x07trustix\x1a\x10schema/sth.proto\x1a\x14schema/logleaf.proto"\x1b\n\nSTHRequest\x12\r\n\x05LogID\x18\x01 \x02(\t"U\n\x1dGetLogConsistencyProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x11\n\tFirstSize\x18\x02 \x02(\x04\x12\x12\n\nSecondSize\x18\x03 \x02(\x04"\x1e\n\rProofResponse\x12\r\n\x05Proof\x18\x01 \x03(\x0c"I\n\x17GetLogAuditProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Index\x18\x02 \x02(\x04\x12\x10\n\x08TreeSize\x18\x03 \x02(\x04"D\n\x14GetLogEntriesRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Start\x18\x02 \x02(\x04\x12\x0e\n\x06\x46inish\x18\x03 \x02(\x04"A\n\x12GetMapValueRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x0b\n\x03Key\x18\x02 \x02(\x0c\x12\x0f\n\x07MapRoot\x18\x03 \x02(\x0c"s\n\x18SparseCompactMerkleProof\x12\x11\n\tSideNodes\x18\x01 \x03(\x0c\x12\x1d\n\x15NonMembershipLeafData\x18\x02 \x02(\x0c\x12\x0f\n\x07\x42itMask\x18\x03 \x02(\x0c\x12\x14\n\x0cNumSideNodes\x18\x04 \x02(\x04"S\n\x10MapValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c\x12\x30\n\x05Proof\x18\x02 \x02(\x0b\x32!.trustix.SparseCompactMerkleProof".\n\x12LogEntriesResponse\x12\x18\n\x06Leaves\x18\x01 \x03(\x0b\x32\x08.LogLeaf"*\n\x0cKeyValuePair\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\r\n\x05Value\x18\x02 \x02(\x0c"D\n\rSubmitRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12$\n\x05Items\x18\x02 \x03(\x0b\x32\x15.trustix.KeyValuePair"R\n\x0eSubmitResponse\x12.\n\x06status\x18\x01 \x02(\x0e\x32\x1e.trustix.SubmitResponse.Status"\x10\n\x06Status\x12\x06\n\x02OK\x10\x00"\x1d\n\x0c\x46lushRequest\x12\r\n\x05LogID\x18\x01 \x02(\t"\x0f\n\rFlushResponse"\x1e\n\x0cValueRequest\x12\x0e\n\x06\x44igest\x18\x01 \x02(\x0c"\x1e\n\rValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c\x32\xaf\x06\n\rTrustixLogAPI\x12%\n\x06GetSTH\x12\x13.trustix.STHRequest\x1a\x04.STH"\x00\x12;\n\x06Submit\x12\x16.trustix.SubmitRequest\x1a\x17.trustix.SubmitResponse"\x00\x12\x38\n\x05\x46lush\x12\x15.trustix.FlushRequest\x1a\x16.trustix.FlushResponse"\x00\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x12Z\n\x16GetLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12N\n\x10GetLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12M\n\rGetLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x12G\n\x0bGetMapValue\x12\x1b.trustix.GetMapValueRequest\x1a\x19.trustix.MapValueResponse"\x00\x12\\\n\x18GetMHLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12P\n\x12GetMHLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12O\n\x0fGetMHLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x42\x35Z3github.com/tweag/trustix/packages/trustix-proto/api',
     dependencies=[
         schema_dot_sth__pb2.DESCRIPTOR,
         schema_dot_logleaf__pb2.DESCRIPTOR,
@@ -49,8 +49,8 @@ _SUBMITRESPONSE_STATUS = _descriptor.EnumDescriptor(
     ],
     containing_type=None,
     serialized_options=None,
-    serialized_start=766,
-    serialized_end=782,
+    serialized_start=856,
+    serialized_end=872,
 )
 _sym_db.RegisterEnumDescriptor(_SUBMITRESPONSE_STATUS)
 
@@ -62,7 +62,27 @@ _STHREQUEST = _descriptor.Descriptor(
     file=DESCRIPTOR,
     containing_type=None,
     create_key=_descriptor._internal_create_key,
-    fields=[],
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="LogID",
+            full_name="trustix.STHRequest.LogID",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
     extensions=[],
     nested_types=[],
     enum_types=[],
@@ -72,7 +92,7 @@ _STHREQUEST = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[],
     serialized_start=66,
-    serialized_end=78,
+    serialized_end=93,
 )
 
 
@@ -85,10 +105,29 @@ _GETLOGCONSISTENCYPROOFREQUEST = _descriptor.Descriptor(
     create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
-            name="FirstSize",
-            full_name="trustix.GetLogConsistencyProofRequest.FirstSize",
+            name="LogID",
+            full_name="trustix.GetLogConsistencyProofRequest.LogID",
             index=0,
             number=1,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="FirstSize",
+            full_name="trustix.GetLogConsistencyProofRequest.FirstSize",
+            index=1,
+            number=2,
             type=4,
             cpp_type=4,
             label=2,
@@ -106,8 +145,8 @@ _GETLOGCONSISTENCYPROOFREQUEST = _descriptor.Descriptor(
         _descriptor.FieldDescriptor(
             name="SecondSize",
             full_name="trustix.GetLogConsistencyProofRequest.SecondSize",
-            index=1,
-            number=2,
+            index=2,
+            number=3,
             type=4,
             cpp_type=4,
             label=2,
@@ -131,8 +170,8 @@ _GETLOGCONSISTENCYPROOFREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=80,
-    serialized_end=150,
+    serialized_start=95,
+    serialized_end=180,
 )
 
 
@@ -172,8 +211,8 @@ _PROOFRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=152,
-    serialized_end=182,
+    serialized_start=182,
+    serialized_end=212,
 )
 
 
@@ -186,10 +225,29 @@ _GETLOGAUDITPROOFREQUEST = _descriptor.Descriptor(
     create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
-            name="Index",
-            full_name="trustix.GetLogAuditProofRequest.Index",
+            name="LogID",
+            full_name="trustix.GetLogAuditProofRequest.LogID",
             index=0,
             number=1,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="Index",
+            full_name="trustix.GetLogAuditProofRequest.Index",
+            index=1,
+            number=2,
             type=4,
             cpp_type=4,
             label=2,
@@ -207,8 +265,8 @@ _GETLOGAUDITPROOFREQUEST = _descriptor.Descriptor(
         _descriptor.FieldDescriptor(
             name="TreeSize",
             full_name="trustix.GetLogAuditProofRequest.TreeSize",
-            index=1,
-            number=2,
+            index=2,
+            number=3,
             type=4,
             cpp_type=4,
             label=2,
@@ -232,8 +290,8 @@ _GETLOGAUDITPROOFREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=184,
-    serialized_end=242,
+    serialized_start=214,
+    serialized_end=287,
 )
 
 
@@ -246,10 +304,29 @@ _GETLOGENTRIESREQUEST = _descriptor.Descriptor(
     create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
-            name="Start",
-            full_name="trustix.GetLogEntriesRequest.Start",
+            name="LogID",
+            full_name="trustix.GetLogEntriesRequest.LogID",
             index=0,
             number=1,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="Start",
+            full_name="trustix.GetLogEntriesRequest.Start",
+            index=1,
+            number=2,
             type=4,
             cpp_type=4,
             label=2,
@@ -267,8 +344,8 @@ _GETLOGENTRIESREQUEST = _descriptor.Descriptor(
         _descriptor.FieldDescriptor(
             name="Finish",
             full_name="trustix.GetLogEntriesRequest.Finish",
-            index=1,
-            number=2,
+            index=2,
+            number=3,
             type=4,
             cpp_type=4,
             label=2,
@@ -292,8 +369,8 @@ _GETLOGENTRIESREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=244,
-    serialized_end=297,
+    serialized_start=289,
+    serialized_end=357,
 )
 
 
@@ -306,10 +383,29 @@ _GETMAPVALUEREQUEST = _descriptor.Descriptor(
     create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
-            name="Key",
-            full_name="trustix.GetMapValueRequest.Key",
+            name="LogID",
+            full_name="trustix.GetMapValueRequest.LogID",
             index=0,
             number=1,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="Key",
+            full_name="trustix.GetMapValueRequest.Key",
+            index=1,
+            number=2,
             type=12,
             cpp_type=9,
             label=2,
@@ -327,8 +423,8 @@ _GETMAPVALUEREQUEST = _descriptor.Descriptor(
         _descriptor.FieldDescriptor(
             name="MapRoot",
             full_name="trustix.GetMapValueRequest.MapRoot",
-            index=1,
-            number=2,
+            index=2,
+            number=3,
             type=12,
             cpp_type=9,
             label=2,
@@ -352,8 +448,8 @@ _GETMAPVALUEREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=299,
-    serialized_end=349,
+    serialized_start=359,
+    serialized_end=424,
 )
 
 
@@ -450,8 +546,8 @@ _SPARSECOMPACTMERKLEPROOF = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=351,
-    serialized_end=466,
+    serialized_start=426,
+    serialized_end=541,
 )
 
 
@@ -510,8 +606,8 @@ _MAPVALUERESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=468,
-    serialized_end=551,
+    serialized_start=543,
+    serialized_end=626,
 )
 
 
@@ -551,8 +647,8 @@ _LOGENTRIESRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=553,
-    serialized_end=599,
+    serialized_start=628,
+    serialized_end=674,
 )
 
 
@@ -611,8 +707,8 @@ _KEYVALUEPAIR = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=601,
-    serialized_end=643,
+    serialized_start=676,
+    serialized_end=718,
 )
 
 
@@ -625,10 +721,29 @@ _SUBMITREQUEST = _descriptor.Descriptor(
     create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
-            name="Items",
-            full_name="trustix.SubmitRequest.Items",
+            name="LogID",
+            full_name="trustix.SubmitRequest.LogID",
             index=0,
             number=1,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="Items",
+            full_name="trustix.SubmitRequest.Items",
+            index=1,
+            number=2,
             type=11,
             cpp_type=10,
             label=3,
@@ -652,8 +767,8 @@ _SUBMITREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=645,
-    serialized_end=698,
+    serialized_start=720,
+    serialized_end=788,
 )
 
 
@@ -695,8 +810,8 @@ _SUBMITRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=700,
-    serialized_end=782,
+    serialized_start=790,
+    serialized_end=872,
 )
 
 
@@ -707,7 +822,27 @@ _FLUSHREQUEST = _descriptor.Descriptor(
     file=DESCRIPTOR,
     containing_type=None,
     create_key=_descriptor._internal_create_key,
-    fields=[],
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="LogID",
+            full_name="trustix.FlushRequest.LogID",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
     extensions=[],
     nested_types=[],
     enum_types=[],
@@ -716,8 +851,8 @@ _FLUSHREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=784,
-    serialized_end=798,
+    serialized_start=874,
+    serialized_end=903,
 )
 
 
@@ -737,8 +872,8 @@ _FLUSHRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=800,
-    serialized_end=815,
+    serialized_start=905,
+    serialized_end=920,
 )
 
 
@@ -778,8 +913,8 @@ _VALUEREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=817,
-    serialized_end=847,
+    serialized_start=922,
+    serialized_end=952,
 )
 
 
@@ -819,8 +954,8 @@ _VALUERESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=849,
-    serialized_end=879,
+    serialized_start=954,
+    serialized_end=984,
 )
 
 _MAPVALUERESPONSE.fields_by_name["Proof"].message_type = _SPARSECOMPACTMERKLEPROOF
@@ -1036,8 +1171,8 @@ _TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
     index=0,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-    serialized_start=882,
-    serialized_end=1697,
+    serialized_start=987,
+    serialized_end=1802,
     methods=[
         _descriptor.MethodDescriptor(
             name="GetSTH",

@@ -19,7 +19,7 @@ func TestLuaScript(t *testing.T) {
 	script := `
       function(inputs)
         t = {}
-        t["LogNames"] = {"DummyLogName"}
+        t["LogIDs"] = {"DummyLog"}
         t["OutputHash"] = "DummyReturn"
         return t
       end
@@ -29,19 +29,19 @@ func TestLuaScript(t *testing.T) {
 
 	inputs := []*LogDeciderInput{
 		&LogDeciderInput{
-			LogName:    "test1",
+			LogID:      "test1",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 		&LogDeciderInput{
-			LogName:    "test2",
+			LogID:      "test2",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 		&LogDeciderInput{
-			LogName:    "test3",
+			LogID:      "test3",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 		&LogDeciderInput{
-			LogName:    "test4",
+			LogID:      "test4",
 			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 	}

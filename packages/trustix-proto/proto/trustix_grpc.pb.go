@@ -19,11 +19,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TrustixCombinedRPCClient interface {
-	// Get map[LogName]Log
+	// Get map[LogID]Log
 	Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (*LogsResponse, error)
 	// TODO: I'm not sure if this belongs here in it's current shape...
 	GetLogEntries(ctx context.Context, in *GetLogEntriesRequestNamed, opts ...grpc.CallOption) (*api.LogEntriesResponse, error)
-	// Get map[LogName]OutputHash
+	// Get map[LogID]OutputHash
 	Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error)
 	GetStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_GetStreamClient, error)
 	// Compare(inputHash)
@@ -152,11 +152,11 @@ func (c *trustixCombinedRPCClient) GetValue(ctx context.Context, in *api.ValueRe
 // All implementations must embed UnimplementedTrustixCombinedRPCServer
 // for forward compatibility
 type TrustixCombinedRPCServer interface {
-	// Get map[LogName]Log
+	// Get map[LogID]Log
 	Logs(context.Context, *LogsRequest) (*LogsResponse, error)
 	// TODO: I'm not sure if this belongs here in it's current shape...
 	GetLogEntries(context.Context, *GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error)
-	// Get map[LogName]OutputHash
+	// Get map[LogID]OutputHash
 	Get(context.Context, *KeyRequest) (*EntriesResponse, error)
 	GetStream(TrustixCombinedRPC_GetStreamServer) error
 	// Compare(inputHash)

@@ -28,10 +28,11 @@ import (
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	apiimpl "github.com/tweag/trustix/packages/trustix/api"
+	tapi "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/client"
 	conf "github.com/tweag/trustix/packages/trustix/config"
 	"github.com/tweag/trustix/packages/trustix/decider"
+	"github.com/tweag/trustix/packages/trustix/lib"
 	"github.com/tweag/trustix/packages/trustix/rpc"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/signer"
@@ -47,6 +48,8 @@ var stateDirectory string
 
 var listenAddresses []string
 var dialAddress string
+
+var logID string
 
 var timeout int
 
@@ -73,27 +76,6 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Could not create state directory: %s", stateDirectory)
 		}
 
-		// Check if any names are non-unique
-		seenNames := make(map[string]struct{})
-		// The number of authoritive logs, can't exceed 1
-		numLogs := 0
-		for _, logConfig := range config.Logs {
-			_, ok := seenNames[logConfig.Name]
-			if ok {
-				log.Fatalf("Found non-unique log name: %s", logConfig.Name)
-			}
-			seenNames[logConfig.Name] = struct{}{}
-
-			if logConfig.Mode == "trustix-log" {
-				numLogs += 1
-				if numLogs > 1 {
-					log.Fatal("More than 1 authoritive logs in the same instance is not supported.")
-				}
-			}
-		}
-
-		var logAPIServer api.TrustixLogAPIServer
-
 		sthmgr := sthmanager.NewSTHManager()
 		defer sthmgr.Close()
 		sthstore, err := storage.NewNativeStorage("STH", stateDirectory)
@@ -101,7 +83,7 @@ var rootCmd = &cobra.Command{
 			log.Fatal("Could not create local cache storage")
 		}
 
-		logMap := rpc.NewTrustixCombinedRPCServerMap()
+		logMap := tapi.NewTrustixLogMap()
 		{
 
 			errChan := make(chan error)
@@ -116,26 +98,34 @@ var rootCmd = &cobra.Command{
 				subConf := subscriberConfig
 				wg.Add(1)
 
+				// TODO: Fix implicit error catching
 				go func() error {
 					defer wg.Done()
 
+					pubBytes, err := signer.Decode(subConf.Signer.PublicKey)
+					if err != nil {
+						return err
+					}
+
+					logID := lib.LogID(subConf.Signer.Type, pubBytes)
+
 					log.WithFields(log.Fields{
-						"name":   subConf.Name,
+						"id":     logID,
 						"pubkey": subConf.Signer.PublicKey,
 						// "mode":   subConf.Mode,
 					}).Info("Adding log subscriber")
 
 					var verifier signer.TrustixVerifier
-
-					signerConfig := subConf.Signer
-					switch signerConfig.Type {
-					case "ed25519":
-						verifier, err = signer.NewED25519Verifier(subConf.Signer.PublicKey)
-						if err != nil {
-							return err
+					{
+						switch subConf.Signer.Type {
+						case "ed25519":
+							verifier, err = signer.NewED25519Verifier(pubBytes)
+							if err != nil {
+								return err
+							}
+						default:
+							return fmt.Errorf("Verifier type '%s' is not supported.", subConf.Signer.Type)
 						}
-					default:
-						return fmt.Errorf("Verifier type '%s' is not supported.", signerConfig.Type)
 					}
 
 					conn, err := client.CreateClientConn(subConf.Transport.GRPC.Remote, verifier.Public())
@@ -143,19 +133,19 @@ var rootCmd = &cobra.Command{
 						return err
 					}
 
-					c, err := apiimpl.NewTrustixAPIGRPCClient(conn)
+					c, err := tapi.NewTrustixAPIGRPCClient(conn)
 					if err != nil {
 						return err
 					}
 
-					logMap.Add(subConf.Name, c)
+					logMap.Add(logID, c)
 
-					sthCache, err := sthmanager.NewSTHCache(subConf.Name, sthstore, c, verifier)
+					sthCache, err := sthmanager.NewSTHCache(logID, sthstore, c, verifier)
 					if err != nil {
 						return err
 					}
 
-					sthmgr.Set(subConf.Name, sthCache)
+					sthmgr.Set(logID, sthCache)
 
 					return nil
 				}()
@@ -169,8 +159,18 @@ var rootCmd = &cobra.Command{
 				go func() error {
 					defer wg.Done()
 
+					var logID string
+					{
+						pubBytes, err := signer.Decode(logConfig.Signer.PublicKey)
+						if err != nil {
+							return err
+						}
+
+						logID = lib.LogID(logConfig.Signer.Type, pubBytes)
+					}
+
 					log.WithFields(log.Fields{
-						"name":   logConfig.Name,
+						"id":     logID,
 						"pubkey": logConfig.Signer.PublicKey,
 						"mode":   logConfig.Mode,
 					}).Info("Adding log")
@@ -178,7 +178,7 @@ var rootCmd = &cobra.Command{
 					// TODO: Define a logger with fields already applied
 
 					log.WithFields(log.Fields{
-						"name": logConfig.Name,
+						"id":   logID,
 						"mode": logConfig.Mode,
 					}).Info("Adding authoritive log to gRPC")
 
@@ -204,7 +204,7 @@ var rootCmd = &cobra.Command{
 					var store storage.TrustixStorage
 					switch logConfig.Storage.Type {
 					case "native":
-						store, err = storage.NewNativeStorage("log-"+logConfig.Name, stateDirectory)
+						store, err = storage.NewNativeStorage("log-"+logID, stateDirectory)
 					case "memory":
 						store, err = storage.NewMemoryStorage()
 					}
@@ -212,19 +212,17 @@ var rootCmd = &cobra.Command{
 						return err
 					}
 
-					logAPI, err := apiimpl.NewKVStoreAPI(store, sig)
+					logAPI, err := tapi.NewKVStoreAPI(store, sig)
 					if err != nil {
 						return err
 					}
 
-					logAPIServer, err = apiimpl.NewTrustixAPIServer(logAPI)
-					if err != nil {
-						return err
-					}
-
-					logMap.Add(logConfig.Name, logAPI)
-					sthmgr.Set(logConfig.Name, sthmanager.NewDummySTHCache(func() (*schema.STH, error) {
-						return logAPI.GetSTH(context.Background(), new(api.STHRequest))
+					logMap.Add(logID, logAPI)
+					// TODO: Allow to fail on startup
+					sthmgr.Set(logID, sthmanager.NewDummySTHCache(func() (*schema.STH, error) {
+						return logAPI.GetSTH(context.Background(), &api.STHRequest{
+							LogID: &logID,
+						})
 					}))
 
 					return nil
@@ -239,6 +237,11 @@ var rootCmd = &cobra.Command{
 			}
 			wg.Wait()
 
+		}
+
+		logAPIServer, err := tapi.NewTrustixAPIServer(logMap)
+		if err != nil {
+			return err
 		}
 
 		decider, err := func() (decider.LogDecider, error) {
@@ -257,8 +260,8 @@ var rootCmd = &cobra.Command{
 						return nil, err
 					}
 					deciders = append(deciders, decider)
-				case "logname":
-					decider, err := decider.NewLogNameDecider(deciderConfig.LogName.Name)
+				case "logid":
+					decider, err := decider.NewLogIDDecider(deciderConfig.LogID.ID)
 					if err != nil {
 						return nil, err
 					}
@@ -415,6 +418,8 @@ func initCommands() {
 
 	rootCmd.PersistentFlags().StringSliceVar(&listenAddresses, "listen", []string{}, "Listen to address")
 	rootCmd.PersistentFlags().IntVar(&timeout, "timeout", 20, "Timeout in seconds")
+
+	rootCmd.PersistentFlags().StringVar(&logID, "log-id", "", "Log ID")
 
 	trustixSock := os.Getenv("TRUSTIX_SOCK")
 	if trustixSock == "" {

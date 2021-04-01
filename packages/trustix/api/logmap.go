@@ -6,47 +6,45 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package rpc
+package api
 
 import (
 	"fmt"
 	"sync"
-
-	"github.com/tweag/trustix/packages/trustix/api"
 )
 
-type TrustixCombinedRPCServerMap struct {
-	logMap map[string]api.TrustixLogAPI
+type TrustixLogMap struct {
+	logMap map[string]TrustixLogAPI
 	mux    *sync.RWMutex
 }
 
-func NewTrustixCombinedRPCServerMap() *TrustixCombinedRPCServerMap {
-	return &TrustixCombinedRPCServerMap{
-		logMap: make(map[string]api.TrustixLogAPI),
+func NewTrustixLogMap() *TrustixLogMap {
+	return &TrustixLogMap{
+		logMap: make(map[string]TrustixLogAPI),
 		mux:    &sync.RWMutex{},
 	}
 }
 
-func (m *TrustixCombinedRPCServerMap) Add(name string, log api.TrustixLogAPI) {
+func (m *TrustixLogMap) Add(logID string, log TrustixLogAPI) {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 
-	m.logMap[name] = log
+	m.logMap[logID] = log
 }
 
-func (m *TrustixCombinedRPCServerMap) Get(name string) (api.TrustixLogAPI, error) {
+func (m *TrustixLogMap) Get(logID string) (TrustixLogAPI, error) {
 	m.mux.RLock()
 	defer m.mux.RUnlock()
 
-	log, ok := m.logMap[name]
+	log, ok := m.logMap[logID]
 	if !ok {
-		return nil, fmt.Errorf("Missing log '%s'", name)
+		return nil, fmt.Errorf("Missing log '%s'", logID)
 	}
 
 	return log, nil
 }
 
-func (m *TrustixCombinedRPCServerMap) Names() []string {
+func (m *TrustixLogMap) IDs() []string {
 	m.mux.RLock()
 	defer m.mux.RUnlock()
 
@@ -59,13 +57,13 @@ func (m *TrustixCombinedRPCServerMap) Names() []string {
 	return keys
 }
 
-func (m *TrustixCombinedRPCServerMap) Map() map[string]api.TrustixLogAPI {
+func (m *TrustixLogMap) Map() map[string]TrustixLogAPI {
 	m.mux.RLock()
 	defer m.mux.RUnlock()
 
-	logMap := make(map[string]api.TrustixLogAPI)
-	for name, log := range m.logMap {
-		logMap[name] = log
+	logMap := make(map[string]TrustixLogAPI)
+	for logID, log := range m.logMap {
+		logMap[logID] = log
 	}
 
 	return logMap

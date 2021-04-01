@@ -57,7 +57,7 @@ var decideCommand = &cobra.Command{
 		}
 
 		for _, unmatched := range r.Mismatches {
-			fmt.Println(fmt.Sprintf("Found mismatched digest '%s' in log '%s'", hex.EncodeToString(unmatched.Digest), *unmatched.LogName))
+			fmt.Println(fmt.Sprintf("Found mismatched digest '%s' in log '%s'", hex.EncodeToString(unmatched.Digest), *unmatched.LogID))
 		}
 
 		if r.Decision != nil {

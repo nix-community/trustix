@@ -11,6 +11,7 @@ package signer
 import (
 	"crypto"
 	"crypto/ed25519"
+	"fmt"
 )
 
 type ed25519Verifier struct {
@@ -25,14 +26,13 @@ func (v *ed25519Verifier) Verify(message, sig []byte) bool {
 	return ed25519.Verify(v.pub, message, sig)
 }
 
-func NewED25519Verifier(pub string) (TrustixVerifier, error) {
-	pubkey, err := decodeKey(pub)
-	if err != nil {
-		return nil, err
+func NewED25519Verifier(pub []byte) (TrustixVerifier, error) {
+	if len(pub) != 32 {
+		return nil, fmt.Errorf("Wrong key length: %d != 32", len(pub))
 	}
 
 	return &ed25519Verifier{
-		pub: pubkey,
+		pub: pub,
 	}, nil
 }
 

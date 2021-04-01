@@ -57,7 +57,7 @@ class TrustixCombinedRPCServicer(object):
     """TrustixCombinedRPC"""
 
     def Logs(self, request, context):
-        """Get map[LogName]Log"""
+        """Get map[LogID]Log"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -69,7 +69,7 @@ class TrustixCombinedRPCServicer(object):
         raise NotImplementedError("Method not implemented!")
 
     def Get(self, request, context):
-        """Get map[LogName]OutputHash"""
+        """Get map[LogID]OutputHash"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")

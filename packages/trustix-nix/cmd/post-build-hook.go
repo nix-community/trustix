@@ -30,7 +30,9 @@ var nixHookCommand = &cobra.Command{
 			log.Fatal("OUT_PATHS is empty, expected at least one path to submit")
 		}
 
-		req := &api.SubmitRequest{}
+		req := &api.SubmitRequest{
+			LogID: &logID,
+		}
 
 		errChan := make(chan error, len(storePaths))
 		wg := new(sync.WaitGroup)
