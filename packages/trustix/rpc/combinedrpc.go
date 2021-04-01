@@ -416,11 +416,10 @@ func (l *TrustixCombinedRPCServer) GetValue(ctx context.Context, in *api.ValueRe
 func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {
 	logs := []*pb.Log{}
 
-	for _, _ = range l.logs.Map() {
+	for name, _ := range l.logs.Map() {
 		s := ""
 		logs = append(logs, &pb.Log{
-			Name:   &s,
-			Mode:   &s,
+			Name:   &name,
 			Signer: &pb.LogSigner{},
 		})
 	}

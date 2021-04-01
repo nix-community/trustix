@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax="proto2",
     serialized_options=b"Z5github.com/tweag/trustix/packages/trustix-proto/proto",
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\x13proto/trustix.proto\x12\x07trustix\x1a\x15schema/mapentry.proto\x1a\x10schema/sth.proto\x1a\rapi/api.proto"\r\n\x0bLogsRequest"b\n\tLogSigner\x12,\n\x07KeyType\x18\x01 \x02(\x0e\x32\x1b.trustix.LogSigner.KeyTypes\x12\x0e\n\x06Public\x18\x02 \x02(\t"\x17\n\x08KeyTypes\x12\x0b\n\x07\x65\x64\x32\x35\x35\x31\x39\x10\x00"\xab\x01\n\x03Log\x12\x0c\n\x04Name\x18\x01 \x02(\t\x12\x0c\n\x04Mode\x18\x02 \x02(\t\x12"\n\x06Signer\x18\x03 \x02(\x0b\x32\x12.trustix.LogSigner\x12$\n\x04Meta\x18\x04 \x03(\x0b\x32\x16.trustix.Log.MetaEntry\x12\x11\n\x03STH\x18\x05 \x02(\x0b\x32\x04.STH\x1a+\n\tMetaEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"*\n\x0cLogsResponse\x12\x1a\n\x04Logs\x18\x01 \x03(\x0b\x32\x0c.trustix.Log"K\n\x19GetLogEntriesRequestNamed\x12\x0f\n\x07LogName\x18\x01 \x02(\t\x12\r\n\x05Start\x18\x02 \x02(\x04\x12\x0e\n\x06\x46inish\x18\x03 \x02(\x04"\x19\n\nKeyRequest\x12\x0b\n\x03Key\x18\x01 \x02(\x0c"\x91\x01\n\x0f\x45ntriesResponse\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\x36\n\x07\x45ntries\x18\x02 \x03(\x0b\x32%.trustix.EntriesResponse.EntriesEntry\x1a\x39\n\x0c\x45ntriesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.MapEntry:\x02\x38\x01"3\n\x10LogValueResponse\x12\x0f\n\x07LogName\x18\x01 \x02(\t\x12\x0e\n\x06\x44igest\x18\x02 \x02(\x0c"W\n\x10LogValueDecision\x12\x10\n\x08LogNames\x18\x01 \x03(\t\x12\x0e\n\x06\x44igest\x18\x02 \x02(\x0c\x12\x12\n\nConfidence\x18\x03 \x02(\x05\x12\r\n\x05Value\x18\x04 \x02(\x0c"~\n\x10\x44\x65\x63isionResponse\x12+\n\x08\x44\x65\x63ision\x18\x01 \x02(\x0b\x32\x19.trustix.LogValueDecision\x12-\n\nMismatches\x18\x02 \x03(\x0b\x32\x19.trustix.LogValueResponse\x12\x0e\n\x06Misses\x18\x03 \x03(\t2\xd8\x03\n\x12TrustixCombinedRPC\x12\x35\n\x04Logs\x12\x14.trustix.LogsRequest\x1a\x15.trustix.LogsResponse"\x00\x12R\n\rGetLogEntries\x12".trustix.GetLogEntriesRequestNamed\x1a\x1b.trustix.LogEntriesResponse"\x00\x12\x36\n\x03Get\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse"\x00\x12@\n\tGetStream\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse"\x00(\x01\x30\x01\x12:\n\x06\x44\x65\x63ide\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse"\x00\x12\x44\n\x0c\x44\x65\x63ideStream\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse"\x00(\x01\x30\x01\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x42\x37Z5github.com/tweag/trustix/packages/trustix-proto/proto',
+    serialized_pb=b'\n\x13proto/trustix.proto\x12\x07trustix\x1a\x15schema/mapentry.proto\x1a\x10schema/sth.proto\x1a\rapi/api.proto"\r\n\x0bLogsRequest"b\n\tLogSigner\x12,\n\x07KeyType\x18\x01 \x02(\x0e\x32\x1b.trustix.LogSigner.KeyTypes\x12\x0e\n\x06Public\x18\x02 \x02(\t"\x17\n\x08KeyTypes\x12\x0b\n\x07\x65\x64\x32\x35\x35\x31\x39\x10\x00"\x9d\x01\n\x03Log\x12\x0c\n\x04Name\x18\x01 \x02(\t\x12"\n\x06Signer\x18\x03 \x02(\x0b\x32\x12.trustix.LogSigner\x12$\n\x04Meta\x18\x04 \x03(\x0b\x32\x16.trustix.Log.MetaEntry\x12\x11\n\x03STH\x18\x05 \x02(\x0b\x32\x04.STH\x1a+\n\tMetaEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"*\n\x0cLogsResponse\x12\x1a\n\x04Logs\x18\x01 \x03(\x0b\x32\x0c.trustix.Log"K\n\x19GetLogEntriesRequestNamed\x12\x0f\n\x07LogName\x18\x01 \x02(\t\x12\r\n\x05Start\x18\x02 \x02(\x04\x12\x0e\n\x06\x46inish\x18\x03 \x02(\x04"\x19\n\nKeyRequest\x12\x0b\n\x03Key\x18\x01 \x02(\x0c"\x91\x01\n\x0f\x45ntriesResponse\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\x36\n\x07\x45ntries\x18\x02 \x03(\x0b\x32%.trustix.EntriesResponse.EntriesEntry\x1a\x39\n\x0c\x45ntriesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.MapEntry:\x02\x38\x01"3\n\x10LogValueResponse\x12\x0f\n\x07LogName\x18\x01 \x02(\t\x12\x0e\n\x06\x44igest\x18\x02 \x02(\x0c"W\n\x10LogValueDecision\x12\x10\n\x08LogNames\x18\x01 \x03(\t\x12\x0e\n\x06\x44igest\x18\x02 \x02(\x0c\x12\x12\n\nConfidence\x18\x03 \x02(\x05\x12\r\n\x05Value\x18\x04 \x02(\x0c"~\n\x10\x44\x65\x63isionResponse\x12+\n\x08\x44\x65\x63ision\x18\x01 \x02(\x0b\x32\x19.trustix.LogValueDecision\x12-\n\nMismatches\x18\x02 \x03(\x0b\x32\x19.trustix.LogValueResponse\x12\x0e\n\x06Misses\x18\x03 \x03(\t2\xd8\x03\n\x12TrustixCombinedRPC\x12\x35\n\x04Logs\x12\x14.trustix.LogsRequest\x1a\x15.trustix.LogsResponse"\x00\x12R\n\rGetLogEntries\x12".trustix.GetLogEntriesRequestNamed\x1a\x1b.trustix.LogEntriesResponse"\x00\x12\x36\n\x03Get\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse"\x00\x12@\n\tGetStream\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse"\x00(\x01\x30\x01\x12:\n\x06\x44\x65\x63ide\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse"\x00\x12\x44\n\x0c\x44\x65\x63ideStream\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse"\x00(\x01\x30\x01\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x42\x37Z5github.com/tweag/trustix/packages/trustix-proto/proto',
     dependencies=[
         schema_dot_mapentry__pb2.DESCRIPTOR,
         schema_dot_sth__pb2.DESCRIPTOR,
@@ -195,8 +195,8 @@ _LOG_METAENTRY = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=332,
-    serialized_end=375,
+    serialized_start=318,
+    serialized_end=361,
 )
 
 _LOG = _descriptor.Descriptor(
@@ -227,28 +227,9 @@ _LOG = _descriptor.Descriptor(
             create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
-            name="Mode",
-            full_name="trustix.Log.Mode",
-            index=1,
-            number=2,
-            type=9,
-            cpp_type=9,
-            label=2,
-            has_default_value=False,
-            default_value=b"".decode("utf-8"),
-            message_type=None,
-            enum_type=None,
-            containing_type=None,
-            is_extension=False,
-            extension_scope=None,
-            serialized_options=None,
-            file=DESCRIPTOR,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.FieldDescriptor(
             name="Signer",
             full_name="trustix.Log.Signer",
-            index=2,
+            index=1,
             number=3,
             type=11,
             cpp_type=10,
@@ -267,7 +248,7 @@ _LOG = _descriptor.Descriptor(
         _descriptor.FieldDescriptor(
             name="Meta",
             full_name="trustix.Log.Meta",
-            index=3,
+            index=2,
             number=4,
             type=11,
             cpp_type=10,
@@ -286,7 +267,7 @@ _LOG = _descriptor.Descriptor(
         _descriptor.FieldDescriptor(
             name="STH",
             full_name="trustix.Log.STH",
-            index=4,
+            index=3,
             number=5,
             type=11,
             cpp_type=10,
@@ -314,7 +295,7 @@ _LOG = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[],
     serialized_start=204,
-    serialized_end=375,
+    serialized_end=361,
 )
 
 
@@ -354,8 +335,8 @@ _LOGSRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=377,
-    serialized_end=419,
+    serialized_start=363,
+    serialized_end=405,
 )
 
 
@@ -433,8 +414,8 @@ _GETLOGENTRIESREQUESTNAMED = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=421,
-    serialized_end=496,
+    serialized_start=407,
+    serialized_end=482,
 )
 
 
@@ -474,8 +455,8 @@ _KEYREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=498,
-    serialized_end=523,
+    serialized_start=484,
+    serialized_end=509,
 )
 
 
@@ -534,8 +515,8 @@ _ENTRIESRESPONSE_ENTRIESENTRY = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=614,
-    serialized_end=671,
+    serialized_start=600,
+    serialized_end=657,
 )
 
 _ENTRIESRESPONSE = _descriptor.Descriptor(
@@ -595,8 +576,8 @@ _ENTRIESRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=526,
-    serialized_end=671,
+    serialized_start=512,
+    serialized_end=657,
 )
 
 
@@ -655,8 +636,8 @@ _LOGVALUERESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=673,
-    serialized_end=724,
+    serialized_start=659,
+    serialized_end=710,
 )
 
 
@@ -753,8 +734,8 @@ _LOGVALUEDECISION = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=726,
-    serialized_end=813,
+    serialized_start=712,
+    serialized_end=799,
 )
 
 
@@ -832,8 +813,8 @@ _DECISIONRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=815,
-    serialized_end=941,
+    serialized_start=801,
+    serialized_end=927,
 )
 
 _LOGSIGNER.fields_by_name["KeyType"].enum_type = _LOGSIGNER_KEYTYPES
@@ -1006,8 +987,8 @@ _TRUSTIXCOMBINEDRPC = _descriptor.ServiceDescriptor(
     index=0,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-    serialized_start=944,
-    serialized_end=1416,
+    serialized_start=930,
+    serialized_end=1402,
     methods=[
         _descriptor.MethodDescriptor(
             name="Logs",
