@@ -5,10 +5,10 @@
         "homepage": null,
         "owner": "tweag",
         "repo": "gomod2nix",
-        "rev": "5dffe7b6ef0e5810d7fbd1715803114ae0e4a304",
-        "sha256": "1zai3dg06f1m15zlqkhyc9b1nqvbppqa8fwhmsdhk3n5cgafgbi6",
+        "rev": "c78d7b9f15a24eba95fbc228509f513c83709d8b",
+        "sha256": "15qjp1g2pkkpr5b1mfjfiwl8kyfabi66hklk7apk7jh9sb2qqf85",
         "type": "tarball",
-        "url": "https://github.com/tweag/gomod2nix/archive/5dffe7b6ef0e5810d7fbd1715803114ae0e4a304.tar.gz",
+        "url": "https://github.com/tweag/gomod2nix/archive/c78d7b9f15a24eba95fbc228509f513c83709d8b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "naersk": {
