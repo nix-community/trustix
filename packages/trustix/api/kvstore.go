@@ -19,15 +19,14 @@ import (
 	"sync"
 	"time"
 
-	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	ca "github.com/tweag/trustix/packages/trustix/cavaluestore"
 	vlog "github.com/tweag/trustix/packages/trustix/log"
 	sthsig "github.com/tweag/trustix/packages/trustix/sth"
 	"github.com/tweag/trustix/packages/trustix/storage"
+	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 type kvStoreLogApi struct {
@@ -56,7 +55,7 @@ func NewKVStoreAPI(logID string, store storage.TrustixStorage, signer crypto.Sig
 
 	// Create an empty initial log if it doesn't exist already
 	err := store.Update(func(txn storage.Transaction) error {
-		storageAPI := storage.NewStorageAPI(txn)
+		storageAPI := storageapi.NewStorageAPI(txn)
 
 		_, err := storageAPI.GetSTH(logID)
 		if err == nil {
@@ -66,7 +65,7 @@ func NewKVStoreAPI(logID string, store storage.TrustixStorage, signer crypto.Sig
 			return err
 		}
 
-		vLog, err := vlog.NewVerifiableLog("log", txn, 0)
+		vLog, err := vlog.NewVerifiableLog(logID, txn, 0)
 		if err != nil {
 			return err
 		}
@@ -106,7 +105,7 @@ func NewKVStoreAPI(logID string, store storage.TrustixStorage, signer crypto.Sig
 
 	if api.sth == nil {
 		err := store.View(func(txn storage.Transaction) error {
-			storageAPI := storage.NewStorageAPI(txn)
+			storageAPI := storageapi.NewStorageAPI(txn)
 			sth, err := storageAPI.GetSTH(logID)
 			if err != nil {
 				return err
@@ -246,49 +245,27 @@ func (kv *kvStoreLogApi) Submit(ctx context.Context, req *api.SubmitRequest) (*a
 
 	err := kv.store.Update(func(txn storage.Transaction) error {
 
+		storageAPI := storageapi.NewStorageAPI(txn)
+
 		// Get the current state of the queue
-		q := &schema.SubmitQueue{}
-		qBytes, err := txn.Get([]byte("QUEUE"), []byte("META"))
-		if err != nil && err == storage.ObjectNotFoundError {
-			min := uint64(0)
-			max := uint64(0)
-			q.Min = &min
-			q.Max = &max
-		} else if err != nil {
+		q, err := storageAPI.GetQueueMeta(kv.logID)
+		if err != nil {
 			return err
-		} else {
-			err = proto.Unmarshal(qBytes, q)
-			if err != nil {
-				return err
-			}
 		}
 
 		// Write each item to the DB while updating queue state
 		for _, pair := range req.Items {
-			itemBytes, err := proto.Marshal(pair)
-			if err != nil {
-				return err
-			}
-
 			itemId := *q.Max
-			err = txn.Set([]byte("QUEUE"), []byte(fmt.Sprintf("%d", itemId)), itemBytes)
+			err = storageAPI.WriteQueueItem(kv.logID, int(itemId), pair)
 			if err != nil {
 				return err
 			}
-
 			next := itemId + 1
 			q.Max = &next
 		}
 
 		// Write queue state
-		qBytes, err = proto.Marshal(q)
-		if err != nil {
-			return err
-		}
-		err = txn.Set([]byte("QUEUE"), []byte("META"), qBytes)
-		if err != nil {
-			return err
-		}
+		storageAPI.SetQueueMeta(kv.logID, q)
 
 		return nil
 	})
@@ -318,7 +295,7 @@ func (kv *kvStoreLogApi) Flush(ctx context.Context, in *api.FlushRequest) (*api.
 func (kv *kvStoreLogApi) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
 	var value []byte
 	err := kv.store.View(func(txn storage.Transaction) error {
-		v, err := ca.Get(txn, in.Digest)
+		v, err := storageapi.NewStorageAPI(txn).GetCAValue(in.Digest)
 		value = v
 		return err
 
@@ -339,19 +316,11 @@ func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 	q := &schema.SubmitQueue{}
 
 	err := kv.store.Update(func(txn storage.Transaction) error {
+		var err error
+		storageAPI := storageapi.NewStorageAPI(txn)
 
 		// Get the current state of the queue
-		qBytes, err := txn.Get([]byte("QUEUE"), []byte("META"))
-		if err != nil && err == storage.ObjectNotFoundError {
-			min := uint64(0)
-			max := uint64(0)
-			q.Min = &min
-			q.Max = &max
-			return nil
-		} else if err != nil {
-			return err
-		}
-		err = proto.Unmarshal(qBytes, q)
+		q, err = storageAPI.GetQueueMeta(kv.logID)
 		if err != nil {
 			return err
 		}
@@ -363,20 +332,7 @@ func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 		for itemId := *q.Min; itemId <= max; itemId++ {
 			q.Min = &itemId
 
-			itemBytes, err := txn.Get([]byte("QUEUE"), []byte(fmt.Sprintf("%d", itemId)))
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-
-			item := &api.KeyValuePair{}
-			err = proto.Unmarshal(itemBytes, item)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-
-			err = txn.Delete([]byte("QUEUE"), []byte(fmt.Sprintf("%d", itemId)))
+			item, err := storageAPI.PopQueueItem(kv.logID, int(itemId))
 			if err != nil {
 				log.Error(err)
 				continue
@@ -393,12 +349,7 @@ func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 			return err
 		}
 
-		// Write queue state
-		qBytes, err = proto.Marshal(q)
-		if err != nil {
-			return err
-		}
-		err = txn.Set([]byte("QUEUE"), []byte("META"), qBytes)
+		err = storageAPI.SetQueueMeta(kv.logID, q)
 		if err != nil {
 			return err
 		}
@@ -472,7 +423,7 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*api.KeyVal
 		wrote = true
 
 		// Add value to content-addressed value store
-		err = ca.Set(txn, pair.Value)
+		err = storageapi.NewStorageAPI(txn).SetCAValue(pair.Value)
 		if err != nil {
 			return err
 		}
@@ -502,19 +453,14 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*api.KeyVal
 		return nil
 	}
 
+	log.Debug("Signing tree heads")
 	sth, err = sthsig.SignHead(vLog, smTree, vMapLog, kv.signer)
 	if err != nil {
 		return err
 	}
 
-	log.Debug("Signing tree heads")
-	smhBytes, err := proto.Marshal(sth)
-	if err != nil {
-		return err
-	}
-
 	log.WithField("size", *sth.TreeSize).Debug("Setting new signed tree heads")
-	err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
+	err = storageapi.NewStorageAPI(txn).SetSTH(kv.logID, sth)
 	if err != nil {
 		return err
 	}

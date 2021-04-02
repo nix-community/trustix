@@ -13,9 +13,9 @@ import (
 
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	ca "github.com/tweag/trustix/packages/trustix/cavaluestore"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/storage"
+	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 // TrustixAPIServer wraps kvStoreLogApi and turns it into a gRPC implementation
@@ -105,7 +105,7 @@ func (s *TrustixAPIServer) Flush(ctx context.Context, req *api.FlushRequest) (*a
 func (s *TrustixAPIServer) GetValue(ctx context.Context, req *api.ValueRequest) (*api.ValueResponse, error) {
 	var value []byte
 	err := s.store.View(func(txn storage.Transaction) error {
-		v, err := ca.Get(txn, req.Digest)
+		v, err := storageapi.NewStorageAPI(txn).GetCAValue(req.Digest)
 		value = v
 		return err
 

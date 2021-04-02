@@ -25,6 +25,7 @@ import (
 	tapi "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/decider"
 	"github.com/tweag/trustix/packages/trustix/storage"
+	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 type TrustixCombinedRPCServer struct {
@@ -67,7 +68,7 @@ func (l *TrustixCombinedRPCServer) getSTHMap() (map[string]*schema.STH, error) {
 	m := make(map[string]*schema.STH)
 
 	err := l.store.View(func(txn storage.Transaction) error {
-		logAPI := storage.NewStorageAPI(txn)
+		logAPI := storageapi.NewStorageAPI(txn)
 
 		for _, logID := range l.logs.IDs() {
 			sth, err := logAPI.GetSTH(logID)

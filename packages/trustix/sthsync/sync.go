@@ -22,6 +22,7 @@ import (
 	"github.com/tweag/trustix/packages/trustix/signer"
 	sthlib "github.com/tweag/trustix/packages/trustix/sth"
 	"github.com/tweag/trustix/packages/trustix/storage"
+	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 type sthSyncer struct {
@@ -41,7 +42,7 @@ func NewSTHSyncer(logID string, store storage.TrustixStorage, logapi api.Trustix
 
 		var oldSTH *schema.STH
 		err := store.View(func(txn storage.Transaction) error {
-			storageAPI := storage.NewStorageAPI(txn)
+			storageAPI := storageapi.NewStorageAPI(txn)
 			var err error
 			oldSTH, err = storageAPI.GetSTH(logID)
 			return err
@@ -117,7 +118,7 @@ func NewSTHSyncer(logID string, store storage.TrustixStorage, logapi api.Trustix
 		}
 
 		err = store.Update(func(txn storage.Transaction) error {
-			storageAPI := storage.NewStorageAPI(txn)
+			storageAPI := storageapi.NewStorageAPI(txn)
 			return storageAPI.SetSTH(logID, sth)
 		})
 

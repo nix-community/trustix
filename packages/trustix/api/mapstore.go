@@ -12,18 +12,19 @@ import (
 	"fmt"
 
 	"github.com/tweag/trustix/packages/trustix/storage"
+	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 type smtMapStore struct {
 	logID      string
-	storageAPI *storage.StorageAPI
+	storageAPI *storageapi.StorageAPI
 }
 
 // Implement MapStore for SMT lib
 func newMapStore(logID string, txn storage.Transaction) *smtMapStore {
 	return &smtMapStore{
 		logID:      logID,
-		storageAPI: storage.NewStorageAPI(txn),
+		storageAPI: storageapi.NewStorageAPI(txn),
 	}
 }
 

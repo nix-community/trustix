@@ -17,19 +17,19 @@ import (
 )
 
 type LogStorage struct {
-	txn    storage.Transaction
-	prefix string
+	txn   storage.Transaction
+	logID string
 }
 
-func NewLogStorage(prefix string, txn storage.Transaction) *LogStorage {
+func NewLogStorage(logID string, txn storage.Transaction) *LogStorage {
 	return &LogStorage{
-		txn:    txn,
-		prefix: prefix,
+		txn:   txn,
+		logID: logID,
 	}
 }
 
 func (s *LogStorage) Get(level int, idx uint64) (*schema.LogLeaf, error) {
-	bucket := []byte(s.prefix)
+	bucket := []byte(s.logID)
 	key := []byte(fmt.Sprintf("%d-%d", level, idx))
 
 	v, err := s.txn.Get(bucket, key)
@@ -53,7 +53,7 @@ func (s *LogStorage) Append(treeSize uint64, level int, leaf *schema.LogLeaf) er
 
 	idx := levelSize(treeSize, level) - 1
 
-	bucket := []byte(s.prefix)
+	bucket := []byte(s.logID)
 	key := []byte(fmt.Sprintf("%d-%d", level, idx))
 
 	err = s.txn.Set(bucket, key, v)
