@@ -28,6 +28,11 @@ var exportCommand = &cobra.Command{
 	Use:   "export",
 	Short: "Export a log to archive",
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		if err := checkLogID(); err != nil {
+			log.Fatal(err)
+		}
+
 		conn, err := client.CreateClientConn(dialAddress, nil)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
