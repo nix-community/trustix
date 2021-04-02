@@ -161,8 +161,8 @@ var rootCmd = &cobra.Command{
 
 			}
 
-			for _, logConfig := range config.Logs {
-				logConfig := logConfig
+			for _, publisherConfig := range config.Publishers {
+				publisherConfig := publisherConfig
 				wg.Add(1)
 
 				go wrapLogInit(func() error {
@@ -170,28 +170,26 @@ var rootCmd = &cobra.Command{
 
 					var logID string
 					{
-						pubBytes, err := signer.Decode(logConfig.Signer.PublicKey)
+						pubBytes, err := signer.Decode(publisherConfig.Signer.PublicKey)
 						if err != nil {
 							return err
 						}
 
-						logID = lib.LogID(logConfig.Signer.Type, pubBytes)
+						logID = lib.LogID(publisherConfig.Signer.Type, pubBytes)
 					}
 
 					log.WithFields(log.Fields{
 						"id":     logID,
-						"pubkey": logConfig.Signer.PublicKey,
-						"mode":   logConfig.Mode,
+						"pubkey": publisherConfig.Signer.PublicKey,
 					}).Info("Adding log")
 
 					// TODO: Define a logger with fields already applied
 
 					log.WithFields(log.Fields{
-						"id":   logID,
-						"mode": logConfig.Mode,
+						"id": logID,
 					}).Info("Adding authoritive log to gRPC")
 
-					signerConfig := logConfig.Signer
+					signerConfig := publisherConfig.Signer
 
 					if signerConfig.Type == "" {
 						return fmt.Errorf("Missing signer config field 'type'.")

@@ -1,44 +1,38 @@
-[[log]]
-name = "trustix-test-follower1"
-mode = "trustix-follower"
+[[publisher]]
 
-[log.transport]
+[publisher.transport]
 type = "grpc"
 
-[log.transport.grpc]
+[publisher.transport.grpc]
 remote = "localhost:8081"
 
-[log.signer]
+[publisher.signer]
 type = "ed25519"
 key-type = "ed25519"
 public-key = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
-[[log]]
-name = "trustix-test-follower2"
-mode = "trustix-follower"
+[[publisher]]
 
-[log.transport]
+[publisher.transport]
 type = "grpc"
 
-[log.transport.grpc]
+[publisher.transport.grpc]
 remote = "localhost:8082"
 
-[log.signer]
+[publisher.signer]
 type = "ed25519"
 key-type = "ed25519"
 public-key = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
 
-[[log]]
-name = "trustix-test-follower3"
-mode = "trustix-follower"
+[[publisher]]
 
-[log.transport]
+[publisher.transport]
 type = "grpc"
 
-[log.transport.grpc]
+[publisher.transport.grpc]
 remote = "localhost:8083"
 
-[log.signer]
+[publisher.signer]
 type = "ed25519"
 key-type = "ed25519"
 public-key = "BneDQe44Wmeypis3B1KfLmipzd+B38UAzmuoH2Nvmso="

@@ -1,17 +1,15 @@
-[[log]]
-mode = "trustix-log"
-name = "trustix-test1"
-
-[log.storage]
+[storage]
 type = "memory"
 
-[log.storage.native]
+[storage.native]
 
-[log.signer]
+[[publisher]]
+
+[publisher.signer]
 type = "ed25519"
 key-type = "ed25519"
 public-key = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
 # Implementation dependent
-[log.signer.ed25519]
+[publisher.signer.ed25519]
 private-key-path = "./priv"

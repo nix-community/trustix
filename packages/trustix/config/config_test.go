@@ -32,9 +32,9 @@ func TestConfig(t *testing.T) {
 	config, err := NewConfigFromFile(f)
 	assert.Nil(t, err)
 
-	assert.Equal(t, 1, len(config.Logs), "Exactly one log should have been returned")
+	assert.Equal(t, 1, len(config.Publishers), "Exactly one publisher should have been returned")
 
-	// log := config.Logs[0]
+	// log := config.Publishers[0]
 
 	// assert.Equal(t, "trustix-test1", log.Name, "Unexpected name returned")
 

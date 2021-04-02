@@ -20,27 +20,9 @@ type StorageConfig struct {
 	Native *NativeStorageConfig `toml:"native"`
 }
 
-type ED25519SignerConfig struct {
-	PrivateKeyPath string `toml:"private-key-path"`
-}
-
-type SignerConfig struct {
-	Type      string               `toml:"type"`
-	KeyType   string               `toml:"key-type"`
-	PublicKey string               `toml:"public-key"`
-	ED25519   *ED25519SignerConfig `toml:"ed25519"`
-}
-
-type LogConfig struct {
-	// Name    string            `toml:"name"`
-	Mode   string            `toml:"mode"`
-	Signer *SignerConfig     `toml:"signer"`
-	Meta   map[string]string `toml:"meta"`
-}
-
 type Config struct {
 	Deciders    []*DeciderConfig    `toml:"decider"`
-	Logs        []*LogConfig        `toml:"log"`
+	Publishers  []*PublisherConfig  `toml:"publisher"`
 	Subscribers []*SubscriberConfig `toml:"subscriber"`
 	Storage     *StorageConfig      `toml:"storage"`
 }

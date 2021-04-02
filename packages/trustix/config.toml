@@ -1,25 +1,20 @@
+[storage]
+type = "native"
+
+[storage.native]
+
 [[decider]]
 engine = "percentage"
 
 [decider.percentage]
 minimum = 50
 
-[[log]]
-mode = "trustix-log"
-# Try to be globally unique when assigning names
-# This is not a strict requirement as names are only enforced to be locally unique
-name = "trustix-test"
+[[publisher]]
 
-[log.meta]
+[publisher.meta]
 upstream = "https://cache.nixos.org"
 
-[log.storage]
-type = "native"
-
-[log.storage.native]
-path = "trustix-log"
-
-[log.signer]
+[publisher.signer]
 # The difference between type & key-type is that type is the Trustix "signer mode" while key-type is the type of key
 # Another signer (lets say PKCS11) could be implemented that uses the same key-type but a different signing backend
 type = "ed25519"
@@ -27,5 +22,5 @@ key-type = "ed25519"
 public-key = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo="  # Base64 encoded public key
 
 # Implementation dependent
-[log.signer.ed25519]
+[publisher.signer.ed25519]
 private-key-path = "./priv"  # Path to base64 encode private key file (should not be in the nix store)

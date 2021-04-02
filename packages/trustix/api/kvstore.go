@@ -130,7 +130,7 @@ func NewKVStoreAPI(logID string, store storage.TrustixStorage, signer crypto.Sig
 		for {
 			q, err := api.submitBatch()
 			if err != nil {
-				log.Error(err)
+				log.Errorf("Unable to submit batch: %v", err)
 				time.Sleep(duration)
 				continue
 			}
@@ -328,13 +328,23 @@ func (kv *kvStoreLogApi) submitBatch() (*schema.SubmitQueue, error) {
 		maxBatchSize := uint64(500)
 
 		items := []*api.KeyValuePair{}
-		max := minUint64(*q.Max-1, *q.Min+maxBatchSize)
+
+		max := *q.Max
+		if max > 0 {
+			max = max - 1
+		}
+		max = minUint64(max, *q.Min+maxBatchSize)
+
+		if *q.Min >= max {
+			return nil
+		}
+
 		for itemId := *q.Min; itemId <= max; itemId++ {
 			q.Min = &itemId
 
 			item, err := storageAPI.PopQueueItem(kv.logID, int(itemId))
 			if err != nil {
-				log.Error(err)
+				log.Error(fmt.Errorf("Error popping queue item '%d': %v", itemId, err))
 				continue
 			}
 
