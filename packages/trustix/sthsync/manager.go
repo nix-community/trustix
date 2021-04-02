@@ -6,52 +6,41 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package sthmanager
+package sthsync
 
 import (
-	"fmt"
 	"sync"
-
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
 )
 
-type STHManager struct {
-	logs map[string]STHCache
-	mux  *sync.RWMutex
+type STHSyncer interface {
+	Close()
 }
 
-func NewSTHManager() *STHManager {
-	return &STHManager{
-		logs: make(map[string]STHCache),
-		mux:  &sync.RWMutex{},
+type SyncManager struct {
+	mux   *sync.Mutex
+	syncs []STHSyncer
+}
+
+func NewSyncManager() *SyncManager {
+	return &SyncManager{
+		syncs: []STHSyncer{},
+		mux:   &sync.Mutex{},
 	}
 }
 
-func (m *STHManager) Set(logID string, c STHCache) {
+func (m *SyncManager) Add(syncer STHSyncer) {
 	m.mux.Lock()
-	m.logs[logID] = c
+	m.syncs = append(m.syncs, syncer)
 	m.mux.Unlock()
 }
 
-func (m *STHManager) Get(logID string) (*schema.STH, error) {
-	m.mux.RLock()
-	defer m.mux.RUnlock()
-
-	cache, ok := m.logs[logID]
-	if !ok {
-		return nil, fmt.Errorf("Missing log '%s'", logID)
-	}
-
-	return cache.Get()
-}
-
-func (m *STHManager) Close() {
+func (m *SyncManager) Close() {
 	wg := new(sync.WaitGroup)
 
-	for _, c := range m.logs {
+	for _, s := range m.syncs {
 		wg.Add(1)
 		go func() {
-			c.Close()
+			s.Close()
 			wg.Done()
 		}()
 	}

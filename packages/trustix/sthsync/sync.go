@@ -6,7 +6,7 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package sthmanager
+package sthsync
 
 import (
 	"bytes"
@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"time"
 
-	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	apipb "github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
@@ -25,26 +24,29 @@ import (
 	"github.com/tweag/trustix/packages/trustix/storage"
 )
 
-type STHCache interface {
-	Get() (*schema.STH, error)
-	Close()
-}
-
-type sthCache struct {
+type sthSyncer struct {
 	store     storage.TrustixStorage
 	logID     string
 	closeChan chan interface{}
 }
 
-func NewSTHCache(logID string, store storage.TrustixStorage, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) (STHCache, error) {
-	c := &sthCache{
+func NewSTHSyncer(logID string, store storage.TrustixStorage, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) STHSyncer {
+	c := &sthSyncer{
 		store:     store,
 		logID:     logID,
 		closeChan: make(chan interface{}),
 	}
 
 	updateSTH := func() error {
-		oldSTH, err := c.Get()
+
+		var oldSTH *schema.STH
+		err := store.View(func(txn storage.Transaction) error {
+			storageAPI := storage.NewStorageAPI(txn)
+			var err error
+			oldSTH, err = storageAPI.GetSTH(logID)
+			return err
+		})
+
 		if err != nil {
 			if err != storage.ObjectNotFoundError {
 				return err
@@ -114,7 +116,10 @@ func NewSTHCache(logID string, store storage.TrustixStorage, logapi api.TrustixL
 			return fmt.Errorf("Consistency proof invalid")
 		}
 
-		err = c.Set(sth)
+		err = store.Update(func(txn storage.Transaction) error {
+			storageAPI := storage.NewStorageAPI(txn)
+			return storageAPI.SetSTH(logID, sth)
+		})
 
 		log.WithFields(log.Fields{
 			"logID":       logID,
@@ -123,19 +128,6 @@ func NewSTHCache(logID string, store storage.TrustixStorage, logapi api.TrustixL
 		}).Info("Updated STH")
 
 		return err
-	}
-
-	_, err := c.Get()
-	if err != nil {
-		if err != storage.ObjectNotFoundError {
-			return nil, err
-		} else {
-			// New tree, no local state yet
-			err = updateSTH()
-			if err != nil {
-				return nil, err
-			}
-		}
 	}
 
 	go func() {
@@ -167,41 +159,9 @@ func NewSTHCache(logID string, store storage.TrustixStorage, logapi api.TrustixL
 		}
 	}()
 
-	return c, nil
+	return c
 }
 
-func (c *sthCache) Set(sth *schema.STH) error {
-	buf, err := proto.Marshal(sth)
-	if err != nil {
-		return err
-	}
-
-	return c.store.Update(func(txn storage.Transaction) error {
-		return txn.Set([]byte(c.logID), []byte("HEAD"), buf)
-	})
-}
-
-func (c *sthCache) Get() (*schema.STH, error) {
-	var buf []byte
-	err := c.store.View(func(txn storage.Transaction) error {
-		v, err := txn.Get([]byte(c.logID), []byte("HEAD"))
-		buf = v
-		return err
-	})
-
-	if len(buf) == 0 {
-		return nil, storage.ObjectNotFoundError
-	}
-
-	sth := &schema.STH{}
-	err = proto.Unmarshal(buf, sth)
-	if err != nil {
-		return nil, err
-	}
-
-	return sth, nil
-}
-
-func (c *sthCache) Close() {
+func (c *sthSyncer) Close() {
 	c.closeChan <- nil
 }

@@ -49,13 +49,15 @@ func minUint64(x, y uint64) uint64 {
 // of a key/value store
 //
 // This is the underlying implementation used by all other abstractions
-func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixLogAPI, error) {
+func NewKVStoreAPI(logID string, store storage.TrustixStorage, signer crypto.Signer) (TrustixLogAPI, error) {
 
 	var sth *schema.STH
 
 	// Create an empty initial log if it doesn't exist already
 	err := store.Update(func(txn storage.Transaction) error {
-		_, err := txn.Get([]byte("META"), []byte("HEAD"))
+		storageAPI := storage.NewStorageAPI(txn)
+
+		_, err := storageAPI.GetSTH(logID)
 		if err == nil {
 			return nil
 		}
@@ -81,13 +83,8 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixL
 			return err
 		}
 
-		smhBytes, err := proto.Marshal(sth)
-		if err != nil {
-			return err
-		}
-
 		log.WithField("size", *sth.TreeSize).Debug("Setting STH for empty tree")
-		err = txn.Set([]byte("META"), []byte("HEAD"), smhBytes)
+		err = storageAPI.SetSTH(logID, sth)
 		if err != nil {
 			return err
 		}
@@ -108,7 +105,8 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixL
 
 	if api.sth == nil {
 		err := store.View(func(txn storage.Transaction) error {
-			sth, err := api.getSTH(txn)
+			storageAPI := storage.NewStorageAPI(txn)
+			sth, err := storageAPI.GetSTH(logID)
 			if err != nil {
 				return err
 			}
@@ -142,23 +140,6 @@ func NewKVStoreAPI(store storage.TrustixStorage, signer crypto.Signer) (TrustixL
 	}()
 
 	return api, nil
-}
-
-func (kv *kvStoreLogApi) getSTH(txn storage.Transaction) (*schema.STH, error) {
-	sth := &schema.STH{}
-	var err error
-
-	sthBytes, err := txn.Get([]byte("META"), []byte("HEAD"))
-	if err != nil {
-		return nil, err
-	}
-
-	err = proto.Unmarshal(sthBytes, sth)
-	if err != nil {
-		return nil, err
-	}
-
-	return sth, nil
 }
 
 func (kv *kvStoreLogApi) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {

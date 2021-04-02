@@ -9,7 +9,6 @@
 package cmd
 
 import (
-	"context"
 	"crypto"
 	"crypto/tls"
 	"fmt"
@@ -27,7 +26,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	tapi "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/client"
 	conf "github.com/tweag/trustix/packages/trustix/config"
@@ -36,7 +34,7 @@ import (
 	"github.com/tweag/trustix/packages/trustix/rpc"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/signer"
-	"github.com/tweag/trustix/packages/trustix/sthmanager"
+	"github.com/tweag/trustix/packages/trustix/sthsync"
 	"github.com/tweag/trustix/packages/trustix/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -89,9 +87,8 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		sthmgr := sthmanager.NewSTHManager()
-		defer sthmgr.Close()
-		sthstore := store // TODO: Create a more narrow Store view
+		sthSyncMgr := sthsync.NewSyncManager()
+		defer sthSyncMgr.Close()
 
 		logMap := tapi.NewTrustixLogMap()
 		{
@@ -157,12 +154,7 @@ var rootCmd = &cobra.Command{
 
 					logMap.Add(logID, c)
 
-					sthCache, err := sthmanager.NewSTHCache(logID, sthstore, c, verifier)
-					if err != nil {
-						return err
-					}
-
-					sthmgr.Set(logID, sthCache)
+					sthSyncMgr.Add(sthsync.NewSTHSyncer(logID, store, c, verifier))
 
 					return nil
 				})
@@ -218,18 +210,12 @@ var rootCmd = &cobra.Command{
 						return fmt.Errorf("Signer type '%s' is not supported.", signerConfig.Type)
 					}
 
-					logAPI, err := tapi.NewKVStoreAPI(store, sig)
+					logAPI, err := tapi.NewKVStoreAPI(logID, store, sig)
 					if err != nil {
 						return err
 					}
 
 					logMap.Add(logID, logAPI)
-					// TODO: Allow to fail on startup
-					sthmgr.Set(logID, sthmanager.NewDummySTHCache(func() (*schema.STH, error) {
-						return logAPI.GetSTH(context.Background(), &api.STHRequest{
-							LogID: &logID,
-						})
-					}))
 
 					return nil
 				})
@@ -282,7 +268,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		logServer := rpc.NewTrustixCombinedRPCServer(sthmgr, logMap, decider)
+		logServer := rpc.NewTrustixCombinedRPCServer(store, logMap, decider)
 
 		log.Debug("Creating gRPC servers")
 

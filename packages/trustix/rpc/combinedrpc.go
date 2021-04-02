@@ -24,21 +24,20 @@ import (
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	tapi "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/decider"
-	"github.com/tweag/trustix/packages/trustix/sthmanager"
+	"github.com/tweag/trustix/packages/trustix/storage"
 )
 
 type TrustixCombinedRPCServer struct {
 	pb.UnimplementedTrustixCombinedRPCServer
-	logs       *tapi.TrustixLogMap
-	decider    decider.LogDecider
-	sthmanager *sthmanager.STHManager
+	logs    *tapi.TrustixLogMap
+	decider decider.LogDecider
+	store   storage.TrustixStorage
 }
 
-func NewTrustixCombinedRPCServer(sthmanager *sthmanager.STHManager, logs *tapi.TrustixLogMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(store storage.TrustixStorage, logs *tapi.TrustixLogMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
 	return &TrustixCombinedRPCServer{
-		logs:       logs,
-		decider:    decider,
-		sthmanager: sthmanager,
+		logs:    logs,
+		decider: decider,
 	}
 }
 
@@ -64,6 +63,28 @@ func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *pb.Get
 	})
 }
 
+func (l *TrustixCombinedRPCServer) getSTHMap() (map[string]*schema.STH, error) {
+	m := make(map[string]*schema.STH)
+
+	err := l.store.View(func(txn storage.Transaction) error {
+		logAPI := storage.NewStorageAPI(txn)
+
+		for _, logID := range l.logs.IDs() {
+			sth, err := logAPI.GetSTH(logID)
+			if err != nil {
+				return err
+			}
+			m[logID] = sth
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
 func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.EntriesResponse, error) {
 	responses := make(map[string]*schema.MapEntry)
 
@@ -73,7 +94,10 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 	hexInput := hex.EncodeToString(in.Key)
 	log.WithField("key", hexInput).Info("Received Get request")
 
-	getSTH := l.sthmanager.Get
+	sthMap, err := l.getSTHMap()
+	if err != nil {
+		return nil, err
+	}
 
 	for logID, l := range l.logs.Map() {
 		logID := logID
@@ -89,9 +113,9 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 				"logID": logID,
 			}).Info("Querying log")
 
-			sth, err := getSTH(logID)
-			if err != nil {
-				log.Error(fmt.Errorf("could not get STH: %v", err))
+			sth, ok := sthMap[logID]
+			if !ok {
+				log.Error(fmt.Errorf("could not get STH for logID: %s", logID))
 				return
 			}
 
@@ -201,12 +225,15 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 	var inputs []*decider.LogDeciderInput
 	var misses []string
 
-	getSTH := l.sthmanager.Get
-
 	logMap := l.logs.Map()
 
-	for name, l := range logMap {
-		name := name
+	sthMap, err := l.getSTHMap()
+	if err != nil {
+		return nil, err
+	}
+
+	for logID, l := range logMap {
+		logID := logID
 		l := l
 
 		wg.Add(1)
@@ -216,12 +243,12 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 
 			log.WithFields(log.Fields{
 				"key":   hexInput,
-				"logID": name,
+				"logID": logID,
 			}).Info("Querying log")
 
-			sth, err := getSTH(name)
-			if err != nil {
-				log.WithField("error", err).Error("Could not get STH")
+			sth, ok := sthMap[logID]
+			if !ok {
+				log.Error(fmt.Errorf("could not get STH for logID: %s", logID))
 				return
 			}
 			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
@@ -251,17 +278,17 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 
 			if err != nil {
 				log.Error(err)
-				misses = append(misses, name)
+				misses = append(misses, logID)
 				return
 			}
 
 			if len(resp.Value) == 0 {
-				misses = append(misses, name)
+				misses = append(misses, logID)
 				return
 			}
 
 			inputs = append(inputs, &decider.LogDeciderInput{
-				LogID:      name,
+				LogID:      logID,
 				OutputHash: hex.EncodeToString(mapEntry.Digest),
 			})
 
