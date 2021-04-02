@@ -36,6 +36,7 @@ type kvStoreLogApi struct {
 	sth       *schema.STH
 	queueMux  *sync.Mutex
 	submitMux *sync.Mutex
+	logID     string
 }
 
 func minUint64(x, y uint64) uint64 {
@@ -70,7 +71,7 @@ func NewKVStoreAPI(logID string, store storage.TrustixStorage, signer crypto.Sig
 			return err
 		}
 
-		smTree := smt.NewSparseMerkleTree(newMapStore(txn), sha256.New())
+		smTree := smt.NewSparseMerkleTree(newMapStore(logID, txn), sha256.New())
 
 		vMapLog, err := vlog.NewVerifiableLog("maplog", txn, 0)
 		if err != nil {
@@ -121,6 +122,8 @@ func NewKVStoreAPI(logID string, store storage.TrustixStorage, signer crypto.Sig
 	if api.sth == nil {
 		return nil, fmt.Errorf("Could not find STH")
 	}
+
+	api.logID = logID
 
 	go func() {
 		// TODO: Figure out a better method than hard coded sleep
@@ -202,7 +205,7 @@ func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *api.GetMapValueRe
 	resp := &api.MapValueResponse{}
 
 	err := kv.store.View(func(txn storage.Transaction) error {
-		tree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), req.MapRoot)
+		tree := smt.ImportSparseMerkleTree(newMapStore(kv.logID, txn), sha256.New(), req.MapRoot)
 
 		v, err := tree.Get(req.Key)
 		if err != nil {
@@ -428,7 +431,7 @@ func (kv *kvStoreLogApi) writeItems(txn storage.Transaction, items []*api.KeyVal
 
 	// The sparse merkle tree
 	log.Debug("Creating sparse merkle tree from persisted data")
-	smTree := smt.ImportSparseMerkleTree(newMapStore(txn), sha256.New(), sth.MapRoot)
+	smTree := smt.ImportSparseMerkleTree(newMapStore(kv.logID, txn), sha256.New(), sth.MapRoot)
 
 	// The append-only log tracking published map heads
 	log.WithField("size", *sth.MHTreeSize).Debug("Creating log tree from persisted data")

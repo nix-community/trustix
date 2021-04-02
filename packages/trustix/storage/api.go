@@ -14,8 +14,7 @@ import (
 )
 
 type StorageAPI struct {
-	txn   Transaction
-	logID string
+	txn Transaction
 }
 
 func NewStorageAPI(txn Transaction) *StorageAPI {
@@ -30,7 +29,7 @@ func (s *StorageAPI) SetSTH(logID string, sth *schema.STH) error {
 		return err
 	}
 
-	return s.txn.Set([]byte(s.logID), []byte("HEAD"), buf)
+	return s.txn.Set([]byte(logID), []byte("HEAD"), buf)
 }
 
 func (s *StorageAPI) GetSTH(logID string) (*schema.STH, error) {
@@ -53,4 +52,12 @@ func (s *StorageAPI) GetSTH(logID string) (*schema.STH, error) {
 	}
 
 	return sth, nil
+}
+
+func (s *StorageAPI) SetSMTValue(logID string, key []byte, value []byte) error {
+	return s.txn.Set([]byte("SMT"), key, value)
+}
+
+func (s *StorageAPI) GetSMTValue(logID string, key []byte) ([]byte, error) {
+	return s.txn.Get([]byte("SMT"), key)
 }

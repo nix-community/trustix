@@ -15,22 +15,24 @@ import (
 )
 
 type smtMapStore struct {
-	txn storage.Transaction
+	logID      string
+	storageAPI *storage.StorageAPI
 }
 
 // Implement MapStore for SMT lib
-func newMapStore(txn storage.Transaction) *smtMapStore {
+func newMapStore(logID string, txn storage.Transaction) *smtMapStore {
 	return &smtMapStore{
-		txn: txn,
+		logID:      logID,
+		storageAPI: storage.NewStorageAPI(txn),
 	}
 }
 
 func (s *smtMapStore) Get(key []byte) ([]byte, error) {
-	return s.txn.Get([]byte("SMT"), key)
+	return s.storageAPI.GetSMTValue(s.logID, key)
 }
 
 func (s *smtMapStore) Set(key []byte, value []byte) error {
-	return s.txn.Set([]byte("SMT"), key, value)
+	return s.storageAPI.SetSMTValue(s.logID, key, value)
 }
 
 func (s *smtMapStore) Delete(key []byte) error {
