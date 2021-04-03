@@ -21,16 +21,6 @@ class TrustixLogAPIStub(object):
             request_serializer=api_dot_api__pb2.STHRequest.SerializeToString,
             response_deserializer=schema_dot_sth__pb2.STH.FromString,
         )
-        self.Submit = channel.unary_unary(
-            "/trustix.TrustixLogAPI/Submit",
-            request_serializer=api_dot_api__pb2.SubmitRequest.SerializeToString,
-            response_deserializer=api_dot_api__pb2.SubmitResponse.FromString,
-        )
-        self.Flush = channel.unary_unary(
-            "/trustix.TrustixLogAPI/Flush",
-            request_serializer=api_dot_api__pb2.FlushRequest.SerializeToString,
-            response_deserializer=api_dot_api__pb2.FlushResponse.FromString,
-        )
         self.GetValue = channel.unary_unary(
             "/trustix.TrustixLogAPI/GetValue",
             request_serializer=api_dot_api__pb2.ValueRequest.SerializeToString,
@@ -78,18 +68,6 @@ class TrustixLogAPIServicer(object):
 
     def GetSTH(self, request, context):
         """Aggregate"""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def Submit(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def Flush(self, request, context):
-        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -149,16 +127,6 @@ def add_TrustixLogAPIServicer_to_server(servicer, server):
             servicer.GetSTH,
             request_deserializer=api_dot_api__pb2.STHRequest.FromString,
             response_serializer=schema_dot_sth__pb2.STH.SerializeToString,
-        ),
-        "Submit": grpc.unary_unary_rpc_method_handler(
-            servicer.Submit,
-            request_deserializer=api_dot_api__pb2.SubmitRequest.FromString,
-            response_serializer=api_dot_api__pb2.SubmitResponse.SerializeToString,
-        ),
-        "Flush": grpc.unary_unary_rpc_method_handler(
-            servicer.Flush,
-            request_deserializer=api_dot_api__pb2.FlushRequest.FromString,
-            response_serializer=api_dot_api__pb2.FlushResponse.SerializeToString,
         ),
         "GetValue": grpc.unary_unary_rpc_method_handler(
             servicer.GetValue,
@@ -230,64 +198,6 @@ class TrustixLogAPI(object):
             "/trustix.TrustixLogAPI/GetSTH",
             api_dot_api__pb2.STHRequest.SerializeToString,
             schema_dot_sth__pb2.STH.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
-
-    @staticmethod
-    def Submit(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/trustix.TrustixLogAPI/Submit",
-            api_dot_api__pb2.SubmitRequest.SerializeToString,
-            api_dot_api__pb2.SubmitResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
-
-    @staticmethod
-    def Flush(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/trustix.TrustixLogAPI/Flush",
-            api_dot_api__pb2.FlushRequest.SerializeToString,
-            api_dot_api__pb2.FlushResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -21,25 +21,32 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
+	rpc "github.com/tweag/trustix/packages/trustix-proto/proto"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	tapi "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/decider"
+	pub "github.com/tweag/trustix/packages/trustix/publisher"
+	"github.com/tweag/trustix/packages/trustix/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/storage"
 	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 type TrustixCombinedRPCServer struct {
 	pb.UnimplementedTrustixCombinedRPCServer
-	logs    *tapi.TrustixLogMap
-	decider decider.LogDecider
-	store   storage.TrustixStorage
+	logs       *tapi.TrustixLogMap
+	decider    decider.LogDecider
+	store      storage.TrustixStorage
+	publishers *pub.PublisherMap
 }
 
-func NewTrustixCombinedRPCServer(store storage.TrustixStorage, logs *tapi.TrustixLogMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
-	return &TrustixCombinedRPCServer{
-		logs:    logs,
-		decider: decider,
+func NewTrustixCombinedRPCServer(store storage.TrustixStorage, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
+	rpc := &TrustixCombinedRPCServer{
+		logs:       logs,
+		decider:    decider,
+		publishers: publishers,
 	}
+
+	return rpc
 }
 
 func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
@@ -442,6 +449,34 @@ func (l *TrustixCombinedRPCServer) GetValue(ctx context.Context, in *api.ValueRe
 	}
 
 	return nil, fmt.Errorf("Value could not be retreived")
+}
+
+func (l *TrustixCombinedRPCServer) Submit(ctx context.Context, req *rpc.SubmitRequest) (*rpc.SubmitResponse, error) {
+	err := auth.CanWrite(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	q, err := l.publishers.Get(*req.LogID)
+	if err != nil {
+		return nil, err
+	}
+
+	return q.Submit(ctx, req)
+}
+
+func (l *TrustixCombinedRPCServer) Flush(ctx context.Context, req *rpc.FlushRequest) (*rpc.FlushResponse, error) {
+	err := auth.CanWrite(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	q, err := l.publishers.Get(*req.LogID)
+	if err != nil {
+		return nil, err
+	}
+
+	return q.Flush(ctx, req)
 }
 
 func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {

@@ -48,14 +48,6 @@ func (s *TrustixAPIGRPCClient) GetMapValue(ctx context.Context, req *api.GetMapV
 	return s.client.GetMapValue(ctx, req)
 }
 
-func (s *TrustixAPIGRPCClient) Submit(ctx context.Context, req *api.SubmitRequest) (*api.SubmitResponse, error) {
-	return s.client.Submit(ctx, req)
-}
-
-func (s *TrustixAPIGRPCClient) Flush(ctx context.Context, in *api.FlushRequest) (*api.FlushResponse, error) {
-	return s.client.Flush(ctx, in)
-}
-
 func (s *TrustixAPIGRPCClient) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
 	return s.client.GetValue(ctx, in)
 }

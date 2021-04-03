@@ -13,7 +13,6 @@ import (
 
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/storage"
 	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
@@ -71,35 +70,6 @@ func (s *TrustixAPIServer) GetMapValue(ctx context.Context, req *api.GetMapValue
 		return nil, err
 	}
 	return log.GetMapValue(ctx, req)
-}
-
-func (s *TrustixAPIServer) Submit(ctx context.Context, req *api.SubmitRequest) (*api.SubmitResponse, error) {
-
-	err := auth.CanWrite(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	log, err := s.logMap.Get(*req.LogID)
-	if err != nil {
-		return nil, err
-	}
-
-	return log.Submit(ctx, req)
-}
-
-func (s *TrustixAPIServer) Flush(ctx context.Context, req *api.FlushRequest) (*api.FlushResponse, error) {
-	err := auth.CanWrite(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	log, err := s.logMap.Get(*req.LogID)
-	if err != nil {
-		return nil, err
-	}
-
-	return log.Flush(ctx, req)
 }
 
 func (s *TrustixAPIServer) GetValue(ctx context.Context, req *api.ValueRequest) (*api.ValueResponse, error) {

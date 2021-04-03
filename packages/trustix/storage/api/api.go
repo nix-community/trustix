@@ -156,3 +156,7 @@ func (s *StorageAPI) GetCAValue(digest []byte) ([]byte, error) {
 
 	return value, nil
 }
+
+func (s *StorageAPI) MapStore(logID string) *SMTMapStore {
+	return newMapStore(s, logID)
+}

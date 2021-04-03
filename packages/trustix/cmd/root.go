@@ -31,6 +31,7 @@ import (
 	conf "github.com/tweag/trustix/packages/trustix/config"
 	"github.com/tweag/trustix/packages/trustix/decider"
 	"github.com/tweag/trustix/packages/trustix/lib"
+	pub "github.com/tweag/trustix/packages/trustix/publisher"
 	"github.com/tweag/trustix/packages/trustix/rpc"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/signer"
@@ -90,6 +91,9 @@ var rootCmd = &cobra.Command{
 		sthSyncMgr := sthsync.NewSyncManager()
 		defer sthSyncMgr.Close()
 
+		pubMap := pub.NewPublisherMap()
+		defer pubMap.Close()
+
 		logMap := tapi.NewTrustixLogMap()
 		{
 
@@ -126,7 +130,6 @@ var rootCmd = &cobra.Command{
 					log.WithFields(log.Fields{
 						"id":     logID,
 						"pubkey": subConf.Signer.PublicKey,
-						// "mode":   subConf.Mode,
 					}).Info("Adding log subscriber")
 
 					var verifier signer.TrustixVerifier
@@ -213,6 +216,9 @@ var rootCmd = &cobra.Command{
 						return err
 					}
 
+					if err = pubMap.Set(logID, pub.NewPublisher(logID, store, sig)); err != nil {
+						return err
+					}
 					logMap.Add(logID, logAPI)
 
 					return nil
@@ -266,7 +272,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		logServer := rpc.NewTrustixCombinedRPCServer(store, logMap, decider)
+		logServer := rpc.NewTrustixCombinedRPCServer(store, logMap, pubMap, decider)
 
 		log.Debug("Creating gRPC servers")
 

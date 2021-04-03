@@ -29,8 +29,10 @@ type TrustixCombinedRPCClient interface {
 	// Compare(inputHash)
 	Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
 	DecideStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_DecideStreamClient, error)
-	// Get stored value by digest
+	// Get stored value by digest (TODO: Remove, it's a duplicate from api.proto
 	GetValue(ctx context.Context, in *api.ValueRequest, opts ...grpc.CallOption) (*api.ValueResponse, error)
+	Submit(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error)
+	Flush(ctx context.Context, in *FlushRequest, opts ...grpc.CallOption) (*FlushResponse, error)
 }
 
 type trustixCombinedRPCClient struct {
@@ -148,6 +150,24 @@ func (c *trustixCombinedRPCClient) GetValue(ctx context.Context, in *api.ValueRe
 	return out, nil
 }
 
+func (c *trustixCombinedRPCClient) Submit(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error) {
+	out := new(SubmitResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/Submit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trustixCombinedRPCClient) Flush(ctx context.Context, in *FlushRequest, opts ...grpc.CallOption) (*FlushResponse, error) {
+	out := new(FlushResponse)
+	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/Flush", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TrustixCombinedRPCServer is the server API for TrustixCombinedRPC service.
 // All implementations must embed UnimplementedTrustixCombinedRPCServer
 // for forward compatibility
@@ -162,8 +182,10 @@ type TrustixCombinedRPCServer interface {
 	// Compare(inputHash)
 	Decide(context.Context, *KeyRequest) (*DecisionResponse, error)
 	DecideStream(TrustixCombinedRPC_DecideStreamServer) error
-	// Get stored value by digest
+	// Get stored value by digest (TODO: Remove, it's a duplicate from api.proto
 	GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error)
+	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
+	Flush(context.Context, *FlushRequest) (*FlushResponse, error)
 	mustEmbedUnimplementedTrustixCombinedRPCServer()
 }
 
@@ -191,6 +213,12 @@ func (UnimplementedTrustixCombinedRPCServer) DecideStream(TrustixCombinedRPC_Dec
 }
 func (UnimplementedTrustixCombinedRPCServer) GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValue not implemented")
+}
+func (UnimplementedTrustixCombinedRPCServer) Submit(context.Context, *SubmitRequest) (*SubmitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Submit not implemented")
+}
+func (UnimplementedTrustixCombinedRPCServer) Flush(context.Context, *FlushRequest) (*FlushResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Flush not implemented")
 }
 func (UnimplementedTrustixCombinedRPCServer) mustEmbedUnimplementedTrustixCombinedRPCServer() {}
 
@@ -347,6 +375,42 @@ func _TrustixCombinedRPC_GetValue_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TrustixCombinedRPC_Submit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixCombinedRPCServer).Submit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixCombinedRPC/Submit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixCombinedRPCServer).Submit(ctx, req.(*SubmitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrustixCombinedRPC_Flush_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FlushRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrustixCombinedRPCServer).Flush(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trustix.TrustixCombinedRPC/Flush",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrustixCombinedRPCServer).Flush(ctx, req.(*FlushRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TrustixCombinedRPC_ServiceDesc is the grpc.ServiceDesc for TrustixCombinedRPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -373,6 +437,14 @@ var TrustixCombinedRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetValue",
 			Handler:    _TrustixCombinedRPC_GetValue_Handler,
+		},
+		{
+			MethodName: "Submit",
+			Handler:    _TrustixCombinedRPC_Submit_Handler,
+		},
+		{
+			MethodName: "Flush",
+			Handler:    _TrustixCombinedRPC_Flush_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

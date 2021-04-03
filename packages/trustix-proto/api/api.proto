@@ -63,25 +63,6 @@ message KeyValuePair {
   required bytes Value = 2;
 }
 
-message SubmitRequest {
-  required string LogID = 1;
-  repeated KeyValuePair Items = 2;
-}
-
-message SubmitResponse {
-  enum Status {
-    OK = 0;
-  }
- required Status status = 1;
-}
-
-message FlushRequest {
-  required string LogID = 1;
-}
-
-message FlushResponse {
-}
-
 message ValueRequest {
   required bytes Digest = 1;
 }
@@ -95,10 +76,6 @@ service TrustixLogAPI {
   // Aggregate
 
   rpc GetSTH (STHRequest) returns (STH) {}
-
-  rpc Submit (SubmitRequest) returns (SubmitResponse) {}
-
-  rpc Flush (FlushRequest) returns (FlushResponse) {}
 
   // Content-addressed values
 

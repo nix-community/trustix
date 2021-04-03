@@ -10,32 +10,28 @@ package api
 
 import (
 	"fmt"
-
-	"github.com/tweag/trustix/packages/trustix/storage"
-	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
-type smtMapStore struct {
+type SMTMapStore struct {
 	logID      string
-	storageAPI *storageapi.StorageAPI
+	storageAPI *StorageAPI
 }
 
-// Implement MapStore for SMT lib
-func newMapStore(logID string, txn storage.Transaction) *smtMapStore {
-	return &smtMapStore{
+func newMapStore(storageAPI *StorageAPI, logID string) *SMTMapStore {
+	return &SMTMapStore{
 		logID:      logID,
-		storageAPI: storageapi.NewStorageAPI(txn),
+		storageAPI: storageAPI,
 	}
 }
 
-func (s *smtMapStore) Get(key []byte) ([]byte, error) {
+func (s *SMTMapStore) Get(key []byte) ([]byte, error) {
 	return s.storageAPI.GetSMTValue(s.logID, key)
 }
 
-func (s *smtMapStore) Set(key []byte, value []byte) error {
+func (s *SMTMapStore) Set(key []byte, value []byte) error {
 	return s.storageAPI.SetSMTValue(s.logID, key, value)
 }
 
-func (s *smtMapStore) Delete(key []byte) error {
+func (s *SMTMapStore) Delete(key []byte) error {
 	return fmt.Errorf("Delete unsupported")
 }

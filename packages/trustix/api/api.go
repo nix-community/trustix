@@ -31,12 +31,6 @@ type TrustixLogAPI interface {
 	// Get value from the map
 	GetMapValue(context.Context, *api.GetMapValueRequest) (*api.MapValueResponse, error)
 
-	// Submit a value to the log
-	Submit(context.Context, *api.SubmitRequest) (*api.SubmitResponse, error)
-
-	// Flush the queue and write new heads
-	Flush(context.Context, *api.FlushRequest) (*api.FlushResponse, error)
-
 	// Get content-addressed computation outputs
 	GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error)
 

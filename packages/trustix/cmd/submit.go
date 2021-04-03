@@ -15,6 +15,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
+	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
 	"github.com/tweag/trustix/packages/trustix/client"
 )
 
@@ -48,14 +49,14 @@ var submitCommand = &cobra.Command{
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		c := api.NewTrustixLogAPIClient(conn)
+		c := pb.NewTrustixCombinedRPCClient(conn)
 
 		log.WithFields(log.Fields{
 			"key":   keyHex,
 			"value": valueHex,
 		}).Debug("Submitting mapping")
 
-		r, err := c.Submit(ctx, &api.SubmitRequest{
+		r, err := c.Submit(ctx, &pb.SubmitRequest{
 			Items: []*api.KeyValuePair{
 				&api.KeyValuePair{
 					Key:   inputBytes,

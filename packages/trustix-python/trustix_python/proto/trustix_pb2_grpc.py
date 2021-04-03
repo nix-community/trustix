@@ -51,6 +51,16 @@ class TrustixCombinedRPCStub(object):
             request_serializer=api_dot_api__pb2.ValueRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.ValueResponse.FromString,
         )
+        self.Submit = channel.unary_unary(
+            "/trustix.TrustixCombinedRPC/Submit",
+            request_serializer=proto_dot_trustix__pb2.SubmitRequest.SerializeToString,
+            response_deserializer=proto_dot_trustix__pb2.SubmitResponse.FromString,
+        )
+        self.Flush = channel.unary_unary(
+            "/trustix.TrustixCombinedRPC/Flush",
+            request_serializer=proto_dot_trustix__pb2.FlushRequest.SerializeToString,
+            response_deserializer=proto_dot_trustix__pb2.FlushResponse.FromString,
+        )
 
 
 class TrustixCombinedRPCServicer(object):
@@ -93,7 +103,19 @@ class TrustixCombinedRPCServicer(object):
         raise NotImplementedError("Method not implemented!")
 
     def GetValue(self, request, context):
-        """Get stored value by digest"""
+        """Get stored value by digest (TODO: Remove, it's a duplicate from api.proto"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def Submit(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def Flush(self, request, context):
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -135,6 +157,16 @@ def add_TrustixCombinedRPCServicer_to_server(servicer, server):
             servicer.GetValue,
             request_deserializer=api_dot_api__pb2.ValueRequest.FromString,
             response_serializer=api_dot_api__pb2.ValueResponse.SerializeToString,
+        ),
+        "Submit": grpc.unary_unary_rpc_method_handler(
+            servicer.Submit,
+            request_deserializer=proto_dot_trustix__pb2.SubmitRequest.FromString,
+            response_serializer=proto_dot_trustix__pb2.SubmitResponse.SerializeToString,
+        ),
+        "Flush": grpc.unary_unary_rpc_method_handler(
+            servicer.Flush,
+            request_deserializer=proto_dot_trustix__pb2.FlushRequest.FromString,
+            response_serializer=proto_dot_trustix__pb2.FlushResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -340,6 +372,64 @@ class TrustixCombinedRPC(object):
             "/trustix.TrustixCombinedRPC/GetValue",
             api_dot_api__pb2.ValueRequest.SerializeToString,
             api_dot_api__pb2.ValueResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
+
+    @staticmethod
+    def Submit(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/trustix.TrustixCombinedRPC/Submit",
+            proto_dot_trustix__pb2.SubmitRequest.SerializeToString,
+            proto_dot_trustix__pb2.SubmitResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
+
+    @staticmethod
+    def Flush(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/trustix.TrustixCombinedRPC/Flush",
+            proto_dot_trustix__pb2.FlushRequest.SerializeToString,
+            proto_dot_trustix__pb2.FlushResponse.FromString,
             options,
             channel_credentials,
             insecure,

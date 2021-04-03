@@ -16,7 +16,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tweag/trustix/packages/trustix-proto/api"
+	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
 	"github.com/tweag/trustix/packages/trustix/client"
 )
 
@@ -30,7 +30,7 @@ var nixHookCommand = &cobra.Command{
 			log.Fatal("OUT_PATHS is empty, expected at least one path to submit")
 		}
 
-		req := &api.SubmitRequest{
+		req := &pb.SubmitRequest{
 			LogID: &logID,
 		}
 
@@ -88,7 +88,7 @@ var nixHookCommand = &cobra.Command{
 		ctx, cancel := client.CreateContext(30)
 		defer cancel()
 
-		c := api.NewTrustixLogAPIClient(conn)
+		c := pb.NewTrustixCombinedRPCClient(conn)
 		_, err = c.Submit(ctx, req)
 		if err != nil {
 			log.Fatalf("could not submit: %v", err)

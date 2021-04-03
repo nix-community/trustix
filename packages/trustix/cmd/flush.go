@@ -11,7 +11,7 @@ package cmd
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tweag/trustix/packages/trustix-proto/api"
+	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
 	"github.com/tweag/trustix/packages/trustix/client"
 )
 
@@ -28,9 +28,8 @@ var flushCommand = &cobra.Command{
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		c := api.NewTrustixLogAPIClient(conn)
-
-		_, err = c.Flush(ctx, &api.FlushRequest{
+		c := pb.NewTrustixCombinedRPCClient(conn)
+		_, err = c.Flush(ctx, &pb.FlushRequest{
 			LogID: &logID,
 		})
 		if err != nil {

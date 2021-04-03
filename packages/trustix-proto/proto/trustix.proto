@@ -24,8 +24,11 @@ service TrustixCombinedRPC {
   rpc Decide (KeyRequest) returns (DecisionResponse) {}
   rpc DecideStream (stream KeyRequest) returns (stream DecisionResponse) {}
 
-  // Get stored value by digest
+  // Get stored value by digest (TODO: Remove, it's a duplicate from api.proto
   rpc GetValue (ValueRequest) returns (ValueResponse) {}
+
+  rpc Submit (SubmitRequest) returns (SubmitResponse) {}
+  rpc Flush (FlushRequest) returns (FlushResponse) {}
 
 }
 
@@ -87,4 +90,23 @@ message DecisionResponse {
 
   // Full misses (log ids missing log entry entirely)
   repeated string Misses = 3;
+}
+
+message SubmitRequest {
+  required string LogID = 1;
+  repeated KeyValuePair Items = 2;
+}
+
+message SubmitResponse {
+  enum Status {
+    OK = 0;
+  }
+ required Status status = 1;
+}
+
+message FlushRequest {
+  required string LogID = 1;
+}
+
+message FlushResponse {
 }
