@@ -24,10 +24,6 @@ var queryCommand = &cobra.Command{
 	Use:   "query",
 	Short: "Query hashes from the log",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := checkLogID(); err != nil {
-			log.Fatal(err)
-		}
-
 		if keyHex == "" {
 			return fmt.Errorf("Missing input/output hash")
 		}
