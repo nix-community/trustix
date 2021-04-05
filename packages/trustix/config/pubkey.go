@@ -23,19 +23,15 @@
 
 package config
 
-type GRPCTransportConfig struct {
-	Remote string `toml:"remote"`
+import (
+	"encoding/base64"
+)
+
+type PublicKey struct {
+	Type string `toml:"type"`
+	Pub  string `toml:"pub"`
 }
 
-type TransportConfig struct {
-	Type string               `toml:"type"`
-	GRPC *GRPCTransportConfig `toml:"grpc"`
-}
-
-type SubscriberConfig struct {
-	// Name string `toml:"name"`
-	// Mode      string            `toml:"mode"`
-	Transport *TransportConfig  `toml:"transport"`
-	PublicKey *PublicKey        `toml:"key"`
-	Meta      map[string]string `toml:"meta"`
+func (p *PublicKey) Decode() ([]byte, error) {
+	return base64.StdEncoding.DecodeString(p.Pub)
 }

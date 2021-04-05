@@ -28,13 +28,12 @@ type ED25519SignerConfig struct {
 }
 
 type SignerConfig struct {
-	Type      string               `toml:"type"`
-	KeyType   string               `toml:"key-type"`
-	PublicKey string               `toml:"public-key"`
-	ED25519   *ED25519SignerConfig `toml:"ed25519"`
+	Type    string               `toml:"type"`
+	ED25519 *ED25519SignerConfig `toml:"ed25519"`
 }
 
 type PublisherConfig struct {
-	Signer *SignerConfig     `toml:"signer"`
-	Meta   map[string]string `toml:"meta"`
+	Signer    *SignerConfig     `toml:"signer"`
+	PublicKey *PublicKey        `toml:"key"`
+	Meta      map[string]string `toml:"meta"`
 }

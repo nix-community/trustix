@@ -5,10 +5,12 @@ type = "memory"
 
 [[publisher]]
 
-[publisher.signer]
+[publisher.key]
 type = "ed25519"
-key-type = "ed25519"
-public-key = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
+pub = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
+
+[publisher.igner]
+type = "ed25519"
 
 # Implementation dependent
 [publisher.signer.ed25519]

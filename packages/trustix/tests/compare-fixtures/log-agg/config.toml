@@ -12,10 +12,9 @@ type = "grpc"
 [subscriber.transport.grpc]
 remote = "unix:///build/1.sock"
 
-[subscriber.signer]
+[subscriber.key]
 type = "ed25519"
-key-type = "ed25519"
-public-key = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
+pub = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
 [[subscriber]]
 
@@ -25,10 +24,9 @@ type = "grpc"
 [subscriber.transport.grpc]
 remote = "unix:///build/2.sock"
 
-[subscriber.signer]
+[subscriber.key]
 type = "ed25519"
-key-type = "ed25519"
-public-key = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
+pub = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
 
 [[subscriber]]
 
@@ -38,7 +36,6 @@ type = "grpc"
 [subscriber.transport.grpc]
 remote = "unix:///build/3.sock"
 
-[subscriber.signer]
+[subscriber.key]
 type = "ed25519"
-key-type = "ed25519"
-public-key = "BneDQe44Wmeypis3B1KfLmipzd+B38UAzmuoH2Nvmso="
+pub = "BneDQe44Wmeypis3B1KfLmipzd+B38UAzmuoH2Nvmso="

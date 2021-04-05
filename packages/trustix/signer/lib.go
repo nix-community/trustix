@@ -13,16 +13,11 @@ import (
 	"io/ioutil"
 )
 
-// Decode - Decode a base64 encoded key
-func Decode(b64Key string) ([]byte, error) {
-	return base64.StdEncoding.DecodeString(b64Key)
-}
-
 func readKey(path string) ([]byte, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	return Decode(string(data))
+	return base64.StdEncoding.DecodeString(string(data))
 }

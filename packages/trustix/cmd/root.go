@@ -120,28 +120,28 @@ var rootCmd = &cobra.Command{
 				go wrapLogInit(func() error {
 					defer wg.Done()
 
-					pubBytes, err := signer.Decode(subConf.Signer.PublicKey)
+					pubBytes, err := subConf.PublicKey.Decode()
 					if err != nil {
 						return err
 					}
 
-					logID := lib.LogID(subConf.Signer.Type, pubBytes)
+					logID := lib.LogID(subConf.PublicKey.Type, pubBytes)
 
 					log.WithFields(log.Fields{
 						"id":     logID,
-						"pubkey": subConf.Signer.PublicKey,
+						"pubkey": subConf.PublicKey.Pub,
 					}).Info("Adding log subscriber")
 
 					var verifier signer.TrustixVerifier
 					{
-						switch subConf.Signer.Type {
+						switch subConf.PublicKey.Type {
 						case "ed25519":
 							verifier, err = signer.NewED25519Verifier(pubBytes)
 							if err != nil {
 								return err
 							}
 						default:
-							return fmt.Errorf("Verifier type '%s' is not supported.", subConf.Signer.Type)
+							return fmt.Errorf("Verifier type '%s' is not supported.", subConf.PublicKey.Type)
 						}
 					}
 
@@ -173,17 +173,17 @@ var rootCmd = &cobra.Command{
 
 					var logID string
 					{
-						pubBytes, err := signer.Decode(publisherConfig.Signer.PublicKey)
+						pubBytes, err := publisherConfig.PublicKey.Decode()
 						if err != nil {
 							return err
 						}
 
-						logID = lib.LogID(publisherConfig.Signer.Type, pubBytes)
+						logID = lib.LogID(publisherConfig.PublicKey.Type, pubBytes)
 					}
 
 					log.WithFields(log.Fields{
 						"id":     logID,
-						"pubkey": publisherConfig.Signer.PublicKey,
+						"pubkey": publisherConfig.PublicKey.Pub,
 					}).Info("Adding log")
 
 					// TODO: Define a logger with fields already applied

@@ -6,9 +6,8 @@ type = "grpc"
 [publisher.transport.grpc]
 remote = "localhost:8081"
 
-[publisher.signer]
+[publisher.key]
 type = "ed25519"
-key-type = "ed25519"
 public-key = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
 [[publisher]]
@@ -19,9 +18,8 @@ type = "grpc"
 [publisher.transport.grpc]
 remote = "localhost:8082"
 
-[publisher.signer]
+[publisher.key]
 type = "ed25519"
-key-type = "ed25519"
 public-key = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
 
 [[publisher]]
@@ -32,7 +30,6 @@ type = "grpc"
 [publisher.transport.grpc]
 remote = "localhost:8083"
 
-[publisher.signer]
+[publisher.key]
 type = "ed25519"
-key-type = "ed25519"
 public-key = "BneDQe44Wmeypis3B1KfLmipzd+B38UAzmuoH2Nvmso="

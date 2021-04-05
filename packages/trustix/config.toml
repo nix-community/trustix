@@ -14,12 +14,12 @@ minimum = 50
 [publisher.meta]
 upstream = "https://cache.nixos.org"
 
-[publisher.signer]
-# The difference between type & key-type is that type is the Trustix "signer mode" while key-type is the type of key
-# Another signer (lets say PKCS11) could be implemented that uses the same key-type but a different signing backend
+[publisher.key]
 type = "ed25519"
-key-type = "ed25519"
-public-key = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo="  # Base64 encoded public key
+pub = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo="  # Base64 encoded public key
+
+[publisher.signer]
+type = "ed25519"
 
 # Implementation dependent
 [publisher.signer.ed25519]
