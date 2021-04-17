@@ -6,22 +6,19 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package config
+package decider
 
 import (
-	signer "github.com/tweag/trustix/packages/trustix/config/signer"
+	"fmt"
 )
 
-type Publisher struct {
-	Signer    *signer.Signer    `toml:"signer"`
-	PublicKey *PublicKey        `toml:"key"`
-	Meta      map[string]string `toml:"meta"`
+type PercentageDecider struct {
+	Minimum int `toml:"minimum"`
 }
 
-func (p *Publisher) Validate() error {
-	if err := p.Signer.Validate(); err != nil {
-		return err
+func (s *PercentageDecider) Validate() error {
+	if s.Minimum < 0 || s.Minimum > 100 {
+		return fmt.Errorf("Minimum percentage decider out of bounds (%d)", s.Minimum)
 	}
-
 	return nil
 }

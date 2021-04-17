@@ -10,27 +10,52 @@ package config
 
 import (
 	"github.com/BurntSushi/toml"
+
+	decider "github.com/tweag/trustix/packages/trustix/config/decider"
 )
 
-type NativeStorageConfig struct {
-}
-
-type StorageConfig struct {
-	Type   string               `toml:"type"`
-	Native *NativeStorageConfig `toml:"native"`
-}
-
 type Config struct {
-	Deciders    []*DeciderConfig    `toml:"decider"`
-	Publishers  []*PublisherConfig  `toml:"publisher"`
-	Subscribers []*SubscriberConfig `toml:"subscriber"`
-	Storage     *StorageConfig      `toml:"storage"`
+	Deciders    []*decider.Decider `toml:"decider"`
+	Publishers  []*Publisher       `toml:"publisher"`
+	Subscribers []*Subscriber      `toml:"subscriber"`
+	Storage     *Storage           `toml:"storage"`
+}
+
+func (c *Config) Validate() error {
+
+	if err := c.Storage.Validate(); err != nil {
+		return err
+	}
+
+	for _, publisher := range c.Publishers {
+		if err := publisher.Validate(); err != nil {
+			return err
+		}
+	}
+
+	for _, subscriber := range c.Subscribers {
+		if err := subscriber.Validate(); err != nil {
+			return err
+		}
+	}
+
+	for _, decider := range c.Deciders {
+		if err := decider.Validate(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func NewConfigFromFile(path string) (*Config, error) {
 	conf := &Config{}
 
 	if _, err := toml.DecodeFile(path, &conf); err != nil {
+		return nil, err
+	}
+
+	if err := conf.Validate(); err != nil {
 		return nil, err
 	}
 

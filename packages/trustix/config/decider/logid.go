@@ -6,22 +6,16 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package config
+package decider
 
 import (
-	signer "github.com/tweag/trustix/packages/trustix/config/signer"
+	"github.com/tweag/trustix/packages/trustix/lib"
 )
 
-type Publisher struct {
-	Signer    *signer.Signer    `toml:"signer"`
-	PublicKey *PublicKey        `toml:"key"`
-	Meta      map[string]string `toml:"meta"`
+type LogIDDecider struct {
+	ID string `toml:"id"`
 }
 
-func (p *Publisher) Validate() error {
-	if err := p.Signer.Validate(); err != nil {
-		return err
-	}
-
-	return nil
+func (s *LogIDDecider) Validate() error {
+	return lib.ValidLogID(s.ID)
 }

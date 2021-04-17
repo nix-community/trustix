@@ -6,22 +6,28 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package config
+package decider
 
 import (
-	signer "github.com/tweag/trustix/packages/trustix/config/signer"
+	"fmt"
 )
 
-type Publisher struct {
-	Signer    *signer.Signer    `toml:"signer"`
-	PublicKey *PublicKey        `toml:"key"`
-	Meta      map[string]string `toml:"meta"`
+type Decider struct {
+	Engine     string              `toml:"engine"`
+	Lua        *LuaDecider        `toml:"lua"`
+	LogID      *LogIDDecider      `toml:"logid"`
+	Percentage *PercentageDecider `toml:"percentage"`
 }
 
-func (p *Publisher) Validate() error {
-	if err := p.Signer.Validate(); err != nil {
-		return err
+func (s *Decider) Validate() error {
+	switch s.Engine {
+	case "lua":
+		return s.Lua.Validate()
+	case "logid":
+		return s.LogID.Validate()
+	case "percentage":
+		return s.Percentage.Validate()
+	default:
+		return fmt.Errorf("Unhandled decider engine: '%s'", s.Engine)
 	}
-
-	return nil
 }

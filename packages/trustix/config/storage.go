@@ -9,19 +9,22 @@
 package config
 
 import (
-	signer "github.com/tweag/trustix/packages/trustix/config/signer"
+	"fmt"
 )
 
-type Publisher struct {
-	Signer    *signer.Signer    `toml:"signer"`
-	PublicKey *PublicKey        `toml:"key"`
-	Meta      map[string]string `toml:"meta"`
+type NativeStorage struct {
 }
 
-func (p *Publisher) Validate() error {
-	if err := p.Signer.Validate(); err != nil {
-		return err
-	}
+type Storage struct {
+	Type   string         `toml:"type"`
+	Native *NativeStorage `toml:"native"`
+}
 
-	return nil
+func (s *Storage) Validate() error {
+	switch s.Type {
+	case "native":
+		return nil
+	default:
+		return fmt.Errorf("Unhandled storage type: '%s'", s.Type)
+	}
 }

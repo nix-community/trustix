@@ -9,18 +9,32 @@
 package config
 
 import (
-	signer "github.com/tweag/trustix/packages/trustix/config/signer"
+	"fmt"
 )
 
-type Publisher struct {
-	Signer    *signer.Signer    `toml:"signer"`
-	PublicKey *PublicKey        `toml:"key"`
-	Meta      map[string]string `toml:"meta"`
+type ED25519 struct {
+	PrivateKeyPath string `toml:"private-key-path"`
 }
 
-func (p *Publisher) Validate() error {
-	if err := p.Signer.Validate(); err != nil {
-		return err
+func (s *ED25519) Validate() error {
+	if s.PrivateKeyPath == "" {
+		return fmt.Errorf("Empty private key path")
+	}
+	return nil
+}
+
+type Signer struct {
+	Type    string   `toml:"type"`
+	ED25519 *ED25519 `toml:"ed25519"`
+}
+
+func (s *Signer) Validate() error {
+
+	switch s.Type {
+	case "ed25519":
+		return s.ED25519.Validate()
+	default:
+		return fmt.Errorf("Unhandled signer type: %s", s.Type)
 	}
 
 	return nil
