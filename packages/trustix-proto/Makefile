@@ -2,6 +2,7 @@ all: go py
 
 go:
 	$(MAKE) -C schema
+	$(MAKE) -C protocol
 	$(MAKE) -C proto
 	$(MAKE) -C api
 
