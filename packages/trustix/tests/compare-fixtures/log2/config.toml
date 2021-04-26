@@ -9,7 +9,7 @@ type = "memory"
 type = "ed25519"
 pub = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
 
-[publisher.igner]
+[publisher.signer]
 type = "ed25519"
 
 # Implementation dependent

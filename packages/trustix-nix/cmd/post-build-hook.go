@@ -30,6 +30,10 @@ var nixHookCommand = &cobra.Command{
 			log.Fatal("OUT_PATHS is empty, expected at least one path to submit")
 		}
 
+		if logID == "" {
+			log.Fatal("Missing log id parameter")
+		}
+
 		req := &pb.SubmitRequest{
 			LogID: &logID,
 		}

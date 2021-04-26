@@ -17,7 +17,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-	"time"
+	// "time"
 
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
@@ -43,7 +43,7 @@ type Publisher struct {
 	signer    crypto.Signer
 	submitMux *sync.Mutex
 	logID     string
-	sth       *schema.STH
+	// sth       *schema.STH
 	closeChan chan interface{}
 }
 
@@ -58,48 +58,48 @@ func NewPublisher(logID string, store storage.TrustixStorage, signer crypto.Sign
 		closeChan: make(chan interface{}),
 	}
 
-	go func() {
-		// TODO: Figure out a better method than hard coded sleep
-		duration := time.Second * 5
+	// go func() {
+	// 	// TODO: Figure out a better method than hard coded sleep
+	// 	duration := time.Second * 5
 
-		timeout := time.NewTimer(duration)
-		defer timeout.Stop()
+	// 	timeout := time.NewTimer(duration)
+	// 	defer timeout.Stop()
 
-		for {
-			timeout.Reset(duration)
-			select {
-			case _ = <-qm.closeChan:
-				return
-			case <-timeout.C:
-				q, err := qm.submitBatch()
-				if err != nil {
-					log.Errorf("Unable to submit batch: %v", err)
-					continue
-				}
+	// 	for {
+	// 		timeout.Reset(duration)
+	// 		select {
+	// 		case _ = <-qm.closeChan:
+	// 			return
+	// 		case <-timeout.C:
+	// 			q, err := qm.submitBatch()
+	// 			if err != nil {
+	// 				log.Errorf("Unable to submit batch: %v", err)
+	// 				continue
+	// 			}
 
-				if *q.Min >= *q.Max {
-					time.Sleep(duration)
-				}
-			}
-		}
-	}()
+	// 			if *q.Min >= *q.Max {
+	// 				time.Sleep(duration)
+	// 			}
+	// 		}
+	// 	}
+	// }()
 
-	go func() {
-		// TODO: Figure out a better method than hard coded sleep
-		duration := time.Second * 5
-		for {
-			q, err := qm.submitBatch()
-			if err != nil {
-				log.Errorf("Unable to submit batch: %v", err)
-				time.Sleep(duration)
-				continue
-			}
+	// go func() {
+	// 	// TODO: Figure out a better method than hard coded sleep
+	// 	duration := time.Second * 5
+	// 	for {
+	// 		q, err := qm.submitBatch()
+	// 		if err != nil {
+	// 			log.Errorf("Unable to submit batch: %v", err)
+	// 			time.Sleep(duration)
+	// 			continue
+	// 		}
 
-			if *q.Min >= *q.Max {
-				time.Sleep(duration)
-			}
-		}
-	}()
+	// 		if *q.Min >= *q.Max {
+	// 			time.Sleep(duration)
+	// 		}
+	// 	}
+	// }()
 
 	return qm
 }
@@ -175,7 +175,10 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 
 	storageAPI := storageapi.NewStorageAPI(txn)
 
-	sth := qm.sth
+	sth, err := storageAPI.GetSTH(qm.logID)
+	if err != nil {
+		return err
+	}
 
 	// The append-only log
 	log.WithField("size", *sth.TreeSize).Debug("Creating log tree from persisted data")
@@ -269,8 +272,6 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 		return err
 	}
 
-	qm.sth = sth
-
 	return nil
 }
 
@@ -291,20 +292,15 @@ func (qm *Publisher) submitBatch() (*schema.SubmitQueue, error) {
 		}
 
 		maxBatchSize := uint64(500)
-
-		items := []*api.KeyValuePair{}
-
-		max := *q.Max
-		if max > 0 {
-			max = max - 1
-		}
-		max = minUint64(max, *q.Min+maxBatchSize)
-
-		if *q.Min >= max {
+		max := minUint64(*q.Max, *q.Min+maxBatchSize)
+		min := *q.Min
+		if min >= max {
 			return nil
 		}
 
-		for itemId := *q.Min; itemId <= max; itemId++ {
+		items := []*api.KeyValuePair{}
+
+		for itemId := min; itemId < max; itemId++ {
 			q.Min = &itemId
 
 			item, err := storageAPI.PopQueueItem(qm.logID, int(itemId))

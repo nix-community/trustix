@@ -13,7 +13,7 @@ import (
 )
 
 type Decider struct {
-	Engine     string              `toml:"engine"`
+	Engine     string             `toml:"engine"`
 	Lua        *LuaDecider        `toml:"lua"`
 	LogID      *LogIDDecider      `toml:"logid"`
 	Percentage *PercentageDecider `toml:"percentage"`

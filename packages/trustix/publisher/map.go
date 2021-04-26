@@ -45,7 +45,7 @@ func (pm *PublisherMap) Get(logID string) (*Publisher, error) {
 
 	pub, exists := pm.m[logID]
 	if !exists {
-		return nil, fmt.Errorf("Publisher doesn't exist")
+		return nil, fmt.Errorf("Publisher with log id '%s' doesn't exist", logID)
 	}
 
 	return pub, nil

@@ -26,8 +26,22 @@ var submitCommand = &cobra.Command{
 	Use:   "submit",
 	Short: "Submit hashes for inclusion in the log",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if keyHex == "" || valueHex == "" {
-			return fmt.Errorf("Missing input/output hash")
+
+		// Verify input params
+		{
+
+			if logID == "" {
+				return fmt.Errorf("Missing log ID")
+			}
+
+			if keyHex == "" {
+				return fmt.Errorf("Missing key parameter")
+			}
+
+			if valueHex == "" {
+				return fmt.Errorf("Missing value parameter")
+			}
+
 		}
 
 		inputBytes, err := hex.DecodeString(keyHex)
@@ -57,6 +71,7 @@ var submitCommand = &cobra.Command{
 		}).Debug("Submitting mapping")
 
 		r, err := c.Submit(ctx, &pb.SubmitRequest{
+			LogID: &logID,
 			Items: []*api.KeyValuePair{
 				&api.KeyValuePair{
 					Key:   inputBytes,

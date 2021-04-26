@@ -21,8 +21,14 @@ type Storage struct {
 }
 
 func (s *Storage) Validate() error {
+	if s == nil {
+		return fmt.Errorf("No storage type configured")
+	}
+
 	switch s.Type {
 	case "native":
+		return nil
+	case "memory":
 		return nil
 	default:
 		return fmt.Errorf("Unhandled storage type: '%s'", s.Type)

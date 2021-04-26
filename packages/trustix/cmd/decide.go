@@ -49,7 +49,7 @@ var decideCommand = &cobra.Command{
 			Key: inputBytes,
 		})
 		if err != nil {
-			log.Fatalf("could not query: %v", err)
+			log.Fatalf("could not decide: %v", err)
 		}
 
 		for _, miss := range r.Misses {

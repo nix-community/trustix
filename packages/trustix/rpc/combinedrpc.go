@@ -41,6 +41,7 @@ type TrustixCombinedRPCServer struct {
 
 func NewTrustixCombinedRPCServer(store storage.TrustixStorage, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
 	rpc := &TrustixCombinedRPCServer{
+		store:      store,
 		logs:       logs,
 		decider:    decider,
 		publishers: publishers,
@@ -260,6 +261,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 				return
 			}
 			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
+				LogID:   &logID,
 				Key:     in.Key,
 				MapRoot: sth.MapRoot,
 			})

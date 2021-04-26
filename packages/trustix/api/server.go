@@ -27,6 +27,7 @@ type TrustixAPIServer struct {
 
 func NewTrustixAPIServer(logMap *TrustixLogMap, store storage.TrustixStorage) (*TrustixAPIServer, error) {
 	return &TrustixAPIServer{
+		store:  store,
 		logMap: logMap,
 	}, nil
 }

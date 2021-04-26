@@ -27,6 +27,10 @@ var submitClosureCommand = &cobra.Command{
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
+		if logID == "" {
+			log.Fatal("Missing log id parameter")
+		}
+
 		storePaths := []string{}
 		{
 			requisites := make(map[string]struct{})

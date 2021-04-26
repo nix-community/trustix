@@ -60,7 +60,9 @@ func NewSTHSyncer(logID string, store storage.TrustixStorage, logapi api.Trustix
 			}
 		}
 
-		sth, err := logapi.GetSTH(context.Background(), new(apipb.STHRequest))
+		sth, err := logapi.GetSTH(context.Background(), &apipb.STHRequest{
+			LogID: &logID,
+		})
 		if err != nil {
 			return err
 		}

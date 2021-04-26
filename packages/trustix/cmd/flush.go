@@ -9,6 +9,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
@@ -19,6 +21,11 @@ var flushCommand = &cobra.Command{
 	Use:   "flush",
 	Short: "Flush submissions and write new tree head",
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		if logID == "" {
+			return fmt.Errorf("Missing log ID")
+		}
+
 		conn, err := client.CreateClientConn(dialAddress, nil)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
