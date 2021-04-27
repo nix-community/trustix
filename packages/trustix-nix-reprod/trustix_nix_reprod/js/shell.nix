@@ -5,7 +5,8 @@ let
     src = import ./src.nix { inherit (pkgs) lib; };
   };
 
-in shellDrv.overrideAttrs(old: {
+in
+shellDrv.overrideAttrs (old: {
 
   shellHook = ''
     if [[ "$(readlink -f node_modules)" == ${builtins.storeDir}* ]]; then

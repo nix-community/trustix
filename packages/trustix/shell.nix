@@ -3,7 +3,8 @@
 let
   rootShell = import ../../shell.nix;
 
-in pkgs.mkShell {
+in
+pkgs.mkShell {
 
   # Speed up compilation
   CGO_ENABLED = "0";

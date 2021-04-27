@@ -1,6 +1,7 @@
 let
   sources = import ./sources.nix;
-in import sources.nixpkgs {
+in
+import sources.nixpkgs {
   overlays = [
     (import "${sources.naersk}/overlay.nix")
     (import "${sources.gomod2nix}/overlay.nix")
@@ -21,17 +22,19 @@ in import sources.nixpkgs {
     })
 
     # Local packages
-    (self: super: let
-      inherit (super) lib;
-      dirNames = lib.attrNames (lib.filterAttrs (pkgDir: type: type == "directory" && builtins.pathExists (../packages + "/${pkgDir}/default.nix")) (builtins.readDir ../packages));
-    in (
-      builtins.listToAttrs (map
-      (pkgDir: {
-        value = self.callPackage (../packages + "/${pkgDir}") { };
-        name = pkgDir;
-      })
-      dirNames)
-    ))
+    (self: super:
+      let
+        inherit (super) lib;
+        dirNames = lib.attrNames (lib.filterAttrs (pkgDir: type: type == "directory" && builtins.pathExists (../packages + "/${pkgDir}/default.nix")) (builtins.readDir ../packages));
+      in
+      (
+        builtins.listToAttrs (map
+          (pkgDir: {
+            value = self.callPackage (../packages + "/${pkgDir}") { };
+            name = pkgDir;
+          })
+          dirNames)
+      ))
 
   ];
 }

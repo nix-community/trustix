@@ -5,7 +5,8 @@ let
     projectDir = ./.;
   };
 
-in pkgs.mkShell {
+in
+pkgs.mkShell {
 
   buildInputs = [
     pythonEnv

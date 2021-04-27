@@ -4,7 +4,8 @@ let
   STATE_DIR = "${builtins.toString ./.}/state";
   TRUSTIX_RPC = "unix://${STATE_DIR}/trustix.sock";
 
-in pkgs.mkShell {
+in
+pkgs.mkShell {
 
   buildInputs = [
     pkgs.nixpkgs-fmt
