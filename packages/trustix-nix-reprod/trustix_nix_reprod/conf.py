@@ -52,7 +52,9 @@ class SettingsModel(BaseModel):
 
     default_attrs: typing.List[str] = _default_attrs
 
-    placeholder_attr: str = _default_attrs[0] if _default_attrs else "hello.x86_64-linux"
+    placeholder_attr: str = (
+        _default_attrs[0] if _default_attrs else "hello.x86_64-linux"
+    )
 
     # Npm managed
     js_store: str = os.environ.get(

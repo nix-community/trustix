@@ -70,7 +70,9 @@ async def get_attrs_reproducibility(
         attr_stats=OrderedDict(
             zip(
                 attrs,
-                await asyncio.gather(*[get_attr_reproducibility(attr) for attr in attrs]),
+                await asyncio.gather(
+                    *[get_attr_reproducibility(attr) for attr in attrs]
+                ),
             )
         ),
     )

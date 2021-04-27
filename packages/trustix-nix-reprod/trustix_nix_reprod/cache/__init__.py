@@ -27,12 +27,16 @@ import orjson
 
 
 def _cache_key(fn, args, kwargs) -> str:
-    return hashlib.sha256(orjson.dumps([
-        fn.__module__,
-        fn.__name__,
-        args,
-        kwargs,
-    ])).hexdigest()
+    return hashlib.sha256(
+        orjson.dumps(
+            [
+                fn.__module__,
+                fn.__name__,
+                args,
+                kwargs,
+            ]
+        )
+    ).hexdigest()
 
 
 def cached(model: Type[BaseModel], ttl: int):
@@ -62,4 +66,5 @@ def cached(model: Type[BaseModel], ttl: int):
             return result
 
         return inner
+
     return wrapper

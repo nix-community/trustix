@@ -52,6 +52,7 @@ def js_url(filename: str) -> Markup:
 def _make_diffoscope_printer(callback):
     def fn(html: str):
         callback(html)
+
     yield fn
 
 
@@ -66,10 +67,14 @@ def diffoscope_render(value: Dict) -> str:
 
     diff = JSONReaderV1().load_rec(value)
 
-    with mock.patch("diffoscope.presenters.html.html.make_printer", _make_diffoscope_printer):
+    with mock.patch(
+        "diffoscope.presenters.html.html.make_printer", _make_diffoscope_printer
+    ):
         HTMLPresenter().output_html(callback, diff)
 
     # Diffoscope leaks argv into title
-    s = re.sub(r"<title>.*?</title>", "<title>Trustix Diffoscope</title>", s, flags=re.DOTALL)
+    s = re.sub(
+        r"<title>.*?</title>", "<title>Trustix Diffoscope</title>", s, flags=re.DOTALL
+    )
 
     return s

@@ -234,7 +234,7 @@ async def diff(request: Request, output_hash_1_hex: str, output_hash_2_hex: str)
                     data.narinfo[output_hash_1_hex],
                     data.narinfo[output_hash_2_hex],
                 ),
-            }
+            },
         ),
         data,
     )

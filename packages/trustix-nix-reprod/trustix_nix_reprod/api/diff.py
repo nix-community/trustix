@@ -113,10 +113,15 @@ async def diff(output_hash_1_hex: str, output_hash_2_hex: str) -> DiffResponse:
 
     rpc_client = get_combined_rpc()
 
-    narinfo1, narinfo2 = [orjson.loads(resp.Value) for resp in (await asyncio.gather(
-        rpc_client.GetValue(api_pb2.ValueRequest(Digest=output_hash_1)),  # type: ignore
-        rpc_client.GetValue(api_pb2.ValueRequest(Digest=output_hash_2)),  # type: ignore
-    ))]
+    narinfo1, narinfo2 = [
+        orjson.loads(resp.Value)
+        for resp in (
+            await asyncio.gather(
+                rpc_client.GetValue(api_pb2.ValueRequest(Digest=output_hash_1)),  # type: ignore
+                rpc_client.GetValue(api_pb2.ValueRequest(Digest=output_hash_2)),  # type: ignore
+            )
+        )
+    ]
 
     diffoscope = await asyncio.get_running_loop().run_in_executor(
         None, _diff, narinfo1, narinfo2
