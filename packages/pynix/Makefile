@@ -2,7 +2,7 @@ build:
 	true  # noop, no build step for python
 
 test:
-	true  # no tests, codegen
+	python -m tests
 
 lint:
 	true  # noop, no linter

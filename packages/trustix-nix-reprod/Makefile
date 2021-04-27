@@ -1,8 +1,9 @@
 build:
+	bash -c "cd trustix_nix_reprod/js && nix-shell --run 'npm run build'"
 	true  # noop, no build step for python
 
 test:
-	true  # no tests, codegen
+	@true
 
 lint:
 	true  # noop, no linter
