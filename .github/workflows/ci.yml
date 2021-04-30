@@ -14,7 +14,7 @@ jobs:
     - uses: cachix/install-nix-action@v12
     - uses: actions/checkout@v1
     - name: build
-      run: make build
+      run: nix-shell --run "make build"
 
   test:
     runs-on: ubuntu-latest
@@ -22,7 +22,7 @@ jobs:
     - uses: cachix/install-nix-action@v12
     - uses: actions/checkout@v1
     - name: test
-      run: make test
+      run: nix-shell --run "make test"
 
   lint:
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
     - uses: cachix/install-nix-action@v12
     - uses: actions/checkout@v1
     - name: lint
-      run: make lint
+      run: nix-shell --run "make lint"
 
   format:
     runs-on: ubuntu-latest
@@ -38,4 +38,4 @@ jobs:
     - uses: cachix/install-nix-action@v12
     - uses: actions/checkout@v1
     - name: format
-      run: make format
+      run: nix-shell --run "make format"
