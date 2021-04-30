@@ -22,7 +22,7 @@ from trustix_nix_reprod.models.meta import BaseMeta
 
 class Log(models.Model):
     name = fields.CharField(
-        max_length=55,
+        max_length=255,
         index=True,
     )
     tree_size = fields.IntField()

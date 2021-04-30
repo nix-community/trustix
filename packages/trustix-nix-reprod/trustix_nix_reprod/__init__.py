@@ -240,12 +240,12 @@ async def index_log(log, sth):
     for finish in chunks[1:]:
         resp = await get_combined_rpc().GetLogEntries(
             trustix_pb2.GetLogEntriesRequestNamed(
-                LogName=log.name,
+                LogID=log.name,
                 Start=start,
                 Finish=finish,
             )
         )
-        print(f"Indexing logname={log.name}, start={start}, finish={finish}")
+        print(f"Indexing logID={log.name}, start={start}, finish={finish}")
 
         async def get_or_create_result(leaf):
             try:

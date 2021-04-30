@@ -1,36 +1,36 @@
 -- upgrade --
 CREATE TABLE IF NOT EXISTS "derivation" (
-    "drv" VARCHAR(120) NOT NULL  PRIMARY KEY,
+    "drv" VARCHAR(255) NOT NULL  PRIMARY KEY,
     "system" VARCHAR(255) NOT NULL
 );
 CREATE INDEX IF NOT EXISTS "idx_derivation_system_5c2dd2" ON "derivation" ("system");
 CREATE TABLE IF NOT EXISTS "derivationattr" (
     "id" SERIAL NOT NULL PRIMARY KEY,
     "attr" VARCHAR(255) NOT NULL,
-    "derivation_id" VARCHAR(120) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
+    "derivation_id" VARCHAR(255) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
     CONSTRAINT "uid_derivationa_derivat_b9328d" UNIQUE ("derivation_id", "attr")
 );
 CREATE INDEX IF NOT EXISTS "idx_derivationa_attr_f37b80" ON "derivationattr" ("attr");
 CREATE TABLE IF NOT EXISTS "derivationoutput" (
     "input_hash" VARCHAR(25) NOT NULL  PRIMARY KEY,
-    "output" VARCHAR(120) NOT NULL,
+    "output" VARCHAR(255) NOT NULL,
     "store_path" VARCHAR(255) NOT NULL,
-    "derivation_id" VARCHAR(120) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
+    "derivation_id" VARCHAR(255) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
     CONSTRAINT "uid_derivationo_derivat_808b7b" UNIQUE ("derivation_id", "output")
 );
 CREATE INDEX IF NOT EXISTS "idx_derivationo_output_8c7711" ON "derivationoutput" ("output");
 CREATE INDEX IF NOT EXISTS "idx_derivationo_store_p_84d64d" ON "derivationoutput" ("store_path");
 CREATE TABLE IF NOT EXISTS "derivationrefdirect" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "drv_id" VARCHAR(120) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
-    "referrer_id" VARCHAR(120) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE
+    "drv_id" VARCHAR(255) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
+    "referrer_id" VARCHAR(255) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS "idx_derivationr_drv_id_cb1ce7" ON "derivationrefdirect" ("drv_id");
 CREATE INDEX IF NOT EXISTS "idx_derivationr_referre_03f0ee" ON "derivationrefdirect" ("referrer_id");
 CREATE TABLE IF NOT EXISTS "derivationrefrecursive" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "drv_id" VARCHAR(120) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
-    "referrer_id" VARCHAR(120) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE
+    "drv_id" VARCHAR(255) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
+    "referrer_id" VARCHAR(255) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS "idx_derivationr_drv_id_ece8f8" ON "derivationrefrecursive" ("drv_id");
 CREATE INDEX IF NOT EXISTS "idx_derivationr_referre_5ccd9c" ON "derivationrefrecursive" ("referrer_id");
@@ -40,14 +40,14 @@ CREATE TABLE IF NOT EXISTS "evaluation" (
 );
 CREATE TABLE IF NOT EXISTS "derivationeval" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "drv_id" VARCHAR(120) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
+    "drv_id" VARCHAR(255) NOT NULL REFERENCES "derivation" ("drv") ON DELETE CASCADE,
     "eval_id" VARCHAR(40) NOT NULL REFERENCES "evaluation" ("commit") ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS "idx_derivatione_drv_id_304e08" ON "derivationeval" ("drv_id");
 CREATE INDEX IF NOT EXISTS "idx_derivatione_eval_id_d1000a" ON "derivationeval" ("eval_id");
 CREATE TABLE IF NOT EXISTS "log" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "name" VARCHAR(55) NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
     "tree_size" INT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS "idx_log_name_1bf001" ON "log" ("name");
