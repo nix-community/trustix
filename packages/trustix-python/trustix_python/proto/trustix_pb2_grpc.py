@@ -23,7 +23,7 @@ class TrustixCombinedRPCStub(object):
         )
         self.GetLogEntries = channel.unary_unary(
             "/trustix.TrustixCombinedRPC/GetLogEntries",
-            request_serializer=proto_dot_trustix__pb2.GetLogEntriesRequestNamed.SerializeToString,
+            request_serializer=api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.LogEntriesResponse.FromString,
         )
         self.Get = channel.unary_unary(
@@ -130,7 +130,7 @@ def add_TrustixCombinedRPCServicer_to_server(servicer, server):
         ),
         "GetLogEntries": grpc.unary_unary_rpc_method_handler(
             servicer.GetLogEntries,
-            request_deserializer=proto_dot_trustix__pb2.GetLogEntriesRequestNamed.FromString,
+            request_deserializer=api_dot_api__pb2.GetLogEntriesRequest.FromString,
             response_serializer=api_dot_api__pb2.LogEntriesResponse.SerializeToString,
         ),
         "Get": grpc.unary_unary_rpc_method_handler(
@@ -225,7 +225,7 @@ class TrustixCombinedRPC(object):
             request,
             target,
             "/trustix.TrustixCombinedRPC/GetLogEntries",
-            proto_dot_trustix__pb2.GetLogEntriesRequestNamed.SerializeToString,
+            api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             api_dot_api__pb2.LogEntriesResponse.FromString,
             options,
             channel_credentials,

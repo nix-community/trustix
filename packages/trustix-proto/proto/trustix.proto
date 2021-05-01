@@ -14,7 +14,7 @@ service TrustixCombinedRPC {
   rpc Logs (LogsRequest) returns (LogsResponse) {}
 
   // TODO: I'm not sure if this belongs here in it's current shape...
-  rpc GetLogEntries(GetLogEntriesRequestNamed) returns (LogEntriesResponse) {}
+  rpc GetLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
 
   // Get map[LogID]OutputHash
   rpc Get (KeyRequest) returns (EntriesResponse) {}
@@ -53,12 +53,6 @@ message Log {
 
 message LogsResponse {
   repeated Log Logs = 1;
-}
-
-message GetLogEntriesRequestNamed {
-  required string LogID = 1;
-  required uint64 Start = 2;
-  required uint64 Finish = 3;
 }
 
 message KeyRequest {

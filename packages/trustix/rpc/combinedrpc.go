@@ -63,7 +63,7 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 	}
 }
 
-func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *pb.GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error) {
+func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 	log, err := l.logs.Get(*in.LogID)
 	if err != nil {
 		return nil, err

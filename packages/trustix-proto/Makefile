@@ -3,7 +3,7 @@ build:
 	$(MAKE) -C protocol
 	$(MAKE) -C proto
 	$(MAKE) -C api
-	bash -c 'cd ../trustix-python && nix-shell --run make'
+	bash -c 'cd ../trustix-python && nix-shell --run "make build"'
 
 test:
 	true  # noop, no tests for codegen

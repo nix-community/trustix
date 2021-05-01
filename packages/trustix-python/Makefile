@@ -1,5 +1,5 @@
 build:
-	true  # noop, no build step for python
+	$(MAKE) -C dev
 
 test:
 	true  # no tests, codegen

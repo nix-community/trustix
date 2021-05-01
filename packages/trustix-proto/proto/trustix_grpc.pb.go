@@ -22,7 +22,7 @@ type TrustixCombinedRPCClient interface {
 	// Get map[LogID]Log
 	Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (*LogsResponse, error)
 	// TODO: I'm not sure if this belongs here in it's current shape...
-	GetLogEntries(ctx context.Context, in *GetLogEntriesRequestNamed, opts ...grpc.CallOption) (*api.LogEntriesResponse, error)
+	GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest, opts ...grpc.CallOption) (*api.LogEntriesResponse, error)
 	// Get map[LogID]OutputHash
 	Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error)
 	GetStream(ctx context.Context, opts ...grpc.CallOption) (TrustixCombinedRPC_GetStreamClient, error)
@@ -52,7 +52,7 @@ func (c *trustixCombinedRPCClient) Logs(ctx context.Context, in *LogsRequest, op
 	return out, nil
 }
 
-func (c *trustixCombinedRPCClient) GetLogEntries(ctx context.Context, in *GetLogEntriesRequestNamed, opts ...grpc.CallOption) (*api.LogEntriesResponse, error) {
+func (c *trustixCombinedRPCClient) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest, opts ...grpc.CallOption) (*api.LogEntriesResponse, error) {
 	out := new(api.LogEntriesResponse)
 	err := c.cc.Invoke(ctx, "/trustix.TrustixCombinedRPC/GetLogEntries", in, out, opts...)
 	if err != nil {
@@ -175,7 +175,7 @@ type TrustixCombinedRPCServer interface {
 	// Get map[LogID]Log
 	Logs(context.Context, *LogsRequest) (*LogsResponse, error)
 	// TODO: I'm not sure if this belongs here in it's current shape...
-	GetLogEntries(context.Context, *GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error)
+	GetLogEntries(context.Context, *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error)
 	// Get map[LogID]OutputHash
 	Get(context.Context, *KeyRequest) (*EntriesResponse, error)
 	GetStream(TrustixCombinedRPC_GetStreamServer) error
@@ -196,7 +196,7 @@ type UnimplementedTrustixCombinedRPCServer struct {
 func (UnimplementedTrustixCombinedRPCServer) Logs(context.Context, *LogsRequest) (*LogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logs not implemented")
 }
-func (UnimplementedTrustixCombinedRPCServer) GetLogEntries(context.Context, *GetLogEntriesRequestNamed) (*api.LogEntriesResponse, error) {
+func (UnimplementedTrustixCombinedRPCServer) GetLogEntries(context.Context, *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLogEntries not implemented")
 }
 func (UnimplementedTrustixCombinedRPCServer) Get(context.Context, *KeyRequest) (*EntriesResponse, error) {
@@ -252,7 +252,7 @@ func _TrustixCombinedRPC_Logs_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _TrustixCombinedRPC_GetLogEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetLogEntriesRequestNamed)
+	in := new(api.GetLogEntriesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -264,7 +264,7 @@ func _TrustixCombinedRPC_GetLogEntries_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/trustix.TrustixCombinedRPC/GetLogEntries",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixCombinedRPCServer).GetLogEntries(ctx, req.(*GetLogEntriesRequestNamed))
+		return srv.(TrustixCombinedRPCServer).GetLogEntries(ctx, req.(*api.GetLogEntriesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

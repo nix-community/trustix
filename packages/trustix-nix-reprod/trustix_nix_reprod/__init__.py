@@ -33,6 +33,7 @@ from tortoise import (
 )
 import ijson  # type: ignore
 from trustix_python.proto import trustix_pb2  # type: ignore
+from trustix_python.api import api_pb2  # type: ignore
 from async_lru import alru_cache  # type: ignore
 import typing
 import pynix
@@ -239,7 +240,7 @@ async def index_log(log, sth):
     start = chunks[0]
     for finish in chunks[1:]:
         resp = await get_combined_rpc().GetLogEntries(
-            trustix_pb2.GetLogEntriesRequestNamed(
+            api_pb2.GetLogEntriesRequest(
                 LogID=log.name,
                 Start=start,
                 Finish=finish,
