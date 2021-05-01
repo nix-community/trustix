@@ -96,6 +96,8 @@ var rootCmd = &cobra.Command{
 
 		signerMetaMap := rpc.NewSignerMetaMap()
 
+		logMetaMap := make(map[string]map[string]string)
+
 		logMap := tapi.NewTrustixLogMap()
 		{
 
@@ -129,12 +131,18 @@ var rootCmd = &cobra.Command{
 
 					logID := lib.LogID(subConf.PublicKey.Type, pubBytes)
 
-					signerMetaMap.Set(logID, subConf.PublicKey.Type, subConf.PublicKey.Pub)
-
 					log.WithFields(log.Fields{
 						"id":     logID,
 						"pubkey": subConf.PublicKey.Pub,
 					}).Info("Adding log subscriber")
+
+					signerMetaMap.Set(logID, subConf.PublicKey.Type, subConf.PublicKey.Pub)
+
+					if subConf.Meta != nil {
+						logMetaMap[logID] = subConf.Meta
+					} else {
+						logMetaMap[logID] = make(map[string]string)
+					}
 
 					var verifier signer.TrustixVerifier
 					{
@@ -186,6 +194,12 @@ var rootCmd = &cobra.Command{
 					}
 
 					signerMetaMap.Set(logID, publisherConfig.PublicKey.Type, publisherConfig.PublicKey.Pub)
+
+					if publisherConfig.Meta != nil {
+						logMetaMap[logID] = publisherConfig.Meta
+					} else {
+						logMetaMap[logID] = make(map[string]string)
+					}
 
 					log.WithFields(log.Fields{
 						"id":     logID,
@@ -278,7 +292,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		logServer := rpc.NewTrustixCombinedRPCServer(store, logMap, pubMap, signerMetaMap, decider)
+		logServer := rpc.NewTrustixCombinedRPCServer(store, logMap, pubMap, signerMetaMap, logMetaMap, decider)
 
 		log.Debug("Creating gRPC servers")
 

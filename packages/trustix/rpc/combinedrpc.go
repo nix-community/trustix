@@ -38,15 +38,17 @@ type TrustixCombinedRPCServer struct {
 	store      storage.TrustixStorage
 	publishers *pub.PublisherMap
 	signerMeta *SignerMetaMap
+	logMeta    map[string]map[string]string
 }
 
-func NewTrustixCombinedRPCServer(store storage.TrustixStorage, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, signerMeta *SignerMetaMap, decider decider.LogDecider) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(store storage.TrustixStorage, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, signerMeta *SignerMetaMap, logMeta map[string]map[string]string, decider decider.LogDecider) *TrustixCombinedRPCServer {
 	rpc := &TrustixCombinedRPCServer{
 		store:      store,
 		logs:       logs,
 		decider:    decider,
 		publishers: publishers,
 		signerMeta: signerMeta,
+		logMeta:    logMeta,
 	}
 
 	return rpc
@@ -491,11 +493,6 @@ func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest)
 		return nil, err
 	}
 
-	// TODO: Don't hard-code meta, take from config
-	var meta = map[string]string{
-		"upstream": "https://cache.nixos.org",
-	}
-
 	for logID, _ := range l.logs.Map() {
 		sth, ok := sthMap[logID]
 		if !ok {
@@ -505,6 +502,11 @@ func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest)
 		signer, err := l.signerMeta.Get(logID)
 		if err != nil {
 			return nil, fmt.Errorf("Missing signer meta for log '%s': %v", logID, err)
+		}
+
+		meta, ok := l.logMeta[logID]
+		if !ok {
+			return nil, fmt.Errorf("Missing meta map for log: %s", logID)
 		}
 
 		logs = append(logs, &pb.Log{
