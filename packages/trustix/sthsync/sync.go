@@ -123,6 +123,9 @@ func NewSTHSyncer(logID string, store storage.Storage, logapi api.TrustixLogAPI,
 			storageAPI := storageapi.NewStorageAPI(txn)
 			return storageAPI.SetSTH(logID, sth)
 		})
+		if err != nil {
+			return err
+		}
 
 		log.WithFields(log.Fields{
 			"logID":       logID,
@@ -130,7 +133,7 @@ func NewSTHSyncer(logID string, store storage.Storage, logapi api.TrustixLogAPI,
 			"treeSize":    *sth.TreeSize,
 		}).Info("Updated STH")
 
-		return err
+		return nil
 	}
 
 	go func() {
