@@ -30,7 +30,7 @@ type memoryTxn struct {
 	txn *memdb.Txn
 }
 
-func (t *memoryTxn) Get(bucket []byte, key []byte) ([]byte, error) {
+func (t *memoryTxn) Get(bucket *Bucket, key []byte) ([]byte, error) {
 	val, err := t.txn.First("record", "id", base64.StdEncoding.EncodeToString(createCompoundNativeKey(bucket, key)))
 	if err != nil {
 		return nil, err
@@ -48,14 +48,14 @@ func (t *memoryTxn) Get(bucket []byte, key []byte) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(record.Value)
 }
 
-func (t *memoryTxn) Set(bucket []byte, key []byte, value []byte) error {
+func (t *memoryTxn) Set(bucket *Bucket, key []byte, value []byte) error {
 	return t.txn.Insert("record", &memdbRecord{
 		Key:   base64.StdEncoding.EncodeToString(createCompoundNativeKey(bucket, key)),
 		Value: base64.StdEncoding.EncodeToString(value),
 	})
 }
 
-func (t *memoryTxn) Delete(bucket []byte, key []byte) error {
+func (t *memoryTxn) Delete(bucket *Bucket, key []byte) error {
 	return t.txn.Delete("record", &memdbRecord{
 		Key: base64.StdEncoding.EncodeToString(createCompoundNativeKey(bucket, key)),
 	})

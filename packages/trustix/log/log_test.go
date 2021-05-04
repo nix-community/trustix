@@ -27,8 +27,14 @@ type testStorageTxn struct {
 	kv map[string]map[string][]byte
 }
 
-func (s *testStorageTxn) Get(bucket []byte, key []byte) ([]byte, error) {
-	b, ok := s.kv[string(bucket)]
+func newTestStorageTxn() *testStorageTxn {
+	return &testStorageTxn{
+		kv: make(map[string]map[string][]byte),
+	}
+}
+
+func (s *testStorageTxn) Get(bucket *storage.Bucket, key []byte) ([]byte, error) {
+	b, ok := s.kv[bucket.Join()]
 	if !ok {
 		return nil, storage.ObjectNotFoundError
 	}
@@ -40,16 +46,22 @@ func (s *testStorageTxn) Get(bucket []byte, key []byte) ([]byte, error) {
 
 	return m, nil
 }
-func (s *testStorageTxn) Set(bucket []byte, key []byte, value []byte) error {
-	_, ok := s.kv[string(bucket)]
+func (s *testStorageTxn) Set(bucket *storage.Bucket, key []byte, value []byte) error {
+	_, ok := s.kv[bucket.Join()]
 	if !ok {
-		s.kv[string(bucket)] = make(map[string][]byte)
+		s.kv[bucket.Join()] = make(map[string][]byte)
 	}
-	s.kv[string(bucket)][string(key)] = value
+	s.kv[bucket.Join()][string(key)] = value
 	return nil
 }
-func (s *testStorageTxn) Delete(bucket []byte, key []byte) error {
+func (s *testStorageTxn) Delete(bucket *storage.Bucket, key []byte) error {
 	return fmt.Errorf("Not implemented")
+}
+
+func newTestStorageBucketTxn() *storage.BucketTransaction {
+	b := &storage.Bucket{}
+	t, _ := b.Cd("test").Txn(newTestStorageTxn())
+	return t
 }
 
 func mkInputs() []*testInput {
@@ -112,11 +124,9 @@ func TestLogRoots(t *testing.T) {
 
 	assert := assert.New(t)
 
-	storageTxn := &testStorageTxn{
-		kv: make(map[string]map[string][]byte),
-	}
+	storageTxn := newTestStorageBucketTxn()
 
-	tree, err := NewVerifiableLog("log", storageTxn, 0)
+	tree, err := NewVerifiableLog(storageTxn, 0)
 	assert.Nil(err)
 
 	root, err := tree.Root()
@@ -143,11 +153,9 @@ func TestAuditProofs(t *testing.T) {
 
 	assert := assert.New(t)
 
-	storageTxn := &testStorageTxn{
-		kv: make(map[string]map[string][]byte),
-	}
+	storageTxn := newTestStorageBucketTxn()
 
-	tree, err := NewVerifiableLog("log", storageTxn, 0)
+	tree, err := NewVerifiableLog(storageTxn, 0)
 	assert.Nil(err)
 
 	inputs := mkInputs()
@@ -197,11 +205,9 @@ func TestConsistencyProofs(t *testing.T) {
 
 	assert := assert.New(t)
 
-	storageTxn := &testStorageTxn{
-		kv: make(map[string]map[string][]byte),
-	}
+	storageTxn := newTestStorageBucketTxn()
 
-	tree, err := NewVerifiableLog("log", storageTxn, 0)
+	tree, err := NewVerifiableLog(storageTxn, 0)
 	assert.Nil(err)
 
 	assertProof := mkAssertProof(t, tree.ConsistencyProof)

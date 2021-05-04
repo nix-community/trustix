@@ -19,15 +19,16 @@ import (
 	"sync"
 	// "time"
 
+	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	rpc "github.com/tweag/trustix/packages/trustix-proto/proto"
 	schema "github.com/tweag/trustix/packages/trustix-proto/schema"
+	"github.com/tweag/trustix/packages/trustix/constants"
 	vlog "github.com/tweag/trustix/packages/trustix/log"
 	sthsig "github.com/tweag/trustix/packages/trustix/sth"
 	"github.com/tweag/trustix/packages/trustix/storage"
-	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 func minUint64(x, y uint64) uint64 {
@@ -38,16 +39,24 @@ func minUint64(x, y uint64) uint64 {
 }
 
 type Publisher struct {
-	queueMux  *sync.Mutex
-	store     storage.Storage
+	queueMux *sync.Mutex
+	store    storage.Storage
+
+	// Storage buckets
+	queueBucket  *storage.Bucket
+	vLogBucket   *storage.Bucket
+	mapBucket    *storage.Bucket
+	mapLogBucket *storage.Bucket
+	caBucket     *storage.Bucket // Content-addressed
+	logBucket    *storage.Bucket // Root-level bucket for log
+
 	signer    crypto.Signer
 	submitMux *sync.Mutex
 	logID     string
-	// sth       *schema.STH
 	closeChan chan interface{}
 }
 
-func NewPublisher(logID string, store storage.Storage, signer crypto.Signer) *Publisher {
+func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket, logBucket *storage.Bucket, signer crypto.Signer) (*Publisher, error) {
 
 	qm := &Publisher{
 		store:     store,
@@ -56,6 +65,59 @@ func NewPublisher(logID string, store storage.Storage, signer crypto.Signer) *Pu
 		queueMux:  &sync.Mutex{},
 		submitMux: &sync.Mutex{},
 		closeChan: make(chan interface{}),
+
+		// Storage buckets
+		logBucket:    logBucket,
+		queueBucket:  logBucket.Cd(constants.QueueBucket),
+		vLogBucket:   logBucket.Cd(constants.VLogBucket),
+		mapBucket:    logBucket.Cd(constants.MapBucket),
+		mapLogBucket: logBucket.Cd(constants.VMapLogBucket),
+		caBucket:     caBucket,
+	}
+
+	// Ensure STH for an empty tree
+	err := store.Update(func(txn storage.Transaction) error {
+
+		logBucketTxn := qm.logBucket.Txn(txn)
+
+		sth, err := storage.GetSTH(logBucketTxn)
+		if err == nil {
+			return nil
+		}
+		if err != storage.ObjectNotFoundError {
+			return err
+		}
+
+		vLog, err := vlog.NewVerifiableLog(qm.vLogBucket.Txn(txn), 0)
+		if err != nil {
+			return err
+		}
+
+		smTree := smt.NewSparseMerkleTree(qm.mapBucket.Txn(txn), sha256.New())
+
+		vMapLog, err := vlog.NewVerifiableLog(qm.mapLogBucket.Txn(txn), 0)
+		if err != nil {
+			return err
+		}
+
+		log.Debug("Signing STH for empty tree")
+		sth, err = sthsig.SignHead(vLog, smTree, vMapLog, signer)
+		if err != nil {
+			return err
+		}
+
+		log.WithField("size", *sth.TreeSize).Debug("Setting STH for empty tree")
+		{
+			buf, err := proto.Marshal(sth)
+			if err != nil {
+				return err
+			}
+
+			return logBucketTxn.Set([]byte(constants.HeadBlob), buf)
+		}
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	// go func() {
@@ -101,7 +163,7 @@ func NewPublisher(logID string, store storage.Storage, signer crypto.Signer) *Pu
 	// 	}
 	// }()
 
-	return qm
+	return qm, nil
 }
 
 func (qm *Publisher) Submit(ctx context.Context, req *rpc.SubmitRequest) (*rpc.SubmitResponse, error) {
@@ -113,11 +175,12 @@ func (qm *Publisher) Submit(ctx context.Context, req *rpc.SubmitRequest) (*rpc.S
 	defer qm.queueMux.Unlock()
 
 	err := qm.store.Update(func(txn storage.Transaction) error {
+		var err error
 
-		storageAPI := storageapi.NewStorageAPI(txn)
+		queueBucketTxn := qm.queueBucket.Txn(txn)
 
 		// Get the current state of the queue
-		q, err := storageAPI.GetQueueMeta(qm.logID)
+		q, err := qm.getQueueMeta(queueBucketTxn)
 		if err != nil {
 			return err
 		}
@@ -125,7 +188,7 @@ func (qm *Publisher) Submit(ctx context.Context, req *rpc.SubmitRequest) (*rpc.S
 		// Write each item to the DB while updating queue state
 		for _, pair := range req.Items {
 			itemId := *q.Max
-			err = storageAPI.WriteQueueItem(qm.logID, int(itemId), pair)
+			err = qm.writeQueueItem(queueBucketTxn, int(itemId), pair)
 			if err != nil {
 				return err
 			}
@@ -134,7 +197,10 @@ func (qm *Publisher) Submit(ctx context.Context, req *rpc.SubmitRequest) (*rpc.S
 		}
 
 		// Write queue state
-		storageAPI.SetQueueMeta(qm.logID, q)
+		err = qm.setQueueMeta(queueBucketTxn, q)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -173,27 +239,30 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 		return fmt.Errorf("Signing is disabled")
 	}
 
-	storageAPI := storageapi.NewStorageAPI(txn)
+	logBucketTxn := qm.logBucket.Txn(txn)
 
-	sth, err := storageAPI.GetSTH(qm.logID)
+	sth, err := storage.GetSTH(logBucketTxn)
 	if err != nil {
 		return err
 	}
 
 	// The append-only log
+	vLogBucketTxn := qm.vLogBucket.Txn(txn)
 	log.WithField("size", *sth.TreeSize).Debug("Creating log tree from persisted data")
-	vLog, err := vlog.NewVerifiableLog("log", txn, *sth.TreeSize)
+	vLog, err := vlog.NewVerifiableLog(vLogBucketTxn, *sth.TreeSize)
 	if err != nil {
 		return err
 	}
 
 	// The sparse merkle tree
 	log.Debug("Creating sparse merkle tree from persisted data")
-	smTree := smt.ImportSparseMerkleTree(storageAPI.MapStore(qm.logID), sha256.New(), sth.MapRoot)
+	mapBucketTxn := qm.mapBucket.Txn(txn)
+	smTree := smt.ImportSparseMerkleTree(mapBucketTxn, sha256.New(), sth.MapRoot)
 
 	// The append-only log tracking published map heads
+	vMapLogBucketTxn := qm.mapLogBucket.Txn(txn)
 	log.WithField("size", *sth.MHTreeSize).Debug("Creating log tree from persisted data")
-	vMapLog, err := vlog.NewVerifiableLog("maplog", txn, *sth.MHTreeSize)
+	vMapLog, err := vlog.NewVerifiableLog(vMapLogBucketTxn, *sth.MHTreeSize)
 	if err != nil {
 		return err
 	}
@@ -230,9 +299,12 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 		wrote = true
 
 		// Add value to content-addressed value store
-		err = storageapi.NewStorageAPI(txn).SetCAValue(pair.Value)
-		if err != nil {
-			return err
+		{
+			digest := sha256.Sum256(pair.Value)
+			err = qm.caBucket.Txn(txn).Set(digest[:], pair.Value)
+			if err != nil {
+				return err
+			}
 		}
 
 		// Append value to both verifiable log & sparse indexed tree
@@ -267,12 +339,84 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 	}
 
 	log.WithField("size", *sth.TreeSize).Debug("Setting new signed tree heads")
-	err = storageapi.NewStorageAPI(txn).SetSTH(qm.logID, sth)
+	{
+		buf, err := proto.Marshal(sth)
+		if err != nil {
+			return err
+		}
+
+		return logBucketTxn.Set([]byte(constants.HeadBlob), buf)
+	}
+}
+
+func (qm *Publisher) setQueueMeta(txn *storage.BucketTransaction, q *schema.SubmitQueue) error {
+	qBytes, err := proto.Marshal(q)
+	if err != nil {
+		return err
+	}
+
+	err = txn.Set([]byte(constants.QueueMetaBlob), qBytes)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (qm *Publisher) writeQueueItem(txn *storage.BucketTransaction, itemID int, item *api.KeyValuePair) error {
+	itemBytes, err := proto.Marshal(item)
+	if err != nil {
+		return err
+	}
+
+	err = txn.Set([]byte(fmt.Sprintf("%d", itemID)), itemBytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (qm *Publisher) popQueueItem(txn *storage.BucketTransaction, itemID int) (*api.KeyValuePair, error) {
+	itemBytes, err := txn.Get([]byte(fmt.Sprintf("%d", itemID)))
+	if err != nil {
+		return nil, err
+	}
+
+	item := &api.KeyValuePair{}
+	err = proto.Unmarshal(itemBytes, item)
+	if err != nil {
+		return nil, err
+	}
+
+	err = txn.Delete([]byte(fmt.Sprintf("%d", itemID)))
+	if err != nil {
+		return nil, err
+	}
+
+	return item, nil
+}
+
+func (qm *Publisher) getQueueMeta(txn *storage.BucketTransaction) (*schema.SubmitQueue, error) {
+	q := &schema.SubmitQueue{}
+
+	qBytes, err := txn.Get([]byte(constants.QueueMetaBlob))
+	if err != nil && err == storage.ObjectNotFoundError {
+		min := uint64(0)
+		max := uint64(0)
+		q.Min = &min
+		q.Max = &max
+		return q, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	err = proto.Unmarshal(qBytes, q)
+	if err != nil {
+		return nil, err
+	}
+
+	return q, nil
 }
 
 func (qm *Publisher) submitBatch() (*schema.SubmitQueue, error) {
@@ -283,10 +427,11 @@ func (qm *Publisher) submitBatch() (*schema.SubmitQueue, error) {
 
 	err := qm.store.Update(func(txn storage.Transaction) error {
 		var err error
-		storageAPI := storageapi.NewStorageAPI(txn)
+
+		queueBucketTxn := qm.queueBucket.Txn(txn)
 
 		// Get the current state of the queue
-		q, err = storageAPI.GetQueueMeta(qm.logID)
+		q, err = qm.getQueueMeta(queueBucketTxn)
 		if err != nil {
 			return err
 		}
@@ -303,7 +448,7 @@ func (qm *Publisher) submitBatch() (*schema.SubmitQueue, error) {
 		for itemId := min; itemId < max; itemId++ {
 			q.Min = &itemId
 
-			item, err := storageAPI.PopQueueItem(qm.logID, int(itemId))
+			item, err := qm.popQueueItem(queueBucketTxn, int(itemId))
 			if err != nil {
 				log.Error(fmt.Errorf("Error popping queue item '%d': %v", itemId, err))
 				continue
@@ -320,7 +465,7 @@ func (qm *Publisher) submitBatch() (*schema.SubmitQueue, error) {
 			return err
 		}
 
-		err = storageAPI.SetQueueMeta(qm.logID, q)
+		err = qm.setQueueMeta(queueBucketTxn, q)
 		if err != nil {
 			return err
 		}

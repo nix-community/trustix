@@ -6,32 +6,34 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package api
+package storage
 
 import (
-	"fmt"
+	proto "github.com/golang/protobuf/proto"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
+	"github.com/tweag/trustix/packages/trustix/constants"
 )
 
-type SMTMapStore struct {
-	logID      string
-	storageAPI *StorageAPI
-}
+// TODO: I don't like this living here but I also don't have a better option
 
-func newMapStore(storageAPI *StorageAPI, logID string) *SMTMapStore {
-	return &SMTMapStore{
-		logID:      logID,
-		storageAPI: storageAPI,
+func GetSTH(txn *BucketTransaction) (*schema.STH, error) {
+	var buf []byte
+	{
+		v, err := txn.Get([]byte(constants.HeadBlob))
+		if err != nil {
+			return nil, err
+		}
+		buf = v
 	}
-}
+	if len(buf) == 0 {
+		return nil, ObjectNotFoundError
+	}
 
-func (s *SMTMapStore) Get(key []byte) ([]byte, error) {
-	return s.storageAPI.GetSMTValue(s.logID, key)
-}
+	sth := &schema.STH{}
+	err := proto.Unmarshal(buf, sth)
+	if err != nil {
+		return nil, err
+	}
 
-func (s *SMTMapStore) Set(key []byte, value []byte) error {
-	return s.storageAPI.SetSMTValue(s.logID, key, value)
-}
-
-func (s *SMTMapStore) Delete(key []byte) error {
-	return fmt.Errorf("Delete unsupported")
+	return sth, nil
 }

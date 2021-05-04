@@ -6,20 +6,26 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package storage
+package api
 
-type Transaction interface {
-	Get(bucket *Bucket, key []byte) ([]byte, error)
-	Set(bucket *Bucket, key []byte, value []byte) error
-	Delete(bucket *Bucket, key []byte) error
-}
+import (
+	"bytes"
+	"crypto/sha256"
+	"fmt"
 
-type Storage interface {
-	Close()
+	"github.com/tweag/trustix/packages/trustix/storage"
+)
 
-	// View - Start a read-only transaction
-	View(func(txn Transaction) error) error
+func getCAValue(txn *storage.BucketTransaction, digest []byte) ([]byte, error) {
+	value, err := txn.Get(digest)
+	if err != nil {
+		return nil, err
+	}
 
-	// Update - Start a read-write transaction
-	Update(func(txn Transaction) error) error
+	digest2 := sha256.Sum256(value)
+	if !bytes.Equal(digest, digest2[:]) {
+		return nil, fmt.Errorf("Digest mismatch")
+	}
+
+	return value, nil
 }

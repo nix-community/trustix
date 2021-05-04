@@ -6,20 +6,21 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package storage
+package constants
 
-type Transaction interface {
-	Get(bucket *Bucket, key []byte) ([]byte, error)
-	Set(bucket *Bucket, key []byte, value []byte) error
-	Delete(bucket *Bucket, key []byte) error
-}
+const (
+	CaValueBucket = "CaValues"
 
-type Storage interface {
-	Close()
+	// The root level of a given log
+	LogBucket = "Log"
 
-	// View - Start a read-only transaction
-	View(func(txn Transaction) error) error
+	// Submission queue for a log
+	QueueBucket   = "Queue"
+	QueueMetaBlob = "Meta"
 
-	// Update - Start a read-write transaction
-	Update(func(txn Transaction) error) error
-}
+	// The sub trees of a log
+	HeadBlob      = "Head"
+	VLogBucket    = "VLog"
+	MapBucket     = "Map"
+	VMapLogBucket = "VMapLog"
+)

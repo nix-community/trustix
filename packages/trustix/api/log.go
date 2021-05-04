@@ -20,10 +20,10 @@ import (
 	"github.com/tweag/trustix/packages/trustix/storage"
 )
 
-func getLogConsistencyProof(prefix string, txn storage.Transaction, ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
+func getLogConsistencyProof(txn *storage.BucketTransaction, ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
 	resp = &api.ProofResponse{}
 
-	vLog, err := vlog.NewVerifiableLog(prefix, txn, *req.SecondSize)
+	vLog, err := vlog.NewVerifiableLog(txn, *req.SecondSize)
 	if err != nil {
 		return nil, err
 	}
@@ -38,9 +38,9 @@ func getLogConsistencyProof(prefix string, txn storage.Transaction, ctx context.
 	return resp, nil
 }
 
-func getLogAuditProof(prefix string, txn storage.Transaction, ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
+func getLogAuditProof(txn *storage.BucketTransaction, ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
 
-	vLog, err := vlog.NewVerifiableLog(prefix, txn, *req.TreeSize)
+	vLog, err := vlog.NewVerifiableLog(txn, *req.TreeSize)
 	if err != nil {
 		return nil, err
 	}
@@ -55,13 +55,13 @@ func getLogAuditProof(prefix string, txn storage.Transaction, ctx context.Contex
 	return resp, nil
 }
 
-func getLogEntries(prefix string, txn storage.Transaction, ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
+func getLogEntries(txn *storage.BucketTransaction, ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 
 	resp := &api.LogEntriesResponse{
 		Leaves: []*schema.LogLeaf{},
 	}
 
-	logStorage := vlog.NewLogStorage(prefix, txn)
+	logStorage := vlog.NewLogStorage(txn)
 
 	for i := int(*req.Start); i <= int(*req.Finish); i++ {
 		leaf, err := logStorage.Get(0, uint64(i))

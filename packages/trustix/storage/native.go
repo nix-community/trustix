@@ -24,15 +24,14 @@ type nativeTxn struct {
 	txn *badger.Txn
 }
 
-func createCompoundNativeKey(bucket []byte, key []byte) []byte {
-	cKey := []byte{}
-	cKey = append(cKey, bucket...)
+func createCompoundNativeKey(bucket *Bucket, key []byte) []byte {
+	cKey := []byte(bucket.Join())
 	cKey = append(cKey, 0x2f)
 	cKey = append(cKey, key...)
 	return cKey
 }
 
-func (t *nativeTxn) Get(bucket []byte, key []byte) ([]byte, error) {
+func (t *nativeTxn) Get(bucket *Bucket, key []byte) ([]byte, error) {
 	val, err := t.txn.Get(createCompoundNativeKey(bucket, key))
 	if err != nil {
 		// Normalise error
@@ -45,11 +44,11 @@ func (t *nativeTxn) Get(bucket []byte, key []byte) ([]byte, error) {
 	return val.ValueCopy(nil)
 }
 
-func (t *nativeTxn) Set(bucket []byte, key []byte, value []byte) error {
+func (t *nativeTxn) Set(bucket *Bucket, key []byte, value []byte) error {
 	return t.txn.Set(createCompoundNativeKey(bucket, key), value)
 }
 
-func (t *nativeTxn) Delete(bucket []byte, key []byte) error {
+func (t *nativeTxn) Delete(bucket *Bucket, key []byte) error {
 	return t.txn.Delete(createCompoundNativeKey(bucket, key))
 }
 

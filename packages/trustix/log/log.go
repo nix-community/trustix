@@ -20,8 +20,8 @@ type VerifiableLog struct {
 	storage  *LogStorage
 }
 
-func NewVerifiableLog(logID string, txn storage.Transaction, treeSize uint64) (*VerifiableLog, error) {
-	storage := NewLogStorage(logID, txn)
+func NewVerifiableLog(txn *storage.BucketTransaction, treeSize uint64) (*VerifiableLog, error) {
+	storage := NewLogStorage(txn)
 	return &VerifiableLog{
 		storage:  storage,
 		treeSize: treeSize,

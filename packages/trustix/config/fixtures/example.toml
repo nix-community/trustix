@@ -1,9 +1,9 @@
-[[publisher]]
-
-[publisher.storage]
+[storage]
 type = "native"
 
-[publisher.storage.native]
+[storage.native]
+
+[[publisher]]
 
 [publisher.key]
 type = "ed25519"

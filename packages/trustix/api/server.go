@@ -14,21 +14,22 @@ import (
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/storage"
-	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 // TrustixAPIServer wraps kvStoreLogApi and turns it into a gRPC implementation
 // It is also responsible for extracting the relevant log implementation for calls that require routing
 type TrustixAPIServer struct {
 	api.UnimplementedTrustixLogAPIServer
-	store  storage.Storage
-	logMap *TrustixLogMap
+	store    storage.Storage
+	logMap   *TrustixLogMap
+	caBucket *storage.Bucket
 }
 
-func NewTrustixAPIServer(logMap *TrustixLogMap, store storage.Storage) (*TrustixAPIServer, error) {
+func NewTrustixAPIServer(logMap *TrustixLogMap, store storage.Storage, caBucket *storage.Bucket) (*TrustixAPIServer, error) {
 	return &TrustixAPIServer{
-		store:  store,
-		logMap: logMap,
+		store:    store,
+		logMap:   logMap,
+		caBucket: caBucket,
 	}, nil
 }
 
@@ -76,10 +77,9 @@ func (s *TrustixAPIServer) GetMapValue(ctx context.Context, req *api.GetMapValue
 func (s *TrustixAPIServer) GetValue(ctx context.Context, req *api.ValueRequest) (*api.ValueResponse, error) {
 	var value []byte
 	err := s.store.View(func(txn storage.Transaction) error {
-		v, err := storageapi.NewStorageAPI(txn).GetCAValue(req.Digest)
+		v, err := getCAValue(s.caBucket.Txn(txn), req.Digest)
 		value = v
 		return err
-
 	})
 	if err != nil {
 		return nil, err

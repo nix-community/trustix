@@ -29,6 +29,7 @@ import (
 	tapi "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/client"
 	conf "github.com/tweag/trustix/packages/trustix/config"
+	"github.com/tweag/trustix/packages/trustix/constants"
 	"github.com/tweag/trustix/packages/trustix/decider"
 	"github.com/tweag/trustix/packages/trustix/lib"
 	pub "github.com/tweag/trustix/packages/trustix/publisher"
@@ -87,6 +88,9 @@ var rootCmd = &cobra.Command{
 				log.Fatalf("Could not initialise store: %v", err)
 			}
 		}
+
+		rootBucket := &storage.Bucket{}
+		caValueBucket := rootBucket.Cd(constants.CaValueBucket)
 
 		sthSyncMgr := sthsync.NewSyncManager()
 		defer sthSyncMgr.Close()
@@ -169,7 +173,7 @@ var rootCmd = &cobra.Command{
 
 					logMap.Add(logID, c)
 
-					sthSyncMgr.Add(sthsync.NewSTHSyncer(logID, store, c, verifier))
+					sthSyncMgr.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), c, verifier))
 
 					return nil
 				})
@@ -231,12 +235,17 @@ var rootCmd = &cobra.Command{
 						return fmt.Errorf("Signer type '%s' is not supported.", signerConfig.Type)
 					}
 
-					logAPI, err := tapi.NewKVStoreAPI(logID, store, sig)
+					logAPI, err := tapi.NewKVStoreAPI(logID, store, caValueBucket, rootBucket.Cd(logID), sig)
 					if err != nil {
 						return err
 					}
 
-					if err = pubMap.Set(logID, pub.NewPublisher(logID, store, sig)); err != nil {
+					publisher, err := pub.NewPublisher(logID, store, caValueBucket, rootBucket.Cd(logID), sig)
+					if err != nil {
+						return err
+					}
+
+					if err = pubMap.Set(logID, publisher); err != nil {
 						return err
 					}
 					logMap.Add(logID, logAPI)
@@ -255,7 +264,7 @@ var rootCmd = &cobra.Command{
 
 		}
 
-		logAPIServer, err := tapi.NewTrustixAPIServer(logMap, store)
+		logAPIServer, err := tapi.NewTrustixAPIServer(logMap, store, caValueBucket)
 		if err != nil {
 			return err
 		}
@@ -292,7 +301,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		logServer := rpc.NewTrustixCombinedRPCServer(store, logMap, pubMap, signerMetaMap, logMetaMap, decider)
+		logServer := rpc.NewTrustixCombinedRPCServer(store, rootBucket, logMap, pubMap, signerMetaMap, logMetaMap, decider)
 
 		log.Debug("Creating gRPC servers")
 
@@ -328,9 +337,7 @@ var rootCmd = &cobra.Command{
 
 			}
 
-			if logAPIServer != nil {
-				api.RegisterTrustixLogAPIServer(s, logAPIServer)
-			}
+			api.RegisterTrustixLogAPIServer(s, logAPIServer)
 
 			go func() {
 				err := s.Serve(lis)

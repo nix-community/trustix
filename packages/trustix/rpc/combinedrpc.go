@@ -28,7 +28,6 @@ import (
 	pub "github.com/tweag/trustix/packages/trustix/publisher"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/storage"
-	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 type TrustixCombinedRPCServer struct {
@@ -39,9 +38,10 @@ type TrustixCombinedRPCServer struct {
 	publishers *pub.PublisherMap
 	signerMeta *SignerMetaMap
 	logMeta    map[string]map[string]string
+	rootBucket *storage.Bucket
 }
 
-func NewTrustixCombinedRPCServer(store storage.Storage, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, signerMeta *SignerMetaMap, logMeta map[string]map[string]string, decider decider.LogDecider) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(store storage.Storage, rootBucket *storage.Bucket, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, signerMeta *SignerMetaMap, logMeta map[string]map[string]string, decider decider.LogDecider) *TrustixCombinedRPCServer {
 	rpc := &TrustixCombinedRPCServer{
 		store:      store,
 		logs:       logs,
@@ -49,6 +49,7 @@ func NewTrustixCombinedRPCServer(store storage.Storage, logs *tapi.TrustixLogMap
 		publishers: publishers,
 		signerMeta: signerMeta,
 		logMeta:    logMeta,
+		rootBucket: rootBucket,
 	}
 
 	return rpc
@@ -80,10 +81,9 @@ func (l *TrustixCombinedRPCServer) getSTHMap() (map[string]*schema.STH, error) {
 	m := make(map[string]*schema.STH)
 
 	err := l.store.View(func(txn storage.Transaction) error {
-		logAPI := storageapi.NewStorageAPI(txn)
-
 		for _, logID := range l.logs.IDs() {
-			sth, err := logAPI.GetSTH(logID)
+			bucket := l.rootBucket.Cd(logID)
+			sth, err := storage.GetSTH(bucket.Txn(txn))
 			if err != nil {
 				return err
 			}

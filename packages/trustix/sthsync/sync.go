@@ -14,15 +14,16 @@ import (
 	"fmt"
 	"time"
 
+	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	apipb "github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/api"
+	"github.com/tweag/trustix/packages/trustix/constants"
 	vlog "github.com/tweag/trustix/packages/trustix/log"
 	"github.com/tweag/trustix/packages/trustix/signer"
 	sthlib "github.com/tweag/trustix/packages/trustix/sth"
 	"github.com/tweag/trustix/packages/trustix/storage"
-	storageapi "github.com/tweag/trustix/packages/trustix/storage/api"
 )
 
 type sthSyncer struct {
@@ -31,7 +32,7 @@ type sthSyncer struct {
 	closeChan chan interface{}
 }
 
-func NewSTHSyncer(logID string, store storage.Storage, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) STHSyncer {
+func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) STHSyncer {
 	c := &sthSyncer{
 		store:     store,
 		logID:     logID,
@@ -42,9 +43,9 @@ func NewSTHSyncer(logID string, store storage.Storage, logapi api.TrustixLogAPI,
 
 		var oldSTH *schema.STH
 		err := store.View(func(txn storage.Transaction) error {
-			storageAPI := storageapi.NewStorageAPI(txn)
 			var err error
-			oldSTH, err = storageAPI.GetSTH(logID)
+			logBucketTxn := logBucket.Txn(txn)
+			oldSTH, err = storage.GetSTH(logBucketTxn)
 			return err
 		})
 
@@ -120,8 +121,12 @@ func NewSTHSyncer(logID string, store storage.Storage, logapi api.TrustixLogAPI,
 		}
 
 		err = store.Update(func(txn storage.Transaction) error {
-			storageAPI := storageapi.NewStorageAPI(txn)
-			return storageAPI.SetSTH(logID, sth)
+			buf, err := proto.Marshal(sth)
+			if err != nil {
+				return err
+			}
+
+			return logBucket.Txn(txn).Set([]byte(constants.HeadBlob), buf)
 		})
 		if err != nil {
 			return err
