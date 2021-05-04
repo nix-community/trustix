@@ -75,7 +75,7 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Could not create state directory: %s", stateDirectory)
 		}
 
-		var store storage.TrustixStorage
+		var store storage.Storage
 		{
 			switch config.Storage.Type {
 			case "native":

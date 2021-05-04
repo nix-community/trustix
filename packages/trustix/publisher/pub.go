@@ -39,7 +39,7 @@ func minUint64(x, y uint64) uint64 {
 
 type Publisher struct {
 	queueMux  *sync.Mutex
-	store     storage.TrustixStorage
+	store     storage.Storage
 	signer    crypto.Signer
 	submitMux *sync.Mutex
 	logID     string
@@ -47,7 +47,7 @@ type Publisher struct {
 	closeChan chan interface{}
 }
 
-func NewPublisher(logID string, store storage.TrustixStorage, signer crypto.Signer) *Publisher {
+func NewPublisher(logID string, store storage.Storage, signer crypto.Signer) *Publisher {
 
 	qm := &Publisher{
 		store:     store,

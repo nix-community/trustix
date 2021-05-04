@@ -26,12 +26,12 @@ import (
 )
 
 type sthSyncer struct {
-	store     storage.TrustixStorage
+	store     storage.Storage
 	logID     string
 	closeChan chan interface{}
 }
 
-func NewSTHSyncer(logID string, store storage.TrustixStorage, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) STHSyncer {
+func NewSTHSyncer(logID string, store storage.Storage, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) STHSyncer {
 	c := &sthSyncer{
 		store:     store,
 		logID:     logID,

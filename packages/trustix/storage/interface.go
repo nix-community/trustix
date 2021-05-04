@@ -14,7 +14,7 @@ type Transaction interface {
 	Delete(bucket []byte, key []byte) error
 }
 
-type TrustixStorage interface {
+type Storage interface {
 	Close()
 
 	// View - Start a read-only transaction

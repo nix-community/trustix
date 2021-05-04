@@ -35,13 +35,13 @@ type TrustixCombinedRPCServer struct {
 	pb.UnimplementedTrustixCombinedRPCServer
 	logs       *tapi.TrustixLogMap
 	decider    decider.LogDecider
-	store      storage.TrustixStorage
+	store      storage.Storage
 	publishers *pub.PublisherMap
 	signerMeta *SignerMetaMap
 	logMeta    map[string]map[string]string
 }
 
-func NewTrustixCombinedRPCServer(store storage.TrustixStorage, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, signerMeta *SignerMetaMap, logMeta map[string]map[string]string, decider decider.LogDecider) *TrustixCombinedRPCServer {
+func NewTrustixCombinedRPCServer(store storage.Storage, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, signerMeta *SignerMetaMap, logMeta map[string]map[string]string, decider decider.LogDecider) *TrustixCombinedRPCServer {
 	rpc := &TrustixCombinedRPCServer{
 		store:      store,
 		logs:       logs,

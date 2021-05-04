@@ -21,11 +21,11 @@ import (
 // It is also responsible for extracting the relevant log implementation for calls that require routing
 type TrustixAPIServer struct {
 	api.UnimplementedTrustixLogAPIServer
-	store  storage.TrustixStorage
+	store  storage.Storage
 	logMap *TrustixLogMap
 }
 
-func NewTrustixAPIServer(logMap *TrustixLogMap, store storage.TrustixStorage) (*TrustixAPIServer, error) {
+func NewTrustixAPIServer(logMap *TrustixLogMap, store storage.Storage) (*TrustixAPIServer, error) {
 	return &TrustixAPIServer{
 		store:  store,
 		logMap: logMap,

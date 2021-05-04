@@ -25,7 +25,7 @@ import (
 )
 
 type KvStoreLogApi struct {
-	store  storage.TrustixStorage
+	store  storage.Storage
 	signer crypto.Signer
 	logID  string
 }
@@ -34,7 +34,7 @@ type KvStoreLogApi struct {
 // of a key/value store
 //
 // This is the underlying implementation used by all other abstractions
-func NewKVStoreAPI(logID string, store storage.TrustixStorage, signer crypto.Signer) (*KvStoreLogApi, error) {
+func NewKVStoreAPI(logID string, store storage.Storage, signer crypto.Signer) (*KvStoreLogApi, error) {
 
 	var sth *schema.STH
 
