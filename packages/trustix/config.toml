@@ -23,4 +23,4 @@ type = "ed25519"
 
 # Implementation dependent
 [publisher.signer.ed25519]
-private-key-path = "./priv"  # Path to base64 encode private key file (should not be in the nix store)
+private-key-path = "./dev/priv"  # Path to base64 encode private key file (should not be in the nix store)
