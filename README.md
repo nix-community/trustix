@@ -54,3 +54,7 @@ This information can now be used by a Trustix user to:
     builders.
 -   automatically identify and exclude misbehaving builders such as `Chuck` in
     above's example.
+
+## Developing
+
+For notes on development see [HACKING.md](./HACKING.md)
