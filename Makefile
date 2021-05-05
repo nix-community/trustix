@@ -20,3 +20,6 @@ format:
 	for pkg in packages/*; do \
 	  bash -c "cd $$pkg && nix-shell --run 'make format'"; \
 	done
+
+develop:
+	hivemind

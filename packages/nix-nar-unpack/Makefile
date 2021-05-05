@@ -9,3 +9,6 @@ lint:
 
 format:
 	true  # noop, no formatter
+
+develop:
+	hivemind

@@ -9,3 +9,6 @@ lint:
 
 format:
 	gofmt -d .
+
+develop:
+	hivemind

@@ -10,3 +10,6 @@ lint:
 
 format:
 	black --quiet --check .
+
+develop:
+	hivemind
