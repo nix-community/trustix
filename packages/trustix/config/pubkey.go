@@ -10,6 +10,7 @@ package config
 
 import (
 	"encoding/base64"
+	"fmt"
 )
 
 type PublicKey struct {
@@ -18,6 +19,10 @@ type PublicKey struct {
 }
 
 func (p *PublicKey) Validate() error {
+	if p.Type == "" {
+		return fmt.Errorf("Required field 'type' not set")
+	}
+
 	if _, err := p.Decode(); err != nil {
 		return err
 	}

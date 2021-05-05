@@ -89,6 +89,30 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		signers := make(map[string]crypto.Signer)
+		{
+			for name, signerConfig := range config.Signers {
+				var sig crypto.Signer
+
+				log.WithFields(log.Fields{
+					"type": signerConfig.Type,
+					"name": name,
+				}).Info("Creating signer")
+
+				switch signerConfig.Type {
+				case "ed25519":
+					sig, err = signer.NewED25519Signer(signerConfig.ED25519.PrivateKeyPath)
+					if err != nil {
+						return err
+					}
+				default:
+					return fmt.Errorf("Signer type '%s' is not supported.", signerConfig.Type)
+				}
+
+				signers[name] = sig
+			}
+		}
+
 		rootBucket := &storage.Bucket{}
 		caValueBucket := rootBucket.Cd(constants.CaValueBucket)
 
@@ -216,28 +240,14 @@ var rootCmd = &cobra.Command{
 						"id": logID,
 					}).Info("Adding authoritive log to gRPC")
 
-					signerConfig := publisherConfig.Signer
-
-					if signerConfig.Type == "" {
-						return fmt.Errorf("Missing signer config field 'type'.")
-					}
-
-					var sig crypto.Signer
-
-					log.WithField("type", signerConfig.Type).Info("Creating signer")
-					switch signerConfig.Type {
-					case "ed25519":
-						sig, err = signer.NewED25519Signer(signerConfig.ED25519.PrivateKeyPath)
-						if err != nil {
-							return err
-						}
-					default:
-						return fmt.Errorf("Signer type '%s' is not supported.", signerConfig.Type)
-					}
-
-					logAPI, err := tapi.NewKVStoreAPI(logID, store, caValueBucket, rootBucket.Cd(logID), sig)
+					logAPI, err := tapi.NewKVStoreAPI(logID, store, caValueBucket, rootBucket.Cd(logID))
 					if err != nil {
 						return err
+					}
+
+					sig, ok := signers[publisherConfig.Signer]
+					if !ok {
+						return fmt.Errorf("Missing signer '%s'", publisherConfig.Signer)
 					}
 
 					publisher, err := pub.NewPublisher(logID, store, caValueBucket, rootBucket.Cd(logID), sig)

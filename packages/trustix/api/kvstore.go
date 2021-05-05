@@ -10,7 +10,6 @@ package api
 
 import (
 	"context"
-	"crypto"
 	"crypto/sha256"
 	"fmt"
 
@@ -30,15 +29,14 @@ type KvStoreLogApi struct {
 	mapBucket    *storage.Bucket
 	mapLogBucket *storage.Bucket
 
-	signer crypto.Signer
-	logID  string
+	logID string
 }
 
 // NewKVStoreAPI - Returns an instance of the log API for an authoritive log implemented on top
 // of a key/value store
 //
 // This is the underlying implementation used by all other abstractions
-func NewKVStoreAPI(logID string, store storage.Storage, caBucket *storage.Bucket, logBucket *storage.Bucket, signer crypto.Signer) (*KvStoreLogApi, error) {
+func NewKVStoreAPI(logID string, store storage.Storage, caBucket *storage.Bucket, logBucket *storage.Bucket) (*KvStoreLogApi, error) {
 	return &KvStoreLogApi{
 		store:        store,
 		logBucket:    logBucket,
@@ -46,7 +44,6 @@ func NewKVStoreAPI(logID string, store storage.Storage, caBucket *storage.Bucket
 		caBucket:     caBucket,
 		mapBucket:    logBucket.Cd(constants.MapBucket),
 		mapLogBucket: logBucket.Cd(constants.VMapLogBucket),
-		signer:       signer,
 		logID:        logID,
 	}, nil
 }

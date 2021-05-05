@@ -4,14 +4,15 @@ type = "memory"
 [storage.native]
 
 [[publisher]]
+signer = "snakeoil"
 
 [publisher.key]
 type = "ed25519"
 pub = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
-[publisher.signer]
+[signer.snakeoil]
 type = "ed25519"
 
 # Implementation dependent
-[publisher.signer.ed25519]
+[signer.snakeoil.ed25519]
 private-key-path = "./priv"

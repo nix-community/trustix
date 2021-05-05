@@ -10,29 +10,8 @@ package config
 
 import (
 	"fmt"
-
-	signer "github.com/tweag/trustix/packages/trustix/config/signer"
 )
 
-type Publisher struct {
-	Signer    string            `toml:"signer"`
-	PublicKey *PublicKey        `toml:"key"`
-	Meta      map[string]string `toml:"meta"`
-}
-
-func (p *Publisher) Validate(signers map[string]*signer.Signer) error {
-	if p.Signer == "" {
-		return missingField("signer")
-	}
-
-	if err := p.PublicKey.Validate(); err != nil {
-		return err
-	}
-
-	_, ok := signers[p.Signer]
-	if !ok {
-		return fmt.Errorf("Signer '%s' referenced but does not exist", p.Signer)
-	}
-
-	return nil
+func missingField(field string) error {
+	return fmt.Errorf("Required field '%s' is missing", field)
 }
