@@ -28,7 +28,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix-nix/nar"
 	"github.com/tweag/trustix/packages/trustix-nix/schema"
-	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
+	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	"github.com/tweag/trustix/packages/trustix/client"
 	"github.com/ulikunitz/xz"
 )
@@ -36,7 +36,7 @@ import (
 var listenAddresses []string
 var binaryCachePrivKey string
 
-func getCaches(c pb.TrustixCombinedRPCClient) ([]string, error) {
+func getCaches(c pb.TrustixRPCClient) ([]string, error) {
 	ctx, cancel := client.CreateContext(30)
 	defer cancel()
 	resp, err := c.Logs(ctx, &pb.LogsRequest{})
@@ -105,7 +105,7 @@ var binaryCacheCommand = &cobra.Command{
 		}
 		defer conn.Close()
 
-		c := pb.NewTrustixCombinedRPCClient(conn)
+		c := pb.NewTrustixRPCClient(conn)
 
 		caches, err := getCaches(c)
 		if err != nil {

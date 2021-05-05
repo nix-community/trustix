@@ -4,12 +4,12 @@ import "schema/mapentry.proto";
 import "schema/sth.proto";
 import "api/api.proto";
 
-option go_package = "github.com/tweag/trustix/packages/trustix-proto/proto";
+option go_package = "github.com/tweag/trustix/packages/trustix-proto/rpc";
 
 package trustix;
 
-// TrustixCombinedRPC
-service TrustixCombinedRPC {
+// TrustixRPC
+service TrustixRPC {
   // Get map[LogID]Log
   rpc Logs (LogsRequest) returns (LogsResponse) {}
 

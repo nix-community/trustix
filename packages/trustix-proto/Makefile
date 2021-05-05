@@ -1,7 +1,7 @@
 build:
 	$(MAKE) -C schema
 	$(MAKE) -C protocol
-	$(MAKE) -C proto
+	$(MAKE) -C rpc
 	$(MAKE) -C api
 	bash -c 'cd ../trustix-python && nix-shell --run "make build"'
 

@@ -20,8 +20,8 @@ import (
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
-	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
-	rpc "github.com/tweag/trustix/packages/trustix-proto/proto"
+	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
+	rpc "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	tapi "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/decider"
@@ -30,8 +30,8 @@ import (
 	"github.com/tweag/trustix/packages/trustix/storage"
 )
 
-type TrustixCombinedRPCServer struct {
-	pb.UnimplementedTrustixCombinedRPCServer
+type TrustixRPCServer struct {
+	pb.UnimplementedTrustixRPCServer
 	logs       *tapi.TrustixLogMap
 	decider    decider.LogDecider
 	store      storage.Storage
@@ -41,8 +41,8 @@ type TrustixCombinedRPCServer struct {
 	rootBucket *storage.Bucket
 }
 
-func NewTrustixCombinedRPCServer(store storage.Storage, rootBucket *storage.Bucket, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, signerMeta *SignerMetaMap, logMeta map[string]map[string]string, decider decider.LogDecider) *TrustixCombinedRPCServer {
-	rpc := &TrustixCombinedRPCServer{
+func NewTrustixRPCServer(store storage.Storage, rootBucket *storage.Bucket, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, signerMeta *SignerMetaMap, logMeta map[string]map[string]string, decider decider.LogDecider) *TrustixRPCServer {
+	rpc := &TrustixRPCServer{
 		store:      store,
 		logs:       logs,
 		decider:    decider,
@@ -64,7 +64,7 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 	}
 }
 
-func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
+func (l *TrustixRPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 	log, err := l.logs.Get(*in.LogID)
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (l *TrustixCombinedRPCServer) GetLogEntries(ctx context.Context, in *api.Ge
 	})
 }
 
-func (l *TrustixCombinedRPCServer) getSTHMap() (map[string]*schema.STH, error) {
+func (l *TrustixRPCServer) getSTHMap() (map[string]*schema.STH, error) {
 	m := make(map[string]*schema.STH)
 
 	err := l.store.View(func(txn storage.Transaction) error {
@@ -98,7 +98,7 @@ func (l *TrustixCombinedRPCServer) getSTHMap() (map[string]*schema.STH, error) {
 	return m, nil
 }
 
-func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.EntriesResponse, error) {
+func (l *TrustixRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.EntriesResponse, error) {
 	responses := make(map[string]*schema.MapEntry)
 
 	var wg sync.WaitGroup
@@ -170,7 +170,7 @@ func (l *TrustixCombinedRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (
 
 }
 
-func (l *TrustixCombinedRPCServer) GetStream(srv pb.TrustixCombinedRPC_GetStreamServer) error {
+func (l *TrustixRPCServer) GetStream(srv pb.TrustixRPC_GetStreamServer) error {
 
 	ctx := context.Background()
 	var wg sync.WaitGroup
@@ -228,7 +228,7 @@ func (l *TrustixCombinedRPCServer) GetStream(srv pb.TrustixCombinedRPC_GetStream
 	return nil
 }
 
-func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
+func (l *TrustixRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
 
 	hexInput := hex.EncodeToString(in.Key)
 	log.WithField("key", hexInput).Info("Received Decide request")
@@ -381,7 +381,7 @@ func (l *TrustixCombinedRPCServer) Decide(ctx context.Context, in *pb.KeyRequest
 
 }
 
-func (l *TrustixCombinedRPCServer) DecideStream(srv pb.TrustixCombinedRPC_DecideStreamServer) error {
+func (l *TrustixRPCServer) DecideStream(srv pb.TrustixRPC_DecideStreamServer) error {
 
 	ctx := context.Background()
 	var wg sync.WaitGroup
@@ -439,7 +439,7 @@ func (l *TrustixCombinedRPCServer) DecideStream(srv pb.TrustixCombinedRPC_Decide
 	return nil
 }
 
-func (l *TrustixCombinedRPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
+func (l *TrustixRPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
 
 	log.Info("Received Value request")
 
@@ -457,7 +457,7 @@ func (l *TrustixCombinedRPCServer) GetValue(ctx context.Context, in *api.ValueRe
 	return nil, fmt.Errorf("Value could not be retreived")
 }
 
-func (l *TrustixCombinedRPCServer) Submit(ctx context.Context, req *rpc.SubmitRequest) (*rpc.SubmitResponse, error) {
+func (l *TrustixRPCServer) Submit(ctx context.Context, req *rpc.SubmitRequest) (*rpc.SubmitResponse, error) {
 	err := auth.CanWrite(ctx)
 	if err != nil {
 		return nil, err
@@ -471,7 +471,7 @@ func (l *TrustixCombinedRPCServer) Submit(ctx context.Context, req *rpc.SubmitRe
 	return q.Submit(ctx, req)
 }
 
-func (l *TrustixCombinedRPCServer) Flush(ctx context.Context, req *rpc.FlushRequest) (*rpc.FlushResponse, error) {
+func (l *TrustixRPCServer) Flush(ctx context.Context, req *rpc.FlushRequest) (*rpc.FlushResponse, error) {
 	err := auth.CanWrite(ctx)
 	if err != nil {
 		return nil, err
@@ -485,7 +485,7 @@ func (l *TrustixCombinedRPCServer) Flush(ctx context.Context, req *rpc.FlushRequ
 	return q.Flush(ctx, req)
 }
 
-func (l *TrustixCombinedRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {
+func (l *TrustixRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {
 	logs := []*pb.Log{}
 
 	sthMap, err := l.getSTHMap()

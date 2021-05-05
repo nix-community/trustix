@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"sync"
 
-	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
+	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
 )
 
 type SignerMetaMap struct {

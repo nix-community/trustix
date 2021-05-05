@@ -14,7 +14,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
+	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	"github.com/tweag/trustix/packages/trustix/client"
 )
 
@@ -37,7 +37,7 @@ var queryMap = &cobra.Command{
 		}
 		defer conn.Close()
 
-		c := pb.NewTrustixCombinedRPCClient(conn)
+		c := pb.NewTrustixRPCClient(conn)
 
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()

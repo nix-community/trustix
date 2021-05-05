@@ -4,11 +4,11 @@
 import grpc
 
 from trustix_python.api import api_pb2 as api_dot_api__pb2
-from trustix_python.proto import trustix_pb2 as proto_dot_trustix__pb2
+from trustix_python.rpc import rpc_pb2 as rpc_dot_rpc__pb2
 
 
-class TrustixCombinedRPCStub(object):
-    """TrustixCombinedRPC"""
+class TrustixRPCStub(object):
+    """TrustixRPC"""
 
     def __init__(self, channel):
         """Constructor.
@@ -17,54 +17,54 @@ class TrustixCombinedRPCStub(object):
             channel: A grpc.Channel.
         """
         self.Logs = channel.unary_unary(
-            "/trustix.TrustixCombinedRPC/Logs",
-            request_serializer=proto_dot_trustix__pb2.LogsRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.LogsResponse.FromString,
+            "/trustix.TrustixRPC/Logs",
+            request_serializer=rpc_dot_rpc__pb2.LogsRequest.SerializeToString,
+            response_deserializer=rpc_dot_rpc__pb2.LogsResponse.FromString,
         )
         self.GetLogEntries = channel.unary_unary(
-            "/trustix.TrustixCombinedRPC/GetLogEntries",
+            "/trustix.TrustixRPC/GetLogEntries",
             request_serializer=api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.LogEntriesResponse.FromString,
         )
         self.Get = channel.unary_unary(
-            "/trustix.TrustixCombinedRPC/Get",
-            request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.EntriesResponse.FromString,
+            "/trustix.TrustixRPC/Get",
+            request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            response_deserializer=rpc_dot_rpc__pb2.EntriesResponse.FromString,
         )
         self.GetStream = channel.stream_stream(
-            "/trustix.TrustixCombinedRPC/GetStream",
-            request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.EntriesResponse.FromString,
+            "/trustix.TrustixRPC/GetStream",
+            request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            response_deserializer=rpc_dot_rpc__pb2.EntriesResponse.FromString,
         )
         self.Decide = channel.unary_unary(
-            "/trustix.TrustixCombinedRPC/Decide",
-            request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.DecisionResponse.FromString,
+            "/trustix.TrustixRPC/Decide",
+            request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            response_deserializer=rpc_dot_rpc__pb2.DecisionResponse.FromString,
         )
         self.DecideStream = channel.stream_stream(
-            "/trustix.TrustixCombinedRPC/DecideStream",
-            request_serializer=proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.DecisionResponse.FromString,
+            "/trustix.TrustixRPC/DecideStream",
+            request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            response_deserializer=rpc_dot_rpc__pb2.DecisionResponse.FromString,
         )
         self.GetValue = channel.unary_unary(
-            "/trustix.TrustixCombinedRPC/GetValue",
+            "/trustix.TrustixRPC/GetValue",
             request_serializer=api_dot_api__pb2.ValueRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.ValueResponse.FromString,
         )
         self.Submit = channel.unary_unary(
-            "/trustix.TrustixCombinedRPC/Submit",
-            request_serializer=proto_dot_trustix__pb2.SubmitRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.SubmitResponse.FromString,
+            "/trustix.TrustixRPC/Submit",
+            request_serializer=rpc_dot_rpc__pb2.SubmitRequest.SerializeToString,
+            response_deserializer=rpc_dot_rpc__pb2.SubmitResponse.FromString,
         )
         self.Flush = channel.unary_unary(
-            "/trustix.TrustixCombinedRPC/Flush",
-            request_serializer=proto_dot_trustix__pb2.FlushRequest.SerializeToString,
-            response_deserializer=proto_dot_trustix__pb2.FlushResponse.FromString,
+            "/trustix.TrustixRPC/Flush",
+            request_serializer=rpc_dot_rpc__pb2.FlushRequest.SerializeToString,
+            response_deserializer=rpc_dot_rpc__pb2.FlushResponse.FromString,
         )
 
 
-class TrustixCombinedRPCServicer(object):
-    """TrustixCombinedRPC"""
+class TrustixRPCServicer(object):
+    """TrustixRPC"""
 
     def Logs(self, request, context):
         """Get map[LogID]Log"""
@@ -121,12 +121,12 @@ class TrustixCombinedRPCServicer(object):
         raise NotImplementedError("Method not implemented!")
 
 
-def add_TrustixCombinedRPCServicer_to_server(servicer, server):
+def add_TrustixRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
         "Logs": grpc.unary_unary_rpc_method_handler(
             servicer.Logs,
-            request_deserializer=proto_dot_trustix__pb2.LogsRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.LogsResponse.SerializeToString,
+            request_deserializer=rpc_dot_rpc__pb2.LogsRequest.FromString,
+            response_serializer=rpc_dot_rpc__pb2.LogsResponse.SerializeToString,
         ),
         "GetLogEntries": grpc.unary_unary_rpc_method_handler(
             servicer.GetLogEntries,
@@ -135,23 +135,23 @@ def add_TrustixCombinedRPCServicer_to_server(servicer, server):
         ),
         "Get": grpc.unary_unary_rpc_method_handler(
             servicer.Get,
-            request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.EntriesResponse.SerializeToString,
+            request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
+            response_serializer=rpc_dot_rpc__pb2.EntriesResponse.SerializeToString,
         ),
         "GetStream": grpc.stream_stream_rpc_method_handler(
             servicer.GetStream,
-            request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.EntriesResponse.SerializeToString,
+            request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
+            response_serializer=rpc_dot_rpc__pb2.EntriesResponse.SerializeToString,
         ),
         "Decide": grpc.unary_unary_rpc_method_handler(
             servicer.Decide,
-            request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.DecisionResponse.SerializeToString,
+            request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
+            response_serializer=rpc_dot_rpc__pb2.DecisionResponse.SerializeToString,
         ),
         "DecideStream": grpc.stream_stream_rpc_method_handler(
             servicer.DecideStream,
-            request_deserializer=proto_dot_trustix__pb2.KeyRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.DecisionResponse.SerializeToString,
+            request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
+            response_serializer=rpc_dot_rpc__pb2.DecisionResponse.SerializeToString,
         ),
         "GetValue": grpc.unary_unary_rpc_method_handler(
             servicer.GetValue,
@@ -160,24 +160,24 @@ def add_TrustixCombinedRPCServicer_to_server(servicer, server):
         ),
         "Submit": grpc.unary_unary_rpc_method_handler(
             servicer.Submit,
-            request_deserializer=proto_dot_trustix__pb2.SubmitRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.SubmitResponse.SerializeToString,
+            request_deserializer=rpc_dot_rpc__pb2.SubmitRequest.FromString,
+            response_serializer=rpc_dot_rpc__pb2.SubmitResponse.SerializeToString,
         ),
         "Flush": grpc.unary_unary_rpc_method_handler(
             servicer.Flush,
-            request_deserializer=proto_dot_trustix__pb2.FlushRequest.FromString,
-            response_serializer=proto_dot_trustix__pb2.FlushResponse.SerializeToString,
+            request_deserializer=rpc_dot_rpc__pb2.FlushRequest.FromString,
+            response_serializer=rpc_dot_rpc__pb2.FlushResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        "trustix.TrustixCombinedRPC", rpc_method_handlers
+        "trustix.TrustixRPC", rpc_method_handlers
     )
     server.add_generic_rpc_handlers((generic_handler,))
 
 
 # This class is part of an EXPERIMENTAL API.
-class TrustixCombinedRPC(object):
-    """TrustixCombinedRPC"""
+class TrustixRPC(object):
+    """TrustixRPC"""
 
     @staticmethod
     def Logs(
@@ -195,9 +195,9 @@ class TrustixCombinedRPC(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixCombinedRPC/Logs",
-            proto_dot_trustix__pb2.LogsRequest.SerializeToString,
-            proto_dot_trustix__pb2.LogsResponse.FromString,
+            "/trustix.TrustixRPC/Logs",
+            rpc_dot_rpc__pb2.LogsRequest.SerializeToString,
+            rpc_dot_rpc__pb2.LogsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -224,7 +224,7 @@ class TrustixCombinedRPC(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixCombinedRPC/GetLogEntries",
+            "/trustix.TrustixRPC/GetLogEntries",
             api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             api_dot_api__pb2.LogEntriesResponse.FromString,
             options,
@@ -253,9 +253,9 @@ class TrustixCombinedRPC(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixCombinedRPC/Get",
-            proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            proto_dot_trustix__pb2.EntriesResponse.FromString,
+            "/trustix.TrustixRPC/Get",
+            rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            rpc_dot_rpc__pb2.EntriesResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -282,9 +282,9 @@ class TrustixCombinedRPC(object):
         return grpc.experimental.stream_stream(
             request_iterator,
             target,
-            "/trustix.TrustixCombinedRPC/GetStream",
-            proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            proto_dot_trustix__pb2.EntriesResponse.FromString,
+            "/trustix.TrustixRPC/GetStream",
+            rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            rpc_dot_rpc__pb2.EntriesResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -311,9 +311,9 @@ class TrustixCombinedRPC(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixCombinedRPC/Decide",
-            proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            proto_dot_trustix__pb2.DecisionResponse.FromString,
+            "/trustix.TrustixRPC/Decide",
+            rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            rpc_dot_rpc__pb2.DecisionResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -340,9 +340,9 @@ class TrustixCombinedRPC(object):
         return grpc.experimental.stream_stream(
             request_iterator,
             target,
-            "/trustix.TrustixCombinedRPC/DecideStream",
-            proto_dot_trustix__pb2.KeyRequest.SerializeToString,
-            proto_dot_trustix__pb2.DecisionResponse.FromString,
+            "/trustix.TrustixRPC/DecideStream",
+            rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            rpc_dot_rpc__pb2.DecisionResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -369,7 +369,7 @@ class TrustixCombinedRPC(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixCombinedRPC/GetValue",
+            "/trustix.TrustixRPC/GetValue",
             api_dot_api__pb2.ValueRequest.SerializeToString,
             api_dot_api__pb2.ValueResponse.FromString,
             options,
@@ -398,9 +398,9 @@ class TrustixCombinedRPC(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixCombinedRPC/Submit",
-            proto_dot_trustix__pb2.SubmitRequest.SerializeToString,
-            proto_dot_trustix__pb2.SubmitResponse.FromString,
+            "/trustix.TrustixRPC/Submit",
+            rpc_dot_rpc__pb2.SubmitRequest.SerializeToString,
+            rpc_dot_rpc__pb2.SubmitResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -427,9 +427,9 @@ class TrustixCombinedRPC(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixCombinedRPC/Flush",
-            proto_dot_trustix__pb2.FlushRequest.SerializeToString,
-            proto_dot_trustix__pb2.FlushResponse.FromString,
+            "/trustix.TrustixRPC/Flush",
+            rpc_dot_rpc__pb2.FlushRequest.SerializeToString,
+            rpc_dot_rpc__pb2.FlushResponse.FromString,
             options,
             channel_credentials,
             insecure,

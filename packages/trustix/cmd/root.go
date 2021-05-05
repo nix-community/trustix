@@ -25,7 +25,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
-	pb "github.com/tweag/trustix/packages/trustix-proto/proto"
+	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	tapi "github.com/tweag/trustix/packages/trustix/api"
 	"github.com/tweag/trustix/packages/trustix/client"
 	conf "github.com/tweag/trustix/packages/trustix/config"
@@ -311,7 +311,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		logServer := rpc.NewTrustixCombinedRPCServer(store, rootBucket, logMap, pubMap, signerMetaMap, logMetaMap, decider)
+		logServer := rpc.NewTrustixRPCServer(store, rootBucket, logMap, pubMap, signerMetaMap, logMetaMap, decider)
 
 		log.Debug("Creating gRPC servers")
 
@@ -325,7 +325,7 @@ var rootCmd = &cobra.Command{
 					grpc.Creds(&auth.SoPeercred{}), // Attach SO_PEERCRED auth to UNIX sockets
 				)
 
-				pb.RegisterTrustixCombinedRPCServer(s, logServer)
+				pb.RegisterTrustixRPCServer(s, logServer)
 
 			} else {
 

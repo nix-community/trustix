@@ -13,7 +13,7 @@ import sys
 
 
 PACKAGES: typing.List[str] = [
-    "proto",
+    "rpc",
     "schema",
     "api",
 ]

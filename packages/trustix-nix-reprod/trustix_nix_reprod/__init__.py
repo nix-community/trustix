@@ -32,7 +32,7 @@ from tortoise import (
     Tortoise,
 )
 import ijson  # type: ignore
-from trustix_python.proto import trustix_pb2  # type: ignore
+from trustix_python.rpc import rpc_pb2  # type: ignore
 from trustix_python.api import api_pb2  # type: ignore
 from async_lru import alru_cache  # type: ignore
 import typing
@@ -270,7 +270,7 @@ async def index_log(log, sth):
 
 
 async def index_logs():
-    req = trustix_pb2.LogsRequest()
+    req = rpc_pb2.LogsRequest()
     resp = await get_combined_rpc().Logs(req)
 
     for log_resp in resp.Logs:

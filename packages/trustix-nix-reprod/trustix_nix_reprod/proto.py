@@ -17,7 +17,7 @@
 from functools import lru_cache
 import grpc  # type: ignore
 
-from trustix_python.proto import trustix_pb2_grpc  # type: ignore
+from trustix_python.rpc import rpc_pb2_grpc  # type: ignore
 from trustix_nix_reprod.conf import settings
 
 
@@ -27,5 +27,5 @@ def get_channel() -> grpc.aio.Channel:
 
 
 @lru_cache(maxsize=None)
-def get_combined_rpc() -> trustix_pb2_grpc.TrustixCombinedRPCStub:  # type: ignore
-    return trustix_pb2_grpc.TrustixCombinedRPCStub(get_channel())  # type: ignore
+def get_combined_rpc() -> rpc_pb2_grpc.TrustixRPCStub:  # type: ignore
+    return rpc_pb2_grpc.TrustixRPCStub(get_channel())  # type: ignore
