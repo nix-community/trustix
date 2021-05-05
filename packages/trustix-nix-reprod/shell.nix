@@ -15,7 +15,7 @@ let
 in
 pkgs.mkShell {
 
-  inherit (rootShell) TRUSTIX_RPC;
+  inherit (rootShell) TRUSTIX_RPC TRUSTIX_ROOT;
 
   NIX_REPROD_STATE_DIR = "${rootShell.STATE_DIR}/nix-reprod";
 

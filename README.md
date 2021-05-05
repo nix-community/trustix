@@ -14,8 +14,7 @@ Trustix is developed for the Nix ecosystem.
 
 ## How does this translate to Nix?
 
-In the Nix ecosystem, pre-built binaries are distributed through so-called <span class="underline">binary
-substituters</span>.
+In the Nix ecosystem, pre-built binaries are distributed through so-called _binary substituters_.
 Similar to other centralized caching systems, they are a single point of failure in the chain of trust when delivering a package to a user.
 This is problematic for several reasons:
 

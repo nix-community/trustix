@@ -1,2 +1,2 @@
 build: reflex -r '\.go$' go build
-binary-cache-proxy: echo trustix-nix | entr -r ./trustix-nix binary-cache-proxy --privkey ./dev/cache-priv-key.pem --address "$TRUSTIX_RPC" --listen localhost:8080
+binary-cache-proxy: go build && ../../tools/wait_for_file trustix-nix && echo trustix-nix | entr -r ./trustix-nix binary-cache-proxy --privkey ./dev/cache-priv-key.pem --address "$TRUSTIX_RPC" --listen localhost:8080

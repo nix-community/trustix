@@ -21,5 +21,8 @@ format:
 	  bash -c "cd $$pkg && nix-shell --run 'make format'"; \
 	done
 
+direnv-allow:
+	find . -name .envrc -exec direnv allow {} \;
+
 develop:
 	hivemind
