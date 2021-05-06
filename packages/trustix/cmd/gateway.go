@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix/client"
+	"github.com/tweag/trustix/packages/trustix/lib"
 )
 
 var gatewayCommand = &cobra.Command{
@@ -74,18 +75,15 @@ var gatewayCommand = &cobra.Command{
 			log.Fatal("No listeners configured")
 		}
 
-		errChan := make(chan error)
+		listenerExecutor := lib.NewParallellExecutor()
 		for _, listener := range listeners {
-			go func(l net.Listener) {
-				err := http.Serve(l, mux)
-				if err != nil {
-					errChan <- err
-				}
-			}(listener)
+			l := listener
+			listenerExecutor.Add(func() error {
+				return http.Serve(l, mux)
+			})
 		}
-		for err := range errChan {
+		if err = listenerExecutor.Wait(); err != nil {
 			log.Fatalf("Error in HTTP handler: %v", err)
-			panic(err)
 		}
 
 		return nil

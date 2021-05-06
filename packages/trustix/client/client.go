@@ -34,8 +34,6 @@ func CreateClientConn(address string, pubKey crypto.PublicKey) (*grpc.ClientConn
 		return nil, fmt.Errorf("Only UNIX sockets are supported in the CLI for now")
 	}
 
-	sockPath := u.Host + u.Path
-
 	log.WithFields(log.Fields{
 		"address": address,
 	}).Debug("Dialing gRPC")
@@ -80,6 +78,8 @@ func CreateClientConn(address string, pubKey crypto.PublicKey) (*grpc.ClientConn
 		}
 
 	case "unix":
+		sockPath := u.Host + u.Path
+
 		conn, err = grpc.Dial(
 			sockPath,
 			grpc.WithInsecure(),

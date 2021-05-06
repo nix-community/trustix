@@ -129,29 +129,11 @@ var rootCmd = &cobra.Command{
 		logMap := tapi.NewTrustixLogMap()
 		{
 
-			errChan := make(chan error)
-			wg := new(sync.WaitGroup)
-
-			go func() {
-				wg.Wait()
-				close(errChan)
-			}()
-
-			// Wrap to handle errors and propagate to channel
-			wrapLogInit := func(fn func() error) {
-				err := fn()
-				if err != nil {
-					errChan <- err
-				}
-			}
+			logInitExecutor := lib.NewParallellExecutor()
 
 			for _, subscriberConfig := range config.Subscribers {
 				subConf := subscriberConfig
-				wg.Add(1)
-
-				go wrapLogInit(func() error {
-					defer wg.Done()
-
+				logInitExecutor.Add(func() error {
 					pubBytes, err := subConf.PublicKey.Decode()
 					if err != nil {
 						return err
@@ -206,11 +188,7 @@ var rootCmd = &cobra.Command{
 
 			for _, publisherConfig := range config.Publishers {
 				publisherConfig := publisherConfig
-				wg.Add(1)
-
-				go wrapLogInit(func() error {
-					defer wg.Done()
-
+				logInitExecutor.Add(func() error {
 					var logID string
 					{
 						pubBytes, err := publisherConfig.PublicKey.Decode()
@@ -265,12 +243,10 @@ var rootCmd = &cobra.Command{
 
 			}
 
-			for err := range errChan {
-				if err != nil {
-					return err
-				}
+			err = logInitExecutor.Wait()
+			if err != nil {
+				return err
 			}
-			wg.Wait()
 
 		}
 
