@@ -6,7 +6,7 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package api
+package interfaces
 
 import (
 	"context"
@@ -15,7 +15,16 @@ import (
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 )
 
-type TrustixLogAPI interface {
+type NodeAPI interface {
+	// List published logs
+	Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error)
+
+	// Get content-addressed computation outputs
+	GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error)
+}
+
+type LogAPI interface {
+
 	// GetSTH - Get a signed tree head
 	GetSTH(context.Context, *api.STHRequest) (*schema.STH, error)
 
@@ -30,9 +39,6 @@ type TrustixLogAPI interface {
 
 	// Get value from the map
 	GetMapValue(context.Context, *api.GetMapValueRequest) (*api.MapValueResponse, error)
-
-	// Get content-addressed computation outputs
-	GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error)
 
 	// Get map head log consistency proof
 	GetMHLogConsistencyProof(context.Context, *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error)

@@ -34,7 +34,7 @@ var rootCmd = &cobra.Command{
 }
 
 func initCommands() {
-	trustixSock := os.Getenv("TRUSTIX_SOCK")
+	trustixSock := os.Getenv("TRUSTIX_RPC")
 	if trustixSock == "" {
 		tmpDir := "/tmp"
 		trustixSock = filepath.Join(tmpDir, "trustix.sock")

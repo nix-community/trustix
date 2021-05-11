@@ -73,17 +73,16 @@ var submitClosureCommand = &cobra.Command{
 			Items: items,
 		}
 
-		conn, err := client.CreateClientConn(dialAddress, nil)
+		c, err := client.CreateClientConn(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
-		defer conn.Close()
+		defer c.Close()
 
 		ctx, cancel := client.CreateContext(30)
 		defer cancel()
 
-		c := pb.NewTrustixRPCClient(conn)
-		_, err = c.Submit(ctx, req)
+		_, err = c.RpcAPI.Submit(ctx, req)
 		if err != nil {
 			log.Fatalf("could not submit: %v", err)
 		}

@@ -36,3 +36,10 @@ func (p *Publisher) Validate(signers map[string]*signer.Signer) error {
 
 	return nil
 }
+
+func (p *Publisher) GetMeta() map[string]string {
+	if p.Meta != nil {
+		return p.Meta
+	}
+	return make(map[string]string)
+}

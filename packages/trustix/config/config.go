@@ -21,6 +21,7 @@ type Config struct {
 	Subscribers []*Subscriber             `toml:"subscriber"`
 	Signers     map[string]*signer.Signer `toml:"signer"`
 	Storage     *Storage                  `toml:"storage"`
+	Remotes     []string                  `toml:"remotes"`
 }
 
 func (c *Config) Validate() error {

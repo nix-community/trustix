@@ -18,7 +18,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	apipb "github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/api"
+	"github.com/tweag/trustix/packages/trustix/client"
 	"github.com/tweag/trustix/packages/trustix/constants"
 	vlog "github.com/tweag/trustix/packages/trustix/log"
 	"github.com/tweag/trustix/packages/trustix/signer"
@@ -32,7 +32,7 @@ type sthSyncer struct {
 	closeChan chan interface{}
 }
 
-func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket, logapi api.TrustixLogAPI, verifier signer.TrustixVerifier) STHSyncer {
+func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket, clients *client.ClientPool, verifier signer.TrustixVerifier) STHSyncer {
 	c := &sthSyncer{
 		store:     store,
 		logID:     logID,
@@ -48,6 +48,12 @@ func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket
 			oldSTH, err = storage.GetSTH(logBucketTxn)
 			return err
 		})
+
+		client, err := clients.Get(logID)
+		if err != nil {
+			return err
+		}
+		logapi := client.LogAPI
 
 		if err != nil {
 			if err != storage.ObjectNotFoundError {

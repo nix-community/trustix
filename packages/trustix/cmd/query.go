@@ -43,18 +43,17 @@ var queryCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		conn, err := client.CreateClientConn(dialAddress, nil)
+		c, err := client.CreateClientConn(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
-		defer conn.Close()
+		defer c.Close()
 
-		c := api.NewTrustixLogAPIClient(conn)
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
 		log.Debug("Requesting STH")
-		sth, err := c.GetSTH(ctx, &api.STHRequest{
+		sth, err := c.LogAPI.GetSTH(ctx, &api.STHRequest{
 			LogID: &logID,
 		})
 		if err != nil {
@@ -64,7 +63,7 @@ var queryCommand = &cobra.Command{
 		log.WithFields(log.Fields{
 			"key": keyHex,
 		}).Debug("Requesting output mapping for")
-		r, err := c.GetMapValue(ctx, &api.GetMapValueRequest{
+		r, err := c.LogAPI.GetMapValue(ctx, &api.GetMapValueRequest{
 			LogID:   &logID,
 			Key:     inputBytes,
 			MapRoot: sth.MapRoot,

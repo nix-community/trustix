@@ -7,7 +7,126 @@ from trustix_python.api import api_pb2 as api_dot_api__pb2
 from trustix_python.schema import sth_pb2 as schema_dot_sth__pb2
 
 
-class TrustixLogAPIStub(object):
+class NodeAPIStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.Logs = channel.unary_unary(
+            "/trustix.NodeAPI/Logs",
+            request_serializer=api_dot_api__pb2.LogsRequest.SerializeToString,
+            response_deserializer=api_dot_api__pb2.LogsResponse.FromString,
+        )
+        self.GetValue = channel.unary_unary(
+            "/trustix.NodeAPI/GetValue",
+            request_serializer=api_dot_api__pb2.ValueRequest.SerializeToString,
+            response_deserializer=api_dot_api__pb2.ValueResponse.FromString,
+        )
+
+
+class NodeAPIServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def Logs(self, request, context):
+        """Get map[LogID]Log"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def GetValue(self, request, context):
+        """Content-addressed values"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+
+def add_NodeAPIServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+        "Logs": grpc.unary_unary_rpc_method_handler(
+            servicer.Logs,
+            request_deserializer=api_dot_api__pb2.LogsRequest.FromString,
+            response_serializer=api_dot_api__pb2.LogsResponse.SerializeToString,
+        ),
+        "GetValue": grpc.unary_unary_rpc_method_handler(
+            servicer.GetValue,
+            request_deserializer=api_dot_api__pb2.ValueRequest.FromString,
+            response_serializer=api_dot_api__pb2.ValueResponse.SerializeToString,
+        ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+        "trustix.NodeAPI", rpc_method_handlers
+    )
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+# This class is part of an EXPERIMENTAL API.
+class NodeAPI(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def Logs(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/trustix.NodeAPI/Logs",
+            api_dot_api__pb2.LogsRequest.SerializeToString,
+            api_dot_api__pb2.LogsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
+
+    @staticmethod
+    def GetValue(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/trustix.NodeAPI/GetValue",
+            api_dot_api__pb2.ValueRequest.SerializeToString,
+            api_dot_api__pb2.ValueResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
+
+
+class LogAPIStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -17,63 +136,52 @@ class TrustixLogAPIStub(object):
             channel: A grpc.Channel.
         """
         self.GetSTH = channel.unary_unary(
-            "/trustix.TrustixLogAPI/GetSTH",
+            "/trustix.LogAPI/GetSTH",
             request_serializer=api_dot_api__pb2.STHRequest.SerializeToString,
             response_deserializer=schema_dot_sth__pb2.STH.FromString,
         )
-        self.GetValue = channel.unary_unary(
-            "/trustix.TrustixLogAPI/GetValue",
-            request_serializer=api_dot_api__pb2.ValueRequest.SerializeToString,
-            response_deserializer=api_dot_api__pb2.ValueResponse.FromString,
-        )
         self.GetLogConsistencyProof = channel.unary_unary(
-            "/trustix.TrustixLogAPI/GetLogConsistencyProof",
+            "/trustix.LogAPI/GetLogConsistencyProof",
             request_serializer=api_dot_api__pb2.GetLogConsistencyProofRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.ProofResponse.FromString,
         )
         self.GetLogAuditProof = channel.unary_unary(
-            "/trustix.TrustixLogAPI/GetLogAuditProof",
+            "/trustix.LogAPI/GetLogAuditProof",
             request_serializer=api_dot_api__pb2.GetLogAuditProofRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.ProofResponse.FromString,
         )
         self.GetLogEntries = channel.unary_unary(
-            "/trustix.TrustixLogAPI/GetLogEntries",
+            "/trustix.LogAPI/GetLogEntries",
             request_serializer=api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.LogEntriesResponse.FromString,
         )
         self.GetMapValue = channel.unary_unary(
-            "/trustix.TrustixLogAPI/GetMapValue",
+            "/trustix.LogAPI/GetMapValue",
             request_serializer=api_dot_api__pb2.GetMapValueRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.MapValueResponse.FromString,
         )
         self.GetMHLogConsistencyProof = channel.unary_unary(
-            "/trustix.TrustixLogAPI/GetMHLogConsistencyProof",
+            "/trustix.LogAPI/GetMHLogConsistencyProof",
             request_serializer=api_dot_api__pb2.GetLogConsistencyProofRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.ProofResponse.FromString,
         )
         self.GetMHLogAuditProof = channel.unary_unary(
-            "/trustix.TrustixLogAPI/GetMHLogAuditProof",
+            "/trustix.LogAPI/GetMHLogAuditProof",
             request_serializer=api_dot_api__pb2.GetLogAuditProofRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.ProofResponse.FromString,
         )
         self.GetMHLogEntries = channel.unary_unary(
-            "/trustix.TrustixLogAPI/GetMHLogEntries",
+            "/trustix.LogAPI/GetMHLogEntries",
             request_serializer=api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.LogEntriesResponse.FromString,
         )
 
 
-class TrustixLogAPIServicer(object):
+class LogAPIServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def GetSTH(self, request, context):
         """Aggregate"""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetValue(self, request, context):
-        """Content-addressed values"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -121,17 +229,12 @@ class TrustixLogAPIServicer(object):
         raise NotImplementedError("Method not implemented!")
 
 
-def add_TrustixLogAPIServicer_to_server(servicer, server):
+def add_LogAPIServicer_to_server(servicer, server):
     rpc_method_handlers = {
         "GetSTH": grpc.unary_unary_rpc_method_handler(
             servicer.GetSTH,
             request_deserializer=api_dot_api__pb2.STHRequest.FromString,
             response_serializer=schema_dot_sth__pb2.STH.SerializeToString,
-        ),
-        "GetValue": grpc.unary_unary_rpc_method_handler(
-            servicer.GetValue,
-            request_deserializer=api_dot_api__pb2.ValueRequest.FromString,
-            response_serializer=api_dot_api__pb2.ValueResponse.SerializeToString,
         ),
         "GetLogConsistencyProof": grpc.unary_unary_rpc_method_handler(
             servicer.GetLogConsistencyProof,
@@ -170,13 +273,13 @@ def add_TrustixLogAPIServicer_to_server(servicer, server):
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        "trustix.TrustixLogAPI", rpc_method_handlers
+        "trustix.LogAPI", rpc_method_handlers
     )
     server.add_generic_rpc_handlers((generic_handler,))
 
 
 # This class is part of an EXPERIMENTAL API.
-class TrustixLogAPI(object):
+class LogAPI(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -195,38 +298,9 @@ class TrustixLogAPI(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixLogAPI/GetSTH",
+            "/trustix.LogAPI/GetSTH",
             api_dot_api__pb2.STHRequest.SerializeToString,
             schema_dot_sth__pb2.STH.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
-
-    @staticmethod
-    def GetValue(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/trustix.TrustixLogAPI/GetValue",
-            api_dot_api__pb2.ValueRequest.SerializeToString,
-            api_dot_api__pb2.ValueResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -253,7 +327,7 @@ class TrustixLogAPI(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixLogAPI/GetLogConsistencyProof",
+            "/trustix.LogAPI/GetLogConsistencyProof",
             api_dot_api__pb2.GetLogConsistencyProofRequest.SerializeToString,
             api_dot_api__pb2.ProofResponse.FromString,
             options,
@@ -282,7 +356,7 @@ class TrustixLogAPI(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixLogAPI/GetLogAuditProof",
+            "/trustix.LogAPI/GetLogAuditProof",
             api_dot_api__pb2.GetLogAuditProofRequest.SerializeToString,
             api_dot_api__pb2.ProofResponse.FromString,
             options,
@@ -311,7 +385,7 @@ class TrustixLogAPI(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixLogAPI/GetLogEntries",
+            "/trustix.LogAPI/GetLogEntries",
             api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             api_dot_api__pb2.LogEntriesResponse.FromString,
             options,
@@ -340,7 +414,7 @@ class TrustixLogAPI(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixLogAPI/GetMapValue",
+            "/trustix.LogAPI/GetMapValue",
             api_dot_api__pb2.GetMapValueRequest.SerializeToString,
             api_dot_api__pb2.MapValueResponse.FromString,
             options,
@@ -369,7 +443,7 @@ class TrustixLogAPI(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixLogAPI/GetMHLogConsistencyProof",
+            "/trustix.LogAPI/GetMHLogConsistencyProof",
             api_dot_api__pb2.GetLogConsistencyProofRequest.SerializeToString,
             api_dot_api__pb2.ProofResponse.FromString,
             options,
@@ -398,7 +472,7 @@ class TrustixLogAPI(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixLogAPI/GetMHLogAuditProof",
+            "/trustix.LogAPI/GetMHLogAuditProof",
             api_dot_api__pb2.GetLogAuditProofRequest.SerializeToString,
             api_dot_api__pb2.ProofResponse.FromString,
             options,
@@ -427,7 +501,7 @@ class TrustixLogAPI(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.TrustixLogAPI/GetMHLogEntries",
+            "/trustix.LogAPI/GetMHLogEntries",
             api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             api_dot_api__pb2.LogEntriesResponse.FromString,
             options,

@@ -6,35 +6,56 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package api
+package server
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/storage"
+	"github.com/tweag/trustix/packages/trustix/client"
+	"github.com/tweag/trustix/packages/trustix/interfaces"
 )
 
 // TrustixAPIServer wraps kvStoreLogApi and turns it into a gRPC implementation
-// It is also responsible for extracting the relevant log implementation for calls that require routing
 type TrustixAPIServer struct {
-	api.UnimplementedTrustixLogAPIServer
-	store    storage.Storage
-	logMap   *TrustixLogMap
-	caBucket *storage.Bucket
+	api.UnimplementedLogAPIServer
+
+	clients *client.ClientPool
+
+	// Keep a set of published logs around to filter on, we don't want to leak what we subscribe to
+	published map[string]struct{}
 }
 
-func NewTrustixAPIServer(logMap *TrustixLogMap, store storage.Storage, caBucket *storage.Bucket) (*TrustixAPIServer, error) {
+func NewLogAPIServer(logs []*api.Log, clients *client.ClientPool) *TrustixAPIServer {
+	published := make(map[string]struct{})
+	for _, log := range logs {
+		published[*log.LogID] = struct{}{}
+	}
+
 	return &TrustixAPIServer{
-		store:    store,
-		logMap:   logMap,
-		caBucket: caBucket,
-	}, nil
+		published: published,
+		clients:   clients,
+	}
+}
+
+func (s *TrustixAPIServer) getClient(logID string) (interfaces.LogAPI, error) {
+	_, ok := s.published[logID]
+	if !ok {
+		return nil, fmt.Errorf("Log with ID '%s' is not published", logID)
+	}
+
+	client, err := s.clients.Get(logID)
+	if err != nil {
+		return nil, err
+	}
+
+	return client.LogAPI, nil
 }
 
 func (s *TrustixAPIServer) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {
-	log, err := s.logMap.Get(*req.LogID)
+	log, err := s.getClient(*req.LogID)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +64,7 @@ func (s *TrustixAPIServer) GetSTH(ctx context.Context, req *api.STHRequest) (*sc
 }
 
 func (s *TrustixAPIServer) GetLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {
-	log, err := s.logMap.Get(*req.LogID)
+	log, err := s.getClient(*req.LogID)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +72,7 @@ func (s *TrustixAPIServer) GetLogConsistencyProof(ctx context.Context, req *api.
 }
 
 func (s *TrustixAPIServer) GetLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (*api.ProofResponse, error) {
-	log, err := s.logMap.Get(*req.LogID)
+	log, err := s.getClient(*req.LogID)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +80,7 @@ func (s *TrustixAPIServer) GetLogAuditProof(ctx context.Context, req *api.GetLog
 }
 
 func (s *TrustixAPIServer) GetLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
-	log, err := s.logMap.Get(*req.LogID)
+	log, err := s.getClient(*req.LogID)
 	if err != nil {
 		return nil, err
 	}
@@ -67,31 +88,15 @@ func (s *TrustixAPIServer) GetLogEntries(ctx context.Context, req *api.GetLogEnt
 }
 
 func (s *TrustixAPIServer) GetMapValue(ctx context.Context, req *api.GetMapValueRequest) (*api.MapValueResponse, error) {
-	log, err := s.logMap.Get(*req.LogID)
+	log, err := s.getClient(*req.LogID)
 	if err != nil {
 		return nil, err
 	}
 	return log.GetMapValue(ctx, req)
 }
 
-func (s *TrustixAPIServer) GetValue(ctx context.Context, req *api.ValueRequest) (*api.ValueResponse, error) {
-	var value []byte
-	err := s.store.View(func(txn storage.Transaction) error {
-		v, err := getCAValue(s.caBucket.Txn(txn), req.Digest)
-		value = v
-		return err
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &api.ValueResponse{
-		Value: value,
-	}, nil
-}
-
 func (s *TrustixAPIServer) GetMHLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {
-	log, err := s.logMap.Get(*req.LogID)
+	log, err := s.getClient(*req.LogID)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +104,7 @@ func (s *TrustixAPIServer) GetMHLogConsistencyProof(ctx context.Context, req *ap
 }
 
 func (s *TrustixAPIServer) GetMHLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (*api.ProofResponse, error) {
-	log, err := s.logMap.Get(*req.LogID)
+	log, err := s.getClient(*req.LogID)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +112,7 @@ func (s *TrustixAPIServer) GetMHLogAuditProof(ctx context.Context, req *api.GetL
 }
 
 func (s *TrustixAPIServer) GetMHLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
-	log, err := s.logMap.Get(*req.LogID)
+	log, err := s.getClient(*req.LogID)
 	if err != nil {
 		return nil, err
 	}

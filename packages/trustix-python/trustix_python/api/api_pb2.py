@@ -23,12 +23,36 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax="proto2",
     serialized_options=b"Z3github.com/tweag/trustix/packages/trustix-proto/api",
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\rapi/api.proto\x12\x07trustix\x1a\x10schema/sth.proto\x1a\x14schema/logleaf.proto"\x1b\n\nSTHRequest\x12\r\n\x05LogID\x18\x01 \x02(\t"U\n\x1dGetLogConsistencyProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x11\n\tFirstSize\x18\x02 \x02(\x04\x12\x12\n\nSecondSize\x18\x03 \x02(\x04"\x1e\n\rProofResponse\x12\r\n\x05Proof\x18\x01 \x03(\x0c"I\n\x17GetLogAuditProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Index\x18\x02 \x02(\x04\x12\x10\n\x08TreeSize\x18\x03 \x02(\x04"D\n\x14GetLogEntriesRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Start\x18\x02 \x02(\x04\x12\x0e\n\x06\x46inish\x18\x03 \x02(\x04"A\n\x12GetMapValueRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x0b\n\x03Key\x18\x02 \x02(\x0c\x12\x0f\n\x07MapRoot\x18\x03 \x02(\x0c"s\n\x18SparseCompactMerkleProof\x12\x11\n\tSideNodes\x18\x01 \x03(\x0c\x12\x1d\n\x15NonMembershipLeafData\x18\x02 \x02(\x0c\x12\x0f\n\x07\x42itMask\x18\x03 \x02(\x0c\x12\x14\n\x0cNumSideNodes\x18\x04 \x02(\x04"S\n\x10MapValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c\x12\x30\n\x05Proof\x18\x02 \x02(\x0b\x32!.trustix.SparseCompactMerkleProof".\n\x12LogEntriesResponse\x12\x18\n\x06Leaves\x18\x01 \x03(\x0b\x32\x08.LogLeaf"*\n\x0cKeyValuePair\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\r\n\x05Value\x18\x02 \x02(\x0c"\x1e\n\x0cValueRequest\x12\x0e\n\x06\x44igest\x18\x01 \x02(\x0c"\x1e\n\rValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c\x32\xb8\x05\n\rTrustixLogAPI\x12%\n\x06GetSTH\x12\x13.trustix.STHRequest\x1a\x04.STH"\x00\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x12Z\n\x16GetLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12N\n\x10GetLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12M\n\rGetLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x12G\n\x0bGetMapValue\x12\x1b.trustix.GetMapValueRequest\x1a\x19.trustix.MapValueResponse"\x00\x12\\\n\x18GetMHLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12P\n\x12GetMHLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12O\n\x0fGetMHLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x42\x35Z3github.com/tweag/trustix/packages/trustix-proto/api',
+    serialized_pb=b'\n\rapi/api.proto\x12\x07trustix\x1a\x10schema/sth.proto\x1a\x14schema/logleaf.proto"\x1b\n\nSTHRequest\x12\r\n\x05LogID\x18\x01 \x02(\t"U\n\x1dGetLogConsistencyProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x11\n\tFirstSize\x18\x02 \x02(\x04\x12\x12\n\nSecondSize\x18\x03 \x02(\x04"\x1e\n\rProofResponse\x12\r\n\x05Proof\x18\x01 \x03(\x0c"I\n\x17GetLogAuditProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Index\x18\x02 \x02(\x04\x12\x10\n\x08TreeSize\x18\x03 \x02(\x04"D\n\x14GetLogEntriesRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Start\x18\x02 \x02(\x04\x12\x0e\n\x06\x46inish\x18\x03 \x02(\x04"A\n\x12GetMapValueRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x0b\n\x03Key\x18\x02 \x02(\x0c\x12\x0f\n\x07MapRoot\x18\x03 \x02(\x0c"s\n\x18SparseCompactMerkleProof\x12\x11\n\tSideNodes\x18\x01 \x03(\x0c\x12\x1d\n\x15NonMembershipLeafData\x18\x02 \x02(\x0c\x12\x0f\n\x07\x42itMask\x18\x03 \x02(\x0c\x12\x14\n\x0cNumSideNodes\x18\x04 \x02(\x04"S\n\x10MapValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c\x12\x30\n\x05Proof\x18\x02 \x02(\x0b\x32!.trustix.SparseCompactMerkleProof".\n\x12LogEntriesResponse\x12\x18\n\x06Leaves\x18\x01 \x03(\x0b\x32\x08.LogLeaf"*\n\x0cKeyValuePair\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\r\n\x05Value\x18\x02 \x02(\x0c"\x1e\n\x0cValueRequest\x12\x0e\n\x06\x44igest\x18\x01 \x02(\x0c"\x1e\n\rValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c"\r\n\x0bLogsRequest"b\n\tLogSigner\x12,\n\x07KeyType\x18\x01 \x02(\x0e\x32\x1b.trustix.LogSigner.KeyTypes\x12\x0e\n\x06Public\x18\x02 \x02(\t"\x17\n\x08KeyTypes\x12\x0b\n\x07\x65\x64\x32\x35\x35\x31\x39\x10\x00"\x8b\x01\n\x03Log\x12\r\n\x05LogID\x18\x01 \x02(\t\x12"\n\x06Signer\x18\x03 \x02(\x0b\x32\x12.trustix.LogSigner\x12$\n\x04Meta\x18\x04 \x03(\x0b\x32\x16.trustix.Log.MetaEntry\x1a+\n\tMetaEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"*\n\x0cLogsResponse\x12\x1a\n\x04Logs\x18\x01 \x03(\x0b\x32\x0c.trustix.Log2}\n\x07NodeAPI\x12\x35\n\x04Logs\x12\x14.trustix.LogsRequest\x1a\x15.trustix.LogsResponse"\x00\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x32\xf4\x04\n\x06LogAPI\x12%\n\x06GetSTH\x12\x13.trustix.STHRequest\x1a\x04.STH"\x00\x12Z\n\x16GetLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12N\n\x10GetLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12M\n\rGetLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x12G\n\x0bGetMapValue\x12\x1b.trustix.GetMapValueRequest\x1a\x19.trustix.MapValueResponse"\x00\x12\\\n\x18GetMHLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12P\n\x12GetMHLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12O\n\x0fGetMHLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x42\x35Z3github.com/tweag/trustix/packages/trustix-proto/api',
     dependencies=[
         schema_dot_sth__pb2.DESCRIPTOR,
         schema_dot_logleaf__pb2.DESCRIPTOR,
     ],
 )
+
+
+_LOGSIGNER_KEYTYPES = _descriptor.EnumDescriptor(
+    name="KeyTypes",
+    full_name="trustix.LogSigner.KeyTypes",
+    filename=None,
+    file=DESCRIPTOR,
+    create_key=_descriptor._internal_create_key,
+    values=[
+        _descriptor.EnumValueDescriptor(
+            name="ed25519",
+            index=0,
+            number=0,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    containing_type=None,
+    serialized_options=None,
+    serialized_start=874,
+    serialized_end=897,
+)
+_sym_db.RegisterEnumDescriptor(_LOGSIGNER_KEYTYPES)
 
 
 _STHREQUEST = _descriptor.Descriptor(
@@ -769,10 +793,280 @@ _VALUERESPONSE = _descriptor.Descriptor(
     serialized_end=782,
 )
 
+
+_LOGSREQUEST = _descriptor.Descriptor(
+    name="LogsRequest",
+    full_name="trustix.LogsRequest",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=784,
+    serialized_end=797,
+)
+
+
+_LOGSIGNER = _descriptor.Descriptor(
+    name="LogSigner",
+    full_name="trustix.LogSigner",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="KeyType",
+            full_name="trustix.LogSigner.KeyType",
+            index=0,
+            number=1,
+            type=14,
+            cpp_type=8,
+            label=2,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="Public",
+            full_name="trustix.LogSigner.Public",
+            index=1,
+            number=2,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[
+        _LOGSIGNER_KEYTYPES,
+    ],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=799,
+    serialized_end=897,
+)
+
+
+_LOG_METAENTRY = _descriptor.Descriptor(
+    name="MetaEntry",
+    full_name="trustix.Log.MetaEntry",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="key",
+            full_name="trustix.Log.MetaEntry.key",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="value",
+            full_name="trustix.Log.MetaEntry.value",
+            index=1,
+            number=2,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=b"8\001",
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=996,
+    serialized_end=1039,
+)
+
+_LOG = _descriptor.Descriptor(
+    name="Log",
+    full_name="trustix.Log",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="LogID",
+            full_name="trustix.Log.LogID",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=2,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="Signer",
+            full_name="trustix.Log.Signer",
+            index=1,
+            number=3,
+            type=11,
+            cpp_type=10,
+            label=2,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="Meta",
+            full_name="trustix.Log.Meta",
+            index=2,
+            number=4,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[
+        _LOG_METAENTRY,
+    ],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=900,
+    serialized_end=1039,
+)
+
+
+_LOGSRESPONSE = _descriptor.Descriptor(
+    name="LogsResponse",
+    full_name="trustix.LogsResponse",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="Logs",
+            full_name="trustix.LogsResponse.Logs",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=1041,
+    serialized_end=1083,
+)
+
 _MAPVALUERESPONSE.fields_by_name["Proof"].message_type = _SPARSECOMPACTMERKLEPROOF
 _LOGENTRIESRESPONSE.fields_by_name[
     "Leaves"
 ].message_type = schema_dot_logleaf__pb2._LOGLEAF
+_LOGSIGNER.fields_by_name["KeyType"].enum_type = _LOGSIGNER_KEYTYPES
+_LOGSIGNER_KEYTYPES.containing_type = _LOGSIGNER
+_LOG_METAENTRY.containing_type = _LOG
+_LOG.fields_by_name["Signer"].message_type = _LOGSIGNER
+_LOG.fields_by_name["Meta"].message_type = _LOG_METAENTRY
+_LOGSRESPONSE.fields_by_name["Logs"].message_type = _LOG
 DESCRIPTOR.message_types_by_name["STHRequest"] = _STHREQUEST
 DESCRIPTOR.message_types_by_name[
     "GetLogConsistencyProofRequest"
@@ -787,6 +1081,10 @@ DESCRIPTOR.message_types_by_name["LogEntriesResponse"] = _LOGENTRIESRESPONSE
 DESCRIPTOR.message_types_by_name["KeyValuePair"] = _KEYVALUEPAIR
 DESCRIPTOR.message_types_by_name["ValueRequest"] = _VALUEREQUEST
 DESCRIPTOR.message_types_by_name["ValueResponse"] = _VALUERESPONSE
+DESCRIPTOR.message_types_by_name["LogsRequest"] = _LOGSREQUEST
+DESCRIPTOR.message_types_by_name["LogSigner"] = _LOGSIGNER
+DESCRIPTOR.message_types_by_name["Log"] = _LOG
+DESCRIPTOR.message_types_by_name["LogsResponse"] = _LOGSRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 STHRequest = _reflection.GeneratedProtocolMessageType(
@@ -921,22 +1219,114 @@ ValueResponse = _reflection.GeneratedProtocolMessageType(
 )
 _sym_db.RegisterMessage(ValueResponse)
 
+LogsRequest = _reflection.GeneratedProtocolMessageType(
+    "LogsRequest",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _LOGSREQUEST,
+        "__module__": "api.api_pb2"
+        # @@protoc_insertion_point(class_scope:trustix.LogsRequest)
+    },
+)
+_sym_db.RegisterMessage(LogsRequest)
+
+LogSigner = _reflection.GeneratedProtocolMessageType(
+    "LogSigner",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _LOGSIGNER,
+        "__module__": "api.api_pb2"
+        # @@protoc_insertion_point(class_scope:trustix.LogSigner)
+    },
+)
+_sym_db.RegisterMessage(LogSigner)
+
+Log = _reflection.GeneratedProtocolMessageType(
+    "Log",
+    (_message.Message,),
+    {
+        "MetaEntry": _reflection.GeneratedProtocolMessageType(
+            "MetaEntry",
+            (_message.Message,),
+            {
+                "DESCRIPTOR": _LOG_METAENTRY,
+                "__module__": "api.api_pb2"
+                # @@protoc_insertion_point(class_scope:trustix.Log.MetaEntry)
+            },
+        ),
+        "DESCRIPTOR": _LOG,
+        "__module__": "api.api_pb2"
+        # @@protoc_insertion_point(class_scope:trustix.Log)
+    },
+)
+_sym_db.RegisterMessage(Log)
+_sym_db.RegisterMessage(Log.MetaEntry)
+
+LogsResponse = _reflection.GeneratedProtocolMessageType(
+    "LogsResponse",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _LOGSRESPONSE,
+        "__module__": "api.api_pb2"
+        # @@protoc_insertion_point(class_scope:trustix.LogsResponse)
+    },
+)
+_sym_db.RegisterMessage(LogsResponse)
+
 
 DESCRIPTOR._options = None
+_LOG_METAENTRY._options = None
 
-_TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
-    name="TrustixLogAPI",
-    full_name="trustix.TrustixLogAPI",
+_NODEAPI = _descriptor.ServiceDescriptor(
+    name="NodeAPI",
+    full_name="trustix.NodeAPI",
     file=DESCRIPTOR,
     index=0,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-    serialized_start=785,
-    serialized_end=1481,
+    serialized_start=1085,
+    serialized_end=1210,
+    methods=[
+        _descriptor.MethodDescriptor(
+            name="Logs",
+            full_name="trustix.NodeAPI.Logs",
+            index=0,
+            containing_service=None,
+            input_type=_LOGSREQUEST,
+            output_type=_LOGSRESPONSE,
+            serialized_options=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.MethodDescriptor(
+            name="GetValue",
+            full_name="trustix.NodeAPI.GetValue",
+            index=1,
+            containing_service=None,
+            input_type=_VALUEREQUEST,
+            output_type=_VALUERESPONSE,
+            serialized_options=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+)
+_sym_db.RegisterServiceDescriptor(_NODEAPI)
+
+DESCRIPTOR.services_by_name["NodeAPI"] = _NODEAPI
+
+
+_LOGAPI = _descriptor.ServiceDescriptor(
+    name="LogAPI",
+    full_name="trustix.LogAPI",
+    file=DESCRIPTOR,
+    index=1,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+    serialized_start=1213,
+    serialized_end=1841,
     methods=[
         _descriptor.MethodDescriptor(
             name="GetSTH",
-            full_name="trustix.TrustixLogAPI.GetSTH",
+            full_name="trustix.LogAPI.GetSTH",
             index=0,
             containing_service=None,
             input_type=_STHREQUEST,
@@ -945,19 +1335,9 @@ _TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
             create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
-            name="GetValue",
-            full_name="trustix.TrustixLogAPI.GetValue",
-            index=1,
-            containing_service=None,
-            input_type=_VALUEREQUEST,
-            output_type=_VALUERESPONSE,
-            serialized_options=None,
-            create_key=_descriptor._internal_create_key,
-        ),
-        _descriptor.MethodDescriptor(
             name="GetLogConsistencyProof",
-            full_name="trustix.TrustixLogAPI.GetLogConsistencyProof",
-            index=2,
+            full_name="trustix.LogAPI.GetLogConsistencyProof",
+            index=1,
             containing_service=None,
             input_type=_GETLOGCONSISTENCYPROOFREQUEST,
             output_type=_PROOFRESPONSE,
@@ -966,8 +1346,8 @@ _TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="GetLogAuditProof",
-            full_name="trustix.TrustixLogAPI.GetLogAuditProof",
-            index=3,
+            full_name="trustix.LogAPI.GetLogAuditProof",
+            index=2,
             containing_service=None,
             input_type=_GETLOGAUDITPROOFREQUEST,
             output_type=_PROOFRESPONSE,
@@ -976,8 +1356,8 @@ _TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="GetLogEntries",
-            full_name="trustix.TrustixLogAPI.GetLogEntries",
-            index=4,
+            full_name="trustix.LogAPI.GetLogEntries",
+            index=3,
             containing_service=None,
             input_type=_GETLOGENTRIESREQUEST,
             output_type=_LOGENTRIESRESPONSE,
@@ -986,8 +1366,8 @@ _TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="GetMapValue",
-            full_name="trustix.TrustixLogAPI.GetMapValue",
-            index=5,
+            full_name="trustix.LogAPI.GetMapValue",
+            index=4,
             containing_service=None,
             input_type=_GETMAPVALUEREQUEST,
             output_type=_MAPVALUERESPONSE,
@@ -996,8 +1376,8 @@ _TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="GetMHLogConsistencyProof",
-            full_name="trustix.TrustixLogAPI.GetMHLogConsistencyProof",
-            index=6,
+            full_name="trustix.LogAPI.GetMHLogConsistencyProof",
+            index=5,
             containing_service=None,
             input_type=_GETLOGCONSISTENCYPROOFREQUEST,
             output_type=_PROOFRESPONSE,
@@ -1006,8 +1386,8 @@ _TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="GetMHLogAuditProof",
-            full_name="trustix.TrustixLogAPI.GetMHLogAuditProof",
-            index=7,
+            full_name="trustix.LogAPI.GetMHLogAuditProof",
+            index=6,
             containing_service=None,
             input_type=_GETLOGAUDITPROOFREQUEST,
             output_type=_PROOFRESPONSE,
@@ -1016,8 +1396,8 @@ _TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="GetMHLogEntries",
-            full_name="trustix.TrustixLogAPI.GetMHLogEntries",
-            index=8,
+            full_name="trustix.LogAPI.GetMHLogEntries",
+            index=7,
             containing_service=None,
             input_type=_GETLOGENTRIESREQUEST,
             output_type=_LOGENTRIESRESPONSE,
@@ -1026,8 +1406,8 @@ _TRUSTIXLOGAPI = _descriptor.ServiceDescriptor(
         ),
     ],
 )
-_sym_db.RegisterServiceDescriptor(_TRUSTIXLOGAPI)
+_sym_db.RegisterServiceDescriptor(_LOGAPI)
 
-DESCRIPTOR.services_by_name["TrustixLogAPI"] = _TRUSTIXLOGAPI
+DESCRIPTOR.services_by_name["LogAPI"] = _LOGAPI
 
 # @@protoc_insertion_point(module_scope)

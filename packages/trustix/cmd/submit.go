@@ -54,23 +54,21 @@ var submitCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		conn, err := client.CreateClientConn(dialAddress, nil)
+		c, err := client.CreateClientConn(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
-		defer conn.Close()
+		defer c.Close()
 
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
-
-		c := pb.NewTrustixRPCClient(conn)
 
 		log.WithFields(log.Fields{
 			"key":   keyHex,
 			"value": valueHex,
 		}).Debug("Submitting mapping")
 
-		r, err := c.Submit(ctx, &pb.SubmitRequest{
+		r, err := c.RpcAPI.Submit(ctx, &pb.SubmitRequest{
 			LogID: &logID,
 			Items: []*api.KeyValuePair{
 				&api.KeyValuePair{

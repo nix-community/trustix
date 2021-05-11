@@ -28,18 +28,20 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix-nix/nar"
 	"github.com/tweag/trustix/packages/trustix-nix/schema"
+	"github.com/tweag/trustix/packages/trustix-proto/api"
 	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	"github.com/tweag/trustix/packages/trustix/client"
+	"github.com/tweag/trustix/packages/trustix/interfaces"
 	"github.com/ulikunitz/xz"
 )
 
 var listenAddresses []string
 var binaryCachePrivKey string
 
-func getCaches(c pb.TrustixRPCClient) ([]string, error) {
+func getCaches(c interfaces.RpcAPI) ([]string, error) {
 	ctx, cancel := client.CreateContext(30)
 	defer cancel()
-	resp, err := c.Logs(ctx, &pb.LogsRequest{})
+	resp, err := c.Logs(ctx, &api.LogsRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -99,15 +101,13 @@ var binaryCacheCommand = &cobra.Command{
 			panic(err)
 		}
 
-		conn, err := client.CreateClientConn(dialAddress, nil)
+		c, err := client.CreateClientConn(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
-		defer conn.Close()
+		defer c.Close()
 
-		c := pb.NewTrustixRPCClient(conn)
-
-		caches, err := getCaches(c)
+		caches, err := getCaches(c.RpcAPI)
 		if err != nil {
 			panic(err)
 		}
@@ -137,7 +137,7 @@ var binaryCacheCommand = &cobra.Command{
 						panic(err)
 					}
 
-					resp, err := c.Decide(r.Context(), &pb.KeyRequest{
+					resp, err := c.RpcAPI.Decide(r.Context(), &pb.KeyRequest{
 						Key: storeHash,
 					})
 					if err != nil {

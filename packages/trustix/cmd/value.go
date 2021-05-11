@@ -34,17 +34,16 @@ var getValueCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		conn, err := client.CreateClientConn(dialAddress, nil)
+		c, err := client.CreateClientConn(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
-		defer conn.Close()
+		defer c.Close()
 
-		c := api.NewTrustixLogAPIClient(conn)
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		resp, err := c.GetValue(ctx, &api.ValueRequest{
+		resp, err := c.NodeAPI.GetValue(ctx, &api.ValueRequest{
 			Digest: digest,
 		})
 		if err != nil {

@@ -1,10 +1,10 @@
+remotes = [
+  "grpc+http://localhost:8081",
+  "grpc+http://localhost:8082",
+  "grpc+http://localhost:8083",
+]
+
 [[publisher]]
-
-[publisher.transport]
-type = "grpc"
-
-[publisher.transport.grpc]
-remote = "localhost:8081"
 
 [publisher.key]
 type = "ed25519"
@@ -12,23 +12,11 @@ public-key = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
 [[publisher]]
 
-[publisher.transport]
-type = "grpc"
-
-[publisher.transport.grpc]
-remote = "localhost:8082"
-
 [publisher.key]
 type = "ed25519"
 public-key = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
 
 [[publisher]]
-
-[publisher.transport]
-type = "grpc"
-
-[publisher.transport.grpc]
-remote = "localhost:8083"
 
 [publisher.key]
 type = "ed25519"

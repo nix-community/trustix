@@ -60,8 +60,7 @@ func (s *testStorageTxn) Delete(bucket *storage.Bucket, key []byte) error {
 
 func newTestStorageBucketTxn() *storage.BucketTransaction {
 	b := &storage.Bucket{}
-	t, _ := b.Cd("test").Txn(newTestStorageTxn())
-	return t
+	return b.Cd("test").Txn(newTestStorageTxn())
 }
 
 func mkInputs() []*testInput {

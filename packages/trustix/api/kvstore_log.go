@@ -17,15 +17,15 @@ import (
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/constants"
+	"github.com/tweag/trustix/packages/trustix/interfaces"
 	"github.com/tweag/trustix/packages/trustix/storage"
 )
 
-type KvStoreLogApi struct {
+type kvStoreLogApi struct {
 	store storage.Storage
 
 	logBucket    *storage.Bucket
 	vLogBucket   *storage.Bucket
-	caBucket     *storage.Bucket
 	mapBucket    *storage.Bucket
 	mapLogBucket *storage.Bucket
 
@@ -36,19 +36,18 @@ type KvStoreLogApi struct {
 // of a key/value store
 //
 // This is the underlying implementation used by all other abstractions
-func NewKVStoreAPI(logID string, store storage.Storage, caBucket *storage.Bucket, logBucket *storage.Bucket) (*KvStoreLogApi, error) {
-	return &KvStoreLogApi{
+func NewKVStoreLogAPI(logID string, store storage.Storage, logBucket *storage.Bucket) (interfaces.LogAPI, error) {
+	return &kvStoreLogApi{
 		store:        store,
 		logBucket:    logBucket,
 		vLogBucket:   logBucket.Cd(constants.VLogBucket),
-		caBucket:     caBucket,
 		mapBucket:    logBucket.Cd(constants.MapBucket),
 		mapLogBucket: logBucket.Cd(constants.VMapLogBucket),
 		logID:        logID,
 	}, nil
 }
 
-func (kv *KvStoreLogApi) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {
+func (kv *kvStoreLogApi) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {
 	var sth *schema.STH
 	err := kv.store.View(func(txn storage.Transaction) error {
 		var err error
@@ -66,7 +65,7 @@ func (kv *KvStoreLogApi) GetSTH(ctx context.Context, req *api.STHRequest) (*sche
 	return sth, nil
 }
 
-func (kv *KvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
+func (kv *kvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
 	resp = &api.ProofResponse{}
 	err = kv.store.View(func(txn storage.Transaction) error {
 		var err error
@@ -86,7 +85,7 @@ func (kv *KvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *api.Ge
 	return resp, nil
 }
 
-func (kv *KvStoreLogApi) GetLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
+func (kv *kvStoreLogApi) GetLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
 	resp = &api.ProofResponse{}
 	err = kv.store.View(func(txn storage.Transaction) error {
 		var err error
@@ -106,7 +105,7 @@ func (kv *KvStoreLogApi) GetLogAuditProof(ctx context.Context, req *api.GetLogAu
 	return resp, nil
 }
 
-func (kv *KvStoreLogApi) GetLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (resp *api.LogEntriesResponse, err error) {
+func (kv *kvStoreLogApi) GetLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (resp *api.LogEntriesResponse, err error) {
 	resp = &api.LogEntriesResponse{
 		Leaves: []*schema.LogLeaf{},
 	}
@@ -129,7 +128,7 @@ func (kv *KvStoreLogApi) GetLogEntries(ctx context.Context, req *api.GetLogEntri
 	return resp, nil
 }
 
-func (kv *KvStoreLogApi) GetMapValue(ctx context.Context, req *api.GetMapValueRequest) (*api.MapValueResponse, error) {
+func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *api.GetMapValueRequest) (*api.MapValueResponse, error) {
 
 	resp := &api.MapValueResponse{}
 
@@ -170,23 +169,7 @@ func (kv *KvStoreLogApi) GetMapValue(ctx context.Context, req *api.GetMapValueRe
 	return resp, nil
 }
 
-func (kv *KvStoreLogApi) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
-	var value []byte
-	err := kv.store.View(func(txn storage.Transaction) error {
-		v, err := getCAValue(kv.caBucket.Txn(txn), in.Digest)
-		value = v
-		return err
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &api.ValueResponse{
-		Value: value,
-	}, nil
-}
-
-func (kv *KvStoreLogApi) GetMHLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
+func (kv *kvStoreLogApi) GetMHLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
 	resp = &api.ProofResponse{}
 	err = kv.store.View(func(txn storage.Transaction) error {
 		var err error
@@ -206,7 +189,7 @@ func (kv *KvStoreLogApi) GetMHLogConsistencyProof(ctx context.Context, req *api.
 	return resp, nil
 }
 
-func (kv *KvStoreLogApi) GetMHLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
+func (kv *kvStoreLogApi) GetMHLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
 	resp = &api.ProofResponse{}
 	err = kv.store.View(func(txn storage.Transaction) error {
 		var err error
@@ -226,7 +209,7 @@ func (kv *KvStoreLogApi) GetMHLogAuditProof(ctx context.Context, req *api.GetLog
 	return resp, nil
 }
 
-func (kv *KvStoreLogApi) GetMHLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (resp *api.LogEntriesResponse, err error) {
+func (kv *kvStoreLogApi) GetMHLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (resp *api.LogEntriesResponse, err error) {
 	resp = &api.LogEntriesResponse{
 		Leaves: []*schema.LogLeaf{},
 	}

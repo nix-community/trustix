@@ -21,6 +21,59 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type LogSigner_KeyTypes int32
+
+const (
+	LogSigner_ed25519 LogSigner_KeyTypes = 0
+)
+
+// Enum value maps for LogSigner_KeyTypes.
+var (
+	LogSigner_KeyTypes_name = map[int32]string{
+		0: "ed25519",
+	}
+	LogSigner_KeyTypes_value = map[string]int32{
+		"ed25519": 0,
+	}
+)
+
+func (x LogSigner_KeyTypes) Enum() *LogSigner_KeyTypes {
+	p := new(LogSigner_KeyTypes)
+	*p = x
+	return p
+}
+
+func (x LogSigner_KeyTypes) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LogSigner_KeyTypes) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_proto_enumTypes[0].Descriptor()
+}
+
+func (LogSigner_KeyTypes) Type() protoreflect.EnumType {
+	return &file_api_proto_enumTypes[0]
+}
+
+func (x LogSigner_KeyTypes) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Do not use.
+func (x *LogSigner_KeyTypes) UnmarshalJSON(b []byte) error {
+	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
+	if err != nil {
+		return err
+	}
+	*x = LogSigner_KeyTypes(num)
+	return nil
+}
+
+// Deprecated: Use LogSigner_KeyTypes.Descriptor instead.
+func (LogSigner_KeyTypes) EnumDescriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{13, 0}
+}
+
 type STHRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -692,6 +745,210 @@ func (x *ValueResponse) GetValue() []byte {
 	return nil
 }
 
+type LogsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *LogsRequest) Reset() {
+	*x = LogsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *LogsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogsRequest) ProtoMessage() {}
+
+func (x *LogsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogsRequest.ProtoReflect.Descriptor instead.
+func (*LogsRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{12}
+}
+
+type LogSigner struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	KeyType *LogSigner_KeyTypes `protobuf:"varint,1,req,name=KeyType,enum=trustix.LogSigner_KeyTypes" json:"KeyType,omitempty"`
+	Public  *string             `protobuf:"bytes,2,req,name=Public" json:"Public,omitempty"`
+}
+
+func (x *LogSigner) Reset() {
+	*x = LogSigner{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *LogSigner) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogSigner) ProtoMessage() {}
+
+func (x *LogSigner) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogSigner.ProtoReflect.Descriptor instead.
+func (*LogSigner) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *LogSigner) GetKeyType() LogSigner_KeyTypes {
+	if x != nil && x.KeyType != nil {
+		return *x.KeyType
+	}
+	return LogSigner_ed25519
+}
+
+func (x *LogSigner) GetPublic() string {
+	if x != nil && x.Public != nil {
+		return *x.Public
+	}
+	return ""
+}
+
+type Log struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	LogID *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
+	// required string Mode = 2;
+	Signer *LogSigner        `protobuf:"bytes,3,req,name=Signer" json:"Signer,omitempty"`
+	Meta   map[string]string `protobuf:"bytes,4,rep,name=Meta" json:"Meta,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // required STH STH = 5;
+}
+
+func (x *Log) Reset() {
+	*x = Log{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Log) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Log) ProtoMessage() {}
+
+func (x *Log) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Log.ProtoReflect.Descriptor instead.
+func (*Log) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *Log) GetLogID() string {
+	if x != nil && x.LogID != nil {
+		return *x.LogID
+	}
+	return ""
+}
+
+func (x *Log) GetSigner() *LogSigner {
+	if x != nil {
+		return x.Signer
+	}
+	return nil
+}
+
+func (x *Log) GetMeta() map[string]string {
+	if x != nil {
+		return x.Meta
+	}
+	return nil
+}
+
+type LogsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Logs []*Log `protobuf:"bytes,1,rep,name=Logs" json:"Logs,omitempty"`
+}
+
+func (x *LogsResponse) Reset() {
+	*x = LogsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *LogsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogsResponse) ProtoMessage() {}
+
+func (x *LogsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogsResponse.ProtoReflect.Descriptor instead.
+func (*LogsResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *LogsResponse) GetLogs() []*Log {
+	if x != nil {
+		return x.Logs
+	}
+	return nil
+}
+
 var File_api_proto protoreflect.FileDescriptor
 
 var file_api_proto_rawDesc = []byte{
@@ -757,14 +1014,40 @@ var file_api_proto_rawDesc = []byte{
 	0x01, 0x20, 0x02, 0x28, 0x0c, 0x52, 0x06, 0x44, 0x69, 0x67, 0x65, 0x73, 0x74, 0x22, 0x25, 0x0a,
 	0x0d, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14,
 	0x0a, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x02, 0x28, 0x0c, 0x52, 0x05, 0x56,
-	0x61, 0x6c, 0x75, 0x65, 0x32, 0xb8, 0x05, 0x0a, 0x0d, 0x54, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78,
-	0x4c, 0x6f, 0x67, 0x41, 0x50, 0x49, 0x12, 0x25, 0x0a, 0x06, 0x47, 0x65, 0x74, 0x53, 0x54, 0x48,
-	0x12, 0x13, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x53, 0x54, 0x48, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x04, 0x2e, 0x53, 0x54, 0x48, 0x22, 0x00, 0x12, 0x3b, 0x0a,
-	0x08, 0x47, 0x65, 0x74, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x15, 0x2e, 0x74, 0x72, 0x75, 0x73,
-	0x74, 0x69, 0x78, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x16, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x5a, 0x0a, 0x16, 0x47, 0x65,
+	0x61, 0x6c, 0x75, 0x65, 0x22, 0x0d, 0x0a, 0x0b, 0x4c, 0x6f, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x22, 0x73, 0x0a, 0x09, 0x4c, 0x6f, 0x67, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72,
+	0x12, 0x35, 0x0a, 0x07, 0x4b, 0x65, 0x79, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x02, 0x28,
+	0x0e, 0x32, 0x1b, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x4c, 0x6f, 0x67, 0x53,
+	0x69, 0x67, 0x6e, 0x65, 0x72, 0x2e, 0x4b, 0x65, 0x79, 0x54, 0x79, 0x70, 0x65, 0x73, 0x52, 0x07,
+	0x4b, 0x65, 0x79, 0x54, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x50, 0x75, 0x62, 0x6c, 0x69,
+	0x63, 0x18, 0x02, 0x20, 0x02, 0x28, 0x09, 0x52, 0x06, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x22,
+	0x17, 0x0a, 0x08, 0x4b, 0x65, 0x79, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x0b, 0x0a, 0x07, 0x65,
+	0x64, 0x32, 0x35, 0x35, 0x31, 0x39, 0x10, 0x00, 0x22, 0xac, 0x01, 0x0a, 0x03, 0x4c, 0x6f, 0x67,
+	0x12, 0x14, 0x0a, 0x05, 0x4c, 0x6f, 0x67, 0x49, 0x44, 0x18, 0x01, 0x20, 0x02, 0x28, 0x09, 0x52,
+	0x05, 0x4c, 0x6f, 0x67, 0x49, 0x44, 0x12, 0x2a, 0x0a, 0x06, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72,
+	0x18, 0x03, 0x20, 0x02, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78,
+	0x2e, 0x4c, 0x6f, 0x67, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x52, 0x06, 0x53, 0x69, 0x67, 0x6e,
+	0x65, 0x72, 0x12, 0x2a, 0x0a, 0x04, 0x4d, 0x65, 0x74, 0x61, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x16, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x4c, 0x6f, 0x67, 0x2e, 0x4d,
+	0x65, 0x74, 0x61, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x04, 0x4d, 0x65, 0x74, 0x61, 0x1a, 0x37,
+	0x0a, 0x09, 0x4d, 0x65, 0x74, 0x61, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b,
+	0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a,
+	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61,
+	0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x30, 0x0a, 0x0c, 0x4c, 0x6f, 0x67, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x20, 0x0a, 0x04, 0x4c, 0x6f, 0x67, 0x73, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e,
+	0x4c, 0x6f, 0x67, 0x52, 0x04, 0x4c, 0x6f, 0x67, 0x73, 0x32, 0x7d, 0x0a, 0x07, 0x4e, 0x6f, 0x64,
+	0x65, 0x41, 0x50, 0x49, 0x12, 0x35, 0x0a, 0x04, 0x4c, 0x6f, 0x67, 0x73, 0x12, 0x14, 0x2e, 0x74,
+	0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x4c, 0x6f, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x15, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x4c, 0x6f, 0x67,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3b, 0x0a, 0x08, 0x47,
+	0x65, 0x74, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x15, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69,
+	0x78, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16,
+	0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x32, 0xf4, 0x04, 0x0a, 0x06, 0x4c, 0x6f, 0x67,
+	0x41, 0x50, 0x49, 0x12, 0x25, 0x0a, 0x06, 0x47, 0x65, 0x74, 0x53, 0x54, 0x48, 0x12, 0x13, 0x2e,
+	0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x53, 0x54, 0x48, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x04, 0x2e, 0x53, 0x54, 0x48, 0x22, 0x00, 0x12, 0x5a, 0x0a, 0x16, 0x47, 0x65,
 	0x74, 0x4c, 0x6f, 0x67, 0x43, 0x6f, 0x6e, 0x73, 0x69, 0x73, 0x74, 0x65, 0x6e, 0x63, 0x79, 0x50,
 	0x72, 0x6f, 0x6f, 0x66, 0x12, 0x26, 0x2e, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2e, 0x47,
 	0x65, 0x74, 0x4c, 0x6f, 0x67, 0x43, 0x6f, 0x6e, 0x73, 0x69, 0x73, 0x74, 0x65, 0x6e, 0x63, 0x79,
@@ -819,49 +1102,62 @@ func file_api_proto_rawDescGZIP() []byte {
 	return file_api_proto_rawDescData
 }
 
-var file_api_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_api_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_api_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_api_proto_goTypes = []interface{}{
-	(*STHRequest)(nil),                    // 0: trustix.STHRequest
-	(*GetLogConsistencyProofRequest)(nil), // 1: trustix.GetLogConsistencyProofRequest
-	(*ProofResponse)(nil),                 // 2: trustix.ProofResponse
-	(*GetLogAuditProofRequest)(nil),       // 3: trustix.GetLogAuditProofRequest
-	(*GetLogEntriesRequest)(nil),          // 4: trustix.GetLogEntriesRequest
-	(*GetMapValueRequest)(nil),            // 5: trustix.GetMapValueRequest
-	(*SparseCompactMerkleProof)(nil),      // 6: trustix.SparseCompactMerkleProof
-	(*MapValueResponse)(nil),              // 7: trustix.MapValueResponse
-	(*LogEntriesResponse)(nil),            // 8: trustix.LogEntriesResponse
-	(*KeyValuePair)(nil),                  // 9: trustix.KeyValuePair
-	(*ValueRequest)(nil),                  // 10: trustix.ValueRequest
-	(*ValueResponse)(nil),                 // 11: trustix.ValueResponse
-	(*schema.LogLeaf)(nil),                // 12: LogLeaf
-	(*schema.STH)(nil),                    // 13: STH
+	(LogSigner_KeyTypes)(0),               // 0: trustix.LogSigner.KeyTypes
+	(*STHRequest)(nil),                    // 1: trustix.STHRequest
+	(*GetLogConsistencyProofRequest)(nil), // 2: trustix.GetLogConsistencyProofRequest
+	(*ProofResponse)(nil),                 // 3: trustix.ProofResponse
+	(*GetLogAuditProofRequest)(nil),       // 4: trustix.GetLogAuditProofRequest
+	(*GetLogEntriesRequest)(nil),          // 5: trustix.GetLogEntriesRequest
+	(*GetMapValueRequest)(nil),            // 6: trustix.GetMapValueRequest
+	(*SparseCompactMerkleProof)(nil),      // 7: trustix.SparseCompactMerkleProof
+	(*MapValueResponse)(nil),              // 8: trustix.MapValueResponse
+	(*LogEntriesResponse)(nil),            // 9: trustix.LogEntriesResponse
+	(*KeyValuePair)(nil),                  // 10: trustix.KeyValuePair
+	(*ValueRequest)(nil),                  // 11: trustix.ValueRequest
+	(*ValueResponse)(nil),                 // 12: trustix.ValueResponse
+	(*LogsRequest)(nil),                   // 13: trustix.LogsRequest
+	(*LogSigner)(nil),                     // 14: trustix.LogSigner
+	(*Log)(nil),                           // 15: trustix.Log
+	(*LogsResponse)(nil),                  // 16: trustix.LogsResponse
+	nil,                                   // 17: trustix.Log.MetaEntry
+	(*schema.LogLeaf)(nil),                // 18: LogLeaf
+	(*schema.STH)(nil),                    // 19: STH
 }
 var file_api_proto_depIdxs = []int32{
-	6,  // 0: trustix.MapValueResponse.Proof:type_name -> trustix.SparseCompactMerkleProof
-	12, // 1: trustix.LogEntriesResponse.Leaves:type_name -> LogLeaf
-	0,  // 2: trustix.TrustixLogAPI.GetSTH:input_type -> trustix.STHRequest
-	10, // 3: trustix.TrustixLogAPI.GetValue:input_type -> trustix.ValueRequest
-	1,  // 4: trustix.TrustixLogAPI.GetLogConsistencyProof:input_type -> trustix.GetLogConsistencyProofRequest
-	3,  // 5: trustix.TrustixLogAPI.GetLogAuditProof:input_type -> trustix.GetLogAuditProofRequest
-	4,  // 6: trustix.TrustixLogAPI.GetLogEntries:input_type -> trustix.GetLogEntriesRequest
-	5,  // 7: trustix.TrustixLogAPI.GetMapValue:input_type -> trustix.GetMapValueRequest
-	1,  // 8: trustix.TrustixLogAPI.GetMHLogConsistencyProof:input_type -> trustix.GetLogConsistencyProofRequest
-	3,  // 9: trustix.TrustixLogAPI.GetMHLogAuditProof:input_type -> trustix.GetLogAuditProofRequest
-	4,  // 10: trustix.TrustixLogAPI.GetMHLogEntries:input_type -> trustix.GetLogEntriesRequest
-	13, // 11: trustix.TrustixLogAPI.GetSTH:output_type -> STH
-	11, // 12: trustix.TrustixLogAPI.GetValue:output_type -> trustix.ValueResponse
-	2,  // 13: trustix.TrustixLogAPI.GetLogConsistencyProof:output_type -> trustix.ProofResponse
-	2,  // 14: trustix.TrustixLogAPI.GetLogAuditProof:output_type -> trustix.ProofResponse
-	8,  // 15: trustix.TrustixLogAPI.GetLogEntries:output_type -> trustix.LogEntriesResponse
-	7,  // 16: trustix.TrustixLogAPI.GetMapValue:output_type -> trustix.MapValueResponse
-	2,  // 17: trustix.TrustixLogAPI.GetMHLogConsistencyProof:output_type -> trustix.ProofResponse
-	2,  // 18: trustix.TrustixLogAPI.GetMHLogAuditProof:output_type -> trustix.ProofResponse
-	8,  // 19: trustix.TrustixLogAPI.GetMHLogEntries:output_type -> trustix.LogEntriesResponse
-	11, // [11:20] is the sub-list for method output_type
-	2,  // [2:11] is the sub-list for method input_type
-	2,  // [2:2] is the sub-list for extension type_name
-	2,  // [2:2] is the sub-list for extension extendee
-	0,  // [0:2] is the sub-list for field type_name
+	7,  // 0: trustix.MapValueResponse.Proof:type_name -> trustix.SparseCompactMerkleProof
+	18, // 1: trustix.LogEntriesResponse.Leaves:type_name -> LogLeaf
+	0,  // 2: trustix.LogSigner.KeyType:type_name -> trustix.LogSigner.KeyTypes
+	14, // 3: trustix.Log.Signer:type_name -> trustix.LogSigner
+	17, // 4: trustix.Log.Meta:type_name -> trustix.Log.MetaEntry
+	15, // 5: trustix.LogsResponse.Logs:type_name -> trustix.Log
+	13, // 6: trustix.NodeAPI.Logs:input_type -> trustix.LogsRequest
+	11, // 7: trustix.NodeAPI.GetValue:input_type -> trustix.ValueRequest
+	1,  // 8: trustix.LogAPI.GetSTH:input_type -> trustix.STHRequest
+	2,  // 9: trustix.LogAPI.GetLogConsistencyProof:input_type -> trustix.GetLogConsistencyProofRequest
+	4,  // 10: trustix.LogAPI.GetLogAuditProof:input_type -> trustix.GetLogAuditProofRequest
+	5,  // 11: trustix.LogAPI.GetLogEntries:input_type -> trustix.GetLogEntriesRequest
+	6,  // 12: trustix.LogAPI.GetMapValue:input_type -> trustix.GetMapValueRequest
+	2,  // 13: trustix.LogAPI.GetMHLogConsistencyProof:input_type -> trustix.GetLogConsistencyProofRequest
+	4,  // 14: trustix.LogAPI.GetMHLogAuditProof:input_type -> trustix.GetLogAuditProofRequest
+	5,  // 15: trustix.LogAPI.GetMHLogEntries:input_type -> trustix.GetLogEntriesRequest
+	16, // 16: trustix.NodeAPI.Logs:output_type -> trustix.LogsResponse
+	12, // 17: trustix.NodeAPI.GetValue:output_type -> trustix.ValueResponse
+	19, // 18: trustix.LogAPI.GetSTH:output_type -> STH
+	3,  // 19: trustix.LogAPI.GetLogConsistencyProof:output_type -> trustix.ProofResponse
+	3,  // 20: trustix.LogAPI.GetLogAuditProof:output_type -> trustix.ProofResponse
+	9,  // 21: trustix.LogAPI.GetLogEntries:output_type -> trustix.LogEntriesResponse
+	8,  // 22: trustix.LogAPI.GetMapValue:output_type -> trustix.MapValueResponse
+	3,  // 23: trustix.LogAPI.GetMHLogConsistencyProof:output_type -> trustix.ProofResponse
+	3,  // 24: trustix.LogAPI.GetMHLogAuditProof:output_type -> trustix.ProofResponse
+	9,  // 25: trustix.LogAPI.GetMHLogEntries:output_type -> trustix.LogEntriesResponse
+	16, // [16:26] is the sub-list for method output_type
+	6,  // [6:16] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_init() }
@@ -1014,19 +1310,68 @@ func file_api_proto_init() {
 				return nil
 			}
 		}
+		file_api_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LogsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LogSigner); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Log); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LogsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   12,
+			NumEnums:      1,
+			NumMessages:   17,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
 		GoTypes:           file_api_proto_goTypes,
 		DependencyIndexes: file_api_proto_depIdxs,
+		EnumInfos:         file_api_proto_enumTypes,
 		MessageInfos:      file_api_proto_msgTypes,
 	}.Build()
 	File_api_proto = out.File

@@ -31,8 +31,8 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_TrustixLogAPI_GetSTH_0(ctx context.Context, marshaler runtime.Marshaler, client TrustixLogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq STHRequest
+func request_NodeAPI_Logs_0(ctx context.Context, marshaler runtime.Marshaler, client NodeAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq LogsRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -43,13 +43,13 @@ func request_TrustixLogAPI_GetSTH_0(ctx context.Context, marshaler runtime.Marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.GetSTH(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Logs(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_TrustixLogAPI_GetSTH_0(ctx context.Context, marshaler runtime.Marshaler, server TrustixLogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq STHRequest
+func local_request_NodeAPI_Logs_0(ctx context.Context, marshaler runtime.Marshaler, server NodeAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq LogsRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -60,12 +60,12 @@ func local_request_TrustixLogAPI_GetSTH_0(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.GetSTH(ctx, &protoReq)
+	msg, err := server.Logs(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_TrustixLogAPI_GetValue_0(ctx context.Context, marshaler runtime.Marshaler, client TrustixLogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_NodeAPI_GetValue_0(ctx context.Context, marshaler runtime.Marshaler, client NodeAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ValueRequest
 	var metadata runtime.ServerMetadata
 
@@ -82,7 +82,7 @@ func request_TrustixLogAPI_GetValue_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-func local_request_TrustixLogAPI_GetValue_0(ctx context.Context, marshaler runtime.Marshaler, server TrustixLogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_NodeAPI_GetValue_0(ctx context.Context, marshaler runtime.Marshaler, server NodeAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ValueRequest
 	var metadata runtime.ServerMetadata
 
@@ -99,7 +99,41 @@ func local_request_TrustixLogAPI_GetValue_0(ctx context.Context, marshaler runti
 
 }
 
-func request_TrustixLogAPI_GetLogConsistencyProof_0(ctx context.Context, marshaler runtime.Marshaler, client TrustixLogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_LogAPI_GetSTH_0(ctx context.Context, marshaler runtime.Marshaler, client LogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq STHRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.GetSTH(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_LogAPI_GetSTH_0(ctx context.Context, marshaler runtime.Marshaler, server LogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq STHRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.GetSTH(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_LogAPI_GetLogConsistencyProof_0(ctx context.Context, marshaler runtime.Marshaler, client LogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogConsistencyProofRequest
 	var metadata runtime.ServerMetadata
 
@@ -116,7 +150,7 @@ func request_TrustixLogAPI_GetLogConsistencyProof_0(ctx context.Context, marshal
 
 }
 
-func local_request_TrustixLogAPI_GetLogConsistencyProof_0(ctx context.Context, marshaler runtime.Marshaler, server TrustixLogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LogAPI_GetLogConsistencyProof_0(ctx context.Context, marshaler runtime.Marshaler, server LogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogConsistencyProofRequest
 	var metadata runtime.ServerMetadata
 
@@ -133,7 +167,7 @@ func local_request_TrustixLogAPI_GetLogConsistencyProof_0(ctx context.Context, m
 
 }
 
-func request_TrustixLogAPI_GetLogAuditProof_0(ctx context.Context, marshaler runtime.Marshaler, client TrustixLogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_LogAPI_GetLogAuditProof_0(ctx context.Context, marshaler runtime.Marshaler, client LogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogAuditProofRequest
 	var metadata runtime.ServerMetadata
 
@@ -150,7 +184,7 @@ func request_TrustixLogAPI_GetLogAuditProof_0(ctx context.Context, marshaler run
 
 }
 
-func local_request_TrustixLogAPI_GetLogAuditProof_0(ctx context.Context, marshaler runtime.Marshaler, server TrustixLogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LogAPI_GetLogAuditProof_0(ctx context.Context, marshaler runtime.Marshaler, server LogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogAuditProofRequest
 	var metadata runtime.ServerMetadata
 
@@ -167,7 +201,7 @@ func local_request_TrustixLogAPI_GetLogAuditProof_0(ctx context.Context, marshal
 
 }
 
-func request_TrustixLogAPI_GetLogEntries_0(ctx context.Context, marshaler runtime.Marshaler, client TrustixLogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_LogAPI_GetLogEntries_0(ctx context.Context, marshaler runtime.Marshaler, client LogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogEntriesRequest
 	var metadata runtime.ServerMetadata
 
@@ -184,7 +218,7 @@ func request_TrustixLogAPI_GetLogEntries_0(ctx context.Context, marshaler runtim
 
 }
 
-func local_request_TrustixLogAPI_GetLogEntries_0(ctx context.Context, marshaler runtime.Marshaler, server TrustixLogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LogAPI_GetLogEntries_0(ctx context.Context, marshaler runtime.Marshaler, server LogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogEntriesRequest
 	var metadata runtime.ServerMetadata
 
@@ -201,7 +235,7 @@ func local_request_TrustixLogAPI_GetLogEntries_0(ctx context.Context, marshaler 
 
 }
 
-func request_TrustixLogAPI_GetMapValue_0(ctx context.Context, marshaler runtime.Marshaler, client TrustixLogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_LogAPI_GetMapValue_0(ctx context.Context, marshaler runtime.Marshaler, client LogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetMapValueRequest
 	var metadata runtime.ServerMetadata
 
@@ -218,7 +252,7 @@ func request_TrustixLogAPI_GetMapValue_0(ctx context.Context, marshaler runtime.
 
 }
 
-func local_request_TrustixLogAPI_GetMapValue_0(ctx context.Context, marshaler runtime.Marshaler, server TrustixLogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LogAPI_GetMapValue_0(ctx context.Context, marshaler runtime.Marshaler, server LogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetMapValueRequest
 	var metadata runtime.ServerMetadata
 
@@ -235,7 +269,7 @@ func local_request_TrustixLogAPI_GetMapValue_0(ctx context.Context, marshaler ru
 
 }
 
-func request_TrustixLogAPI_GetMHLogConsistencyProof_0(ctx context.Context, marshaler runtime.Marshaler, client TrustixLogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_LogAPI_GetMHLogConsistencyProof_0(ctx context.Context, marshaler runtime.Marshaler, client LogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogConsistencyProofRequest
 	var metadata runtime.ServerMetadata
 
@@ -252,7 +286,7 @@ func request_TrustixLogAPI_GetMHLogConsistencyProof_0(ctx context.Context, marsh
 
 }
 
-func local_request_TrustixLogAPI_GetMHLogConsistencyProof_0(ctx context.Context, marshaler runtime.Marshaler, server TrustixLogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LogAPI_GetMHLogConsistencyProof_0(ctx context.Context, marshaler runtime.Marshaler, server LogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogConsistencyProofRequest
 	var metadata runtime.ServerMetadata
 
@@ -269,7 +303,7 @@ func local_request_TrustixLogAPI_GetMHLogConsistencyProof_0(ctx context.Context,
 
 }
 
-func request_TrustixLogAPI_GetMHLogAuditProof_0(ctx context.Context, marshaler runtime.Marshaler, client TrustixLogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_LogAPI_GetMHLogAuditProof_0(ctx context.Context, marshaler runtime.Marshaler, client LogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogAuditProofRequest
 	var metadata runtime.ServerMetadata
 
@@ -286,7 +320,7 @@ func request_TrustixLogAPI_GetMHLogAuditProof_0(ctx context.Context, marshaler r
 
 }
 
-func local_request_TrustixLogAPI_GetMHLogAuditProof_0(ctx context.Context, marshaler runtime.Marshaler, server TrustixLogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LogAPI_GetMHLogAuditProof_0(ctx context.Context, marshaler runtime.Marshaler, server LogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogAuditProofRequest
 	var metadata runtime.ServerMetadata
 
@@ -303,7 +337,7 @@ func local_request_TrustixLogAPI_GetMHLogAuditProof_0(ctx context.Context, marsh
 
 }
 
-func request_TrustixLogAPI_GetMHLogEntries_0(ctx context.Context, marshaler runtime.Marshaler, client TrustixLogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_LogAPI_GetMHLogEntries_0(ctx context.Context, marshaler runtime.Marshaler, client LogAPIClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogEntriesRequest
 	var metadata runtime.ServerMetadata
 
@@ -320,7 +354,7 @@ func request_TrustixLogAPI_GetMHLogEntries_0(ctx context.Context, marshaler runt
 
 }
 
-func local_request_TrustixLogAPI_GetMHLogEntries_0(ctx context.Context, marshaler runtime.Marshaler, server TrustixLogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LogAPI_GetMHLogEntries_0(ctx context.Context, marshaler runtime.Marshaler, server LogAPIServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetLogEntriesRequest
 	var metadata runtime.ServerMetadata
 
@@ -337,24 +371,24 @@ func local_request_TrustixLogAPI_GetMHLogEntries_0(ctx context.Context, marshale
 
 }
 
-// RegisterTrustixLogAPIHandlerServer registers the http handlers for service TrustixLogAPI to "mux".
-// UnaryRPC     :call TrustixLogAPIServer directly.
+// RegisterNodeAPIHandlerServer registers the http handlers for service NodeAPI to "mux".
+// UnaryRPC     :call NodeAPIServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterTrustixLogAPIHandlerFromEndpoint instead.
-func RegisterTrustixLogAPIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server TrustixLogAPIServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterNodeAPIHandlerFromEndpoint instead.
+func RegisterNodeAPIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server NodeAPIServer) error {
 
-	mux.Handle("POST", pattern_TrustixLogAPI_GetSTH_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_NodeAPI_Logs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetSTH")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.NodeAPI/Logs")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TrustixLogAPI_GetSTH_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_NodeAPI_Logs_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -362,22 +396,22 @@ func RegisterTrustixLogAPIHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_TrustixLogAPI_GetSTH_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_NodeAPI_Logs_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_TrustixLogAPI_GetValue_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_NodeAPI_GetValue_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetValue")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.NodeAPI/GetValue")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TrustixLogAPI_GetValue_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_NodeAPI_GetValue_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -385,177 +419,209 @@ func RegisterTrustixLogAPIHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_TrustixLogAPI_GetValue_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetLogConsistencyProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetLogConsistencyProof")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_TrustixLogAPI_GetLogConsistencyProof_0(rctx, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetLogConsistencyProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetLogAuditProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetLogAuditProof")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_TrustixLogAPI_GetLogAuditProof_0(rctx, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetLogAuditProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetLogEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetLogEntries")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_TrustixLogAPI_GetLogEntries_0(rctx, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetLogEntries_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetMapValue_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetMapValue")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_TrustixLogAPI_GetMapValue_0(rctx, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetMapValue_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetMHLogConsistencyProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetMHLogConsistencyProof")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_TrustixLogAPI_GetMHLogConsistencyProof_0(rctx, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetMHLogConsistencyProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetMHLogAuditProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetMHLogAuditProof")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_TrustixLogAPI_GetMHLogAuditProof_0(rctx, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetMHLogAuditProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetMHLogEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetMHLogEntries")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_TrustixLogAPI_GetMHLogEntries_0(rctx, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetMHLogEntries_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_NodeAPI_GetValue_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterTrustixLogAPIHandlerFromEndpoint is same as RegisterTrustixLogAPIHandler but
+// RegisterLogAPIHandlerServer registers the http handlers for service LogAPI to "mux".
+// UnaryRPC     :call LogAPIServer directly.
+// StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterLogAPIHandlerFromEndpoint instead.
+func RegisterLogAPIHandlerServer(ctx context.Context, mux *runtime.ServeMux, server LogAPIServer) error {
+
+	mux.Handle("POST", pattern_LogAPI_GetSTH_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.LogAPI/GetSTH")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LogAPI_GetSTH_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetSTH_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetLogConsistencyProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.LogAPI/GetLogConsistencyProof")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LogAPI_GetLogConsistencyProof_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetLogConsistencyProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetLogAuditProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.LogAPI/GetLogAuditProof")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LogAPI_GetLogAuditProof_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetLogAuditProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetLogEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.LogAPI/GetLogEntries")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LogAPI_GetLogEntries_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetLogEntries_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetMapValue_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.LogAPI/GetMapValue")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LogAPI_GetMapValue_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetMapValue_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetMHLogConsistencyProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.LogAPI/GetMHLogConsistencyProof")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LogAPI_GetMHLogConsistencyProof_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetMHLogConsistencyProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetMHLogAuditProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.LogAPI/GetMHLogAuditProof")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LogAPI_GetMHLogAuditProof_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetMHLogAuditProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetMHLogEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/trustix.LogAPI/GetMHLogEntries")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LogAPI_GetMHLogEntries_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetMHLogEntries_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	return nil
+}
+
+// RegisterNodeAPIHandlerFromEndpoint is same as RegisterNodeAPIHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterTrustixLogAPIHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterNodeAPIHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -575,199 +641,59 @@ func RegisterTrustixLogAPIHandlerFromEndpoint(ctx context.Context, mux *runtime.
 		}()
 	}()
 
-	return RegisterTrustixLogAPIHandler(ctx, mux, conn)
+	return RegisterNodeAPIHandler(ctx, mux, conn)
 }
 
-// RegisterTrustixLogAPIHandler registers the http handlers for service TrustixLogAPI to "mux".
+// RegisterNodeAPIHandler registers the http handlers for service NodeAPI to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterTrustixLogAPIHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterTrustixLogAPIHandlerClient(ctx, mux, NewTrustixLogAPIClient(conn))
+func RegisterNodeAPIHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterNodeAPIHandlerClient(ctx, mux, NewNodeAPIClient(conn))
 }
 
-// RegisterTrustixLogAPIHandlerClient registers the http handlers for service TrustixLogAPI
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "TrustixLogAPIClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "TrustixLogAPIClient"
+// RegisterNodeAPIHandlerClient registers the http handlers for service NodeAPI
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "NodeAPIClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "NodeAPIClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "TrustixLogAPIClient" to call the correct interceptors.
-func RegisterTrustixLogAPIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client TrustixLogAPIClient) error {
+// "NodeAPIClient" to call the correct interceptors.
+func RegisterNodeAPIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client NodeAPIClient) error {
 
-	mux.Handle("POST", pattern_TrustixLogAPI_GetSTH_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_NodeAPI_Logs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetSTH")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.NodeAPI/Logs")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TrustixLogAPI_GetSTH_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_NodeAPI_Logs_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_TrustixLogAPI_GetSTH_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_NodeAPI_Logs_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_TrustixLogAPI_GetValue_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_NodeAPI_GetValue_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetValue")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.NodeAPI/GetValue")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TrustixLogAPI_GetValue_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_NodeAPI_GetValue_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_TrustixLogAPI_GetValue_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetLogConsistencyProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetLogConsistencyProof")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_TrustixLogAPI_GetLogConsistencyProof_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetLogConsistencyProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetLogAuditProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetLogAuditProof")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_TrustixLogAPI_GetLogAuditProof_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetLogAuditProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetLogEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetLogEntries")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_TrustixLogAPI_GetLogEntries_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetLogEntries_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetMapValue_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetMapValue")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_TrustixLogAPI_GetMapValue_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetMapValue_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetMHLogConsistencyProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetMHLogConsistencyProof")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_TrustixLogAPI_GetMHLogConsistencyProof_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetMHLogConsistencyProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetMHLogAuditProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetMHLogAuditProof")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_TrustixLogAPI_GetMHLogAuditProof_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetMHLogAuditProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_TrustixLogAPI_GetMHLogEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.TrustixLogAPI/GetMHLogEntries")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_TrustixLogAPI_GetMHLogEntries_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_TrustixLogAPI_GetMHLogEntries_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_NodeAPI_GetValue_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -775,41 +701,250 @@ func RegisterTrustixLogAPIHandlerClient(ctx context.Context, mux *runtime.ServeM
 }
 
 var (
-	pattern_TrustixLogAPI_GetSTH_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.TrustixLogAPI", "GetSTH"}, ""))
+	pattern_NodeAPI_Logs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.NodeAPI", "Logs"}, ""))
 
-	pattern_TrustixLogAPI_GetValue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.TrustixLogAPI", "GetValue"}, ""))
-
-	pattern_TrustixLogAPI_GetLogConsistencyProof_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.TrustixLogAPI", "GetLogConsistencyProof"}, ""))
-
-	pattern_TrustixLogAPI_GetLogAuditProof_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.TrustixLogAPI", "GetLogAuditProof"}, ""))
-
-	pattern_TrustixLogAPI_GetLogEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.TrustixLogAPI", "GetLogEntries"}, ""))
-
-	pattern_TrustixLogAPI_GetMapValue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.TrustixLogAPI", "GetMapValue"}, ""))
-
-	pattern_TrustixLogAPI_GetMHLogConsistencyProof_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.TrustixLogAPI", "GetMHLogConsistencyProof"}, ""))
-
-	pattern_TrustixLogAPI_GetMHLogAuditProof_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.TrustixLogAPI", "GetMHLogAuditProof"}, ""))
-
-	pattern_TrustixLogAPI_GetMHLogEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.TrustixLogAPI", "GetMHLogEntries"}, ""))
+	pattern_NodeAPI_GetValue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.NodeAPI", "GetValue"}, ""))
 )
 
 var (
-	forward_TrustixLogAPI_GetSTH_0 = runtime.ForwardResponseMessage
+	forward_NodeAPI_Logs_0 = runtime.ForwardResponseMessage
 
-	forward_TrustixLogAPI_GetValue_0 = runtime.ForwardResponseMessage
+	forward_NodeAPI_GetValue_0 = runtime.ForwardResponseMessage
+)
 
-	forward_TrustixLogAPI_GetLogConsistencyProof_0 = runtime.ForwardResponseMessage
+// RegisterLogAPIHandlerFromEndpoint is same as RegisterLogAPIHandler but
+// automatically dials to "endpoint" and closes the connection when "ctx" gets done.
+func RegisterLogAPIHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+	conn, err := grpc.Dial(endpoint, opts...)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			if cerr := conn.Close(); cerr != nil {
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
+			}
+			return
+		}
+		go func() {
+			<-ctx.Done()
+			if cerr := conn.Close(); cerr != nil {
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
+			}
+		}()
+	}()
 
-	forward_TrustixLogAPI_GetLogAuditProof_0 = runtime.ForwardResponseMessage
+	return RegisterLogAPIHandler(ctx, mux, conn)
+}
 
-	forward_TrustixLogAPI_GetLogEntries_0 = runtime.ForwardResponseMessage
+// RegisterLogAPIHandler registers the http handlers for service LogAPI to "mux".
+// The handlers forward requests to the grpc endpoint over "conn".
+func RegisterLogAPIHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterLogAPIHandlerClient(ctx, mux, NewLogAPIClient(conn))
+}
 
-	forward_TrustixLogAPI_GetMapValue_0 = runtime.ForwardResponseMessage
+// RegisterLogAPIHandlerClient registers the http handlers for service LogAPI
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "LogAPIClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "LogAPIClient"
+// doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
+// "LogAPIClient" to call the correct interceptors.
+func RegisterLogAPIHandlerClient(ctx context.Context, mux *runtime.ServeMux, client LogAPIClient) error {
 
-	forward_TrustixLogAPI_GetMHLogConsistencyProof_0 = runtime.ForwardResponseMessage
+	mux.Handle("POST", pattern_LogAPI_GetSTH_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.LogAPI/GetSTH")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LogAPI_GetSTH_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
 
-	forward_TrustixLogAPI_GetMHLogAuditProof_0 = runtime.ForwardResponseMessage
+		forward_LogAPI_GetSTH_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
-	forward_TrustixLogAPI_GetMHLogEntries_0 = runtime.ForwardResponseMessage
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetLogConsistencyProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.LogAPI/GetLogConsistencyProof")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LogAPI_GetLogConsistencyProof_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetLogConsistencyProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetLogAuditProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.LogAPI/GetLogAuditProof")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LogAPI_GetLogAuditProof_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetLogAuditProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetLogEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.LogAPI/GetLogEntries")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LogAPI_GetLogEntries_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetLogEntries_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetMapValue_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.LogAPI/GetMapValue")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LogAPI_GetMapValue_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetMapValue_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetMHLogConsistencyProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.LogAPI/GetMHLogConsistencyProof")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LogAPI_GetMHLogConsistencyProof_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetMHLogConsistencyProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetMHLogAuditProof_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.LogAPI/GetMHLogAuditProof")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LogAPI_GetMHLogAuditProof_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetMHLogAuditProof_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_LogAPI_GetMHLogEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/trustix.LogAPI/GetMHLogEntries")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LogAPI_GetMHLogEntries_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LogAPI_GetMHLogEntries_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	return nil
+}
+
+var (
+	pattern_LogAPI_GetSTH_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.LogAPI", "GetSTH"}, ""))
+
+	pattern_LogAPI_GetLogConsistencyProof_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.LogAPI", "GetLogConsistencyProof"}, ""))
+
+	pattern_LogAPI_GetLogAuditProof_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.LogAPI", "GetLogAuditProof"}, ""))
+
+	pattern_LogAPI_GetLogEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.LogAPI", "GetLogEntries"}, ""))
+
+	pattern_LogAPI_GetMapValue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.LogAPI", "GetMapValue"}, ""))
+
+	pattern_LogAPI_GetMHLogConsistencyProof_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.LogAPI", "GetMHLogConsistencyProof"}, ""))
+
+	pattern_LogAPI_GetMHLogAuditProof_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.LogAPI", "GetMHLogAuditProof"}, ""))
+
+	pattern_LogAPI_GetMHLogEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"trustix.LogAPI", "GetMHLogEntries"}, ""))
+)
+
+var (
+	forward_LogAPI_GetSTH_0 = runtime.ForwardResponseMessage
+
+	forward_LogAPI_GetLogConsistencyProof_0 = runtime.ForwardResponseMessage
+
+	forward_LogAPI_GetLogAuditProof_0 = runtime.ForwardResponseMessage
+
+	forward_LogAPI_GetLogEntries_0 = runtime.ForwardResponseMessage
+
+	forward_LogAPI_GetMapValue_0 = runtime.ForwardResponseMessage
+
+	forward_LogAPI_GetMHLogConsistencyProof_0 = runtime.ForwardResponseMessage
+
+	forward_LogAPI_GetMHLogAuditProof_0 = runtime.ForwardResponseMessage
+
+	forward_LogAPI_GetMHLogEntries_0 = runtime.ForwardResponseMessage
 )

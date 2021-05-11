@@ -18,8 +18,8 @@ class TrustixRPCStub(object):
         """
         self.Logs = channel.unary_unary(
             "/trustix.TrustixRPC/Logs",
-            request_serializer=rpc_dot_rpc__pb2.LogsRequest.SerializeToString,
-            response_deserializer=rpc_dot_rpc__pb2.LogsResponse.FromString,
+            request_serializer=api_dot_api__pb2.LogsRequest.SerializeToString,
+            response_deserializer=api_dot_api__pb2.LogsResponse.FromString,
         )
         self.GetLogEntries = channel.unary_unary(
             "/trustix.TrustixRPC/GetLogEntries",
@@ -31,18 +31,8 @@ class TrustixRPCStub(object):
             request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
             response_deserializer=rpc_dot_rpc__pb2.EntriesResponse.FromString,
         )
-        self.GetStream = channel.stream_stream(
-            "/trustix.TrustixRPC/GetStream",
-            request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
-            response_deserializer=rpc_dot_rpc__pb2.EntriesResponse.FromString,
-        )
         self.Decide = channel.unary_unary(
             "/trustix.TrustixRPC/Decide",
-            request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
-            response_deserializer=rpc_dot_rpc__pb2.DecisionResponse.FromString,
-        )
-        self.DecideStream = channel.stream_stream(
-            "/trustix.TrustixRPC/DecideStream",
             request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
             response_deserializer=rpc_dot_rpc__pb2.DecisionResponse.FromString,
         )
@@ -67,13 +57,13 @@ class TrustixRPCServicer(object):
     """TrustixRPC"""
 
     def Logs(self, request, context):
-        """Get map[LogID]Log"""
+        """Get map[LogID]Log (all local logs)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def GetLogEntries(self, request, context):
-        """TODO: I'm not sure if this belongs here in it's current shape..."""
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -84,20 +74,8 @@ class TrustixRPCServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
-    def GetStream(self, request_iterator, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
     def Decide(self, request, context):
         """Compare(inputHash)"""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def DecideStream(self, request_iterator, context):
-        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -125,8 +103,8 @@ def add_TrustixRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
         "Logs": grpc.unary_unary_rpc_method_handler(
             servicer.Logs,
-            request_deserializer=rpc_dot_rpc__pb2.LogsRequest.FromString,
-            response_serializer=rpc_dot_rpc__pb2.LogsResponse.SerializeToString,
+            request_deserializer=api_dot_api__pb2.LogsRequest.FromString,
+            response_serializer=api_dot_api__pb2.LogsResponse.SerializeToString,
         ),
         "GetLogEntries": grpc.unary_unary_rpc_method_handler(
             servicer.GetLogEntries,
@@ -138,18 +116,8 @@ def add_TrustixRPCServicer_to_server(servicer, server):
             request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
             response_serializer=rpc_dot_rpc__pb2.EntriesResponse.SerializeToString,
         ),
-        "GetStream": grpc.stream_stream_rpc_method_handler(
-            servicer.GetStream,
-            request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
-            response_serializer=rpc_dot_rpc__pb2.EntriesResponse.SerializeToString,
-        ),
         "Decide": grpc.unary_unary_rpc_method_handler(
             servicer.Decide,
-            request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
-            response_serializer=rpc_dot_rpc__pb2.DecisionResponse.SerializeToString,
-        ),
-        "DecideStream": grpc.stream_stream_rpc_method_handler(
-            servicer.DecideStream,
             request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
             response_serializer=rpc_dot_rpc__pb2.DecisionResponse.SerializeToString,
         ),
@@ -196,8 +164,8 @@ class TrustixRPC(object):
             request,
             target,
             "/trustix.TrustixRPC/Logs",
-            rpc_dot_rpc__pb2.LogsRequest.SerializeToString,
-            rpc_dot_rpc__pb2.LogsResponse.FromString,
+            api_dot_api__pb2.LogsRequest.SerializeToString,
+            api_dot_api__pb2.LogsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -267,35 +235,6 @@ class TrustixRPC(object):
         )
 
     @staticmethod
-    def GetStream(
-        request_iterator,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.stream_stream(
-            request_iterator,
-            target,
-            "/trustix.TrustixRPC/GetStream",
-            rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
-            rpc_dot_rpc__pb2.EntriesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
-
-    @staticmethod
     def Decide(
         request,
         target,
@@ -312,35 +251,6 @@ class TrustixRPC(object):
             request,
             target,
             "/trustix.TrustixRPC/Decide",
-            rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
-            rpc_dot_rpc__pb2.DecisionResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
-
-    @staticmethod
-    def DecideStream(
-        request_iterator,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.stream_stream(
-            request_iterator,
-            target,
-            "/trustix.TrustixRPC/DecideStream",
             rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
             rpc_dot_rpc__pb2.DecisionResponse.FromString,
             options,

@@ -8,21 +8,18 @@
 
 package config
 
-type GRPCTransport struct {
-	Remote string `toml:"remote"`
-}
-
-type Transport struct {
-	Type string         `toml:"type"`
-	GRPC *GRPCTransport `toml:"grpc"`
-}
-
 type Subscriber struct {
-	Transport *Transport        `toml:"transport"`
 	PublicKey *PublicKey        `toml:"key"`
 	Meta      map[string]string `toml:"meta"`
 }
 
 func (s *Subscriber) Validate() error {
 	return nil
+}
+
+func (s *Subscriber) GetMeta() map[string]string {
+	if s.Meta != nil {
+		return s.Meta
+	}
+	return make(map[string]string)
 }

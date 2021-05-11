@@ -6,7 +6,7 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package rpc
+package server
 
 import (
 	"context"
@@ -14,7 +14,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
 	"sync"
 
 	"github.com/lazyledger/smt"
@@ -23,7 +22,7 @@ import (
 	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	rpc "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	tapi "github.com/tweag/trustix/packages/trustix/api"
+	"github.com/tweag/trustix/packages/trustix/client"
 	"github.com/tweag/trustix/packages/trustix/decider"
 	pub "github.com/tweag/trustix/packages/trustix/publisher"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
@@ -32,27 +31,30 @@ import (
 
 type TrustixRPCServer struct {
 	pb.UnimplementedTrustixRPCServer
-	logs       *tapi.TrustixLogMap
 	decider    decider.LogDecider
 	store      storage.Storage
 	publishers *pub.PublisherMap
-	signerMeta *SignerMetaMap
-	logMeta    map[string]map[string]string
 	rootBucket *storage.Bucket
+	logs       []*api.Log
+	clients    *client.ClientPool
 }
 
-func NewTrustixRPCServer(store storage.Storage, rootBucket *storage.Bucket, logs *tapi.TrustixLogMap, publishers *pub.PublisherMap, signerMeta *SignerMetaMap, logMeta map[string]map[string]string, decider decider.LogDecider) *TrustixRPCServer {
-	rpc := &TrustixRPCServer{
+func NewTrustixRPCServer(
+	store storage.Storage,
+	rootBucket *storage.Bucket,
+	clients *client.ClientPool,
+	publishers *pub.PublisherMap,
+	logs []*api.Log,
+	decider decider.LogDecider,
+) *TrustixRPCServer {
+	return &TrustixRPCServer{
 		store:      store,
-		logs:       logs,
 		decider:    decider,
 		publishers: publishers,
-		signerMeta: signerMeta,
-		logMeta:    logMeta,
+		logs:       logs,
 		rootBucket: rootBucket,
+		clients:    clients,
 	}
-
-	return rpc
 }
 
 func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
@@ -65,12 +67,13 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 }
 
 func (l *TrustixRPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
-	log, err := l.logs.Get(*in.LogID)
+
+	client, err := l.clients.Get(*in.LogID)
 	if err != nil {
 		return nil, err
 	}
 
-	return log.GetLogEntries(ctx, &api.GetLogEntriesRequest{
+	return client.LogAPI.GetLogEntries(ctx, &api.GetLogEntriesRequest{
 		LogID:  in.LogID,
 		Start:  in.Start,
 		Finish: in.Finish,
@@ -81,7 +84,8 @@ func (l *TrustixRPCServer) getSTHMap() (map[string]*schema.STH, error) {
 	m := make(map[string]*schema.STH)
 
 	err := l.store.View(func(txn storage.Transaction) error {
-		for _, logID := range l.logs.IDs() {
+		for _, log := range l.logs {
+			logID := *log.LogID
 			bucket := l.rootBucket.Cd(logID)
 			sth, err := storage.GetSTH(bucket.Txn(txn))
 			if err != nil {
@@ -112,19 +116,26 @@ func (l *TrustixRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.Entr
 		return nil, err
 	}
 
-	for logID, l := range l.logs.Map() {
-		logID := logID
-		l := l
+	for _, logMeta := range l.logs {
+		logMeta := logMeta
 
 		wg.Add(1)
 
 		go func() {
 			defer wg.Done()
 
+			logID := *logMeta.LogID
+
 			log.WithFields(log.Fields{
 				"key":   hexInput,
 				"logID": logID,
 			}).Info("Querying log")
+
+			client, err := l.clients.Get(logID)
+			if err != nil {
+				log.Error(fmt.Errorf("could not get client for logID '%s': %v", logID, err))
+				return
+			}
 
 			sth, ok := sthMap[logID]
 			if !ok {
@@ -132,7 +143,7 @@ func (l *TrustixRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.Entr
 				return
 			}
 
-			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
+			resp, err := client.LogAPI.GetMapValue(ctx, &api.GetMapValueRequest{
 				LogID:   &logID,
 				Key:     in.Key,
 				MapRoot: sth.MapRoot,
@@ -170,64 +181,6 @@ func (l *TrustixRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.Entr
 
 }
 
-func (l *TrustixRPCServer) GetStream(srv pb.TrustixRPC_GetStreamServer) error {
-
-	ctx := context.Background()
-	var wg sync.WaitGroup
-	jobChan := make(chan *pb.KeyRequest)
-	errChan := make(chan error)
-
-	numWorkers := 20
-	for i := 0; i <= numWorkers; i++ {
-		i := i
-		go func() {
-			log.WithField("count", i).Debug("Creating Get stream worker")
-
-			for in := range jobChan {
-				resp, err := l.Get(ctx, in)
-				if err != nil {
-					wg.Done()
-					errChan <- err
-					return
-				}
-
-				err = srv.Send(resp)
-				if err != nil {
-					wg.Done()
-					errChan <- err
-					return
-				}
-
-				wg.Done()
-			}
-		}()
-	}
-
-	go func() {
-		for {
-			in, err := srv.Recv()
-			if err != nil {
-				if err == io.EOF {
-					close(jobChan)
-					wg.Wait()
-					close(errChan)
-					break
-				}
-				errChan <- err
-				return
-			}
-			wg.Add(1)
-			jobChan <- in
-		}
-	}()
-
-	for err := range errChan {
-		return err
-	}
-
-	return nil
-}
-
 func (l *TrustixRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
 
 	hexInput := hex.EncodeToString(in.Key)
@@ -238,21 +191,32 @@ func (l *TrustixRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.D
 	var inputs []*decider.LogDeciderInput
 	var misses []string
 
-	logMap := l.logs.Map()
-
 	sthMap, err := l.getSTHMap()
 	if err != nil {
 		return nil, err
 	}
 
-	for logID, l := range logMap {
-		logID := logID
-		l := l
+	logIDs := []string{}
+	clients := make(map[string]*client.Client)
+	for logID := range sthMap {
+		client, err := l.clients.Get(logID)
+		if err != nil {
+			log.Error(fmt.Errorf("could not get client for logID '%s': %v", logID, err))
+			continue
+		}
+		clients[logID] = client
+		logIDs = append(logIDs, logID)
+	}
+
+	for _, logMeta := range l.logs {
+		logMeta := logMeta
 
 		wg.Add(1)
 
 		go func() {
 			defer wg.Done()
+
+			logID := *logMeta.LogID
 
 			log.WithFields(log.Fields{
 				"key":   hexInput,
@@ -264,7 +228,7 @@ func (l *TrustixRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.D
 				log.Error(fmt.Errorf("could not get STH for logID: %s", logID))
 				return
 			}
-			resp, err := l.GetMapValue(ctx, &api.GetMapValueRequest{
+			resp, err := clients[logID].LogAPI.GetMapValue(ctx, &api.GetMapValueRequest{
 				LogID:   &logID,
 				Key:     in.Key,
 				MapRoot: sth.MapRoot,
@@ -340,7 +304,7 @@ func (l *TrustixRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.D
 
 			value := []byte{}
 			for _, id := range logIDs {
-				resp, err := logMap[id].GetValue(ctx, &api.ValueRequest{
+				resp, err := clients[id].NodeAPI.GetValue(ctx, &api.ValueRequest{
 					Digest: outputHash,
 				})
 				if err != nil {
@@ -381,77 +345,31 @@ func (l *TrustixRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.D
 
 }
 
-func (l *TrustixRPCServer) DecideStream(srv pb.TrustixRPC_DecideStreamServer) error {
-
-	ctx := context.Background()
-	var wg sync.WaitGroup
-	jobChan := make(chan *pb.KeyRequest)
-	errChan := make(chan error)
-
-	numWorkers := 20
-	for i := 0; i <= numWorkers; i++ {
-		i := i
-		go func() {
-			log.WithField("count", i).Debug("Creating Decide stream worker")
-
-			for in := range jobChan {
-				resp, err := l.Decide(ctx, in)
-				if err != nil {
-					wg.Done()
-					errChan <- err
-					return
-				}
-
-				err = srv.Send(resp)
-				if err != nil {
-					wg.Done()
-					errChan <- err
-					return
-				}
-
-				wg.Done()
-			}
-		}()
-	}
-
-	go func() {
-		for {
-			in, err := srv.Recv()
-			if err != nil {
-				if err == io.EOF {
-					close(jobChan)
-					wg.Wait()
-					close(errChan)
-					break
-				}
-				errChan <- err
-				return
-			}
-			wg.Add(1)
-			jobChan <- in
-		}
-	}()
-
-	for err := range errChan {
-		return err
-	}
-
-	return nil
-}
-
 func (l *TrustixRPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
 
 	log.Info("Received Value request")
 
-	for name, logApi := range l.logs.Map() {
-		resp, err := logApi.GetValue(ctx, in)
+	for _, logMeta := range l.logs {
+		logID := *logMeta.LogID
+
+		client, err := l.clients.Get(logID)
 		if err != nil {
 			log.WithFields(log.Fields{
-				"logID": name,
-			}).Info("Error receiving value")
-		} else {
-			return resp, nil
+				"logID": logID,
+			}).Info("Could not find active client")
+			continue
 		}
+
+		resp, err := client.NodeAPI.GetValue(ctx, in)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"logID": logID,
+				"error": err,
+			}).Info("Error receiving value")
+			continue
+		}
+
+		return resp, nil
 	}
 
 	return nil, fmt.Errorf("Value could not be retreived")
@@ -485,39 +403,8 @@ func (l *TrustixRPCServer) Flush(ctx context.Context, req *rpc.FlushRequest) (*r
 	return q.Flush(ctx, req)
 }
 
-func (l *TrustixRPCServer) Logs(ctx context.Context, in *pb.LogsRequest) (*pb.LogsResponse, error) {
-	logs := []*pb.Log{}
-
-	sthMap, err := l.getSTHMap()
-	if err != nil {
-		return nil, err
-	}
-
-	for logID, _ := range l.logs.Map() {
-		sth, ok := sthMap[logID]
-		if !ok {
-			return nil, fmt.Errorf("Missing STH for logID '%s'", logID)
-		}
-
-		signer, err := l.signerMeta.Get(logID)
-		if err != nil {
-			return nil, fmt.Errorf("Missing signer meta for log '%s': %v", logID, err)
-		}
-
-		meta, ok := l.logMeta[logID]
-		if !ok {
-			return nil, fmt.Errorf("Missing meta map for log: %s", logID)
-		}
-
-		logs = append(logs, &pb.Log{
-			LogID:  &logID,
-			STH:    sth,
-			Meta:   meta,
-			Signer: signer,
-		})
-	}
-
-	return &pb.LogsResponse{
-		Logs: logs,
+func (l *TrustixRPCServer) Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error) {
+	return &api.LogsResponse{
+		Logs: l.logs,
 	}, nil
 }

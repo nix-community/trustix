@@ -19,16 +19,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TrustixRPCClient interface {
-	// Get map[LogID]Log
-	Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (*LogsResponse, error)
-	// TODO: I'm not sure if this belongs here in it's current shape...
+	// Get map[LogID]Log (all local logs)
+	Logs(ctx context.Context, in *api.LogsRequest, opts ...grpc.CallOption) (*api.LogsResponse, error)
 	GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest, opts ...grpc.CallOption) (*api.LogEntriesResponse, error)
 	// Get map[LogID]OutputHash
 	Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error)
-	GetStream(ctx context.Context, opts ...grpc.CallOption) (TrustixRPC_GetStreamClient, error)
 	// Compare(inputHash)
 	Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
-	DecideStream(ctx context.Context, opts ...grpc.CallOption) (TrustixRPC_DecideStreamClient, error)
 	// Get stored value by digest (TODO: Remove, it's a duplicate from api.proto
 	GetValue(ctx context.Context, in *api.ValueRequest, opts ...grpc.CallOption) (*api.ValueResponse, error)
 	Submit(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error)
@@ -43,8 +40,8 @@ func NewTrustixRPCClient(cc grpc.ClientConnInterface) TrustixRPCClient {
 	return &trustixRPCClient{cc}
 }
 
-func (c *trustixRPCClient) Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (*LogsResponse, error) {
-	out := new(LogsResponse)
+func (c *trustixRPCClient) Logs(ctx context.Context, in *api.LogsRequest, opts ...grpc.CallOption) (*api.LogsResponse, error) {
+	out := new(api.LogsResponse)
 	err := c.cc.Invoke(ctx, "/trustix.TrustixRPC/Logs", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,37 +67,6 @@ func (c *trustixRPCClient) Get(ctx context.Context, in *KeyRequest, opts ...grpc
 	return out, nil
 }
 
-func (c *trustixRPCClient) GetStream(ctx context.Context, opts ...grpc.CallOption) (TrustixRPC_GetStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TrustixRPC_ServiceDesc.Streams[0], "/trustix.TrustixRPC/GetStream", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &trustixRPCGetStreamClient{stream}
-	return x, nil
-}
-
-type TrustixRPC_GetStreamClient interface {
-	Send(*KeyRequest) error
-	Recv() (*EntriesResponse, error)
-	grpc.ClientStream
-}
-
-type trustixRPCGetStreamClient struct {
-	grpc.ClientStream
-}
-
-func (x *trustixRPCGetStreamClient) Send(m *KeyRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *trustixRPCGetStreamClient) Recv() (*EntriesResponse, error) {
-	m := new(EntriesResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func (c *trustixRPCClient) Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error) {
 	out := new(DecisionResponse)
 	err := c.cc.Invoke(ctx, "/trustix.TrustixRPC/Decide", in, out, opts...)
@@ -108,37 +74,6 @@ func (c *trustixRPCClient) Decide(ctx context.Context, in *KeyRequest, opts ...g
 		return nil, err
 	}
 	return out, nil
-}
-
-func (c *trustixRPCClient) DecideStream(ctx context.Context, opts ...grpc.CallOption) (TrustixRPC_DecideStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TrustixRPC_ServiceDesc.Streams[1], "/trustix.TrustixRPC/DecideStream", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &trustixRPCDecideStreamClient{stream}
-	return x, nil
-}
-
-type TrustixRPC_DecideStreamClient interface {
-	Send(*KeyRequest) error
-	Recv() (*DecisionResponse, error)
-	grpc.ClientStream
-}
-
-type trustixRPCDecideStreamClient struct {
-	grpc.ClientStream
-}
-
-func (x *trustixRPCDecideStreamClient) Send(m *KeyRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *trustixRPCDecideStreamClient) Recv() (*DecisionResponse, error) {
-	m := new(DecisionResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 func (c *trustixRPCClient) GetValue(ctx context.Context, in *api.ValueRequest, opts ...grpc.CallOption) (*api.ValueResponse, error) {
@@ -172,16 +107,13 @@ func (c *trustixRPCClient) Flush(ctx context.Context, in *FlushRequest, opts ...
 // All implementations must embed UnimplementedTrustixRPCServer
 // for forward compatibility
 type TrustixRPCServer interface {
-	// Get map[LogID]Log
-	Logs(context.Context, *LogsRequest) (*LogsResponse, error)
-	// TODO: I'm not sure if this belongs here in it's current shape...
+	// Get map[LogID]Log (all local logs)
+	Logs(context.Context, *api.LogsRequest) (*api.LogsResponse, error)
 	GetLogEntries(context.Context, *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error)
 	// Get map[LogID]OutputHash
 	Get(context.Context, *KeyRequest) (*EntriesResponse, error)
-	GetStream(TrustixRPC_GetStreamServer) error
 	// Compare(inputHash)
 	Decide(context.Context, *KeyRequest) (*DecisionResponse, error)
-	DecideStream(TrustixRPC_DecideStreamServer) error
 	// Get stored value by digest (TODO: Remove, it's a duplicate from api.proto
 	GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error)
 	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
@@ -193,7 +125,7 @@ type TrustixRPCServer interface {
 type UnimplementedTrustixRPCServer struct {
 }
 
-func (UnimplementedTrustixRPCServer) Logs(context.Context, *LogsRequest) (*LogsResponse, error) {
+func (UnimplementedTrustixRPCServer) Logs(context.Context, *api.LogsRequest) (*api.LogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logs not implemented")
 }
 func (UnimplementedTrustixRPCServer) GetLogEntries(context.Context, *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
@@ -202,14 +134,8 @@ func (UnimplementedTrustixRPCServer) GetLogEntries(context.Context, *api.GetLogE
 func (UnimplementedTrustixRPCServer) Get(context.Context, *KeyRequest) (*EntriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedTrustixRPCServer) GetStream(TrustixRPC_GetStreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetStream not implemented")
-}
 func (UnimplementedTrustixRPCServer) Decide(context.Context, *KeyRequest) (*DecisionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Decide not implemented")
-}
-func (UnimplementedTrustixRPCServer) DecideStream(TrustixRPC_DecideStreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method DecideStream not implemented")
 }
 func (UnimplementedTrustixRPCServer) GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValue not implemented")
@@ -234,7 +160,7 @@ func RegisterTrustixRPCServer(s grpc.ServiceRegistrar, srv TrustixRPCServer) {
 }
 
 func _TrustixRPC_Logs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LogsRequest)
+	in := new(api.LogsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -246,7 +172,7 @@ func _TrustixRPC_Logs_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/trustix.TrustixRPC/Logs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrustixRPCServer).Logs(ctx, req.(*LogsRequest))
+		return srv.(TrustixRPCServer).Logs(ctx, req.(*api.LogsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -287,32 +213,6 @@ func _TrustixRPC_Get_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TrustixRPC_GetStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(TrustixRPCServer).GetStream(&trustixRPCGetStreamServer{stream})
-}
-
-type TrustixRPC_GetStreamServer interface {
-	Send(*EntriesResponse) error
-	Recv() (*KeyRequest, error)
-	grpc.ServerStream
-}
-
-type trustixRPCGetStreamServer struct {
-	grpc.ServerStream
-}
-
-func (x *trustixRPCGetStreamServer) Send(m *EntriesResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *trustixRPCGetStreamServer) Recv() (*KeyRequest, error) {
-	m := new(KeyRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func _TrustixRPC_Decide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(KeyRequest)
 	if err := dec(in); err != nil {
@@ -329,32 +229,6 @@ func _TrustixRPC_Decide_Handler(srv interface{}, ctx context.Context, dec func(i
 		return srv.(TrustixRPCServer).Decide(ctx, req.(*KeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
-}
-
-func _TrustixRPC_DecideStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(TrustixRPCServer).DecideStream(&trustixRPCDecideStreamServer{stream})
-}
-
-type TrustixRPC_DecideStreamServer interface {
-	Send(*DecisionResponse) error
-	Recv() (*KeyRequest, error)
-	grpc.ServerStream
-}
-
-type trustixRPCDecideStreamServer struct {
-	grpc.ServerStream
-}
-
-func (x *trustixRPCDecideStreamServer) Send(m *DecisionResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *trustixRPCDecideStreamServer) Recv() (*KeyRequest, error) {
-	m := new(KeyRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 func _TrustixRPC_GetValue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -447,19 +321,6 @@ var TrustixRPC_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TrustixRPC_Flush_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetStream",
-			Handler:       _TrustixRPC_GetStream_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-		{
-			StreamName:    "DecideStream",
-			Handler:       _TrustixRPC_DecideStream_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "rpc.proto",
 }

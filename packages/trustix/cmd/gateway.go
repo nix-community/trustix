@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix/client"
+	tgrpc "github.com/tweag/trustix/packages/trustix/grpc"
 	"github.com/tweag/trustix/packages/trustix/lib"
 )
 
@@ -26,7 +27,7 @@ var gatewayCommand = &cobra.Command{
 	Short: "Trustix gateway translating REST calls to gRPC",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		conn, err := client.CreateClientConn(dialAddress, nil)
+		conn, err := tgrpc.Dial(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -36,7 +37,7 @@ var gatewayCommand = &cobra.Command{
 		defer cancel()
 
 		mux := runtime.NewServeMux()
-		err = api.RegisterTrustixLogAPIHandler(ctx, mux, conn)
+		err = api.RegisterLogAPIHandler(ctx, mux, conn)
 		if err != nil {
 			return err
 		}

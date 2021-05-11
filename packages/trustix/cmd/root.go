@@ -10,7 +10,6 @@ package cmd
 
 import (
 	"crypto"
-	"crypto/tls"
 	"fmt"
 	"net"
 	"net/url"
@@ -33,13 +32,12 @@ import (
 	"github.com/tweag/trustix/packages/trustix/decider"
 	"github.com/tweag/trustix/packages/trustix/lib"
 	pub "github.com/tweag/trustix/packages/trustix/publisher"
-	"github.com/tweag/trustix/packages/trustix/rpc"
 	"github.com/tweag/trustix/packages/trustix/rpc/auth"
+	"github.com/tweag/trustix/packages/trustix/server"
 	"github.com/tweag/trustix/packages/trustix/signer"
 	"github.com/tweag/trustix/packages/trustix/sthsync"
 	"github.com/tweag/trustix/packages/trustix/storage"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 var once sync.Once
@@ -113,8 +111,76 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		// These APIs are static and fully controlled by the configuration file
+		logs := []*api.Log{}
+		logsPublished := []*api.Log{}
+		{
+			for _, pubConf := range config.Publishers {
+				logID, err := pubConf.PublicKey.LogID()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				signer, err := pubConf.PublicKey.Signer()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				log := &api.Log{
+					LogID:  &logID,
+					Meta:   pubConf.GetMeta(),
+					Signer: signer,
+				}
+
+				logs = append(logs, log)
+				logsPublished = append(logsPublished, log)
+			}
+
+			for _, subConf := range config.Subscribers {
+				logID, err := subConf.PublicKey.LogID()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				signer, err := subConf.PublicKey.Signer()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				log := &api.Log{
+					LogID:  &logID,
+					Meta:   subConf.GetMeta(),
+					Signer: signer,
+				}
+
+				logs = append(logs, log)
+			}
+		}
+
+		clientPool := client.NewClientPool()
+		defer clientPool.Close()
+
+		for _, remote := range config.Remotes {
+			remote := remote
+			go func() {
+
+				pc, err := clientPool.Dial(remote)
+				if err != nil {
+					log.WithFields(log.Fields{
+						"remote": remote,
+					}).Error("Couldn't dial remote")
+					return
+				}
+
+				pc.Activate()
+			}()
+		}
+
 		rootBucket := &storage.Bucket{}
 		caValueBucket := rootBucket.Cd(constants.CaValueBucket)
+
+		nodeAPI := tapi.NewKVStoreNodeAPI(store, caValueBucket, logsPublished)
+		nodeAPIServer := server.NewNodeAPIServer(nodeAPI)
 
 		sthSyncMgr := sthsync.NewSyncManager()
 		defer sthSyncMgr.Close()
@@ -122,11 +188,6 @@ var rootCmd = &cobra.Command{
 		pubMap := pub.NewPublisherMap()
 		defer pubMap.Close()
 
-		signerMetaMap := rpc.NewSignerMetaMap()
-
-		logMetaMap := make(map[string]map[string]string)
-
-		logMap := tapi.NewTrustixLogMap()
 		{
 
 			logInitExecutor := lib.NewParallellExecutor()
@@ -146,14 +207,6 @@ var rootCmd = &cobra.Command{
 						"pubkey": subConf.PublicKey.Pub,
 					}).Info("Adding log subscriber")
 
-					signerMetaMap.Set(logID, subConf.PublicKey.Type, subConf.PublicKey.Pub)
-
-					if subConf.Meta != nil {
-						logMetaMap[logID] = subConf.Meta
-					} else {
-						logMetaMap[logID] = make(map[string]string)
-					}
-
 					var verifier signer.TrustixVerifier
 					{
 						switch subConf.PublicKey.Type {
@@ -167,58 +220,29 @@ var rootCmd = &cobra.Command{
 						}
 					}
 
-					conn, err := client.CreateClientConn(subConf.Transport.GRPC.Remote, verifier.Public())
-					if err != nil {
-						return err
-					}
-
-					c, err := tapi.NewTrustixAPIGRPCClient(conn)
-					if err != nil {
-						return err
-					}
-
-					logMap.Add(logID, c)
-
-					sthSyncMgr.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), c, verifier))
+					sthSyncMgr.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), clientPool, verifier))
 
 					return nil
 				})
 
 			}
 
-			for _, publisherConfig := range config.Publishers {
+			for i, publisherConfig := range config.Publishers {
+				i := i
 				publisherConfig := publisherConfig
 				logInitExecutor.Add(func() error {
-					var logID string
-					{
-						pubBytes, err := publisherConfig.PublicKey.Decode()
-						if err != nil {
-							return err
-						}
-
-						logID = lib.LogID(publisherConfig.PublicKey.Type, pubBytes)
-					}
-
-					signerMetaMap.Set(logID, publisherConfig.PublicKey.Type, publisherConfig.PublicKey.Pub)
-
-					if publisherConfig.Meta != nil {
-						logMetaMap[logID] = publisherConfig.Meta
-					} else {
-						logMetaMap[logID] = make(map[string]string)
-					}
+					logID := *logsPublished[i].LogID
 
 					log.WithFields(log.Fields{
 						"id":     logID,
 						"pubkey": publisherConfig.PublicKey.Pub,
 					}).Info("Adding log")
 
-					// TODO: Define a logger with fields already applied
-
 					log.WithFields(log.Fields{
 						"id": logID,
 					}).Info("Adding authoritive log to gRPC")
 
-					logAPI, err := tapi.NewKVStoreAPI(logID, store, caValueBucket, rootBucket.Cd(logID))
+					logAPI, err := tapi.NewKVStoreLogAPI(logID, store, rootBucket.Cd(logID))
 					if err != nil {
 						return err
 					}
@@ -236,7 +260,16 @@ var rootCmd = &cobra.Command{
 					if err = pubMap.Set(logID, publisher); err != nil {
 						return err
 					}
-					logMap.Add(logID, logAPI)
+
+					pc, err := clientPool.Add(&client.Client{
+						NodeAPI: nodeAPI,
+						LogAPI:  logAPI,
+						Type:    client.LocalClientType,
+					}, []string{logID})
+					if err != nil {
+						return err
+					}
+					pc.Activate()
 
 					return nil
 				})
@@ -250,10 +283,7 @@ var rootCmd = &cobra.Command{
 
 		}
 
-		logAPIServer, err := tapi.NewTrustixAPIServer(logMap, store, caValueBucket)
-		if err != nil {
-			return err
-		}
+		logAPIServer := server.NewLogAPIServer(logsPublished, clientPool)
 
 		decider, err := func() (decider.LogDecider, error) {
 			deciders := []decider.LogDecider{}
@@ -287,13 +317,13 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		logServer := rpc.NewTrustixRPCServer(store, rootBucket, logMap, pubMap, signerMetaMap, logMetaMap, decider)
+		rpcServer := server.NewTrustixRPCServer(store, rootBucket, clientPool, pubMap, logs, decider)
 
 		log.Debug("Creating gRPC servers")
 
 		errChan := make(chan error)
 
-		createServer := func(lis net.Listener, insecure bool) (s *grpc.Server) {
+		createServer := func(lis net.Listener) (s *grpc.Server) {
 			_, isUnix := lis.(*net.UnixListener)
 
 			if isUnix {
@@ -301,29 +331,14 @@ var rootCmd = &cobra.Command{
 					grpc.Creds(&auth.SoPeercred{}), // Attach SO_PEERCRED auth to UNIX sockets
 				)
 
-				pb.RegisterTrustixRPCServer(s, logServer)
+				pb.RegisterTrustixRPCServer(s, rpcServer)
 
 			} else {
-
-				if insecure {
-					s = grpc.NewServer()
-				} else {
-					cert, err := generateCert()
-					if err != nil {
-						log.Fatalf("Could not create cert")
-					}
-
-					config := &tls.Config{
-						Certificates: []tls.Certificate{*cert},
-						ClientAuth:   tls.NoClientCert,
-					}
-
-					s = grpc.NewServer(grpc.Creds(credentials.NewTLS(config)))
-				}
-
+				s = grpc.NewServer()
 			}
 
-			api.RegisterTrustixLogAPIServer(s, logAPIServer)
+			api.RegisterLogAPIServer(s, logAPIServer)
+			api.RegisterNodeAPIServer(s, nodeAPIServer)
 
 			go func() {
 				err := s.Serve(lis)
@@ -347,7 +362,7 @@ var rootCmd = &cobra.Command{
 				"address": lis.Addr(),
 			}).Info("Using socket activated listener")
 
-			servers = append(servers, createServer(lis, false))
+			servers = append(servers, createServer(lis))
 		}
 
 		// Create sockets
@@ -367,9 +382,6 @@ var rootCmd = &cobra.Command{
 			case "http":
 				family = "tcp"
 				host = u.Host
-			case "https":
-				family = "tcp"
-				host = u.Host
 			default:
 				log.Fatalf("Socket with scheme '%s' unsupported", u.Scheme)
 			}
@@ -383,7 +395,7 @@ var rootCmd = &cobra.Command{
 				"address": addr,
 			}).Info("Listening to address")
 
-			servers = append(servers, createServer(lis, u.Scheme == "http"))
+			servers = append(servers, createServer(lis))
 		}
 
 		if len(servers) <= 0 {
@@ -430,7 +442,7 @@ func initCommands() {
 
 	rootCmd.PersistentFlags().StringVar(&logID, "log-id", "", "Log ID")
 
-	trustixSock := os.Getenv("TRUSTIX_SOCK")
+	trustixSock := os.Getenv("TRUSTIX_RPC")
 	if trustixSock == "" {
 		tmpDir := "/tmp"
 		trustixSock = filepath.Join(tmpDir, "trustix.sock")
@@ -465,9 +477,6 @@ func initCommands() {
 	initDecide()
 
 	rootCmd.AddCommand(flushCommand)
-
-	rootCmd.AddCommand(exportCommand)
-	initExport()
 
 	rootCmd.AddCommand(gatewayCommand)
 }

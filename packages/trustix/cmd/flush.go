@@ -26,17 +26,16 @@ var flushCommand = &cobra.Command{
 			return fmt.Errorf("Missing log ID")
 		}
 
-		conn, err := client.CreateClientConn(dialAddress, nil)
+		c, err := client.CreateClientConn(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
-		defer conn.Close()
+		defer c.Close()
 
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		c := pb.NewTrustixRPCClient(conn)
-		_, err = c.Flush(ctx, &pb.FlushRequest{
+		_, err = c.RpcAPI.Flush(ctx, &pb.FlushRequest{
 			LogID: &logID,
 		})
 		if err != nil {

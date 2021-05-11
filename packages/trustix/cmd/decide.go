@@ -31,13 +31,11 @@ var decideCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		conn, err := client.CreateClientConn(dialAddress, nil)
+		c, err := client.CreateClientConn(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
-		defer conn.Close()
-
-		c := pb.NewTrustixRPCClient(conn)
+		defer c.Close()
 
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
@@ -45,7 +43,8 @@ var decideCommand = &cobra.Command{
 		log.WithFields(log.Fields{
 			"key": keyHex,
 		}).Debug("Requesting output mappings for")
-		r, err := c.Decide(ctx, &pb.KeyRequest{
+
+		r, err := c.RpcAPI.Decide(ctx, &pb.KeyRequest{
 			Key: inputBytes,
 		})
 		if err != nil {

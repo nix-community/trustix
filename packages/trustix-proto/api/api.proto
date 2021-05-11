@@ -71,15 +71,45 @@ message ValueResponse {
   required bytes Value = 1;
 }
 
-service TrustixLogAPI {
+message LogsRequest {
+}
 
-  // Aggregate
+message LogSigner {
+  enum KeyTypes {
+    ed25519 = 0;
+  }
+  required KeyTypes KeyType = 1;
+  required string Public = 2;
+}
 
-  rpc GetSTH (STHRequest) returns (STH) {}
+message Log {
+  required string LogID = 1;
+  // required string Mode = 2;
+  required LogSigner Signer = 3;
+  map<string, string> Meta = 4;
+  // required STH STH = 5;
+}
+
+message LogsResponse {
+  repeated Log Logs = 1;
+}
+
+service NodeAPI {
+
+  // Get map[LogID]Log
+  rpc Logs (LogsRequest) returns (LogsResponse) {}
 
   // Content-addressed values
 
   rpc GetValue(ValueRequest) returns (ValueResponse) {}
+
+}
+
+service LogAPI {
+
+  // Aggregate
+
+  rpc GetSTH (STHRequest) returns (STH) {}
 
   // Log
 
