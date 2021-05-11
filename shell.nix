@@ -1,6 +1,5 @@
+{ pkgs ? import ./nix }:
 let
-  pkgs = import ./nix;
-
   STATE_DIR = "${builtins.toString ./.}/state";
   TRUSTIX_RPC = "unix://${STATE_DIR}/trustix.sock";
   TRUSTIX_ROOT = builtins.toString ./.;

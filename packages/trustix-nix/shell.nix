@@ -1,7 +1,7 @@
 { pkgs ? import ../../nix }:
 
 let
-  rootShell = import ../../shell.nix;
+  rootShell = import ../../shell.nix { };
 
 in
 pkgs.mkShell {
