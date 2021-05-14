@@ -470,9 +470,6 @@ func initCommands() {
 	rootCmd.AddCommand(getValueCommand)
 	initGetValue()
 
-	rootCmd.AddCommand(queryMap)
-	initMapQuery()
-
 	rootCmd.AddCommand(decideCommand)
 	initDecide()
 

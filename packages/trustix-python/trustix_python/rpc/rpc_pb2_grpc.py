@@ -26,11 +26,6 @@ class RPCApiStub(object):
             request_serializer=api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.LogEntriesResponse.FromString,
         )
-        self.Get = channel.unary_unary(
-            "/trustix.RPCApi/Get",
-            request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
-            response_deserializer=rpc_dot_rpc__pb2.EntriesResponse.FromString,
-        )
         self.Decide = channel.unary_unary(
             "/trustix.RPCApi/Decide",
             request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
@@ -64,12 +59,6 @@ class RPCApiServicer(object):
 
     def GetLogEntries(self, request, context):
         """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def Get(self, request, context):
-        """Get map[LogID]OutputHash"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -110,11 +99,6 @@ def add_RPCApiServicer_to_server(servicer, server):
             servicer.GetLogEntries,
             request_deserializer=api_dot_api__pb2.GetLogEntriesRequest.FromString,
             response_serializer=api_dot_api__pb2.LogEntriesResponse.SerializeToString,
-        ),
-        "Get": grpc.unary_unary_rpc_method_handler(
-            servicer.Get,
-            request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
-            response_serializer=rpc_dot_rpc__pb2.EntriesResponse.SerializeToString,
         ),
         "Decide": grpc.unary_unary_rpc_method_handler(
             servicer.Decide,
@@ -195,35 +179,6 @@ class RPCApi(object):
             "/trustix.RPCApi/GetLogEntries",
             api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
             api_dot_api__pb2.LogEntriesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
-
-    @staticmethod
-    def Get(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/trustix.RPCApi/Get",
-            rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
-            rpc_dot_rpc__pb2.EntriesResponse.FromString,
             options,
             channel_credentials,
             insecure,

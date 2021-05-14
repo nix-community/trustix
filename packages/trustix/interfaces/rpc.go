@@ -19,9 +19,6 @@ type RpcAPI interface {
 	Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error)
 
 	GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error)
-
-	Get(ctx context.Context, in *rpc.KeyRequest) (*rpc.EntriesResponse, error)
-
 	Decide(ctx context.Context, in *rpc.KeyRequest) (*rpc.DecisionResponse, error)
 
 	GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error)

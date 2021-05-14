@@ -22,8 +22,6 @@ type RPCApiClient interface {
 	// Get map[LogID]Log (all local logs)
 	Logs(ctx context.Context, in *api.LogsRequest, opts ...grpc.CallOption) (*api.LogsResponse, error)
 	GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest, opts ...grpc.CallOption) (*api.LogEntriesResponse, error)
-	// Get map[LogID]OutputHash
-	Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error)
 	// Compare(inputHash)
 	Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
 	// Get stored value by digest (TODO: Remove, it's a duplicate from api.proto
@@ -52,15 +50,6 @@ func (c *rPCApiClient) Logs(ctx context.Context, in *api.LogsRequest, opts ...gr
 func (c *rPCApiClient) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest, opts ...grpc.CallOption) (*api.LogEntriesResponse, error) {
 	out := new(api.LogEntriesResponse)
 	err := c.cc.Invoke(ctx, "/trustix.RPCApi/GetLogEntries", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *rPCApiClient) Get(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*EntriesResponse, error) {
-	out := new(EntriesResponse)
-	err := c.cc.Invoke(ctx, "/trustix.RPCApi/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,8 +99,6 @@ type RPCApiServer interface {
 	// Get map[LogID]Log (all local logs)
 	Logs(context.Context, *api.LogsRequest) (*api.LogsResponse, error)
 	GetLogEntries(context.Context, *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error)
-	// Get map[LogID]OutputHash
-	Get(context.Context, *KeyRequest) (*EntriesResponse, error)
 	// Compare(inputHash)
 	Decide(context.Context, *KeyRequest) (*DecisionResponse, error)
 	// Get stored value by digest (TODO: Remove, it's a duplicate from api.proto
@@ -130,9 +117,6 @@ func (UnimplementedRPCApiServer) Logs(context.Context, *api.LogsRequest) (*api.L
 }
 func (UnimplementedRPCApiServer) GetLogEntries(context.Context, *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLogEntries not implemented")
-}
-func (UnimplementedRPCApiServer) Get(context.Context, *KeyRequest) (*EntriesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedRPCApiServer) Decide(context.Context, *KeyRequest) (*DecisionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Decide not implemented")
@@ -191,24 +175,6 @@ func _RPCApi_GetLogEntries_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCApiServer).GetLogEntries(ctx, req.(*api.GetLogEntriesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RPCApi_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(KeyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RPCApiServer).Get(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/trustix.RPCApi/Get",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCApiServer).Get(ctx, req.(*KeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -299,10 +265,6 @@ var RPCApi_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetLogEntries",
 			Handler:    _RPCApi_GetLogEntries_Handler,
-		},
-		{
-			MethodName: "Get",
-			Handler:    _RPCApi_Get_Handler,
 		},
 		{
 			MethodName: "Decide",

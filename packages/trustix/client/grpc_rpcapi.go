@@ -35,10 +35,6 @@ func (c *rpcAPIGRPCClient) GetLogEntries(ctx context.Context, in *api.GetLogEntr
 	return c.client.GetLogEntries(ctx, in)
 }
 
-func (c *rpcAPIGRPCClient) Get(ctx context.Context, in *rpc.KeyRequest) (*rpc.EntriesResponse, error) {
-	return c.client.Get(ctx, in)
-}
-
 func (c *rpcAPIGRPCClient) Decide(ctx context.Context, in *rpc.KeyRequest) (*rpc.DecisionResponse, error) {
 	return c.client.Decide(ctx, in)
 }

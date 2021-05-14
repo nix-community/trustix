@@ -32,7 +32,6 @@ from tortoise import (
     Tortoise,
 )
 import ijson  # type: ignore
-from trustix_python.rpc import rpc_pb2  # type: ignore
 from trustix_python.api import api_pb2  # type: ignore
 from async_lru import alru_cache  # type: ignore
 import typing

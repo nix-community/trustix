@@ -14,9 +14,6 @@ service RPCApi {
 
   rpc GetLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
 
-  // Get map[LogID]OutputHash
-  rpc Get (KeyRequest) returns (EntriesResponse) {}
-
   // Compare(inputHash)
   rpc Decide (KeyRequest) returns (DecisionResponse) {}
 
@@ -25,10 +22,6 @@ service RPCApi {
 
   rpc Submit (SubmitRequest) returns (SubmitResponse) {}
   rpc Flush (FlushRequest) returns (FlushResponse) {}
-}
-
-message KeyRequest {
-  required bytes Key = 1;
 }
 
 message EntriesResponse {
