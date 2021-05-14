@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax="proto2",
     serialized_options=b"Z3github.com/tweag/trustix/packages/trustix-proto/rpc",
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\rrpc/rpc.proto\x12\x07trustix\x1a\x15schema/mapentry.proto\x1a\rapi/api.proto"\x19\n\nKeyRequest\x12\x0b\n\x03Key\x18\x01 \x02(\x0c"\x91\x01\n\x0f\x45ntriesResponse\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\x36\n\x07\x45ntries\x18\x02 \x03(\x0b\x32%.trustix.EntriesResponse.EntriesEntry\x1a\x39\n\x0c\x45ntriesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.MapEntry:\x02\x38\x01"1\n\x10LogValueResponse\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x0e\n\x06\x44igest\x18\x02 \x02(\x0c"U\n\x10LogValueDecision\x12\x0e\n\x06LogIDs\x18\x01 \x03(\t\x12\x0e\n\x06\x44igest\x18\x02 \x02(\x0c\x12\x12\n\nConfidence\x18\x03 \x02(\x05\x12\r\n\x05Value\x18\x04 \x02(\x0c"~\n\x10\x44\x65\x63isionResponse\x12+\n\x08\x44\x65\x63ision\x18\x01 \x02(\x0b\x32\x19.trustix.LogValueDecision\x12-\n\nMismatches\x18\x02 \x03(\x0b\x32\x19.trustix.LogValueResponse\x12\x0e\n\x06Misses\x18\x03 \x03(\t"D\n\rSubmitRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12$\n\x05Items\x18\x02 \x03(\x0b\x32\x15.trustix.KeyValuePair"R\n\x0eSubmitResponse\x12.\n\x06status\x18\x01 \x02(\x0e\x32\x1e.trustix.SubmitResponse.Status"\x10\n\x06Status\x12\x06\n\x02OK\x10\x00"\x1d\n\x0c\x46lushRequest\x12\r\n\x05LogID\x18\x01 \x02(\t"\x0f\n\rFlushResponse2\xba\x03\n\nTrustixRPC\x12\x35\n\x04Logs\x12\x14.trustix.LogsRequest\x1a\x15.trustix.LogsResponse"\x00\x12M\n\rGetLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x12\x36\n\x03Get\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse"\x00\x12:\n\x06\x44\x65\x63ide\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse"\x00\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x12;\n\x06Submit\x12\x16.trustix.SubmitRequest\x1a\x17.trustix.SubmitResponse"\x00\x12\x38\n\x05\x46lush\x12\x15.trustix.FlushRequest\x1a\x16.trustix.FlushResponse"\x00\x42\x35Z3github.com/tweag/trustix/packages/trustix-proto/rpc',
+    serialized_pb=b'\n\rrpc/rpc.proto\x12\x07trustix\x1a\x15schema/mapentry.proto\x1a\rapi/api.proto"\x19\n\nKeyRequest\x12\x0b\n\x03Key\x18\x01 \x02(\x0c"\x91\x01\n\x0f\x45ntriesResponse\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\x36\n\x07\x45ntries\x18\x02 \x03(\x0b\x32%.trustix.EntriesResponse.EntriesEntry\x1a\x39\n\x0c\x45ntriesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.MapEntry:\x02\x38\x01"1\n\x10LogValueResponse\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x0e\n\x06\x44igest\x18\x02 \x02(\x0c"U\n\x10LogValueDecision\x12\x0e\n\x06LogIDs\x18\x01 \x03(\t\x12\x0e\n\x06\x44igest\x18\x02 \x02(\x0c\x12\x12\n\nConfidence\x18\x03 \x02(\x05\x12\r\n\x05Value\x18\x04 \x02(\x0c"~\n\x10\x44\x65\x63isionResponse\x12+\n\x08\x44\x65\x63ision\x18\x01 \x02(\x0b\x32\x19.trustix.LogValueDecision\x12-\n\nMismatches\x18\x02 \x03(\x0b\x32\x19.trustix.LogValueResponse\x12\x0e\n\x06Misses\x18\x03 \x03(\t"D\n\rSubmitRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12$\n\x05Items\x18\x02 \x03(\x0b\x32\x15.trustix.KeyValuePair"R\n\x0eSubmitResponse\x12.\n\x06status\x18\x01 \x02(\x0e\x32\x1e.trustix.SubmitResponse.Status"\x10\n\x06Status\x12\x06\n\x02OK\x10\x00"\x1d\n\x0c\x46lushRequest\x12\r\n\x05LogID\x18\x01 \x02(\t"\x0f\n\rFlushResponse2\xb6\x03\n\x06RPCApi\x12\x35\n\x04Logs\x12\x14.trustix.LogsRequest\x1a\x15.trustix.LogsResponse"\x00\x12M\n\rGetLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x12\x36\n\x03Get\x12\x13.trustix.KeyRequest\x1a\x18.trustix.EntriesResponse"\x00\x12:\n\x06\x44\x65\x63ide\x12\x13.trustix.KeyRequest\x1a\x19.trustix.DecisionResponse"\x00\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x12;\n\x06Submit\x12\x16.trustix.SubmitRequest\x1a\x17.trustix.SubmitResponse"\x00\x12\x38\n\x05\x46lush\x12\x15.trustix.FlushRequest\x1a\x16.trustix.FlushResponse"\x00\x42\x35Z3github.com/tweag/trustix/packages/trustix-proto/rpc',
     dependencies=[
         schema_dot_mapentry__pb2.DESCRIPTOR,
         api_dot_api__pb2.DESCRIPTOR,
@@ -752,19 +752,19 @@ _sym_db.RegisterMessage(FlushResponse)
 DESCRIPTOR._options = None
 _ENTRIESRESPONSE_ENTRIESENTRY._options = None
 
-_TRUSTIXRPC = _descriptor.ServiceDescriptor(
-    name="TrustixRPC",
-    full_name="trustix.TrustixRPC",
+_RPCAPI = _descriptor.ServiceDescriptor(
+    name="RPCApi",
+    full_name="trustix.RPCApi",
     file=DESCRIPTOR,
     index=0,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
     serialized_start=708,
-    serialized_end=1150,
+    serialized_end=1146,
     methods=[
         _descriptor.MethodDescriptor(
             name="Logs",
-            full_name="trustix.TrustixRPC.Logs",
+            full_name="trustix.RPCApi.Logs",
             index=0,
             containing_service=None,
             input_type=api_dot_api__pb2._LOGSREQUEST,
@@ -774,7 +774,7 @@ _TRUSTIXRPC = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="GetLogEntries",
-            full_name="trustix.TrustixRPC.GetLogEntries",
+            full_name="trustix.RPCApi.GetLogEntries",
             index=1,
             containing_service=None,
             input_type=api_dot_api__pb2._GETLOGENTRIESREQUEST,
@@ -784,7 +784,7 @@ _TRUSTIXRPC = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="Get",
-            full_name="trustix.TrustixRPC.Get",
+            full_name="trustix.RPCApi.Get",
             index=2,
             containing_service=None,
             input_type=_KEYREQUEST,
@@ -794,7 +794,7 @@ _TRUSTIXRPC = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="Decide",
-            full_name="trustix.TrustixRPC.Decide",
+            full_name="trustix.RPCApi.Decide",
             index=3,
             containing_service=None,
             input_type=_KEYREQUEST,
@@ -804,7 +804,7 @@ _TRUSTIXRPC = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="GetValue",
-            full_name="trustix.TrustixRPC.GetValue",
+            full_name="trustix.RPCApi.GetValue",
             index=4,
             containing_service=None,
             input_type=api_dot_api__pb2._VALUEREQUEST,
@@ -814,7 +814,7 @@ _TRUSTIXRPC = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="Submit",
-            full_name="trustix.TrustixRPC.Submit",
+            full_name="trustix.RPCApi.Submit",
             index=5,
             containing_service=None,
             input_type=_SUBMITREQUEST,
@@ -824,7 +824,7 @@ _TRUSTIXRPC = _descriptor.ServiceDescriptor(
         ),
         _descriptor.MethodDescriptor(
             name="Flush",
-            full_name="trustix.TrustixRPC.Flush",
+            full_name="trustix.RPCApi.Flush",
             index=6,
             containing_service=None,
             input_type=_FLUSHREQUEST,
@@ -834,8 +834,8 @@ _TRUSTIXRPC = _descriptor.ServiceDescriptor(
         ),
     ],
 )
-_sym_db.RegisterServiceDescriptor(_TRUSTIXRPC)
+_sym_db.RegisterServiceDescriptor(_RPCAPI)
 
-DESCRIPTOR.services_by_name["TrustixRPC"] = _TRUSTIXRPC
+DESCRIPTOR.services_by_name["RPCApi"] = _RPCAPI
 
 # @@protoc_insertion_point(module_scope)

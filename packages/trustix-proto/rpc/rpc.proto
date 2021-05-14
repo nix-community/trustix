@@ -8,7 +8,7 @@ option go_package = "github.com/tweag/trustix/packages/trustix-proto/rpc";
 package trustix;
 
 // TrustixRPC
-service TrustixRPC {
+service RPCApi {
   // Get map[LogID]Log (all local logs)
   rpc Logs (LogsRequest) returns (LogsResponse) {}
 

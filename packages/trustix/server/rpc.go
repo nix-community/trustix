@@ -30,7 +30,7 @@ import (
 )
 
 type TrustixRPCServer struct {
-	pb.UnimplementedTrustixRPCServer
+	pb.UnimplementedRPCApiServer
 	decider    decider.LogDecider
 	store      storage.Storage
 	publishers *pub.PublisherMap

@@ -17,11 +17,11 @@ import (
 )
 
 type rpcAPIGRPCClient struct {
-	client rpc.TrustixRPCClient
+	client rpc.RPCApiClient
 }
 
 func newRpcAPIGRPCClient(conn *grpc.ClientConn) *rpcAPIGRPCClient {
-	c := rpc.NewTrustixRPCClient(conn)
+	c := rpc.NewRPCApiClient(conn)
 	return &rpcAPIGRPCClient{
 		client: c,
 	}

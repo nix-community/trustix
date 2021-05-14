@@ -331,7 +331,7 @@ var rootCmd = &cobra.Command{
 					grpc.Creds(&auth.SoPeercred{}), // Attach SO_PEERCRED auth to UNIX sockets
 				)
 
-				pb.RegisterTrustixRPCServer(s, rpcServer)
+				pb.RegisterRPCApiServer(s, rpcServer)
 
 			} else {
 				s = grpc.NewServer()
