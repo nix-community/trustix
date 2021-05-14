@@ -52,8 +52,8 @@ var queryCommand = &cobra.Command{
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		log.Debug("Requesting STH")
-		sth, err := c.LogAPI.GetSTH(ctx, &api.STHRequest{
+		log.Debug("Requesting log head")
+		sth, err := c.LogAPI.GetHead(ctx, &api.LogHeadRequest{
 			LogID: &logID,
 		})
 		if err != nil {

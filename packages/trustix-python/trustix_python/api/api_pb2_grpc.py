@@ -4,7 +4,7 @@
 import grpc
 
 from trustix_python.api import api_pb2 as api_dot_api__pb2
-from trustix_python.schema import sth_pb2 as schema_dot_sth__pb2
+from trustix_python.schema import loghead_pb2 as schema_dot_loghead__pb2
 
 
 class NodeAPIStub(object):
@@ -135,10 +135,10 @@ class LogAPIStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.GetSTH = channel.unary_unary(
-            "/trustix.LogAPI/GetSTH",
-            request_serializer=api_dot_api__pb2.STHRequest.SerializeToString,
-            response_deserializer=schema_dot_sth__pb2.STH.FromString,
+        self.GetHead = channel.unary_unary(
+            "/trustix.LogAPI/GetHead",
+            request_serializer=api_dot_api__pb2.LogHeadRequest.SerializeToString,
+            response_deserializer=schema_dot_loghead__pb2.LogHead.FromString,
         )
         self.GetLogConsistencyProof = channel.unary_unary(
             "/trustix.LogAPI/GetLogConsistencyProof",
@@ -180,7 +180,7 @@ class LogAPIStub(object):
 class LogAPIServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def GetSTH(self, request, context):
+    def GetHead(self, request, context):
         """Aggregate"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
@@ -231,10 +231,10 @@ class LogAPIServicer(object):
 
 def add_LogAPIServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        "GetSTH": grpc.unary_unary_rpc_method_handler(
-            servicer.GetSTH,
-            request_deserializer=api_dot_api__pb2.STHRequest.FromString,
-            response_serializer=schema_dot_sth__pb2.STH.SerializeToString,
+        "GetHead": grpc.unary_unary_rpc_method_handler(
+            servicer.GetHead,
+            request_deserializer=api_dot_api__pb2.LogHeadRequest.FromString,
+            response_serializer=schema_dot_loghead__pb2.LogHead.SerializeToString,
         ),
         "GetLogConsistencyProof": grpc.unary_unary_rpc_method_handler(
             servicer.GetLogConsistencyProof,
@@ -283,7 +283,7 @@ class LogAPI(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def GetSTH(
+    def GetHead(
         request,
         target,
         options=(),
@@ -298,9 +298,9 @@ class LogAPI(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.LogAPI/GetSTH",
-            api_dot_api__pb2.STHRequest.SerializeToString,
-            schema_dot_sth__pb2.STH.FromString,
+            "/trustix.LogAPI/GetHead",
+            api_dot_api__pb2.LogHeadRequest.SerializeToString,
+            schema_dot_loghead__pb2.LogHead.FromString,
             options,
             channel_credentials,
             insecure,

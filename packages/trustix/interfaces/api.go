@@ -25,8 +25,8 @@ type NodeAPI interface {
 
 type LogAPI interface {
 
-	// GetSTH - Get a signed tree head
-	GetSTH(context.Context, *api.STHRequest) (*schema.STH, error)
+	// GetHead - Get a signed tree head
+	GetHead(context.Context, *api.LogHeadRequest) (*schema.LogHead, error)
 
 	// Get log consistency proof
 	GetLogConsistencyProof(context.Context, *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error)

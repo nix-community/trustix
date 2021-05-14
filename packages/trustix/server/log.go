@@ -54,13 +54,13 @@ func (s *TrustixAPIServer) getClient(logID string) (interfaces.LogAPI, error) {
 	return client.LogAPI, nil
 }
 
-func (s *TrustixAPIServer) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {
+func (s *TrustixAPIServer) GetHead(ctx context.Context, req *api.LogHeadRequest) (*schema.LogHead, error) {
 	log, err := s.getClient(*req.LogID)
 	if err != nil {
 		return nil, err
 	}
 
-	return log.GetSTH(ctx, req)
+	return log.GetHead(ctx, req)
 }
 
 func (s *TrustixAPIServer) GetLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {

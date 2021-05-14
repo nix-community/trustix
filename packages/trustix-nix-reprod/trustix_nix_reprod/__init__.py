@@ -270,13 +270,13 @@ async def index_log(log, sth):
 
 
 async def index_logs():
-    req = rpc_pb2.LogsRequest()
+    req = api_pb2.LogsRequest()
     resp = await get_combined_rpc().Logs(req)
 
     for log_resp in resp.Logs:
         try:
-            log = await Log.get(name=log_resp.Name)
+            log = await Log.get(name=log_resp.LogID)
         except DoesNotExist:
-            log = await Log.create(name=log_resp.Name, tree_size=0)
+            log = await Log.create(name=log_resp.LogID, tree_size=0)
 
         await index_log(log, log_resp.STH)

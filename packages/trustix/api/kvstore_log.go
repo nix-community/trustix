@@ -47,11 +47,11 @@ func NewKVStoreLogAPI(logID string, store storage.Storage, logBucket *storage.Bu
 	}, nil
 }
 
-func (kv *kvStoreLogApi) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {
-	var sth *schema.STH
+func (kv *kvStoreLogApi) GetHead(ctx context.Context, req *api.LogHeadRequest) (*schema.LogHead, error) {
+	var sth *schema.LogHead
 	err := kv.store.View(func(txn storage.Transaction) error {
 		var err error
-		sth, err = storage.GetSTH(kv.logBucket.Txn(txn))
+		sth, err = storage.GetLogHead(kv.logBucket.Txn(txn))
 		if err != nil {
 			return err
 		}

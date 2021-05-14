@@ -13,7 +13,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from trustix_python.schema import sth_pb2 as schema_dot_sth__pb2
+from trustix_python.schema import loghead_pb2 as schema_dot_loghead__pb2
 from trustix_python.schema import logleaf_pb2 as schema_dot_logleaf__pb2
 
 
@@ -23,9 +23,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax="proto2",
     serialized_options=b"Z3github.com/tweag/trustix/packages/trustix-proto/api",
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\rapi/api.proto\x12\x07trustix\x1a\x10schema/sth.proto\x1a\x14schema/logleaf.proto"\x1b\n\nSTHRequest\x12\r\n\x05LogID\x18\x01 \x02(\t"U\n\x1dGetLogConsistencyProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x11\n\tFirstSize\x18\x02 \x02(\x04\x12\x12\n\nSecondSize\x18\x03 \x02(\x04"\x1e\n\rProofResponse\x12\r\n\x05Proof\x18\x01 \x03(\x0c"I\n\x17GetLogAuditProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Index\x18\x02 \x02(\x04\x12\x10\n\x08TreeSize\x18\x03 \x02(\x04"D\n\x14GetLogEntriesRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Start\x18\x02 \x02(\x04\x12\x0e\n\x06\x46inish\x18\x03 \x02(\x04"A\n\x12GetMapValueRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x0b\n\x03Key\x18\x02 \x02(\x0c\x12\x0f\n\x07MapRoot\x18\x03 \x02(\x0c"s\n\x18SparseCompactMerkleProof\x12\x11\n\tSideNodes\x18\x01 \x03(\x0c\x12\x1d\n\x15NonMembershipLeafData\x18\x02 \x02(\x0c\x12\x0f\n\x07\x42itMask\x18\x03 \x02(\x0c\x12\x14\n\x0cNumSideNodes\x18\x04 \x02(\x04"S\n\x10MapValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c\x12\x30\n\x05Proof\x18\x02 \x02(\x0b\x32!.trustix.SparseCompactMerkleProof".\n\x12LogEntriesResponse\x12\x18\n\x06Leaves\x18\x01 \x03(\x0b\x32\x08.LogLeaf"*\n\x0cKeyValuePair\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\r\n\x05Value\x18\x02 \x02(\x0c"\x1e\n\x0cValueRequest\x12\x0e\n\x06\x44igest\x18\x01 \x02(\x0c"\x1e\n\rValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c"\r\n\x0bLogsRequest"b\n\tLogSigner\x12,\n\x07KeyType\x18\x01 \x02(\x0e\x32\x1b.trustix.LogSigner.KeyTypes\x12\x0e\n\x06Public\x18\x02 \x02(\t"\x17\n\x08KeyTypes\x12\x0b\n\x07\x65\x64\x32\x35\x35\x31\x39\x10\x00"\x8b\x01\n\x03Log\x12\r\n\x05LogID\x18\x01 \x02(\t\x12"\n\x06Signer\x18\x03 \x02(\x0b\x32\x12.trustix.LogSigner\x12$\n\x04Meta\x18\x04 \x03(\x0b\x32\x16.trustix.Log.MetaEntry\x1a+\n\tMetaEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"*\n\x0cLogsResponse\x12\x1a\n\x04Logs\x18\x01 \x03(\x0b\x32\x0c.trustix.Log2}\n\x07NodeAPI\x12\x35\n\x04Logs\x12\x14.trustix.LogsRequest\x1a\x15.trustix.LogsResponse"\x00\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x32\xf4\x04\n\x06LogAPI\x12%\n\x06GetSTH\x12\x13.trustix.STHRequest\x1a\x04.STH"\x00\x12Z\n\x16GetLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12N\n\x10GetLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12M\n\rGetLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x12G\n\x0bGetMapValue\x12\x1b.trustix.GetMapValueRequest\x1a\x19.trustix.MapValueResponse"\x00\x12\\\n\x18GetMHLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12P\n\x12GetMHLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12O\n\x0fGetMHLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x42\x35Z3github.com/tweag/trustix/packages/trustix-proto/api',
+    serialized_pb=b'\n\rapi/api.proto\x12\x07trustix\x1a\x14schema/loghead.proto\x1a\x14schema/logleaf.proto"\x1f\n\x0eLogHeadRequest\x12\r\n\x05LogID\x18\x01 \x02(\t"U\n\x1dGetLogConsistencyProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x11\n\tFirstSize\x18\x02 \x02(\x04\x12\x12\n\nSecondSize\x18\x03 \x02(\x04"\x1e\n\rProofResponse\x12\r\n\x05Proof\x18\x01 \x03(\x0c"I\n\x17GetLogAuditProofRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Index\x18\x02 \x02(\x04\x12\x10\n\x08TreeSize\x18\x03 \x02(\x04"D\n\x14GetLogEntriesRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\r\n\x05Start\x18\x02 \x02(\x04\x12\x0e\n\x06\x46inish\x18\x03 \x02(\x04"A\n\x12GetMapValueRequest\x12\r\n\x05LogID\x18\x01 \x02(\t\x12\x0b\n\x03Key\x18\x02 \x02(\x0c\x12\x0f\n\x07MapRoot\x18\x03 \x02(\x0c"s\n\x18SparseCompactMerkleProof\x12\x11\n\tSideNodes\x18\x01 \x03(\x0c\x12\x1d\n\x15NonMembershipLeafData\x18\x02 \x02(\x0c\x12\x0f\n\x07\x42itMask\x18\x03 \x02(\x0c\x12\x14\n\x0cNumSideNodes\x18\x04 \x02(\x04"S\n\x10MapValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c\x12\x30\n\x05Proof\x18\x02 \x02(\x0b\x32!.trustix.SparseCompactMerkleProof".\n\x12LogEntriesResponse\x12\x18\n\x06Leaves\x18\x01 \x03(\x0b\x32\x08.LogLeaf"*\n\x0cKeyValuePair\x12\x0b\n\x03Key\x18\x01 \x02(\x0c\x12\r\n\x05Value\x18\x02 \x02(\x0c"\x1e\n\x0cValueRequest\x12\x0e\n\x06\x44igest\x18\x01 \x02(\x0c"\x1e\n\rValueResponse\x12\r\n\x05Value\x18\x01 \x02(\x0c"\r\n\x0bLogsRequest"b\n\tLogSigner\x12,\n\x07KeyType\x18\x01 \x02(\x0e\x32\x1b.trustix.LogSigner.KeyTypes\x12\x0e\n\x06Public\x18\x02 \x02(\t"\x17\n\x08KeyTypes\x12\x0b\n\x07\x65\x64\x32\x35\x35\x31\x39\x10\x00"\x8b\x01\n\x03Log\x12\r\n\x05LogID\x18\x01 \x02(\t\x12"\n\x06Signer\x18\x03 \x02(\x0b\x32\x12.trustix.LogSigner\x12$\n\x04Meta\x18\x04 \x03(\x0b\x32\x16.trustix.Log.MetaEntry\x1a+\n\tMetaEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"*\n\x0cLogsResponse\x12\x1a\n\x04Logs\x18\x01 \x03(\x0b\x32\x0c.trustix.Log2}\n\x07NodeAPI\x12\x35\n\x04Logs\x12\x14.trustix.LogsRequest\x1a\x15.trustix.LogsResponse"\x00\x12;\n\x08GetValue\x12\x15.trustix.ValueRequest\x1a\x16.trustix.ValueResponse"\x00\x32\xfd\x04\n\x06LogAPI\x12.\n\x07GetHead\x12\x17.trustix.LogHeadRequest\x1a\x08.LogHead"\x00\x12Z\n\x16GetLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12N\n\x10GetLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12M\n\rGetLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x12G\n\x0bGetMapValue\x12\x1b.trustix.GetMapValueRequest\x1a\x19.trustix.MapValueResponse"\x00\x12\\\n\x18GetMHLogConsistencyProof\x12&.trustix.GetLogConsistencyProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12P\n\x12GetMHLogAuditProof\x12 .trustix.GetLogAuditProofRequest\x1a\x16.trustix.ProofResponse"\x00\x12O\n\x0fGetMHLogEntries\x12\x1d.trustix.GetLogEntriesRequest\x1a\x1b.trustix.LogEntriesResponse"\x00\x42\x35Z3github.com/tweag/trustix/packages/trustix-proto/api',
     dependencies=[
-        schema_dot_sth__pb2.DESCRIPTOR,
+        schema_dot_loghead__pb2.DESCRIPTOR,
         schema_dot_logleaf__pb2.DESCRIPTOR,
     ],
 )
@@ -49,15 +49,15 @@ _LOGSIGNER_KEYTYPES = _descriptor.EnumDescriptor(
     ],
     containing_type=None,
     serialized_options=None,
-    serialized_start=874,
-    serialized_end=897,
+    serialized_start=882,
+    serialized_end=905,
 )
 _sym_db.RegisterEnumDescriptor(_LOGSIGNER_KEYTYPES)
 
 
-_STHREQUEST = _descriptor.Descriptor(
-    name="STHRequest",
-    full_name="trustix.STHRequest",
+_LOGHEADREQUEST = _descriptor.Descriptor(
+    name="LogHeadRequest",
+    full_name="trustix.LogHeadRequest",
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
@@ -65,7 +65,7 @@ _STHREQUEST = _descriptor.Descriptor(
     fields=[
         _descriptor.FieldDescriptor(
             name="LogID",
-            full_name="trustix.STHRequest.LogID",
+            full_name="trustix.LogHeadRequest.LogID",
             index=0,
             number=1,
             type=9,
@@ -91,8 +91,8 @@ _STHREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=66,
-    serialized_end=93,
+    serialized_start=70,
+    serialized_end=101,
 )
 
 
@@ -170,8 +170,8 @@ _GETLOGCONSISTENCYPROOFREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=95,
-    serialized_end=180,
+    serialized_start=103,
+    serialized_end=188,
 )
 
 
@@ -211,8 +211,8 @@ _PROOFRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=182,
-    serialized_end=212,
+    serialized_start=190,
+    serialized_end=220,
 )
 
 
@@ -290,8 +290,8 @@ _GETLOGAUDITPROOFREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=214,
-    serialized_end=287,
+    serialized_start=222,
+    serialized_end=295,
 )
 
 
@@ -369,8 +369,8 @@ _GETLOGENTRIESREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=289,
-    serialized_end=357,
+    serialized_start=297,
+    serialized_end=365,
 )
 
 
@@ -448,8 +448,8 @@ _GETMAPVALUEREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=359,
-    serialized_end=424,
+    serialized_start=367,
+    serialized_end=432,
 )
 
 
@@ -546,8 +546,8 @@ _SPARSECOMPACTMERKLEPROOF = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=426,
-    serialized_end=541,
+    serialized_start=434,
+    serialized_end=549,
 )
 
 
@@ -606,8 +606,8 @@ _MAPVALUERESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=543,
-    serialized_end=626,
+    serialized_start=551,
+    serialized_end=634,
 )
 
 
@@ -647,8 +647,8 @@ _LOGENTRIESRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=628,
-    serialized_end=674,
+    serialized_start=636,
+    serialized_end=682,
 )
 
 
@@ -707,8 +707,8 @@ _KEYVALUEPAIR = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=676,
-    serialized_end=718,
+    serialized_start=684,
+    serialized_end=726,
 )
 
 
@@ -748,8 +748,8 @@ _VALUEREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=720,
-    serialized_end=750,
+    serialized_start=728,
+    serialized_end=758,
 )
 
 
@@ -789,8 +789,8 @@ _VALUERESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=752,
-    serialized_end=782,
+    serialized_start=760,
+    serialized_end=790,
 )
 
 
@@ -810,8 +810,8 @@ _LOGSREQUEST = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=784,
-    serialized_end=797,
+    serialized_start=792,
+    serialized_end=805,
 )
 
 
@@ -872,8 +872,8 @@ _LOGSIGNER = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=799,
-    serialized_end=897,
+    serialized_start=807,
+    serialized_end=905,
 )
 
 
@@ -932,8 +932,8 @@ _LOG_METAENTRY = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=996,
-    serialized_end=1039,
+    serialized_start=1004,
+    serialized_end=1047,
 )
 
 _LOG = _descriptor.Descriptor(
@@ -1012,8 +1012,8 @@ _LOG = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=900,
-    serialized_end=1039,
+    serialized_start=908,
+    serialized_end=1047,
 )
 
 
@@ -1053,8 +1053,8 @@ _LOGSRESPONSE = _descriptor.Descriptor(
     syntax="proto2",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=1041,
-    serialized_end=1083,
+    serialized_start=1049,
+    serialized_end=1091,
 )
 
 _MAPVALUERESPONSE.fields_by_name["Proof"].message_type = _SPARSECOMPACTMERKLEPROOF
@@ -1067,7 +1067,7 @@ _LOG_METAENTRY.containing_type = _LOG
 _LOG.fields_by_name["Signer"].message_type = _LOGSIGNER
 _LOG.fields_by_name["Meta"].message_type = _LOG_METAENTRY
 _LOGSRESPONSE.fields_by_name["Logs"].message_type = _LOG
-DESCRIPTOR.message_types_by_name["STHRequest"] = _STHREQUEST
+DESCRIPTOR.message_types_by_name["LogHeadRequest"] = _LOGHEADREQUEST
 DESCRIPTOR.message_types_by_name[
     "GetLogConsistencyProofRequest"
 ] = _GETLOGCONSISTENCYPROOFREQUEST
@@ -1087,16 +1087,16 @@ DESCRIPTOR.message_types_by_name["Log"] = _LOG
 DESCRIPTOR.message_types_by_name["LogsResponse"] = _LOGSRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-STHRequest = _reflection.GeneratedProtocolMessageType(
-    "STHRequest",
+LogHeadRequest = _reflection.GeneratedProtocolMessageType(
+    "LogHeadRequest",
     (_message.Message,),
     {
-        "DESCRIPTOR": _STHREQUEST,
+        "DESCRIPTOR": _LOGHEADREQUEST,
         "__module__": "api.api_pb2"
-        # @@protoc_insertion_point(class_scope:trustix.STHRequest)
+        # @@protoc_insertion_point(class_scope:trustix.LogHeadRequest)
     },
 )
-_sym_db.RegisterMessage(STHRequest)
+_sym_db.RegisterMessage(LogHeadRequest)
 
 GetLogConsistencyProofRequest = _reflection.GeneratedProtocolMessageType(
     "GetLogConsistencyProofRequest",
@@ -1284,8 +1284,8 @@ _NODEAPI = _descriptor.ServiceDescriptor(
     index=0,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-    serialized_start=1085,
-    serialized_end=1210,
+    serialized_start=1093,
+    serialized_end=1218,
     methods=[
         _descriptor.MethodDescriptor(
             name="Logs",
@@ -1321,16 +1321,16 @@ _LOGAPI = _descriptor.ServiceDescriptor(
     index=1,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-    serialized_start=1213,
-    serialized_end=1841,
+    serialized_start=1221,
+    serialized_end=1858,
     methods=[
         _descriptor.MethodDescriptor(
-            name="GetSTH",
-            full_name="trustix.LogAPI.GetSTH",
+            name="GetHead",
+            full_name="trustix.LogAPI.GetHead",
             index=0,
             containing_service=None,
-            input_type=_STHREQUEST,
-            output_type=schema_dot_sth__pb2._STH,
+            input_type=_LOGHEADREQUEST,
+            output_type=schema_dot_loghead__pb2._LOGHEAD,
             serialized_options=None,
             create_key=_descriptor._internal_create_key,
         ),

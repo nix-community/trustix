@@ -27,8 +27,8 @@ func newLogAPIGRPCClient(conn *grpc.ClientConn) *logAPIGRPCClient {
 	}
 }
 
-func (c *logAPIGRPCClient) GetSTH(ctx context.Context, req *api.STHRequest) (*schema.STH, error) {
-	return c.client.GetSTH(ctx, req)
+func (c *logAPIGRPCClient) GetHead(ctx context.Context, req *api.LogHeadRequest) (*schema.LogHead, error) {
+	return c.client.GetHead(ctx, req)
 }
 
 func (c *logAPIGRPCClient) GetLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {

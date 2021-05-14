@@ -143,7 +143,7 @@ var NodeAPI_ServiceDesc = grpc.ServiceDesc{
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LogAPIClient interface {
-	GetSTH(ctx context.Context, in *STHRequest, opts ...grpc.CallOption) (*schema.STH, error)
+	GetHead(ctx context.Context, in *LogHeadRequest, opts ...grpc.CallOption) (*schema.LogHead, error)
 	GetLogConsistencyProof(ctx context.Context, in *GetLogConsistencyProofRequest, opts ...grpc.CallOption) (*ProofResponse, error)
 	GetLogAuditProof(ctx context.Context, in *GetLogAuditProofRequest, opts ...grpc.CallOption) (*ProofResponse, error)
 	GetLogEntries(ctx context.Context, in *GetLogEntriesRequest, opts ...grpc.CallOption) (*LogEntriesResponse, error)
@@ -161,9 +161,9 @@ func NewLogAPIClient(cc grpc.ClientConnInterface) LogAPIClient {
 	return &logAPIClient{cc}
 }
 
-func (c *logAPIClient) GetSTH(ctx context.Context, in *STHRequest, opts ...grpc.CallOption) (*schema.STH, error) {
-	out := new(schema.STH)
-	err := c.cc.Invoke(ctx, "/trustix.LogAPI/GetSTH", in, out, opts...)
+func (c *logAPIClient) GetHead(ctx context.Context, in *LogHeadRequest, opts ...grpc.CallOption) (*schema.LogHead, error) {
+	out := new(schema.LogHead)
+	err := c.cc.Invoke(ctx, "/trustix.LogAPI/GetHead", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +237,7 @@ func (c *logAPIClient) GetMHLogEntries(ctx context.Context, in *GetLogEntriesReq
 // All implementations must embed UnimplementedLogAPIServer
 // for forward compatibility
 type LogAPIServer interface {
-	GetSTH(context.Context, *STHRequest) (*schema.STH, error)
+	GetHead(context.Context, *LogHeadRequest) (*schema.LogHead, error)
 	GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
 	GetLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)
 	GetLogEntries(context.Context, *GetLogEntriesRequest) (*LogEntriesResponse, error)
@@ -252,8 +252,8 @@ type LogAPIServer interface {
 type UnimplementedLogAPIServer struct {
 }
 
-func (UnimplementedLogAPIServer) GetSTH(context.Context, *STHRequest) (*schema.STH, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSTH not implemented")
+func (UnimplementedLogAPIServer) GetHead(context.Context, *LogHeadRequest) (*schema.LogHead, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHead not implemented")
 }
 func (UnimplementedLogAPIServer) GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLogConsistencyProof not implemented")
@@ -289,20 +289,20 @@ func RegisterLogAPIServer(s grpc.ServiceRegistrar, srv LogAPIServer) {
 	s.RegisterService(&LogAPI_ServiceDesc, srv)
 }
 
-func _LogAPI_GetSTH_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(STHRequest)
+func _LogAPI_GetHead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogHeadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LogAPIServer).GetSTH(ctx, in)
+		return srv.(LogAPIServer).GetHead(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trustix.LogAPI/GetSTH",
+		FullMethod: "/trustix.LogAPI/GetHead",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LogAPIServer).GetSTH(ctx, req.(*STHRequest))
+		return srv.(LogAPIServer).GetHead(ctx, req.(*LogHeadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -441,8 +441,8 @@ var LogAPI_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*LogAPIServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetSTH",
-			Handler:    _LogAPI_GetSTH_Handler,
+			MethodName: "GetHead",
+			Handler:    _LogAPI_GetHead_Handler,
 		},
 		{
 			MethodName: "GetLogConsistencyProof",

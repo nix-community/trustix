@@ -80,7 +80,7 @@ func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket,
 
 		logBucketTxn := qm.logBucket.Txn(txn)
 
-		sth, err := storage.GetSTH(logBucketTxn)
+		sth, err := storage.GetLogHead(logBucketTxn)
 		if err == nil {
 			return nil
 		}
@@ -241,7 +241,7 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 
 	logBucketTxn := qm.logBucket.Txn(txn)
 
-	sth, err := storage.GetSTH(logBucketTxn)
+	sth, err := storage.GetLogHead(logBucketTxn)
 	if err != nil {
 		return err
 	}

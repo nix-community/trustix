@@ -2,7 +2,7 @@ syntax = "proto2";
 
 option go_package = "github.com/tweag/trustix/packages/trustix-proto/schema";
 
-message STH {
+message LogHead {
   // Log
   required bytes LogRoot = 1;
   required uint64 TreeSize = 2;

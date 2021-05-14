@@ -26,7 +26,7 @@ func uint64ToBytes(i uint64) []byte {
 	return b[:]
 }
 
-func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *vlog.VerifiableLog, signer crypto.Signer) (*schema.STH, error) {
+func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *vlog.VerifiableLog, signer crypto.Signer) (*schema.LogHead, error) {
 	opts := crypto.SignerOpts(crypto.Hash(0))
 
 	vLogRoot, err := vLog.Root()
@@ -61,7 +61,7 @@ func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *v
 		return nil, err
 	}
 
-	return &schema.STH{
+	return &schema.LogHead{
 		LogRoot:    vLogRoot,
 		TreeSize:   &vLogSize,
 		MapRoot:    smTreeRoot,
@@ -71,15 +71,15 @@ func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *v
 	}, nil
 }
 
-func VerifySTHSig(verifier signer.TrustixVerifier, sth *schema.STH) bool {
+func VerifyLogHeadSig(verifier signer.TrustixVerifier, head *schema.LogHead) bool {
 
 	h := sha256.New()
-	h.Write(sth.LogRoot)
-	h.Write(uint64ToBytes(*sth.TreeSize))
-	h.Write(sth.MapRoot)
-	h.Write(sth.MHRoot)
-	h.Write(uint64ToBytes(*sth.MHTreeSize))
+	h.Write(head.LogRoot)
+	h.Write(uint64ToBytes(*head.TreeSize))
+	h.Write(head.MapRoot)
+	h.Write(head.MHRoot)
+	h.Write(uint64ToBytes(*head.MHTreeSize))
 	sum := h.Sum(nil)
 
-	return verifier.Verify(sum, sth.Signature)
+	return verifier.Verify(sum, head.Signature)
 }

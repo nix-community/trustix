@@ -41,11 +41,11 @@ func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket
 
 	updateSTH := func() error {
 
-		var oldSTH *schema.STH
+		var oldSTH *schema.LogHead
 		err := store.View(func(txn storage.Transaction) error {
 			var err error
 			logBucketTxn := logBucket.Txn(txn)
-			oldSTH, err = storage.GetSTH(logBucketTxn)
+			oldSTH, err = storage.GetLogHead(logBucketTxn)
 			return err
 		})
 
@@ -61,13 +61,13 @@ func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket
 			} else {
 				// New tree, no local state yet
 				size := uint64(0)
-				oldSTH = &schema.STH{
+				oldSTH = &schema.LogHead{
 					TreeSize: &size,
 				}
 			}
 		}
 
-		sth, err := logapi.GetSTH(context.Background(), &apipb.STHRequest{
+		sth, err := logapi.GetHead(context.Background(), &apipb.LogHeadRequest{
 			LogID: &logID,
 		})
 		if err != nil {
@@ -101,7 +101,7 @@ func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket
 			}
 		}
 
-		valid := sthlib.VerifySTHSig(verifier, sth)
+		valid := sthlib.VerifyLogHeadSig(verifier, sth)
 		if !valid {
 			return fmt.Errorf("STH signature invalid")
 		}

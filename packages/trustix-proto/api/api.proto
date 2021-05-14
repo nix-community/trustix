@@ -1,13 +1,13 @@
 syntax = "proto2";
 
-import "schema/sth.proto";
+import "schema/loghead.proto";
 import "schema/logleaf.proto";
 
 option go_package = "github.com/tweag/trustix/packages/trustix-proto/api";
 
 package trustix;
 
-message STHRequest {
+message LogHeadRequest {
   required string LogID = 1;
 }
 
@@ -109,7 +109,7 @@ service LogAPI {
 
   // Aggregate
 
-  rpc GetSTH (STHRequest) returns (STH) {}
+  rpc GetHead (LogHeadRequest) returns (LogHead) {}
 
   // Log
 

@@ -66,6 +66,11 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 	}
 }
 
+func (l *TrustixRPCServer) getLogHead(txn storage.Transaction, logID string) (*schema.LogHead, error) {
+	bucket := l.rootBucket.Cd(logID)
+	return storage.GetLogHead(bucket.Txn(txn))
+}
+
 func (l *TrustixRPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 
 	client, err := l.clients.Get(*in.LogID)
@@ -80,18 +85,17 @@ func (l *TrustixRPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntr
 	})
 }
 
-func (l *TrustixRPCServer) getSTHMap() (map[string]*schema.STH, error) {
-	m := make(map[string]*schema.STH)
+func (l *TrustixRPCServer) getLogHeadMap() (map[string]*schema.LogHead, error) {
+	m := make(map[string]*schema.LogHead)
 
 	err := l.store.View(func(txn storage.Transaction) error {
 		for _, log := range l.logs {
 			logID := *log.LogID
-			bucket := l.rootBucket.Cd(logID)
-			sth, err := storage.GetSTH(bucket.Txn(txn))
+			head, err := l.getLogHead(txn, logID)
 			if err != nil {
 				return err
 			}
-			m[logID] = sth
+			m[logID] = head
 		}
 		return nil
 	})
@@ -111,7 +115,7 @@ func (l *TrustixRPCServer) Get(ctx context.Context, in *pb.KeyRequest) (*pb.Entr
 	hexInput := hex.EncodeToString(in.Key)
 	log.WithField("key", hexInput).Info("Received Get request")
 
-	sthMap, err := l.getSTHMap()
+	sthMap, err := l.getLogHeadMap()
 	if err != nil {
 		return nil, err
 	}
@@ -191,7 +195,7 @@ func (l *TrustixRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.D
 	var inputs []*decider.LogDeciderInput
 	var misses []string
 
-	sthMap, err := l.getSTHMap()
+	sthMap, err := l.getLogHeadMap()
 	if err != nil {
 		return nil, err
 	}

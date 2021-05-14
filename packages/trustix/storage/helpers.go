@@ -16,7 +16,7 @@ import (
 
 // TODO: I don't like this living here but I also don't have a better option
 
-func GetSTH(txn *BucketTransaction) (*schema.STH, error) {
+func GetLogHead(txn *BucketTransaction) (*schema.LogHead, error) {
 	var buf []byte
 	{
 		v, err := txn.Get([]byte(constants.HeadBlob))
@@ -29,7 +29,7 @@ func GetSTH(txn *BucketTransaction) (*schema.STH, error) {
 		return nil, ObjectNotFoundError
 	}
 
-	sth := &schema.STH{}
+	sth := &schema.LogHead{}
 	err := proto.Unmarshal(buf, sth)
 	if err != nil {
 		return nil, err
