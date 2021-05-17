@@ -35,7 +35,7 @@ var flushCommand = &cobra.Command{
 		ctx, cancel := client.CreateContext(timeout)
 		defer cancel()
 
-		_, err = c.RpcAPI.Flush(ctx, &pb.FlushRequest{
+		_, err = c.LogRPC.Flush(ctx, &pb.FlushRequest{
 			LogID: &logID,
 		})
 		if err != nil {

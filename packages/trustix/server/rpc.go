@@ -20,16 +20,14 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
-	rpc "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/client"
 	"github.com/tweag/trustix/packages/trustix/decider"
 	pub "github.com/tweag/trustix/packages/trustix/publisher"
-	"github.com/tweag/trustix/packages/trustix/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/storage"
 )
 
-type TrustixRPCServer struct {
+type RPCServer struct {
 	pb.UnimplementedRPCApiServer
 	decider    decider.LogDecider
 	store      storage.Storage
@@ -39,15 +37,15 @@ type TrustixRPCServer struct {
 	clients    *client.ClientPool
 }
 
-func NewTrustixRPCServer(
+func NewRPCServer(
 	store storage.Storage,
 	rootBucket *storage.Bucket,
 	clients *client.ClientPool,
 	publishers *pub.PublisherMap,
 	logs []*api.Log,
 	decider decider.LogDecider,
-) *TrustixRPCServer {
-	return &TrustixRPCServer{
+) *RPCServer {
+	return &RPCServer{
 		store:      store,
 		decider:    decider,
 		publishers: publishers,
@@ -66,12 +64,7 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 	}
 }
 
-func (l *TrustixRPCServer) getLogHead(txn storage.Transaction, logID string) (*schema.LogHead, error) {
-	bucket := l.rootBucket.Cd(logID)
-	return storage.GetLogHead(bucket.Txn(txn))
-}
-
-func (l *TrustixRPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
+func (l *RPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
 
 	client, err := l.clients.Get(*in.LogID)
 	if err != nil {
@@ -85,13 +78,13 @@ func (l *TrustixRPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntr
 	})
 }
 
-func (l *TrustixRPCServer) getLogHeadMap() (map[string]*schema.LogHead, error) {
+func (l *RPCServer) getLogHeadMap() (map[string]*schema.LogHead, error) {
 	m := make(map[string]*schema.LogHead)
 
 	err := l.store.View(func(txn storage.Transaction) error {
 		for _, log := range l.logs {
 			logID := *log.LogID
-			head, err := l.getLogHead(txn, logID)
+			head, err := getLogHead(l.rootBucket, txn, logID)
 			if err != nil {
 				return err
 			}
@@ -106,7 +99,7 @@ func (l *TrustixRPCServer) getLogHeadMap() (map[string]*schema.LogHead, error) {
 	return m, nil
 }
 
-func (l *TrustixRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
+func (l *RPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
 
 	hexInput := hex.EncodeToString(in.Key)
 	log.WithField("key", hexInput).Info("Received Decide request")
@@ -270,7 +263,7 @@ func (l *TrustixRPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.D
 
 }
 
-func (l *TrustixRPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
+func (l *RPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
 
 	log.Info("Received Value request")
 
@@ -300,35 +293,7 @@ func (l *TrustixRPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (
 	return nil, fmt.Errorf("Value could not be retreived")
 }
 
-func (l *TrustixRPCServer) Submit(ctx context.Context, req *rpc.SubmitRequest) (*rpc.SubmitResponse, error) {
-	err := auth.CanWrite(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	q, err := l.publishers.Get(*req.LogID)
-	if err != nil {
-		return nil, err
-	}
-
-	return q.Submit(ctx, req)
-}
-
-func (l *TrustixRPCServer) Flush(ctx context.Context, req *rpc.FlushRequest) (*rpc.FlushResponse, error) {
-	err := auth.CanWrite(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	q, err := l.publishers.Get(*req.LogID)
-	if err != nil {
-		return nil, err
-	}
-
-	return q.Flush(ctx, req)
-}
-
-func (l *TrustixRPCServer) Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error) {
+func (l *RPCServer) Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error) {
 	return &api.LogsResponse{
 		Logs: l.logs,
 	}, nil

@@ -28,9 +28,7 @@ from trustix_nix_reprod.cache import cached
 from trustix_python.api import api_pb2
 from trustix_nix_reprod.conf import settings
 from trustix_nix_reprod.api.models import DiffResponse
-from trustix_nix_reprod.proto import (
-    get_combined_rpc,
-)
+from trustix_nix_reprod.proto import get_rpcapi
 
 
 # Uvloop has a nasty bug https://github.com/MagicStack/uvloop/issues/317
@@ -111,7 +109,7 @@ async def diff(output_hash_1_hex: str, output_hash_2_hex: str) -> DiffResponse:
     output_hash_1 = codecs.decode(output_hash_1_hex, "hex")  # type: ignore
     output_hash_2 = codecs.decode(output_hash_2_hex, "hex")  # type: ignore
 
-    rpc_client = get_combined_rpc()
+    rpc_client = get_rpcapi()
 
     narinfo1, narinfo2 = [
         orjson.loads(resp.Value)

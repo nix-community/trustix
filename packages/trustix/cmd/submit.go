@@ -68,7 +68,7 @@ var submitCommand = &cobra.Command{
 			"value": valueHex,
 		}).Debug("Submitting mapping")
 
-		r, err := c.RpcAPI.Submit(ctx, &pb.SubmitRequest{
+		r, err := c.LogRPC.Submit(ctx, &pb.SubmitRequest{
 			LogID: &logID,
 			Items: []*api.KeyValuePair{
 				&api.KeyValuePair{

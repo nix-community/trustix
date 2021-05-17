@@ -47,6 +47,7 @@ func CreateClientConn(address string) (*Client, error) {
 		LogAPI:  newLogAPIGRPCClient(conn),
 		RpcAPI:  newRpcAPIGRPCClient(conn),
 		NodeAPI: newNodeAPIGRPCClient(conn),
+		LogRPC:  newLogRPCGRPCClient(conn),
 
 		close: conn.Close,
 	}

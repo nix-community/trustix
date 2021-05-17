@@ -13,17 +13,18 @@ import (
 
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/rpc"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
 )
 
 type RpcAPI interface {
 	Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error)
-
-	GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error)
 	Decide(ctx context.Context, in *rpc.KeyRequest) (*rpc.DecisionResponse, error)
-
 	GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error)
+}
 
+type LogRPC interface {
+	GetHead(context.Context, *api.LogHeadRequest) (*schema.LogHead, error)
+	GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error)
 	Submit(ctx context.Context, in *rpc.SubmitRequest) (*rpc.SubmitResponse, error)
-
 	Flush(ctx context.Context, in *rpc.FlushRequest) (*rpc.FlushResponse, error)
 }

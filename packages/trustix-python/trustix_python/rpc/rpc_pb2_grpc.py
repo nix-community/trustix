@@ -5,6 +5,7 @@ import grpc
 
 from trustix_python.api import api_pb2 as api_dot_api__pb2
 from trustix_python.rpc import rpc_pb2 as rpc_dot_rpc__pb2
+from trustix_python.schema import loghead_pb2 as schema_dot_loghead__pb2
 
 
 class RPCApiStub(object):
@@ -21,11 +22,6 @@ class RPCApiStub(object):
             request_serializer=api_dot_api__pb2.LogsRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.LogsResponse.FromString,
         )
-        self.GetLogEntries = channel.unary_unary(
-            "/trustix.RPCApi/GetLogEntries",
-            request_serializer=api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
-            response_deserializer=api_dot_api__pb2.LogEntriesResponse.FromString,
-        )
         self.Decide = channel.unary_unary(
             "/trustix.RPCApi/Decide",
             request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
@@ -35,16 +31,6 @@ class RPCApiStub(object):
             "/trustix.RPCApi/GetValue",
             request_serializer=api_dot_api__pb2.ValueRequest.SerializeToString,
             response_deserializer=api_dot_api__pb2.ValueResponse.FromString,
-        )
-        self.Submit = channel.unary_unary(
-            "/trustix.RPCApi/Submit",
-            request_serializer=rpc_dot_rpc__pb2.SubmitRequest.SerializeToString,
-            response_deserializer=rpc_dot_rpc__pb2.SubmitResponse.FromString,
-        )
-        self.Flush = channel.unary_unary(
-            "/trustix.RPCApi/Flush",
-            request_serializer=rpc_dot_rpc__pb2.FlushRequest.SerializeToString,
-            response_deserializer=rpc_dot_rpc__pb2.FlushResponse.FromString,
         )
 
 
@@ -57,12 +43,6 @@ class RPCApiServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
-    def GetLogEntries(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
     def Decide(self, request, context):
         """Compare(inputHash)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -70,19 +50,7 @@ class RPCApiServicer(object):
         raise NotImplementedError("Method not implemented!")
 
     def GetValue(self, request, context):
-        """Get stored value by digest (TODO: Remove, it's a duplicate from api.proto"""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def Submit(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def Flush(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Get stored value by digest"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -95,11 +63,6 @@ def add_RPCApiServicer_to_server(servicer, server):
             request_deserializer=api_dot_api__pb2.LogsRequest.FromString,
             response_serializer=api_dot_api__pb2.LogsResponse.SerializeToString,
         ),
-        "GetLogEntries": grpc.unary_unary_rpc_method_handler(
-            servicer.GetLogEntries,
-            request_deserializer=api_dot_api__pb2.GetLogEntriesRequest.FromString,
-            response_serializer=api_dot_api__pb2.LogEntriesResponse.SerializeToString,
-        ),
         "Decide": grpc.unary_unary_rpc_method_handler(
             servicer.Decide,
             request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
@@ -109,16 +72,6 @@ def add_RPCApiServicer_to_server(servicer, server):
             servicer.GetValue,
             request_deserializer=api_dot_api__pb2.ValueRequest.FromString,
             response_serializer=api_dot_api__pb2.ValueResponse.SerializeToString,
-        ),
-        "Submit": grpc.unary_unary_rpc_method_handler(
-            servicer.Submit,
-            request_deserializer=rpc_dot_rpc__pb2.SubmitRequest.FromString,
-            response_serializer=rpc_dot_rpc__pb2.SubmitResponse.SerializeToString,
-        ),
-        "Flush": grpc.unary_unary_rpc_method_handler(
-            servicer.Flush,
-            request_deserializer=rpc_dot_rpc__pb2.FlushRequest.FromString,
-            response_serializer=rpc_dot_rpc__pb2.FlushResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -150,35 +103,6 @@ class RPCApi(object):
             "/trustix.RPCApi/Logs",
             api_dot_api__pb2.LogsRequest.SerializeToString,
             api_dot_api__pb2.LogsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
-
-    @staticmethod
-    def GetLogEntries(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/trustix.RPCApi/GetLogEntries",
-            api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
-            api_dot_api__pb2.LogEntriesResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -247,6 +171,157 @@ class RPCApi(object):
             metadata,
         )
 
+
+class LogRPCStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.GetHead = channel.unary_unary(
+            "/trustix.LogRPC/GetHead",
+            request_serializer=api_dot_api__pb2.LogHeadRequest.SerializeToString,
+            response_deserializer=schema_dot_loghead__pb2.LogHead.FromString,
+        )
+        self.GetLogEntries = channel.unary_unary(
+            "/trustix.LogRPC/GetLogEntries",
+            request_serializer=api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
+            response_deserializer=api_dot_api__pb2.LogEntriesResponse.FromString,
+        )
+        self.Submit = channel.unary_unary(
+            "/trustix.LogRPC/Submit",
+            request_serializer=rpc_dot_rpc__pb2.SubmitRequest.SerializeToString,
+            response_deserializer=rpc_dot_rpc__pb2.SubmitResponse.FromString,
+        )
+        self.Flush = channel.unary_unary(
+            "/trustix.LogRPC/Flush",
+            request_serializer=rpc_dot_rpc__pb2.FlushRequest.SerializeToString,
+            response_deserializer=rpc_dot_rpc__pb2.FlushResponse.FromString,
+        )
+
+
+class LogRPCServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def GetHead(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def GetLogEntries(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def Submit(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def Flush(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+
+def add_LogRPCServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+        "GetHead": grpc.unary_unary_rpc_method_handler(
+            servicer.GetHead,
+            request_deserializer=api_dot_api__pb2.LogHeadRequest.FromString,
+            response_serializer=schema_dot_loghead__pb2.LogHead.SerializeToString,
+        ),
+        "GetLogEntries": grpc.unary_unary_rpc_method_handler(
+            servicer.GetLogEntries,
+            request_deserializer=api_dot_api__pb2.GetLogEntriesRequest.FromString,
+            response_serializer=api_dot_api__pb2.LogEntriesResponse.SerializeToString,
+        ),
+        "Submit": grpc.unary_unary_rpc_method_handler(
+            servicer.Submit,
+            request_deserializer=rpc_dot_rpc__pb2.SubmitRequest.FromString,
+            response_serializer=rpc_dot_rpc__pb2.SubmitResponse.SerializeToString,
+        ),
+        "Flush": grpc.unary_unary_rpc_method_handler(
+            servicer.Flush,
+            request_deserializer=rpc_dot_rpc__pb2.FlushRequest.FromString,
+            response_serializer=rpc_dot_rpc__pb2.FlushResponse.SerializeToString,
+        ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+        "trustix.LogRPC", rpc_method_handlers
+    )
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+# This class is part of an EXPERIMENTAL API.
+class LogRPC(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def GetHead(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/trustix.LogRPC/GetHead",
+            api_dot_api__pb2.LogHeadRequest.SerializeToString,
+            schema_dot_loghead__pb2.LogHead.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
+
+    @staticmethod
+    def GetLogEntries(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/trustix.LogRPC/GetLogEntries",
+            api_dot_api__pb2.GetLogEntriesRequest.SerializeToString,
+            api_dot_api__pb2.LogEntriesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
+
     @staticmethod
     def Submit(
         request,
@@ -263,7 +338,7 @@ class RPCApi(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.RPCApi/Submit",
+            "/trustix.LogRPC/Submit",
             rpc_dot_rpc__pb2.SubmitRequest.SerializeToString,
             rpc_dot_rpc__pb2.SubmitResponse.FromString,
             options,
@@ -292,7 +367,7 @@ class RPCApi(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/trustix.RPCApi/Flush",
+            "/trustix.LogRPC/Flush",
             rpc_dot_rpc__pb2.FlushRequest.SerializeToString,
             rpc_dot_rpc__pb2.FlushResponse.FromString,
             options,

@@ -42,7 +42,10 @@ import asyncio
 import json
 
 from trustix_nix_reprod.conf import settings
-from trustix_nix_reprod.proto import get_combined_rpc
+from trustix_nix_reprod.proto import (
+    get_rpcapi,
+    get_logrpc,
+)
 from trustix_nix_reprod.cache import connection as cache_connection
 
 
@@ -238,7 +241,7 @@ async def index_log(log, sth):
 
     start = chunks[0]
     for finish in chunks[1:]:
-        resp = await get_combined_rpc().GetLogEntries(
+        resp = await get_logrpc().GetLogEntries(
             api_pb2.GetLogEntriesRequest(
                 LogID=log.name,
                 Start=start,
@@ -270,7 +273,7 @@ async def index_log(log, sth):
 
 async def index_logs():
     req = api_pb2.LogsRequest()
-    resp = await get_combined_rpc().Logs(req)
+    resp = await get_rpcapi().Logs(req)
 
     for log_resp in resp.Logs:
         try:
@@ -278,4 +281,7 @@ async def index_logs():
         except DoesNotExist:
             log = await Log.create(name=log_resp.LogID, tree_size=0)
 
-        await index_log(log, log_resp.STH)
+        head_req = api_pb2.LogHeadRequest(LogID=log_resp.LogID)
+        head = await get_logrpc().GetHead(head_req)
+
+        await index_log(log, head)

@@ -6,32 +6,14 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package client
+package server
 
 import (
-	"github.com/tweag/trustix/packages/trustix/interfaces"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
+	"github.com/tweag/trustix/packages/trustix/storage"
 )
 
-const (
-	LocalClientType = iota
-	GRPCClientType
-)
-
-type Client struct {
-	NodeAPI interfaces.NodeAPI
-	LogAPI  interfaces.LogAPI
-	RpcAPI  interfaces.RpcAPI
-	LogRPC  interfaces.LogRPC
-
-	Type int
-
-	close func() error
-}
-
-func (c *Client) Close() error {
-	if c.close != nil {
-		return c.close()
-	}
-
-	return nil
+func getLogHead(rootBucket *storage.Bucket, txn storage.Transaction, logID string) (*schema.LogHead, error) {
+	bucket := rootBucket.Cd(logID)
+	return storage.GetLogHead(bucket.Txn(txn))
 }

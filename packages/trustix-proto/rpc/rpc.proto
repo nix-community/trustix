@@ -1,6 +1,7 @@
 syntax = "proto2";
 
 import "schema/mapentry.proto";
+import "schema/loghead.proto";
 import "api/api.proto";
 
 option go_package = "github.com/tweag/trustix/packages/trustix-proto/rpc";
@@ -12,16 +13,22 @@ service RPCApi {
   // Get map[LogID]Log (all local logs)
   rpc Logs (LogsRequest) returns (LogsResponse) {}
 
-  rpc GetLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
-
   // Compare(inputHash)
   rpc Decide (KeyRequest) returns (DecisionResponse) {}
 
-  // Get stored value by digest (TODO: Remove, it's a duplicate from api.proto
+  // Get stored value by digest
   rpc GetValue (ValueRequest) returns (ValueResponse) {}
+}
 
+service LogRPC {
+  rpc GetHead (LogHeadRequest) returns (LogHead) {}
+  rpc GetLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
   rpc Submit (SubmitRequest) returns (SubmitResponse) {}
   rpc Flush (FlushRequest) returns (FlushResponse) {}
+}
+
+message KeyRequest {
+  required bytes Key = 1;
 }
 
 message EntriesResponse {

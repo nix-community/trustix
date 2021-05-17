@@ -31,22 +31,10 @@ func (c *rpcAPIGRPCClient) Logs(ctx context.Context, in *api.LogsRequest) (*api.
 	return c.client.Logs(ctx, in)
 }
 
-func (c *rpcAPIGRPCClient) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
-	return c.client.GetLogEntries(ctx, in)
-}
-
 func (c *rpcAPIGRPCClient) Decide(ctx context.Context, in *rpc.KeyRequest) (*rpc.DecisionResponse, error) {
 	return c.client.Decide(ctx, in)
 }
 
 func (c *rpcAPIGRPCClient) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
 	return c.client.GetValue(ctx, in)
-}
-
-func (c *rpcAPIGRPCClient) Submit(ctx context.Context, in *rpc.SubmitRequest) (*rpc.SubmitResponse, error) {
-	return c.client.Submit(ctx, in)
-}
-
-func (c *rpcAPIGRPCClient) Flush(ctx context.Context, in *rpc.FlushRequest) (*rpc.FlushResponse, error) {
-	return c.client.Flush(ctx, in)
 }

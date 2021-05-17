@@ -317,7 +317,8 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
-		rpcServer := server.NewTrustixRPCServer(store, rootBucket, clientPool, pubMap, logs, decider)
+		logRpcServer := server.NewLogRPCServer(store, rootBucket, clientPool, pubMap)
+		rpcServer := server.NewRPCServer(store, rootBucket, clientPool, pubMap, logs, decider)
 
 		log.Debug("Creating gRPC servers")
 
@@ -331,6 +332,7 @@ var rootCmd = &cobra.Command{
 					grpc.Creds(&auth.SoPeercred{}), // Attach SO_PEERCRED auth to UNIX sockets
 				)
 
+				pb.RegisterLogRPCServer(s, logRpcServer)
 				pb.RegisterRPCApiServer(s, rpcServer)
 
 			} else {

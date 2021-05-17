@@ -92,7 +92,7 @@ var nixHookCommand = &cobra.Command{
 		ctx, cancel := client.CreateContext(30)
 		defer cancel()
 
-		_, err = c.RpcAPI.Submit(ctx, req)
+		_, err = c.LogRPC.Submit(ctx, req)
 		if err != nil {
 			log.Fatalf("could not submit: %v", err)
 		}

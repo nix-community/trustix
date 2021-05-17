@@ -27,5 +27,10 @@ def get_channel() -> grpc.aio.Channel:
 
 
 @lru_cache(maxsize=None)
-def get_combined_rpc() -> rpc_pb2_grpc.TrustixRPCStub:  # type: ignore
-    return rpc_pb2_grpc.TrustixRPCStub(get_channel())  # type: ignore
+def get_rpcapi() -> rpc_pb2_grpc.RPCApiStub:  # type: ignore
+    return rpc_pb2_grpc.RPCApiStub(get_channel())  # type: ignore
+
+
+@lru_cache(maxsize=None)
+def get_logrpc() -> rpc_pb2_grpc.LogRPCStub:  # type: ignore
+    return rpc_pb2_grpc.LogRPCStub(get_channel())  # type: ignore
