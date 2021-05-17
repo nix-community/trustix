@@ -11,6 +11,7 @@ package cmd
 import (
 	"crypto"
 	"fmt"
+	"math"
 	"net"
 	"net/url"
 	"os"
@@ -19,6 +20,7 @@ import (
 	"path/filepath"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/coreos/go-systemd/activation"
 	log "github.com/sirupsen/logrus"
@@ -182,8 +184,8 @@ var rootCmd = &cobra.Command{
 		nodeAPI := tapi.NewKVStoreNodeAPI(store, caValueBucket, logsPublished)
 		nodeAPIServer := server.NewNodeAPIServer(nodeAPI)
 
-		sthSyncMgr := sthsync.NewSyncManager()
-		defer sthSyncMgr.Close()
+		headSyncCloser := lib.NewMultiCloser()
+		defer headSyncCloser.Close()
 
 		pubMap := pub.NewPublisherMap()
 		defer pubMap.Close()
@@ -220,7 +222,11 @@ var rootCmd = &cobra.Command{
 						}
 					}
 
-					sthSyncMgr.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), clientPool, verifier))
+					{
+						interval := 1.0
+						duration := time.Millisecond * time.Duration(math.Round(interval/1000))
+						headSyncCloser.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), clientPool, verifier, duration))
+					}
 
 					return nil
 				})

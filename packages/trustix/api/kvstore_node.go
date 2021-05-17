@@ -40,7 +40,7 @@ func (kv *kvStoreNodeApi) GetValue(ctx context.Context, in *api.ValueRequest) (*
 
 		var err error
 
-		value, err := bucketTxn.Get(in.Digest)
+		value, err = bucketTxn.Get(in.Digest)
 		if err != nil {
 			return err
 		}

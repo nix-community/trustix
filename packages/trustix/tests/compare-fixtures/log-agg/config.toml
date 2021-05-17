@@ -1,6 +1,6 @@
 remotes = [
   "unix:///build/1.sock",
-  "unix:///build/2.sock"
+  "unix:///build/2.sock",
   "unix:///build/3.sock",
 ]
 

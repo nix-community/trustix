@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"time"
 
 	proto "github.com/golang/protobuf/proto"
@@ -32,7 +33,14 @@ type sthSyncer struct {
 	closeChan chan interface{}
 }
 
-func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket, clients *client.ClientPool, verifier signer.TrustixVerifier) STHSyncer {
+func NewSTHSyncer(
+	logID string,
+	store storage.Storage,
+	logBucket *storage.Bucket,
+	clients *client.ClientPool,
+	verifier signer.TrustixVerifier,
+	pollInterval time.Duration,
+) io.Closer {
 	c := &sthSyncer{
 		store:     store,
 		logID:     logID,
@@ -48,13 +56,6 @@ func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket
 			oldSTH, err = storage.GetLogHead(logBucketTxn)
 			return err
 		})
-
-		client, err := clients.Get(logID)
-		if err != nil {
-			return err
-		}
-		logapi := client.LogAPI
-
 		if err != nil {
 			if err != storage.ObjectNotFoundError {
 				return err
@@ -66,6 +67,12 @@ func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket
 				}
 			}
 		}
+
+		client, err := clients.Get(logID)
+		if err != nil {
+			return err
+		}
+		logapi := client.LogAPI
 
 		sth, err := logapi.GetHead(context.Background(), &apipb.LogHeadRequest{
 			LogID: &logID,
@@ -160,15 +167,14 @@ func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket
 
 		run()
 
-		duration := time.Second * 10
-		timeout := time.NewTimer(duration)
+		timeout := time.NewTimer(pollInterval)
 		defer timeout.Stop()
 
-		// TODO: Make timeout configurable (& manually triggerable)
 		for {
-			timeout.Reset(duration)
+			timeout.Reset(pollInterval)
 			select {
 			case _ = <-c.closeChan:
+				timeout.Stop()
 				return
 			case <-timeout.C:
 				run()
@@ -179,6 +185,7 @@ func NewSTHSyncer(logID string, store storage.Storage, logBucket *storage.Bucket
 	return c
 }
 
-func (c *sthSyncer) Close() {
+func (c *sthSyncer) Close() error {
 	c.closeChan <- nil
+	return nil
 }

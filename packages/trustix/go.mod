@@ -17,6 +17,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tweag/trustix/packages/trustix-proto v0.0.0-00010101000000-000000000000
 	github.com/ugorji/go v1.1.4 // indirect
+	go.uber.org/multierr v1.6.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
 	google.golang.org/grpc v1.36.0

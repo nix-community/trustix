@@ -78,27 +78,6 @@ func (l *RPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequ
 	})
 }
 
-func (l *RPCServer) getLogHeadMap() (map[string]*schema.LogHead, error) {
-	m := make(map[string]*schema.LogHead)
-
-	err := l.store.View(func(txn storage.Transaction) error {
-		for _, log := range l.logs {
-			logID := *log.LogID
-			head, err := getLogHead(l.rootBucket, txn, logID)
-			if err != nil {
-				return err
-			}
-			m[logID] = head
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return m, nil
-}
-
 func (l *RPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
 
 	hexInput := hex.EncodeToString(in.Key)
@@ -109,9 +88,24 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.Decision
 	var inputs []*decider.LogDeciderInput
 	var misses []string
 
-	sthMap, err := l.getLogHeadMap()
-	if err != nil {
-		return nil, err
+	logs := l.logs
+
+	sthMap := make(map[string]*schema.LogHead)
+	{
+		err := l.store.View(func(txn storage.Transaction) error {
+			for _, log := range logs {
+				logID := *log.LogID
+				head, err := getLogHead(l.rootBucket, txn, logID)
+				if err != nil {
+					return err
+				}
+				sthMap[logID] = head
+			}
+			return nil
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	logIDs := []string{}
@@ -126,7 +120,7 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.Decision
 		logIDs = append(logIDs, logID)
 	}
 
-	for _, logMeta := range l.logs {
+	for _, logMeta := range logs {
 		logMeta := logMeta
 
 		wg.Add(1)
