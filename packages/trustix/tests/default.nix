@@ -32,16 +32,16 @@ in
 
     systemfd -s ./sock -- trustix --config ${./config-simple.toml} &
 
-    trustix --log-id "$log_id" submit --input-hash "$key" --output-hash "$value"
+    trustix --log-id "$log_id" submit --key "$key" --value "$value"
     trustix --log-id "$log_id" flush
 
     echo "Checking input equality"
-    test $(trustix --log-id "$log_id" query --input-hash "$key" | cut -d' ' -f 3) = "$expected"
+    test $(trustix --log-id "$log_id" query --key "$key" | cut -d' ' -f 3) = "$expected"
   '';
 
   # Test comparing multiple logs
   comparison = mkTest "compare" ''
-    input_hash="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
+    key="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
     output_hash="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
     evil_hash="053e399dbbdd74b10ad6d2cfa28ab4aab7e342d613a731c7dc4b66c2283e0757"
 
@@ -59,13 +59,13 @@ in
     (cd ${compare-fixtures/log3}; systemfd -s $build_dir/3.sock -- trustix --state $TMPDIR/log3-state --config ./config.toml) &
 
     # Submit hashes
-    trustix --log-id "$log_id_1" submit --input-hash "$input_hash" --output-hash "$output_hash" --address "unix://./1.sock"
+    trustix --log-id "$log_id_1" submit --key "$key" --value "$output_hash" --address "unix://./1.sock"
     trustix --log-id "$log_id_1" flush --address "unix://./1.sock"
 
-    trustix --log-id "$log_id_2" submit --input-hash "$input_hash" --output-hash "$output_hash" --address "unix://./2.sock"
+    trustix --log-id "$log_id_2" submit --key "$key" --value "$output_hash" --address "unix://./2.sock"
     trustix --log-id "$log_id_2" flush --address "unix://./2.sock"
 
-    trustix --log-id "$log_id_3" submit --input-hash "$input_hash" --output-hash "$evil_hash" --address "unix://./3.sock"
+    trustix --log-id "$log_id_3" submit --key "$key" --value "$evil_hash" --address "unix://./3.sock"
     trustix --log-id "$log_id_3" flush --address "unix://./3.sock"
 
     (cd ${compare-fixtures/log-agg}; systemfd -s $build_dir/agg.sock -- trustix --state $TMPDIR/log-agg-state --config ./config.toml) &
@@ -75,7 +75,7 @@ in
     # about what that would look like
     sleep 5
 
-    trustix decide --input-hash "$input_hash" --address "unix://./agg.sock" > output
+    trustix decide --key "$key" --address "unix://./agg.sock" > output
 
     echo "Decision output:"
     cat output

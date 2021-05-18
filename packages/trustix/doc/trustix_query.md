@@ -9,8 +9,8 @@ trustix query [flags]
 ### Options
 
 ```
-  -h, --help                help for query
-      --input-hash string   Input hash in hex encoding
+  -h, --help         help for query
+      --key string   Key in hex encoding
 ```
 
 ### Options inherited from parent commands

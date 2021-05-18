@@ -8,18 +8,23 @@ option go_package = "github.com/tweag/trustix/packages/trustix-proto/rpc";
 
 package trustix;
 
-// TrustixRPC
+// RPCApi are "private" rpc methods for an instance.
+// This should only be available to trusted parties.
 service RPCApi {
-  // Get map[LogID]Log (all local logs)
+
+  // Get a list of all logs published/subscribed by this node
   rpc Logs (LogsRequest) returns (LogsResponse) {}
 
-  // Compare(inputHash)
+  // Decide on an output for key based on the configured decision method
   rpc Decide (KeyRequest) returns (DecisionResponse) {}
 
-  // Get stored value by digest
+  // Get values by their content-address
   rpc GetValue (ValueRequest) returns (ValueResponse) {}
+
 }
 
+// RPCApi are "private" rpc methods for an instance related to a specific log.
+// This should only be available to trusted parties.
 service LogRPC {
   rpc GetHead (LogHeadRequest) returns (LogHead) {}
   rpc GetLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}

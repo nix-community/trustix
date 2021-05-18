@@ -3,7 +3,8 @@
 let
   rootShell = import ../../shell.nix;
 
-in pkgs.stdenv.mkDerivation {
+in
+pkgs.stdenv.mkDerivation {
   pname = "trustix-doc";
   version = "dev";
 

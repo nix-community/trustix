@@ -25,8 +25,10 @@ type MapEntry struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Digest []byte  `protobuf:"bytes,1,req,name=Digest" json:"Digest,omitempty"`
-	Index  *uint64 `protobuf:"varint,2,req,name=Index" json:"Index,omitempty"`
+	// Value digest of tree node
+	Digest []byte `protobuf:"bytes,1,req,name=Digest" json:"Digest,omitempty"`
+	// Index of value in log
+	Index *uint64 `protobuf:"varint,2,req,name=Index" json:"Index,omitempty"`
 }
 
 func (x *MapEntry) Reset() {

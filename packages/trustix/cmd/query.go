@@ -85,5 +85,5 @@ var queryCommand = &cobra.Command{
 }
 
 func initQuery() {
-	queryCommand.Flags().StringVar(&keyHex, "input-hash", "", "Input hash in hex encoding")
+	queryCommand.Flags().StringVar(&keyHex, "key", "", "Key in hex encoding")
 }

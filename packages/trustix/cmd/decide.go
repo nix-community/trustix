@@ -20,10 +20,10 @@ import (
 
 var decideCommand = &cobra.Command{
 	Use:   "decide",
-	Short: "Decide output hash from the logs (multiple)",
+	Short: "Decide on output from configured logs",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if keyHex == "" {
-			return fmt.Errorf("Missing input/output hash")
+			return fmt.Errorf("Missing key param")
 		}
 
 		inputBytes, err := hex.DecodeString(keyHex)
@@ -68,5 +68,5 @@ var decideCommand = &cobra.Command{
 }
 
 func initDecide() {
-	decideCommand.Flags().StringVar(&keyHex, "input-hash", "", "Input hash in hex encoding")
+	decideCommand.Flags().StringVar(&keyHex, "key", "", "Key in hex encoding")
 }

@@ -90,14 +90,14 @@
 <a name="trustix.GetLogAuditProofRequest"></a>
 
 ### GetLogAuditProofRequest
-
+Get log audit proof for a given tree
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| LogID | [string](#string) | required |  |
-| Index | [uint64](#uint64) | required |  |
-| TreeSize | [uint64](#uint64) | required |  |
+| LogID | [string](#string) | required | Log identifier |
+| Index | [uint64](#uint64) | required | Tree node index |
+| TreeSize | [uint64](#uint64) | required | Tree size (proof reference) |
 
 
 
@@ -107,14 +107,14 @@
 <a name="trustix.GetLogConsistencyProofRequest"></a>
 
 ### GetLogConsistencyProofRequest
-
+Get a consistency proof between two given log sizes
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| LogID | [string](#string) | required |  |
-| FirstSize | [uint64](#uint64) | required |  |
-| SecondSize | [uint64](#uint64) | required |  |
+| LogID | [string](#string) | required | Log identifier |
+| FirstSize | [uint64](#uint64) | required | From tree size |
+| SecondSize | [uint64](#uint64) | required | To tree size |
 
 
 
@@ -129,9 +129,9 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| LogID | [string](#string) | required |  |
-| Start | [uint64](#uint64) | required |  |
-| Finish | [uint64](#uint64) | required |  |
+| LogID | [string](#string) | required | Log identifier |
+| Start | [uint64](#uint64) | required | Get entries from |
+| Finish | [uint64](#uint64) | required | Get entries to |
 
 
 
@@ -146,9 +146,9 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| LogID | [string](#string) | required |  |
-| Key | [bytes](#bytes) | required |  |
-| MapRoot | [bytes](#bytes) | required |  |
+| LogID | [string](#string) | required | Log identifier |
+| Key | [bytes](#bytes) | required | Map key |
+| MapRoot | [bytes](#bytes) | required | Map root hash to derive proof from |
 
 
 
@@ -163,8 +163,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Key | [bytes](#bytes) | required |  |
-| Value | [bytes](#bytes) | required |  |
+| Key | [bytes](#bytes) | required | Map key |
+| Value | [bytes](#bytes) | required | Map value |
 
 
 
@@ -180,7 +180,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | LogID | [string](#string) | required |  |
-| Signer | [LogSigner](#trustix.LogSigner) | required | required string Mode = 2; |
+| Signer | [LogSigner](#trustix.LogSigner) | required |  |
 | Meta | [Log.MetaEntry](#trustix.Log.MetaEntry) | repeated |  |
 
 
@@ -222,12 +222,12 @@
 <a name="trustix.LogHeadRequest"></a>
 
 ### LogHeadRequest
-
+Request a signed head for a given log
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| LogID | [string](#string) | required |  |
+| LogID | [string](#string) | required | Log identifier |
 
 
 
@@ -309,7 +309,7 @@
 <a name="trustix.SparseCompactMerkleProof"></a>
 
 ### SparseCompactMerkleProof
-
+Sparse merkle tree proof
 
 
 | Field | Type | Label | Description |
@@ -374,11 +374,11 @@
 <a name="trustix.LogAPI"></a>
 
 ### LogAPI
-
+LogAPI is a logical grouping for RPC methods that are specific to a given log.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetHead | [LogHeadRequest](#trustix.LogHeadRequest) | [.LogHead](#LogHead) |  |
+| GetHead | [LogHeadRequest](#trustix.LogHeadRequest) | [.LogHead](#LogHead) | Get signed head |
 | GetLogConsistencyProof | [GetLogConsistencyProofRequest](#trustix.GetLogConsistencyProofRequest) | [ProofResponse](#trustix.ProofResponse) |  |
 | GetLogAuditProof | [GetLogAuditProofRequest](#trustix.GetLogAuditProofRequest) | [ProofResponse](#trustix.ProofResponse) |  |
 | GetLogEntries | [GetLogEntriesRequest](#trustix.GetLogEntriesRequest) | [LogEntriesResponse](#trustix.LogEntriesResponse) |  |
@@ -391,12 +391,13 @@
 <a name="trustix.NodeAPI"></a>
 
 ### NodeAPI
-
+NodeAPI is a logical grouping for RPC methods that are for the entire node
+rather than individual logs.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Logs | [LogsRequest](#trustix.LogsRequest) | [LogsResponse](#trustix.LogsResponse) | Get map[LogID]Log |
-| GetValue | [ValueRequest](#trustix.ValueRequest) | [ValueResponse](#trustix.ValueResponse) |  |
+| Logs | [LogsRequest](#trustix.LogsRequest) | [LogsResponse](#trustix.LogsResponse) | Get a list of all logs published by this node |
+| GetValue | [ValueRequest](#trustix.ValueRequest) | [ValueResponse](#trustix.ValueResponse) | Get values by their content-address |
 
  
 
@@ -583,7 +584,8 @@
 <a name="trustix.LogRPC"></a>
 
 ### LogRPC
-
+RPCApi are &#34;private&#34; rpc methods for an instance related to a specific log.
+This should only be available to trusted parties.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
@@ -596,13 +598,14 @@
 <a name="trustix.RPCApi"></a>
 
 ### RPCApi
-TrustixRPC
+RPCApi are &#34;private&#34; rpc methods for an instance.
+This should only be available to trusted parties.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Logs | [LogsRequest](#trustix.LogsRequest) | [LogsResponse](#trustix.LogsResponse) | Get map[LogID]Log (all local logs) |
-| Decide | [KeyRequest](#trustix.KeyRequest) | [DecisionResponse](#trustix.DecisionResponse) | Compare(inputHash) |
-| GetValue | [ValueRequest](#trustix.ValueRequest) | [ValueResponse](#trustix.ValueResponse) | Get stored value by digest |
+| Logs | [LogsRequest](#trustix.LogsRequest) | [LogsResponse](#trustix.LogsResponse) | Get a list of all logs published/subscribed by this node |
+| Decide | [KeyRequest](#trustix.KeyRequest) | [DecisionResponse](#trustix.DecisionResponse) | Decide on an output for key based on the configured decision method |
+| GetValue | [ValueRequest](#trustix.ValueRequest) | [ValueResponse](#trustix.ValueResponse) | Get values by their content-address |
 
  
 
@@ -618,15 +621,15 @@ TrustixRPC
 <a name=".LogHead"></a>
 
 ### LogHead
-
+Log
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| LogRoot | [bytes](#bytes) | required | Log |
+| LogRoot | [bytes](#bytes) | required |  |
 | TreeSize | [uint64](#uint64) | required |  |
-| MapRoot | [bytes](#bytes) | required | Map |
-| MHRoot | [bytes](#bytes) | required | Map head fields |
+| MapRoot | [bytes](#bytes) | required |  |
+| MHRoot | [bytes](#bytes) | required |  |
 | MHTreeSize | [uint64](#uint64) | required |  |
 | Signature | [bytes](#bytes) | required | Aggregate signature |
 
@@ -654,7 +657,7 @@ TrustixRPC
 <a name=".LogLeaf"></a>
 
 ### LogLeaf
-
+Leaf value of a merkle tree
 
 
 | Field | Type | Label | Description |
@@ -692,8 +695,8 @@ TrustixRPC
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Digest | [bytes](#bytes) | required |  |
-| Index | [uint64](#uint64) | required |  |
+| Digest | [bytes](#bytes) | required | Value digest of tree node |
+| Index | [uint64](#uint64) | required | Index of value in log |
 
 
 
@@ -719,7 +722,7 @@ TrustixRPC
 <a name=".SubmitQueue"></a>
 
 ### SubmitQueue
-
+This type is internal only and not guaranteed stable
 
 
 | Field | Type | Label | Description |

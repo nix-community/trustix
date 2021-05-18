@@ -25,12 +25,9 @@ type LogHead struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Log
-	LogRoot  []byte  `protobuf:"bytes,1,req,name=LogRoot" json:"LogRoot,omitempty"`
-	TreeSize *uint64 `protobuf:"varint,2,req,name=TreeSize" json:"TreeSize,omitempty"`
-	// Map
-	MapRoot []byte `protobuf:"bytes,3,req,name=MapRoot" json:"MapRoot,omitempty"`
-	// Map head fields
+	LogRoot    []byte  `protobuf:"bytes,1,req,name=LogRoot" json:"LogRoot,omitempty"`
+	TreeSize   *uint64 `protobuf:"varint,2,req,name=TreeSize" json:"TreeSize,omitempty"`
+	MapRoot    []byte  `protobuf:"bytes,3,req,name=MapRoot" json:"MapRoot,omitempty"`
 	MHRoot     []byte  `protobuf:"bytes,4,req,name=MHRoot" json:"MHRoot,omitempty"`
 	MHTreeSize *uint64 `protobuf:"varint,5,req,name=MHTreeSize" json:"MHTreeSize,omitempty"`
 	// Aggregate signature

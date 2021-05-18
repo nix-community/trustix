@@ -1,4 +1,4 @@
-all: build test lint doc format
+all: format build test lint doc
 
 build:
 	for pkg in packages/*; do \

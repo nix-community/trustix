@@ -19,8 +19,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NodeAPIClient interface {
-	// Get map[LogID]Log
+	// Get a list of all logs published by this node
 	Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (*LogsResponse, error)
+	// Get values by their content-address
 	GetValue(ctx context.Context, in *ValueRequest, opts ...grpc.CallOption) (*ValueResponse, error)
 }
 
@@ -54,8 +55,9 @@ func (c *nodeAPIClient) GetValue(ctx context.Context, in *ValueRequest, opts ...
 // All implementations must embed UnimplementedNodeAPIServer
 // for forward compatibility
 type NodeAPIServer interface {
-	// Get map[LogID]Log
+	// Get a list of all logs published by this node
 	Logs(context.Context, *LogsRequest) (*LogsResponse, error)
+	// Get values by their content-address
 	GetValue(context.Context, *ValueRequest) (*ValueResponse, error)
 	mustEmbedUnimplementedNodeAPIServer()
 }
@@ -143,6 +145,7 @@ var NodeAPI_ServiceDesc = grpc.ServiceDesc{
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LogAPIClient interface {
+	// Get signed head
 	GetHead(ctx context.Context, in *LogHeadRequest, opts ...grpc.CallOption) (*schema.LogHead, error)
 	GetLogConsistencyProof(ctx context.Context, in *GetLogConsistencyProofRequest, opts ...grpc.CallOption) (*ProofResponse, error)
 	GetLogAuditProof(ctx context.Context, in *GetLogAuditProofRequest, opts ...grpc.CallOption) (*ProofResponse, error)
@@ -237,6 +240,7 @@ func (c *logAPIClient) GetMHLogEntries(ctx context.Context, in *GetLogEntriesReq
 // All implementations must embed UnimplementedLogAPIServer
 // for forward compatibility
 type LogAPIServer interface {
+	// Get signed head
 	GetHead(context.Context, *LogHeadRequest) (*schema.LogHead, error)
 	GetLogConsistencyProof(context.Context, *GetLogConsistencyProofRequest) (*ProofResponse, error)
 	GetLogAuditProof(context.Context, *GetLogAuditProofRequest) (*ProofResponse, error)

@@ -9,7 +9,9 @@ from trustix_python.schema import loghead_pb2 as schema_dot_loghead__pb2
 
 
 class RPCApiStub(object):
-    """TrustixRPC"""
+    """RPCApi are "private" rpc methods for an instance.
+    This should only be available to trusted parties.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -35,22 +37,24 @@ class RPCApiStub(object):
 
 
 class RPCApiServicer(object):
-    """TrustixRPC"""
+    """RPCApi are "private" rpc methods for an instance.
+    This should only be available to trusted parties.
+    """
 
     def Logs(self, request, context):
-        """Get map[LogID]Log (all local logs)"""
+        """Get a list of all logs published/subscribed by this node"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def Decide(self, request, context):
-        """Compare(inputHash)"""
+        """Decide on an output for key based on the configured decision method"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def GetValue(self, request, context):
-        """Get stored value by digest"""
+        """Get values by their content-address"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -82,7 +86,9 @@ def add_RPCApiServicer_to_server(servicer, server):
 
 # This class is part of an EXPERIMENTAL API.
 class RPCApi(object):
-    """TrustixRPC"""
+    """RPCApi are "private" rpc methods for an instance.
+    This should only be available to trusted parties.
+    """
 
     @staticmethod
     def Logs(
@@ -173,7 +179,9 @@ class RPCApi(object):
 
 
 class LogRPCStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """RPCApi are "private" rpc methods for an instance related to a specific log.
+    This should only be available to trusted parties.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -204,7 +212,9 @@ class LogRPCStub(object):
 
 
 class LogRPCServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """RPCApi are "private" rpc methods for an instance related to a specific log.
+    This should only be available to trusted parties.
+    """
 
     def GetHead(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -262,7 +272,9 @@ def add_LogRPCServicer_to_server(servicer, server):
 
 # This class is part of an EXPERIMENTAL API.
 class LogRPC(object):
-    """Missing associated documentation comment in .proto file."""
+    """RPCApi are "private" rpc methods for an instance related to a specific log.
+    This should only be available to trusted parties.
+    """
 
     @staticmethod
     def GetHead(

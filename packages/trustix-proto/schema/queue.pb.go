@@ -20,6 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// This type is internal only and not guaranteed stable
 type SubmitQueue struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

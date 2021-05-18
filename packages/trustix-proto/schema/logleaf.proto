@@ -2,6 +2,7 @@ syntax = "proto2";
 
 option go_package = "github.com/tweag/trustix/packages/trustix-proto/schema";
 
+// Leaf value of a merkle tree
 message LogLeaf {
   optional bytes Key = 1;
   optional bytes ValueDigest = 2;

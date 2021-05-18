@@ -9,9 +9,9 @@ trustix submit [flags]
 ### Options
 
 ```
-  -h, --help                 help for submit
-      --input-hash string    Input hash in hex encoding
-      --output-hash string   Output hash in hex encoding
+  -h, --help           help for submit
+      --key string     Key in hex encoding
+      --value string   Value in hex encoding
 ```
 
 ### Options inherited from parent commands

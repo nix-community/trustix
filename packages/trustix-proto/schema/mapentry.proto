@@ -3,6 +3,9 @@ syntax = "proto2";
 option go_package = "github.com/tweag/trustix/packages/trustix-proto/schema";
 
 message MapEntry {
+  // Value digest of tree node
   required bytes Digest = 1;
+
+  // Index of value in log
   required uint64 Index = 2;
 }

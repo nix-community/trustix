@@ -88,6 +88,6 @@ var submitCommand = &cobra.Command{
 }
 
 func initSubmit() {
-	submitCommand.Flags().StringVar(&keyHex, "input-hash", "", "Input hash in hex encoding")
-	submitCommand.Flags().StringVar(&valueHex, "output-hash", "", "Output hash in hex encoding")
+	submitCommand.Flags().StringVar(&keyHex, "key", "", "Key in hex encoding")
+	submitCommand.Flags().StringVar(&valueHex, "value", "", "Value in hex encoding")
 }

@@ -20,11 +20,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCApiClient interface {
-	// Get map[LogID]Log (all local logs)
+	// Get a list of all logs published/subscribed by this node
 	Logs(ctx context.Context, in *api.LogsRequest, opts ...grpc.CallOption) (*api.LogsResponse, error)
-	// Compare(inputHash)
+	// Decide on an output for key based on the configured decision method
 	Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
-	// Get stored value by digest
+	// Get values by their content-address
 	GetValue(ctx context.Context, in *api.ValueRequest, opts ...grpc.CallOption) (*api.ValueResponse, error)
 }
 
@@ -67,11 +67,11 @@ func (c *rPCApiClient) GetValue(ctx context.Context, in *api.ValueRequest, opts 
 // All implementations must embed UnimplementedRPCApiServer
 // for forward compatibility
 type RPCApiServer interface {
-	// Get map[LogID]Log (all local logs)
+	// Get a list of all logs published/subscribed by this node
 	Logs(context.Context, *api.LogsRequest) (*api.LogsResponse, error)
-	// Compare(inputHash)
+	// Decide on an output for key based on the configured decision method
 	Decide(context.Context, *KeyRequest) (*DecisionResponse, error)
-	// Get stored value by digest
+	// Get values by their content-address
 	GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error)
 	mustEmbedUnimplementedRPCApiServer()
 }

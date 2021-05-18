@@ -8,7 +8,9 @@ from trustix_python.schema import loghead_pb2 as schema_dot_loghead__pb2
 
 
 class NodeAPIStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """NodeAPI is a logical grouping for RPC methods that are for the entire node
+    rather than individual logs.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -29,16 +31,18 @@ class NodeAPIStub(object):
 
 
 class NodeAPIServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """NodeAPI is a logical grouping for RPC methods that are for the entire node
+    rather than individual logs.
+    """
 
     def Logs(self, request, context):
-        """Get map[LogID]Log"""
+        """Get a list of all logs published by this node"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def GetValue(self, request, context):
-        """Content-addressed values"""
+        """Get values by their content-address"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -65,7 +69,9 @@ def add_NodeAPIServicer_to_server(servicer, server):
 
 # This class is part of an EXPERIMENTAL API.
 class NodeAPI(object):
-    """Missing associated documentation comment in .proto file."""
+    """NodeAPI is a logical grouping for RPC methods that are for the entire node
+    rather than individual logs.
+    """
 
     @staticmethod
     def Logs(
@@ -127,7 +133,7 @@ class NodeAPI(object):
 
 
 class LogAPIStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """LogAPI is a logical grouping for RPC methods that are specific to a given log."""
 
     def __init__(self, channel):
         """Constructor.
@@ -178,10 +184,10 @@ class LogAPIStub(object):
 
 
 class LogAPIServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """LogAPI is a logical grouping for RPC methods that are specific to a given log."""
 
     def GetHead(self, request, context):
-        """Aggregate"""
+        """Get signed head"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -280,7 +286,7 @@ def add_LogAPIServicer_to_server(servicer, server):
 
 # This class is part of an EXPERIMENTAL API.
 class LogAPI(object):
-    """Missing associated documentation comment in .proto file."""
+    """LogAPI is a logical grouping for RPC methods that are specific to a given log."""
 
     @staticmethod
     def GetHead(

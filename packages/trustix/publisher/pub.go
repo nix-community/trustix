@@ -17,7 +17,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-	// "time"
 
 	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"

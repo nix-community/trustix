@@ -74,11 +74,13 @@ func (LogSigner_KeyTypes) EnumDescriptor() ([]byte, []int) {
 	return file_api_proto_rawDescGZIP(), []int{13, 0}
 }
 
+// Request a signed head for a given log
 type LogHeadRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// Log identifier
 	LogID *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
 }
 
@@ -121,13 +123,17 @@ func (x *LogHeadRequest) GetLogID() string {
 	return ""
 }
 
+// Get a consistency proof between two given log sizes
 type GetLogConsistencyProofRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	LogID      *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
-	FirstSize  *uint64 `protobuf:"varint,2,req,name=FirstSize" json:"FirstSize,omitempty"`
+	// Log identifier
+	LogID *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
+	// From tree size
+	FirstSize *uint64 `protobuf:"varint,2,req,name=FirstSize" json:"FirstSize,omitempty"`
+	// To tree size
 	SecondSize *uint64 `protobuf:"varint,3,req,name=SecondSize" json:"SecondSize,omitempty"`
 }
 
@@ -231,13 +237,17 @@ func (x *ProofResponse) GetProof() [][]byte {
 	return nil
 }
 
+// Get log audit proof for a given tree
 type GetLogAuditProofRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	LogID    *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
-	Index    *uint64 `protobuf:"varint,2,req,name=Index" json:"Index,omitempty"`
+	// Log identifier
+	LogID *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
+	// Tree node index
+	Index *uint64 `protobuf:"varint,2,req,name=Index" json:"Index,omitempty"`
+	// Tree size (proof reference)
 	TreeSize *uint64 `protobuf:"varint,3,req,name=TreeSize" json:"TreeSize,omitempty"`
 }
 
@@ -299,8 +309,11 @@ type GetLogEntriesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	LogID  *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
-	Start  *uint64 `protobuf:"varint,2,req,name=Start" json:"Start,omitempty"`
+	// Log identifier
+	LogID *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
+	// Get entries from
+	Start *uint64 `protobuf:"varint,2,req,name=Start" json:"Start,omitempty"`
+	// Get entries to
 	Finish *uint64 `protobuf:"varint,3,req,name=Finish" json:"Finish,omitempty"`
 }
 
@@ -362,9 +375,12 @@ type GetMapValueRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	LogID   *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
-	Key     []byte  `protobuf:"bytes,2,req,name=Key" json:"Key,omitempty"`
-	MapRoot []byte  `protobuf:"bytes,3,req,name=MapRoot" json:"MapRoot,omitempty"`
+	// Log identifier
+	LogID *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
+	// Map key
+	Key []byte `protobuf:"bytes,2,req,name=Key" json:"Key,omitempty"`
+	// Map root hash to derive proof from
+	MapRoot []byte `protobuf:"bytes,3,req,name=MapRoot" json:"MapRoot,omitempty"`
 }
 
 func (x *GetMapValueRequest) Reset() {
@@ -420,6 +436,7 @@ func (x *GetMapValueRequest) GetMapRoot() []byte {
 	return nil
 }
 
+// Sparse merkle tree proof
 type SparseCompactMerkleProof struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -601,7 +618,9 @@ type KeyValuePair struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Key   []byte `protobuf:"bytes,1,req,name=Key" json:"Key,omitempty"`
+	// Map key
+	Key []byte `protobuf:"bytes,1,req,name=Key" json:"Key,omitempty"`
+	// Map value
 	Value []byte `protobuf:"bytes,2,req,name=Value" json:"Value,omitempty"`
 }
 
@@ -843,8 +862,7 @@ type Log struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	LogID *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
-	// required string Mode = 2;
+	LogID  *string           `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
 	Signer *LogSigner        `protobuf:"bytes,3,req,name=Signer" json:"Signer,omitempty"`
 	Meta   map[string]string `protobuf:"bytes,4,rep,name=Meta" json:"Meta,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 }

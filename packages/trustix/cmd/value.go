@@ -26,7 +26,7 @@ var getValueCommand = &cobra.Command{
 	Short: "Get computed value based on content digest",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if valueDigest == "" {
-			return fmt.Errorf("Missing input/output hash")
+			return fmt.Errorf("Missing value digest parameter")
 		}
 
 		digest, err := hex.DecodeString(valueDigest)

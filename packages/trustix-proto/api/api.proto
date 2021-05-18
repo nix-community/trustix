@@ -7,38 +7,72 @@ option go_package = "github.com/tweag/trustix/packages/trustix-proto/api";
 
 package trustix;
 
+// Request a signed head for a given log
 message LogHeadRequest {
+
+  // Log identifier
   required string LogID = 1;
+
 }
 
+// Get a consistency proof between two given log sizes
 message GetLogConsistencyProofRequest {
+
+  // Log identifier
   required string LogID = 1;
+
+  // From tree size
   required uint64 FirstSize = 2;
+
+  // To tree size
   required uint64 SecondSize = 3;
+
 }
 
 message ProofResponse {
   repeated bytes Proof = 1;
 }
 
+// Get log audit proof for a given tree
 message GetLogAuditProofRequest {
+
+  // Log identifier
   required string LogID = 1;
+
+  // Tree node index
   required uint64 Index = 2;
+
+  // Tree size (proof reference)
   required uint64 TreeSize = 3;
+
 }
 
 message GetLogEntriesRequest {
+
+  // Log identifier
   required string LogID = 1;
+
+  // Get entries from
   required uint64 Start = 2;
+
+  // Get entries to
   required uint64 Finish = 3;
+
 }
 
 message GetMapValueRequest {
+
+    // Log identifier
   required string LogID = 1;
+
+  // Map key
   required bytes Key = 2;
+
+  // Map root hash to derive proof from
   required bytes MapRoot = 3;
 }
 
+// Sparse merkle tree proof
 message SparseCompactMerkleProof {
   repeated bytes SideNodes = 1;
   required bytes NonMembershipLeafData = 2;
@@ -59,8 +93,13 @@ message LogEntriesResponse {
 }
 
 message KeyValuePair {
+
+  // Map key
   required bytes Key = 1;
+
+  // Map value
   required bytes Value = 2;
+
 }
 
 message ValueRequest {
@@ -84,7 +123,9 @@ message LogSigner {
 
 message Log {
   required string LogID = 1;
+
   // required string Mode = 2;
+
   required LogSigner Signer = 3;
   map<string, string> Meta = 4;
 }
@@ -93,21 +134,22 @@ message LogsResponse {
   repeated Log Logs = 1;
 }
 
+// NodeAPI is a logical grouping for RPC methods that are for the entire node
+// rather than individual logs.
 service NodeAPI {
 
-  // Get map[LogID]Log
+  // Get a list of all logs published by this node
   rpc Logs (LogsRequest) returns (LogsResponse) {}
 
-  // Content-addressed values
-
+  // Get values by their content-address
   rpc GetValue(ValueRequest) returns (ValueResponse) {}
 
 }
 
+// LogAPI is a logical grouping for RPC methods that are specific to a given log.
 service LogAPI {
 
-  // Aggregate
-
+  // Get signed head
   rpc GetHead (LogHeadRequest) returns (LogHead) {}
 
   // Log

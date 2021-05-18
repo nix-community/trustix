@@ -20,6 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Leaf value of a merkle tree
 type LogLeaf struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

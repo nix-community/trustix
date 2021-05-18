@@ -1,6 +1,6 @@
 ## trustix decide
 
-Decide output hash from the logs (multiple)
+Decide on output from configured logs
 
 ```
 trustix decide [flags]
@@ -9,8 +9,8 @@ trustix decide [flags]
 ### Options
 
 ```
-  -h, --help                help for decide
-      --input-hash string   Input hash in hex encoding
+  -h, --help         help for decide
+      --key string   Key in hex encoding
 ```
 
 ### Options inherited from parent commands

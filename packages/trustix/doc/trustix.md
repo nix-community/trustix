@@ -24,7 +24,7 @@ trustix [flags]
 
 ### SEE ALSO
 
-* [trustix decide](trustix_decide.md)	 - Decide output hash from the logs (multiple)
+* [trustix decide](trustix_decide.md)	 - Decide on output from configured logs
 * [trustix doc](trustix_doc.md)	 - Generate documentation
 * [trustix flush](trustix_flush.md)	 - Flush submissions and write new tree head
 * [trustix gateway](trustix_gateway.md)	 - Trustix gateway translating REST calls to gRPC
