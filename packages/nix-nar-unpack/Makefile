@@ -12,3 +12,6 @@ format:
 
 develop:
 	hivemind
+
+doc:
+	true  # noop

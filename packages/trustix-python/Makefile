@@ -9,3 +9,6 @@ lint:
 
 format:
 	black --quiet --check .
+
+doc:
+	true  # noop

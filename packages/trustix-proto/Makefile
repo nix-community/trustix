@@ -1,4 +1,4 @@
-build:
+build: doc
 	$(MAKE) -C schema
 	$(MAKE) -C rpc
 	$(MAKE) -C api
@@ -12,3 +12,8 @@ lint:
 
 format:
 	gofmt -d .
+
+doc:
+	protoc --doc_out=. --doc_opt=markdown,doc.md \
+	-I=. -I=.. \
+	*/*.proto

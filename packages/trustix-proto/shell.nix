@@ -6,6 +6,9 @@ pkgs.mkShell {
     pkgs.protobuf
     pkgs.reflex
     pkgs.go
+
+    pkgs.protoc-gen-doc
+    pkgs.mdbook
   ];
 
   shellHook = ''

@@ -1,4 +1,4 @@
-all: build test lint format
+all: build test lint doc format
 
 build:
 	for pkg in packages/*; do \
@@ -19,6 +19,11 @@ format:
 	nixpkgs-fmt --check .
 	for pkg in packages/*; do \
 	  bash -c "cd $$pkg && nix-shell --run 'make format'"; \
+	done
+
+doc:
+	for pkg in packages/*; do \
+	  bash -c "cd $$pkg && nix-shell --run 'make doc'"; \
 	done
 
 direnv-allow:

@@ -87,7 +87,6 @@ message Log {
   // required string Mode = 2;
   required LogSigner Signer = 3;
   map<string, string> Meta = 4;
-  // required STH STH = 5;
 }
 
 message LogsResponse {

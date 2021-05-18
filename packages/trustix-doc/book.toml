@@ -1,0 +1,6 @@
+[book]
+authors = ["adisbladis"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Trustix Doc"

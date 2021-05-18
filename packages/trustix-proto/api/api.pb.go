@@ -846,7 +846,7 @@ type Log struct {
 	LogID *string `protobuf:"bytes,1,req,name=LogID" json:"LogID,omitempty"`
 	// required string Mode = 2;
 	Signer *LogSigner        `protobuf:"bytes,3,req,name=Signer" json:"Signer,omitempty"`
-	Meta   map[string]string `protobuf:"bytes,4,rep,name=Meta" json:"Meta,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // required STH STH = 5;
+	Meta   map[string]string `protobuf:"bytes,4,rep,name=Meta" json:"Meta,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 }
 
 func (x *Log) Reset() {

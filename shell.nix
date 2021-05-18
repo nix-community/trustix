@@ -12,6 +12,8 @@ pkgs.mkShell {
     pkgs.nixpkgs-fmt
     pkgs.hivemind
     pkgs.niv
+
+    pkgs.mdbook
   ];
 
   inherit STATE_DIR TRUSTIX_RPC TRUSTIX_ROOT;
