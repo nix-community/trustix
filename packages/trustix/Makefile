@@ -12,3 +12,6 @@ format:
 
 develop:
 	hivemind
+
+doc: build
+	./trustix doc

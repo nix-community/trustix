@@ -484,6 +484,9 @@ func initCommands() {
 	rootCmd.AddCommand(flushCommand)
 
 	rootCmd.AddCommand(gatewayCommand)
+
+	rootCmd.AddCommand(docCommand)
+	initDoc()
 }
 
 func Execute() {
