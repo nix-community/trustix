@@ -1,0 +1,271 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Introduction - Trustix Doc</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <link rel="stylesheet" href="css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">2.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">3.</strong> API docs</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Trustix Doc</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="trustix---a-new-model-for-nix-binary-substitutions"><a class="header" href="#trustix---a-new-model-for-nix-binary-substitutions">Trustix - A new model for Nix binary substitutions</a></h1>
+<p>Trustix is a tool that compares build outputs for a given build input across a group of independent providers to establish trust in software binaries.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>We often use pre-built software binaries and trust that they correspond to the program we want.
+But nothing assures that these binaries were really built from the program's sources and reasonable built instructions.
+Common, costly supply chain attacks exploit this to distribute malicious software, which is one reason why most software is delivered through centralized, highly secured providers.
+Trustix, a tool developed via a <a href="https://nlnet.nl/project/Trustix/">NGI Trust and Privacy grant</a>, establishes trust in binaries in a different, decentralized manner.
+This increases security, and paves the way for an internet where small providers can deliver safe code, ultimately with a safer and larger offer for the user.</p>
+<p>Trustix is developed for the Nix ecosystem.</p>
+<h2 id="how-does-this-translate-to-nix"><a class="header" href="#how-does-this-translate-to-nix">How does this translate to Nix?</a></h2>
+<p>In the Nix ecosystem, pre-built binaries are distributed through so-called <em>binary substituters</em>.
+Similar to other centralized caching systems, they are a single point of failure in the chain of trust when delivering a package to a user.
+This is problematic for several reasons:</p>
+<p>First, if anyone manages to compromise the <a href="https://hydra.nixos.org/">NixOS Hydra</a> build machines and its keys, they could upload backdoored builds to users.
+In the Nix ecosystem, a compromised key is even more dangerous because https://cache.nixos.org can't use a rolling key because of the way it is set up.
+This means that a compromised key would realistically mean that <em>all</em> packages in the cache are compromised.
+They would have to be rebuilt or garbage collected which is very costly.</p>
+<p>Second, the NixOS Hydra <em>hardware</em>, on which the binaries are built, may also be compromised and not considered trustworthy by more security conscious users.</p>
+<h2 id="trustix-design"><a class="header" href="#trustix-design">Trustix design</a></h2>
+<p><code>Trustix</code> aims to solve this problem via distributed trust &amp; trust agility.
+Essentially it compares build outputs across a group of independent builders
+that log and exchange hashes of build input/output pairs.
+This is achieved through the following methodology:</p>
+<ul>
+<li>Each builder is associated with a public-private key pair</li>
+<li>In a post-build hook the output hash (NAR hash) of the build is uploaded to a ledger</li>
+</ul>
+<p>This allows a user to trust binary substitutions based on an M-of-N vote among the participating builders.</p>
+<p>Here is an example:
+Let's say we have 4 builders configured: <code>Alice</code>, <code>Bob</code>, <code>Chuck</code> &amp; <code>Dan</code>.
+We have configured <code>Trustix</code> to require a 3/4 majority for a build to be trusted.
+<code>Alice</code>, <code>Bob</code>, <code>Dan</code> and <code>Chuck</code> all claim to have built the <code>hello</code> derivation.
+All builders participate in the Trustix network and communicate precisely
+what they have built with a hash that describes the build inputs of <code>hello</code>, and
+what have obtained as output with another hash.
+For the same input, the first 3 builders have arrived at the same output hash but <code>Chuck</code> has
+obtained something different.</p>
+<p>This information can now be used by a Trustix user to:</p>
+<ul>
+<li>track build reproducability across a large number of builders.</li>
+<li>trust only builds that have been confirmed by a majority of selected
+builders.</li>
+<li>automatically identify and exclude misbehaving builders such as <code>Chuck</code> in
+above's example.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+                            <a rel="next" href="hacking.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+                    <a rel="next" href="hacking.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
