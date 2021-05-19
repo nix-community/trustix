@@ -57,4 +57,4 @@ This information can now be used by a Trustix user to:
 
 ## Developing
 
-For notes on development see [HACKING.md](./HACKING.md)
+For notes on development see [HACKING.md](./packages/trustix-doc/src/hacking.md)
