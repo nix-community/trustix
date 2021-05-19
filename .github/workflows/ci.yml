@@ -8,34 +8,22 @@ on:
 
 jobs:
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: cachix/install-nix-action@v12
-    - uses: actions/checkout@v1
-    - name: build
-      run: nix-shell --run "make build"
-
   test:
     runs-on: ubuntu-latest
     steps:
     - uses: cachix/install-nix-action@v12
-    - uses: actions/checkout@v1
-    - name: test
-      run: nix-shell --run "make test"
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: cachix/install-nix-action@v12
     - uses: actions/checkout@v1
-    - name: lint
-      run: nix-shell --run "make lint"
 
-  format:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: cachix/install-nix-action@v12
-    - uses: actions/checkout@v1
-    - name: format
-      run: nix-shell --run "make format"
+    - name: build
+      run: nix-shell --run "make"
+
+    # Docs
+    - name: build-doc
+      run: nix-build ./. -A trustix-doc
+    - name: deploy-doc
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./result
