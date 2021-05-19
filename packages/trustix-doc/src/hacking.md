@@ -29,10 +29,6 @@ Trustix-proto contains all shared protobuf definitions shared by various compone
 Trustix-python contains generated code from trustix-proto for Python.
 If you want to interact with Trustix over it's RPC interface from Python this is what you want to use.
 
-- [nix-nar-unpack](./packages/nix-nar-unpack)
-
-Nix doesn't come with a standalone tool to unpack NAR archives (the native Nix archive format) and we need one for the reproducibility checker so [diffoscope](https://diffoscope.org/) can work.
-
 - [pynix](./packages/pynix)
 
 A number of generic small utility functions to work with Nix files.
