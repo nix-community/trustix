@@ -15,7 +15,7 @@ import (
 	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	rpc "github.com/tweag/trustix/packages/trustix-proto/rpc"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/client"
+	"github.com/tweag/trustix/packages/trustix/internal/pool"
 	pub "github.com/tweag/trustix/packages/trustix/internal/publisher"
 	"github.com/tweag/trustix/packages/trustix/internal/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/internal/storage"
@@ -25,7 +25,7 @@ type LogRPCServer struct {
 	pb.UnimplementedLogRPCServer
 
 	publishers *pub.PublisherMap
-	clients    *client.ClientPool
+	clients    *pool.ClientPool
 	store      storage.Storage
 	rootBucket *storage.Bucket
 }
@@ -33,7 +33,7 @@ type LogRPCServer struct {
 func NewLogRPCServer(
 	store storage.Storage,
 	rootBucket *storage.Bucket,
-	clients *client.ClientPool,
+	clients *pool.ClientPool,
 	publishers *pub.PublisherMap,
 ) *LogRPCServer {
 	return &LogRPCServer{

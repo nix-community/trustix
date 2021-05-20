@@ -14,21 +14,21 @@ import (
 
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/client"
 	"github.com/tweag/trustix/packages/trustix/interfaces"
+	"github.com/tweag/trustix/packages/trustix/internal/pool"
 )
 
 // TrustixAPIServer wraps kvStoreLogApi and turns it into a gRPC implementation
 type TrustixAPIServer struct {
 	api.UnimplementedLogAPIServer
 
-	clients *client.ClientPool
+	clients *pool.ClientPool
 
 	// Keep a set of published logs around to filter on, we don't want to leak what we subscribe to
 	published map[string]struct{}
 }
 
-func NewLogAPIServer(logs []*api.Log, clients *client.ClientPool) *TrustixAPIServer {
+func NewLogAPIServer(logs []*api.Log, clients *pool.ClientPool) *TrustixAPIServer {
 	published := make(map[string]struct{})
 	for _, log := range logs {
 		published[*log.LogID] = struct{}{}

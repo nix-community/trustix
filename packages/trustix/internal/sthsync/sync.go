@@ -19,9 +19,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	apipb "github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/client"
 	"github.com/tweag/trustix/packages/trustix/internal/constants"
 	vlog "github.com/tweag/trustix/packages/trustix/internal/log"
+	"github.com/tweag/trustix/packages/trustix/internal/pool"
 	"github.com/tweag/trustix/packages/trustix/internal/signer"
 	sthlib "github.com/tweag/trustix/packages/trustix/internal/sth"
 	"github.com/tweag/trustix/packages/trustix/internal/storage"
@@ -37,7 +37,7 @@ func NewSTHSyncer(
 	logID string,
 	store storage.Storage,
 	logBucket *storage.Bucket,
-	clients *client.ClientPool,
+	clients *pool.ClientPool,
 	verifier signer.TrustixVerifier,
 	pollInterval time.Duration,
 ) io.Closer {

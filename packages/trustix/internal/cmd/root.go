@@ -33,6 +33,7 @@ import (
 	"github.com/tweag/trustix/packages/trustix/internal/constants"
 	"github.com/tweag/trustix/packages/trustix/internal/decider"
 	"github.com/tweag/trustix/packages/trustix/internal/lib"
+	"github.com/tweag/trustix/packages/trustix/internal/pool"
 	pub "github.com/tweag/trustix/packages/trustix/internal/publisher"
 	"github.com/tweag/trustix/packages/trustix/internal/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/internal/server"
@@ -159,7 +160,7 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		clientPool := client.NewClientPool()
+		clientPool := pool.NewClientPool()
 		defer clientPool.Close()
 
 		for _, remote := range config.Remotes {

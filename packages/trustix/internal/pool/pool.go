@@ -6,7 +6,7 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package client
+package pool
 
 import (
 	"fmt"
@@ -16,6 +16,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	api "github.com/tweag/trustix/packages/trustix-proto/api"
+	"github.com/tweag/trustix/packages/trustix/client"
 )
 
 const (
@@ -26,7 +27,7 @@ const (
 type stringSet = map[string]struct{}
 
 type PoolClient struct {
-	client   *Client
+	client   *client.Client
 	tags     stringSet
 	priority int
 	pool     *ClientPool
@@ -164,7 +165,7 @@ func NewClientPool() *ClientPool {
 	}
 }
 
-func (p *ClientPool) Add(client *Client, tags []string) (*PoolClient, error) {
+func (p *ClientPool) Add(c *client.Client, tags []string) (*PoolClient, error) {
 	p.mux.Lock()
 	defer p.mux.Unlock()
 
@@ -173,13 +174,13 @@ func (p *ClientPool) Add(client *Client, tags []string) (*PoolClient, error) {
 	}
 
 	var priority int
-	switch client.Type {
-	case LocalClientType:
+	switch c.Type {
+	case client.LocalClientType:
 		priority = LocalPriority
-	case GRPCClientType:
+	case client.GRPCClientType:
 		priority = GRPCPriority
 	default:
-		return nil, fmt.Errorf("Unhandled client type: %d", client.Type)
+		return nil, fmt.Errorf("Unhandled client type: %d", c.Type)
 	}
 
 	tagMap := make(stringSet)
@@ -188,7 +189,7 @@ func (p *ClientPool) Add(client *Client, tags []string) (*PoolClient, error) {
 	}
 
 	pc := &PoolClient{
-		client:   client,
+		client:   c,
 		tags:     tagMap,
 		priority: priority,
 		pool:     p,
@@ -206,20 +207,20 @@ func (p *ClientPool) Add(client *Client, tags []string) (*PoolClient, error) {
 func (p *ClientPool) Dial(address string) (*PoolClient, error) {
 
 	// TODO: Retry loop (probably managed by PoolClient somehow)
-	client, err := CreateClientConn(address)
+	c, err := client.CreateClientConn(address)
 	if err != nil {
 		return nil, err
 	}
 
-	pc, err := p.Add(client, nil)
+	pc, err := p.Add(c, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	// TODO: This responsibility belongs elsewhere
 	go func() {
-		ctx, _ := CreateContext(30)
-		resp, err := client.NodeAPI.Logs(ctx, &api.LogsRequest{})
+		ctx, _ := client.CreateContext(30)
+		resp, err := c.NodeAPI.Logs(ctx, &api.LogsRequest{})
 		if err != nil {
 			log.Errorf("Error while getting logs from '%s': %v", address, err)
 		}
@@ -259,7 +260,7 @@ func (p *ClientPool) addTags(client *PoolClient, tags []string) {
 
 }
 
-func (p *ClientPool) Get(tag string) (*Client, error) {
+func (p *ClientPool) Get(tag string) (*client.Client, error) {
 	p.mux.RLock()
 	defer p.mux.RUnlock()
 

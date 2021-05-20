@@ -23,6 +23,7 @@ import (
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/client"
 	"github.com/tweag/trustix/packages/trustix/internal/decider"
+	"github.com/tweag/trustix/packages/trustix/internal/pool"
 	pub "github.com/tweag/trustix/packages/trustix/internal/publisher"
 	"github.com/tweag/trustix/packages/trustix/internal/storage"
 )
@@ -34,13 +35,13 @@ type RPCServer struct {
 	publishers *pub.PublisherMap
 	rootBucket *storage.Bucket
 	logs       []*api.Log
-	clients    *client.ClientPool
+	clients    *pool.ClientPool
 }
 
 func NewRPCServer(
 	store storage.Storage,
 	rootBucket *storage.Bucket,
-	clients *client.ClientPool,
+	clients *pool.ClientPool,
 	publishers *pub.PublisherMap,
 	logs []*api.Log,
 	decider decider.LogDecider,
