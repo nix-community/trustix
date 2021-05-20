@@ -6,17 +6,16 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package main // import "github.com/tweag/trustix/packages/trustix/internal"
+package decider
 
 import (
-	"runtime"
-
-	"github.com/tweag/trustix/packages/trustix/internal/cmd"
+	"github.com/tweag/trustix/packages/trustix/internal/lib"
 )
 
-func main() {
-	runtime.SetBlockProfileRate(100)
-	runtime.GOMAXPROCS(128)
+type LogIDDecider struct {
+	ID string `toml:"id"`
+}
 
-	cmd.Execute()
+func (s *LogIDDecider) Validate() error {
+	return lib.ValidLogID(s.ID)
 }

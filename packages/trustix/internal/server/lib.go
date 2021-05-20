@@ -6,17 +6,14 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package main // import "github.com/tweag/trustix/packages/trustix/internal"
+package server
 
 import (
-	"runtime"
-
-	"github.com/tweag/trustix/packages/trustix/internal/cmd"
+	"github.com/tweag/trustix/packages/trustix-proto/schema"
+	"github.com/tweag/trustix/packages/trustix/internal/storage"
 )
 
-func main() {
-	runtime.SetBlockProfileRate(100)
-	runtime.GOMAXPROCS(128)
-
-	cmd.Execute()
+func getLogHead(rootBucket *storage.Bucket, txn storage.Transaction, logID string) (*schema.LogHead, error) {
+	bucket := rootBucket.Cd(logID)
+	return storage.GetLogHead(bucket.Txn(txn))
 }

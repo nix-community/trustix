@@ -18,7 +18,7 @@ It contains a [post-build hook](https://www.tweag.io/blog/2019-11-21-untrusted-c
 
 - [trustix-nix-reprod](../../packages/trustix-nix-reprod)
 
-This packages
+This package is an implementation of a reproducibility tracker backed by logs.
 
 - [trustix-proto](../../packages/trustix-proto)
 
