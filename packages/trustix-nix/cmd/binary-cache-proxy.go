@@ -35,6 +35,8 @@ import (
 	"github.com/ulikunitz/xz"
 )
 
+var nixProtocolId string = "5138a791-8d00-4182-96bc-f1f2688cdde2"
+
 var listenAddresses []string
 var binaryCachePrivKey string
 
@@ -137,8 +139,9 @@ var binaryCacheCommand = &cobra.Command{
 						panic(err)
 					}
 
-					resp, err := c.RpcAPI.Decide(r.Context(), &pb.KeyRequest{
-						Key: storeHash,
+					resp, err := c.RpcAPI.Decide(r.Context(), &pb.DecideRequest{
+						Key:      storeHash,
+						Protocol: &nixProtocolId,
 					})
 					if err != nil {
 						log.WithFields(log.Fields{

@@ -13,7 +13,7 @@ import (
 	"fmt"
 
 	"github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix/internal/lib"
+	"github.com/tweag/trustix/packages/trustix/internal/protocols"
 )
 
 type PublicKey struct {
@@ -36,13 +36,13 @@ func (p *PublicKey) Decode() ([]byte, error) {
 	return base64.StdEncoding.DecodeString(p.Pub)
 }
 
-func (p *PublicKey) LogID() (string, error) {
+func (p *PublicKey) LogID(pd *protocols.ProtocolDescriptor) (string, error) {
 	pubBytes, err := p.Decode()
 	if err != nil {
 		return "", err
 	}
 
-	return lib.LogID(p.Type, pubBytes), nil
+	return pd.LogID(p.Type, pubBytes), nil
 }
 
 func (p *PublicKey) Signer() (*api.LogSigner, error) {

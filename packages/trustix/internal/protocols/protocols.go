@@ -10,6 +10,7 @@ package protocols
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"hash"
 	"sync"
@@ -42,6 +43,19 @@ func (pd *ProtocolDescriptor) Validate() error {
 	}
 
 	return nil
+}
+
+// LogID - Generate a deterministic ID based on known facts
+func (pd *ProtocolDescriptor) LogID(keyType string, publicKey []byte) string {
+	h := pd.NewHash()
+
+	h.Write([]byte(keyType))
+	h.Write([]byte(":"))
+
+	h.Write(publicKey)
+	h.Write([]byte(":"))
+
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 var once sync.Once

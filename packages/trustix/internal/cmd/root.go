@@ -122,7 +122,12 @@ var rootCmd = &cobra.Command{
 		logsPublished := []*api.Log{}
 		{
 			for _, pubConf := range config.Publishers {
-				logID, err := pubConf.PublicKey.LogID()
+				pd, err := protocols.Get(pubConf.Protocol)
+				if err != nil {
+					return err
+				}
+
+				logID, err := pubConf.PublicKey.LogID(pd)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -143,7 +148,12 @@ var rootCmd = &cobra.Command{
 			}
 
 			for _, subConf := range config.Subscribers {
-				logID, err := subConf.PublicKey.LogID()
+				pd, err := protocols.Get(subConf.Protocol)
+				if err != nil {
+					return err
+				}
+
+				logID, err := subConf.PublicKey.LogID(pd)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -206,7 +216,15 @@ var rootCmd = &cobra.Command{
 						return err
 					}
 
-					logID := lib.LogID(subConf.PublicKey.Type, pubBytes)
+					pd, err := protocols.Get(subConf.Protocol)
+					if err != nil {
+						return err
+					}
+
+					logID, err := subConf.PublicKey.LogID(pd)
+					if err != nil {
+						return err
+					}
 
 					log.WithFields(log.Fields{
 						"id":     logID,
@@ -227,11 +245,6 @@ var rootCmd = &cobra.Command{
 					}
 
 					{
-						pd, err := protocols.Get(subConf.Protocol)
-						if err != nil {
-							return err
-						}
-
 						interval := 1.0
 						duration := time.Millisecond * time.Duration(math.Round(interval/1000))
 						headSyncCloser.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), clientPool, verifier, duration, pd))

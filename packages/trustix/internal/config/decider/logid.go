@@ -9,7 +9,7 @@
 package decider
 
 import (
-	"github.com/tweag/trustix/packages/trustix/internal/lib"
+	"fmt"
 )
 
 type LogIDDecider struct {
@@ -17,5 +17,8 @@ type LogIDDecider struct {
 }
 
 func (s *LogIDDecider) Validate() error {
-	return lib.ValidLogID(s.ID)
+	if s.ID == "" {
+		return fmt.Errorf("Empty log ids are invalid")
+	}
+	return nil
 }
