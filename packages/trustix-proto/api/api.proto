@@ -124,10 +124,15 @@ message LogSigner {
 message Log {
   required string LogID = 1;
 
-  // required string Mode = 2;
+  enum LogModes {
+    Log = 0;
+  }
+  required LogModes Mode = 2;
 
-  required LogSigner Signer = 3;
-  map<string, string> Meta = 4;
+  required string Protocol = 3;
+
+  required LogSigner Signer = 4;
+  map<string, string> Meta = 5;
 }
 
 message LogsResponse {

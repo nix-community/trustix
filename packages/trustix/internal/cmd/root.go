@@ -138,9 +138,11 @@ var rootCmd = &cobra.Command{
 				}
 
 				log := &api.Log{
-					LogID:  &logID,
-					Meta:   pubConf.GetMeta(),
-					Signer: signer,
+					LogID:    &logID,
+					Meta:     pubConf.GetMeta(),
+					Signer:   signer,
+					Protocol: &pd.ID,
+					Mode:     api.Log_LogModes(0).Enum(), // Hard-coded for now
 				}
 
 				logs = append(logs, log)
@@ -164,9 +166,11 @@ var rootCmd = &cobra.Command{
 				}
 
 				log := &api.Log{
-					LogID:  &logID,
-					Meta:   subConf.GetMeta(),
-					Signer: signer,
+					LogID:    &logID,
+					Meta:     subConf.GetMeta(),
+					Signer:   signer,
+					Protocol: &pd.ID,
+					Mode:     api.Log_LogModes(0).Enum(), // Hard-coded for now
 				}
 
 				logs = append(logs, log)

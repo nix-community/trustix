@@ -22,6 +22,7 @@
     - [ValueRequest](#trustix.ValueRequest)
     - [ValueResponse](#trustix.ValueResponse)
   
+    - [Log.LogModes](#trustix.Log.LogModes)
     - [LogSigner.KeyTypes](#trustix.LogSigner.KeyTypes)
   
   
@@ -180,6 +181,8 @@ Get a consistency proof between two given log sizes
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | LogID | [string](#string) | required |  |
+| Mode | [Log.LogModes](#trustix.Log.LogModes) | required |  |
+| Protocol | [string](#string) | required |  |
 | Signer | [LogSigner](#trustix.LogSigner) | required |  |
 | Meta | [Log.MetaEntry](#trustix.Log.MetaEntry) | repeated |  |
 
@@ -354,6 +357,17 @@ Sparse merkle tree proof
 
 
  
+
+
+<a name="trustix.Log.LogModes"></a>
+
+### Log.LogModes
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| Log | 0 |  |
+
 
 
 <a name="trustix.LogSigner.KeyTypes"></a>
