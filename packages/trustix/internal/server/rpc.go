@@ -30,7 +30,7 @@ import (
 
 type RPCServer struct {
 	pb.UnimplementedRPCApiServer
-	decider    decider.LogDecider
+	decider    map[string]decider.LogDecider
 	store      storage.Storage
 	publishers *pub.PublisherMap
 	rootBucket *storage.Bucket
@@ -44,7 +44,7 @@ func NewRPCServer(
 	clients *pool.ClientPool,
 	publishers *pub.PublisherMap,
 	logs []*api.Log,
-	decider decider.LogDecider,
+	decider map[string]decider.LogDecider,
 ) *RPCServer {
 	return &RPCServer{
 		store:      store,
@@ -87,6 +87,11 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 	pd, err := protocols.Get(*in.Protocol)
 	if err != nil {
 		return nil, fmt.Errorf("Unknown protocol: %w", err)
+	}
+
+	deciderEngine, ok := l.decider[pd.ID]
+	if !ok {
+		return nil, fmt.Errorf("No decider configured for protocol '%s'", pd.ID)
 	}
 
 	var wg sync.WaitGroup
@@ -201,7 +206,7 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 	if len(inputs) > 0 {
 
 		var err error
-		decision, err = l.decider.Decide(inputs)
+		decision, err = deciderEngine.Decide(inputs)
 		if err != nil {
 			return nil, err
 		}

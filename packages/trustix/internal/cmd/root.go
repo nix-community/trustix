@@ -301,40 +301,46 @@ var rootCmd = &cobra.Command{
 
 		logAPIServer := server.NewLogAPIServer(logsPublished, clientPool)
 
-		decider, err := func() (decider.LogDecider, error) {
-			deciders := []decider.LogDecider{}
-			for _, deciderConfig := range config.Deciders {
-				switch deciderConfig.Engine {
-				case "lua":
-					decider, err := decider.NewLuaDecider(deciderConfig.Lua.Script)
-					if err != nil {
-						return nil, err
+		deciders := make(map[string]decider.LogDecider)
+		{
+			for protocol, deciderConfigs := range config.Deciders {
+				current := []decider.LogDecider{}
+				for _, deciderConfig := range deciderConfigs {
+					switch deciderConfig.Engine {
+					case "lua":
+						decider, err := decider.NewLuaDecider(deciderConfig.Lua.Script)
+						if err != nil {
+							return err
+						}
+						current = append(current, decider)
+					case "percentage":
+						decider, err := decider.NewMinimumPercentDecider(deciderConfig.Percentage.Minimum)
+						if err != nil {
+							return err
+						}
+						current = append(current, decider)
+					case "logid":
+						decider, err := decider.NewLogIDDecider(deciderConfig.LogID.ID)
+						if err != nil {
+							return err
+						}
+						current = append(current, decider)
+					default:
+						return fmt.Errorf("No such engine: %s", deciderConfig.Engine)
 					}
-					deciders = append(deciders, decider)
-				case "percentage":
-					decider, err := decider.NewMinimumPercentDecider(deciderConfig.Percentage.Minimum)
-					if err != nil {
-						return nil, err
-					}
-					deciders = append(deciders, decider)
-				case "logid":
-					decider, err := decider.NewLogIDDecider(deciderConfig.LogID.ID)
-					if err != nil {
-						return nil, err
-					}
-					deciders = append(deciders, decider)
-				default:
-					return nil, fmt.Errorf("No such engine: %s", deciderConfig.Engine)
 				}
+
+				pd, err := protocols.Get(protocol)
+				if err != nil {
+					return err
+				}
+
+				deciders[pd.ID] = decider.NewAggDecider(current...)
 			}
-			return decider.NewAggDecider(deciders...), nil
-		}()
-		if err != nil {
-			return fmt.Errorf("Error creating decision engine: %v", err)
 		}
 
 		logRpcServer := server.NewLogRPCServer(store, rootBucket, clientPool, pubMap)
-		rpcServer := server.NewRPCServer(store, rootBucket, clientPool, pubMap, logs, decider)
+		rpcServer := server.NewRPCServer(store, rootBucket, clientPool, pubMap, logs, deciders)
 
 		log.Debug("Creating gRPC servers")
 

@@ -7,10 +7,12 @@ remotes = [
 [storage]
 type = "memory"
 
-[[decider]]
+[decider]
+
+[[decider."test"]]
 engine = "percentage"
 
-[decider.percentage]
+[decider."test".percentage]
 minimum = 50
 
 [[subscriber]]

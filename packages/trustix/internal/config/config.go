@@ -9,19 +9,20 @@
 package config
 
 import (
-	"github.com/BurntSushi/toml"
+	"fmt"
 
+	"github.com/BurntSushi/toml"
 	decider "github.com/tweag/trustix/packages/trustix/internal/config/decider"
 	signer "github.com/tweag/trustix/packages/trustix/internal/config/signer"
 )
 
 type Config struct {
-	Deciders    []*decider.Decider        `toml:"decider"`
-	Publishers  []*Publisher              `toml:"publisher"`
-	Subscribers []*Subscriber             `toml:"subscriber"`
-	Signers     map[string]*signer.Signer `toml:"signer"`
-	Storage     *Storage                  `toml:"storage"`
-	Remotes     []string                  `toml:"remotes"`
+	Deciders    map[string][]*decider.Decider `toml:"decider"`
+	Publishers  []*Publisher                  `toml:"publisher"`
+	Subscribers []*Subscriber                 `toml:"subscriber"`
+	Signers     map[string]*signer.Signer     `toml:"signer"`
+	Storage     *Storage                      `toml:"storage"`
+	Remotes     []string                      `toml:"remotes"`
 }
 
 func (c *Config) Validate() error {
@@ -48,9 +49,16 @@ func (c *Config) Validate() error {
 		}
 	}
 
-	for _, decider := range c.Deciders {
-		if err := decider.Validate(); err != nil {
-			return err
+	for protocol, deciders := range c.Deciders {
+
+		if protocol == "" {
+			return fmt.Errorf("Empty protocol not allowed")
+		}
+
+		for _, decider := range deciders {
+			if err := decider.Validate(); err != nil {
+				return err
+			}
 		}
 	}
 

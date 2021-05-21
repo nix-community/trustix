@@ -3,10 +3,12 @@ type = "native"
 
 [storage.native]
 
-[[decider]]
+[decider]
+
+[[decider."nix"]]
 engine = "percentage"
 
-[decider.percentage]
+[decider."nix".percentage]
 minimum = 50
 
 [signer.snakeoil]
