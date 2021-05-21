@@ -14,18 +14,21 @@ engine = "percentage"
 minimum = 50
 
 [[subscriber]]
+protocol = "test"
 
 [subscriber.key]
 type = "ed25519"
 pub = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
 [[subscriber]]
+protocol = "test"
 
 [subscriber.key]
 type = "ed25519"
 pub = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
 
 [[subscriber]]
+protocol = "test"
 
 [subscriber.key]
 type = "ed25519"

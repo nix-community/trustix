@@ -26,6 +26,10 @@ var decideCommand = &cobra.Command{
 			return fmt.Errorf("Missing key param")
 		}
 
+		if protocol == "" {
+			return fmt.Errorf("Missing protocol parameter")
+		}
+
 		inputBytes, err := hex.DecodeString(keyHex)
 		if err != nil {
 			log.Fatal(err)
@@ -44,8 +48,9 @@ var decideCommand = &cobra.Command{
 			"key": keyHex,
 		}).Debug("Requesting output mappings for")
 
-		r, err := c.RpcAPI.Decide(ctx, &pb.KeyRequest{
-			Key: inputBytes,
+		r, err := c.RpcAPI.Decide(ctx, &pb.DecideRequest{
+			Key:      inputBytes,
+			Protocol: &protocol,
 		})
 		if err != nil {
 			log.Fatalf("could not decide: %v", err)

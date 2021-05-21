@@ -18,7 +18,7 @@ import (
 
 type RpcAPI interface {
 	Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error)
-	Decide(ctx context.Context, in *rpc.KeyRequest) (*rpc.DecisionResponse, error)
+	Decide(ctx context.Context, in *rpc.DecideRequest) (*rpc.DecisionResponse, error)
 	GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error)
 }
 

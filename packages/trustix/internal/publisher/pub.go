@@ -12,7 +12,6 @@ import (
 	"bytes"
 	"context"
 	"crypto"
-	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -26,6 +25,7 @@ import (
 	schema "github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/internal/constants"
 	vlog "github.com/tweag/trustix/packages/trustix/internal/log"
+	"github.com/tweag/trustix/packages/trustix/internal/protocols"
 	sthsig "github.com/tweag/trustix/packages/trustix/internal/sth"
 	"github.com/tweag/trustix/packages/trustix/internal/storage"
 )
@@ -35,6 +35,12 @@ func minUint64(x, y uint64) uint64 {
 		return y
 	}
 	return x
+}
+
+func hashSum(pd *protocols.ProtocolDescriptor, b []byte) []byte {
+	h := pd.NewHash()
+	h.Write(b)
+	return h.Sum(nil)
 }
 
 type Publisher struct {
@@ -49,13 +55,15 @@ type Publisher struct {
 	caBucket     *storage.Bucket // Content-addressed
 	logBucket    *storage.Bucket // Root-level bucket for log
 
+	pd *protocols.ProtocolDescriptor
+
 	signer    crypto.Signer
 	submitMux *sync.Mutex
 	logID     string
 	closeChan chan interface{}
 }
 
-func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket, logBucket *storage.Bucket, signer crypto.Signer) (*Publisher, error) {
+func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket, logBucket *storage.Bucket, signer crypto.Signer, pd *protocols.ProtocolDescriptor) (*Publisher, error) {
 
 	qm := &Publisher{
 		store:     store,
@@ -72,6 +80,8 @@ func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket,
 		mapBucket:    logBucket.Cd(constants.MapBucket),
 		mapLogBucket: logBucket.Cd(constants.VMapLogBucket),
 		caBucket:     caBucket,
+
+		pd: pd,
 	}
 
 	// Ensure STH for an empty tree
@@ -87,20 +97,20 @@ func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket,
 			return err
 		}
 
-		vLog, err := vlog.NewVerifiableLog(qm.vLogBucket.Txn(txn), 0)
+		vLog, err := vlog.NewVerifiableLog(qm.pd.NewHash, qm.vLogBucket.Txn(txn), 0)
 		if err != nil {
 			return err
 		}
 
-		smTree := smt.NewSparseMerkleTree(qm.mapBucket.Txn(txn), sha256.New())
+		smTree := smt.NewSparseMerkleTree(qm.mapBucket.Txn(txn), pd.NewHash())
 
-		vMapLog, err := vlog.NewVerifiableLog(qm.mapLogBucket.Txn(txn), 0)
+		vMapLog, err := vlog.NewVerifiableLog(qm.pd.NewHash, qm.mapLogBucket.Txn(txn), 0)
 		if err != nil {
 			return err
 		}
 
 		log.Debug("Signing STH for empty tree")
-		sth, err = sthsig.SignHead(vLog, smTree, vMapLog, signer)
+		sth, err = sthsig.SignHead(vLog, smTree, vMapLog, signer, qm.pd)
 		if err != nil {
 			return err
 		}
@@ -248,7 +258,7 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 	// The append-only log
 	vLogBucketTxn := qm.vLogBucket.Txn(txn)
 	log.WithField("size", *sth.TreeSize).Debug("Creating log tree from persisted data")
-	vLog, err := vlog.NewVerifiableLog(vLogBucketTxn, *sth.TreeSize)
+	vLog, err := vlog.NewVerifiableLog(qm.pd.NewHash, vLogBucketTxn, *sth.TreeSize)
 	if err != nil {
 		return err
 	}
@@ -256,12 +266,12 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 	// The sparse merkle tree
 	log.Debug("Creating sparse merkle tree from persisted data")
 	mapBucketTxn := qm.mapBucket.Txn(txn)
-	smTree := smt.ImportSparseMerkleTree(mapBucketTxn, sha256.New(), sth.MapRoot)
+	smTree := smt.ImportSparseMerkleTree(mapBucketTxn, qm.pd.NewHash(), sth.MapRoot)
 
 	// The append-only log tracking published map heads
 	vMapLogBucketTxn := qm.mapLogBucket.Txn(txn)
 	log.WithField("size", *sth.MHTreeSize).Debug("Creating log tree from persisted data")
-	vMapLog, err := vlog.NewVerifiableLog(vMapLogBucketTxn, *sth.MHTreeSize)
+	vMapLog, err := vlog.NewVerifiableLog(qm.pd.NewHash, vMapLogBucketTxn, *sth.MHTreeSize)
 	if err != nil {
 		return err
 	}
@@ -283,7 +293,7 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 				return err
 			}
 
-			valueDigest := sha256.Sum256(pair.Value)
+			valueDigest := hashSum(qm.pd, pair.Value)
 			if bytes.Equal(oldEntry.Digest, valueDigest[:]) {
 				continue
 			}
@@ -299,7 +309,7 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 
 		// Add value to content-addressed value store
 		{
-			digest := sha256.Sum256(pair.Value)
+			digest := hashSum(qm.pd, pair.Value)
 			err = qm.caBucket.Txn(txn).Set(digest[:], pair.Value)
 			if err != nil {
 				return err
@@ -332,7 +342,7 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 	}
 
 	log.Debug("Signing tree heads")
-	sth, err = sthsig.SignHead(vLog, smTree, vMapLog, qm.signer)
+	sth, err = sthsig.SignHead(vLog, smTree, vMapLog, qm.signer, qm.pd)
 	if err != nil {
 		return err
 	}

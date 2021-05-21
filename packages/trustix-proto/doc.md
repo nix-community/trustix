@@ -30,12 +30,12 @@
   
 
 - [rpc/rpc.proto](#rpc/rpc.proto)
+    - [DecideRequest](#trustix.DecideRequest)
     - [DecisionResponse](#trustix.DecisionResponse)
     - [EntriesResponse](#trustix.EntriesResponse)
     - [EntriesResponse.EntriesEntry](#trustix.EntriesResponse.EntriesEntry)
     - [FlushRequest](#trustix.FlushRequest)
     - [FlushResponse](#trustix.FlushResponse)
-    - [KeyRequest](#trustix.KeyRequest)
     - [LogValueDecision](#trustix.LogValueDecision)
     - [LogValueResponse](#trustix.LogValueResponse)
     - [SubmitRequest](#trustix.SubmitRequest)
@@ -410,6 +410,22 @@ rather than individual logs.
 
 
 
+<a name="trustix.DecideRequest"></a>
+
+### DecideRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Key | [bytes](#bytes) | required |  |
+| Protocol | [string](#string) | required |  |
+
+
+
+
+
+
 <a name="trustix.DecisionResponse"></a>
 
 ### DecisionResponse
@@ -478,21 +494,6 @@ rather than individual logs.
 
 ### FlushResponse
 
-
-
-
-
-
-
-<a name="trustix.KeyRequest"></a>
-
-### KeyRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| Key | [bytes](#bytes) | required |  |
 
 
 
@@ -604,7 +605,7 @@ This should only be available to trusted parties.
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | Logs | [LogsRequest](#trustix.LogsRequest) | [LogsResponse](#trustix.LogsResponse) | Get a list of all logs published/subscribed by this node |
-| Decide | [KeyRequest](#trustix.KeyRequest) | [DecisionResponse](#trustix.DecisionResponse) | Decide on an output for key based on the configured decision method |
+| Decide | [DecideRequest](#trustix.DecideRequest) | [DecisionResponse](#trustix.DecisionResponse) | Decide on an output for key based on the configured decision method |
 | GetValue | [ValueRequest](#trustix.ValueRequest) | [ValueResponse](#trustix.ValueResponse) | Get values by their content-address |
 
  

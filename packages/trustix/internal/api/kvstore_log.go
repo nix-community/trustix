@@ -10,14 +10,14 @@ package api
 
 import (
 	"context"
-	"crypto/sha256"
 	"fmt"
 
 	"github.com/lazyledger/smt"
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/internal/constants"
 	"github.com/tweag/trustix/packages/trustix/interfaces"
+	"github.com/tweag/trustix/packages/trustix/internal/constants"
+	"github.com/tweag/trustix/packages/trustix/internal/protocols"
 	"github.com/tweag/trustix/packages/trustix/internal/storage"
 )
 
@@ -29,6 +29,8 @@ type kvStoreLogApi struct {
 	mapBucket    *storage.Bucket
 	mapLogBucket *storage.Bucket
 
+	pd *protocols.ProtocolDescriptor
+
 	logID string
 }
 
@@ -36,7 +38,7 @@ type kvStoreLogApi struct {
 // of a key/value store
 //
 // This is the underlying implementation used by all other abstractions
-func NewKVStoreLogAPI(logID string, store storage.Storage, logBucket *storage.Bucket) (interfaces.LogAPI, error) {
+func NewKVStoreLogAPI(logID string, store storage.Storage, logBucket *storage.Bucket, pd *protocols.ProtocolDescriptor) (interfaces.LogAPI, error) {
 	return &kvStoreLogApi{
 		store:        store,
 		logBucket:    logBucket,
@@ -44,6 +46,7 @@ func NewKVStoreLogAPI(logID string, store storage.Storage, logBucket *storage.Bu
 		mapBucket:    logBucket.Cd(constants.MapBucket),
 		mapLogBucket: logBucket.Cd(constants.VMapLogBucket),
 		logID:        logID,
+		pd:           pd,
 	}, nil
 }
 
@@ -72,7 +75,7 @@ func (kv *kvStoreLogApi) GetLogConsistencyProof(ctx context.Context, req *api.Ge
 
 		vLogBucketTxn := kv.vLogBucket.Txn(txn)
 
-		resp, err = getLogConsistencyProof(vLogBucketTxn, ctx, req)
+		resp, err = getLogConsistencyProof(kv.pd.NewHash, vLogBucketTxn, ctx, req)
 		if err != nil {
 			return err
 		}
@@ -92,7 +95,7 @@ func (kv *kvStoreLogApi) GetLogAuditProof(ctx context.Context, req *api.GetLogAu
 
 		vLogBucketTxn := kv.vLogBucket.Txn(txn)
 
-		resp, err = getLogAuditProof(vLogBucketTxn, ctx, req)
+		resp, err = getLogAuditProof(kv.pd.NewHash, vLogBucketTxn, ctx, req)
 		if err != nil {
 			return err
 		}
@@ -134,7 +137,7 @@ func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *api.GetMapValueRe
 
 	err := kv.store.View(func(txn storage.Transaction) error {
 		mapBucketTxn := kv.mapBucket.Txn(txn)
-		tree := smt.ImportSparseMerkleTree(mapBucketTxn, sha256.New(), req.MapRoot)
+		tree := smt.ImportSparseMerkleTree(mapBucketTxn, kv.pd.NewHash(), req.MapRoot)
 
 		v, err := tree.Get(req.Key)
 		if err != nil {
@@ -176,7 +179,7 @@ func (kv *kvStoreLogApi) GetMHLogConsistencyProof(ctx context.Context, req *api.
 
 		vMapLogBucketTxn := kv.mapLogBucket.Txn(txn)
 
-		resp, err = getLogConsistencyProof(vMapLogBucketTxn, ctx, req)
+		resp, err = getLogConsistencyProof(kv.pd.NewHash, vMapLogBucketTxn, ctx, req)
 		if err != nil {
 			return err
 		}
@@ -196,7 +199,7 @@ func (kv *kvStoreLogApi) GetMHLogAuditProof(ctx context.Context, req *api.GetLog
 
 		vMapLogBucketTxn := kv.mapLogBucket.Txn(txn)
 
-		resp, err = getLogAuditProof(vMapLogBucketTxn, ctx, req)
+		resp, err = getLogAuditProof(kv.pd.NewHash, vMapLogBucketTxn, ctx, req)
 		if err != nil {
 			return err
 		}

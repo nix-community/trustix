@@ -31,7 +31,7 @@ func (c *rpcAPIGRPCClient) Logs(ctx context.Context, in *api.LogsRequest) (*api.
 	return c.client.Logs(ctx, in)
 }
 
-func (c *rpcAPIGRPCClient) Decide(ctx context.Context, in *rpc.KeyRequest) (*rpc.DecisionResponse, error) {
+func (c *rpcAPIGRPCClient) Decide(ctx context.Context, in *rpc.DecideRequest) (*rpc.DecisionResponse, error) {
 	return c.client.Decide(ctx, in)
 }
 

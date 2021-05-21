@@ -9,6 +9,7 @@
 package log
 
 import (
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"testing"
@@ -125,7 +126,7 @@ func TestLogRoots(t *testing.T) {
 
 	storageTxn := newTestStorageBucketTxn()
 
-	tree, err := NewVerifiableLog(storageTxn, 0)
+	tree, err := NewVerifiableLog(sha256.New, storageTxn, 0)
 	assert.Nil(err)
 
 	root, err := tree.Root()
@@ -154,7 +155,7 @@ func TestAuditProofs(t *testing.T) {
 
 	storageTxn := newTestStorageBucketTxn()
 
-	tree, err := NewVerifiableLog(storageTxn, 0)
+	tree, err := NewVerifiableLog(sha256.New, storageTxn, 0)
 	assert.Nil(err)
 
 	inputs := mkInputs()
@@ -206,7 +207,7 @@ func TestConsistencyProofs(t *testing.T) {
 
 	storageTxn := newTestStorageBucketTxn()
 
-	tree, err := NewVerifiableLog(storageTxn, 0)
+	tree, err := NewVerifiableLog(sha256.New, storageTxn, 0)
 	assert.Nil(err)
 
 	assertProof := mkAssertProof(t, tree.ConsistencyProof)

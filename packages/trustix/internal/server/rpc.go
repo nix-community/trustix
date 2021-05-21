@@ -10,7 +10,6 @@ package server
 
 import (
 	"context"
-	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -24,6 +23,7 @@ import (
 	"github.com/tweag/trustix/packages/trustix/client"
 	"github.com/tweag/trustix/packages/trustix/internal/decider"
 	"github.com/tweag/trustix/packages/trustix/internal/pool"
+	"github.com/tweag/trustix/packages/trustix/internal/protocols"
 	pub "github.com/tweag/trustix/packages/trustix/internal/publisher"
 	"github.com/tweag/trustix/packages/trustix/internal/storage"
 )
@@ -79,10 +79,15 @@ func (l *RPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequ
 	})
 }
 
-func (l *RPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.DecisionResponse, error) {
+func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.DecisionResponse, error) {
 
 	hexInput := hex.EncodeToString(in.Key)
 	log.WithField("key", hexInput).Info("Received Decide request")
+
+	pd, err := protocols.Get(*in.Protocol)
+	if err != nil {
+		return nil, fmt.Errorf("Unknown protocol: %w", err)
+	}
 
 	var wg sync.WaitGroup
 	var mux sync.Mutex
@@ -151,7 +156,7 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.KeyRequest) (*pb.Decision
 				return
 			}
 
-			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.Key, resp.Value, sha256.New())
+			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.Key, resp.Value, pd.NewHash())
 			if !valid {
 				log.Error("SMT proof verification failed")
 				return

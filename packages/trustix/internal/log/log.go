@@ -9,7 +9,7 @@
 package log
 
 import (
-	"crypto/sha256"
+	"hash"
 
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	"github.com/tweag/trustix/packages/trustix/internal/storage"
@@ -18,13 +18,15 @@ import (
 type VerifiableLog struct {
 	treeSize uint64
 	storage  *LogStorage
+	hashFn   func() hash.Hash
 }
 
-func NewVerifiableLog(txn *storage.BucketTransaction, treeSize uint64) (*VerifiableLog, error) {
+func NewVerifiableLog(hashFn func() hash.Hash, txn *storage.BucketTransaction, treeSize uint64) (*VerifiableLog, error) {
 	storage := NewLogStorage(txn)
 	return &VerifiableLog{
 		storage:  storage,
 		treeSize: treeSize,
+		hashFn:   hashFn,
 	}, nil
 }
 
@@ -34,7 +36,7 @@ func (l *VerifiableLog) Size() uint64 {
 
 func (l *VerifiableLog) Root() ([]byte, error) {
 	if l.treeSize == 0 {
-		return LeafDigest(nil), nil
+		return leafDigest(l.hashFn, nil), nil
 	}
 
 	level := 0
@@ -59,7 +61,7 @@ func (l *VerifiableLog) Root() ([]byte, error) {
 				return nil, err
 			}
 
-			digest = branchHash(newLeaf.LeafDigest, digest)
+			digest = branchHash(l.hashFn, newLeaf.LeafDigest, digest)
 		}
 	}
 
@@ -70,7 +72,7 @@ func (l *VerifiableLog) Append(data []byte) (*schema.LogLeaf, error) {
 	l.treeSize += 1
 
 	leaf := &schema.LogLeaf{
-		LeafDigest: LeafDigest(data),
+		LeafDigest: leafDigest(l.hashFn, data),
 	}
 
 	err := l.addNodeToLevel(0, leaf)
@@ -84,11 +86,14 @@ func (l *VerifiableLog) Append(data []byte) (*schema.LogLeaf, error) {
 func (l *VerifiableLog) AppendKV(key []byte, value []byte) (*schema.LogLeaf, error) {
 	l.treeSize += 1
 
-	valueDigest := sha256.Sum256(value)
+	h := l.hashFn()
+	h.Write(value)
+	valueDigest := h.Sum(nil)
+
 	leaf := &schema.LogLeaf{
 		Key:         key,
-		ValueDigest: valueDigest[:],
-		LeafDigest:  LeafDigestKV(key, valueDigest[:]),
+		ValueDigest: valueDigest,
+		LeafDigest:  leafDigestKV(l.hashFn, key, valueDigest),
 	}
 
 	err := l.addNodeToLevel(0, leaf)
@@ -120,7 +125,7 @@ func (l *VerifiableLog) addNodeToLevel(level int, leaf *schema.LogLeaf) error {
 			return err
 		}
 
-		newHash := branchHash(ll.LeafDigest, rl.LeafDigest)
+		newHash := branchHash(l.hashFn, ll.LeafDigest, rl.LeafDigest)
 		err = l.addNodeToLevel(level+1, &schema.LogLeaf{
 			// We don't save the raw value for a branch hash
 			LeafDigest: newHash,
@@ -160,7 +165,7 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node uint64, level int, sna
 				return nil, err
 			}
 
-			lastHash = branchHash(lastLeaf.LeafDigest, lastHash)
+			lastHash = branchHash(l.hashFn, lastLeaf.LeafDigest, lastHash)
 		}
 		lastNode = parent(lastNode)
 	}
@@ -190,7 +195,7 @@ func (l *VerifiableLog) pathFromNodeToRootAtSnapshot(node uint64, level int, sna
 				return nil, err
 			}
 
-			lastHash = branchHash(lastLeaf.LeafDigest, lastHash)
+			lastHash = branchHash(l.hashFn, lastLeaf.LeafDigest, lastHash)
 		}
 		level += 1
 		node = parent(node)

@@ -11,12 +11,12 @@ package sth
 import (
 	"crypto"
 	"crypto/rand"
-	"crypto/sha256"
 	"encoding/binary"
 
 	"github.com/lazyledger/smt"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
 	vlog "github.com/tweag/trustix/packages/trustix/internal/log"
+	"github.com/tweag/trustix/packages/trustix/internal/protocols"
 	"github.com/tweag/trustix/packages/trustix/internal/signer"
 )
 
@@ -26,7 +26,7 @@ func uint64ToBytes(i uint64) []byte {
 	return b[:]
 }
 
-func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *vlog.VerifiableLog, signer crypto.Signer) (*schema.LogHead, error) {
+func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *vlog.VerifiableLog, signer crypto.Signer, pd *protocols.ProtocolDescriptor) (*schema.LogHead, error) {
 	opts := crypto.SignerOpts(crypto.Hash(0))
 
 	vLogRoot, err := vLog.Root()
@@ -48,7 +48,7 @@ func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *v
 	vLogSize := vLog.Size()
 	vMapLogSize := vMapLog.Size()
 
-	h := sha256.New()
+	h := pd.NewHash()
 	h.Write(vLogRoot)
 	h.Write(uint64ToBytes(vLogSize))
 	h.Write(smTreeRoot)
@@ -71,9 +71,9 @@ func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *v
 	}, nil
 }
 
-func VerifyLogHeadSig(verifier signer.TrustixVerifier, head *schema.LogHead) bool {
+func VerifyLogHeadSig(verifier signer.TrustixVerifier, head *schema.LogHead, pd *protocols.ProtocolDescriptor) bool {
 
-	h := sha256.New()
+	h := pd.NewHash()
 	h.Write(head.LogRoot)
 	h.Write(uint64ToBytes(*head.TreeSize))
 	h.Write(head.MapRoot)

@@ -34,6 +34,7 @@ import (
 	"github.com/tweag/trustix/packages/trustix/internal/decider"
 	"github.com/tweag/trustix/packages/trustix/internal/lib"
 	"github.com/tweag/trustix/packages/trustix/internal/pool"
+	"github.com/tweag/trustix/packages/trustix/internal/protocols"
 	pub "github.com/tweag/trustix/packages/trustix/internal/publisher"
 	"github.com/tweag/trustix/packages/trustix/internal/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/internal/server"
@@ -51,6 +52,8 @@ var listenAddresses []string
 var dialAddress string
 
 var logID string
+
+var protocol string
 
 var timeout int
 
@@ -224,9 +227,14 @@ var rootCmd = &cobra.Command{
 					}
 
 					{
+						pd, err := protocols.Get(subConf.Protocol)
+						if err != nil {
+							return err
+						}
+
 						interval := 1.0
 						duration := time.Millisecond * time.Duration(math.Round(interval/1000))
-						headSyncCloser.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), clientPool, verifier, duration))
+						headSyncCloser.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), clientPool, verifier, duration, pd))
 					}
 
 					return nil
@@ -245,11 +253,12 @@ var rootCmd = &cobra.Command{
 						"pubkey": publisherConfig.PublicKey.Pub,
 					}).Info("Adding log")
 
-					log.WithFields(log.Fields{
-						"id": logID,
-					}).Info("Adding authoritive log to gRPC")
+					pd, err := protocols.Get(publisherConfig.Protocol)
+					if err != nil {
+						return err
+					}
 
-					logAPI, err := tapi.NewKVStoreLogAPI(logID, store, rootBucket.Cd(logID))
+					logAPI, err := tapi.NewKVStoreLogAPI(logID, store, rootBucket.Cd(logID), pd)
 					if err != nil {
 						return err
 					}
@@ -259,7 +268,7 @@ var rootCmd = &cobra.Command{
 						return fmt.Errorf("Missing signer '%s'", publisherConfig.Signer)
 					}
 
-					publisher, err := pub.NewPublisher(logID, store, caValueBucket, rootBucket.Cd(logID), sig)
+					publisher, err := pub.NewPublisher(logID, store, caValueBucket, rootBucket.Cd(logID), sig, pd)
 					if err != nil {
 						return err
 					}
@@ -459,6 +468,7 @@ func initCommands() {
 	trustixSock = fmt.Sprintf("unix://%s", trustixSock)
 
 	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
+	rootCmd.PersistentFlags().StringVar(&protocol, "protocol", "", "Protocol ID")
 
 	log.SetLevel(log.DebugLevel)
 	log.SetOutput(os.Stderr)

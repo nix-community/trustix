@@ -23,7 +23,7 @@ type RPCApiClient interface {
 	// Get a list of all logs published/subscribed by this node
 	Logs(ctx context.Context, in *api.LogsRequest, opts ...grpc.CallOption) (*api.LogsResponse, error)
 	// Decide on an output for key based on the configured decision method
-	Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
+	Decide(ctx context.Context, in *DecideRequest, opts ...grpc.CallOption) (*DecisionResponse, error)
 	// Get values by their content-address
 	GetValue(ctx context.Context, in *api.ValueRequest, opts ...grpc.CallOption) (*api.ValueResponse, error)
 }
@@ -45,7 +45,7 @@ func (c *rPCApiClient) Logs(ctx context.Context, in *api.LogsRequest, opts ...gr
 	return out, nil
 }
 
-func (c *rPCApiClient) Decide(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*DecisionResponse, error) {
+func (c *rPCApiClient) Decide(ctx context.Context, in *DecideRequest, opts ...grpc.CallOption) (*DecisionResponse, error) {
 	out := new(DecisionResponse)
 	err := c.cc.Invoke(ctx, "/trustix.RPCApi/Decide", in, out, opts...)
 	if err != nil {
@@ -70,7 +70,7 @@ type RPCApiServer interface {
 	// Get a list of all logs published/subscribed by this node
 	Logs(context.Context, *api.LogsRequest) (*api.LogsResponse, error)
 	// Decide on an output for key based on the configured decision method
-	Decide(context.Context, *KeyRequest) (*DecisionResponse, error)
+	Decide(context.Context, *DecideRequest) (*DecisionResponse, error)
 	// Get values by their content-address
 	GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error)
 	mustEmbedUnimplementedRPCApiServer()
@@ -83,7 +83,7 @@ type UnimplementedRPCApiServer struct {
 func (UnimplementedRPCApiServer) Logs(context.Context, *api.LogsRequest) (*api.LogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logs not implemented")
 }
-func (UnimplementedRPCApiServer) Decide(context.Context, *KeyRequest) (*DecisionResponse, error) {
+func (UnimplementedRPCApiServer) Decide(context.Context, *DecideRequest) (*DecisionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Decide not implemented")
 }
 func (UnimplementedRPCApiServer) GetValue(context.Context, *api.ValueRequest) (*api.ValueResponse, error) {
@@ -121,7 +121,7 @@ func _RPCApi_Logs_Handler(srv interface{}, ctx context.Context, dec func(interfa
 }
 
 func _RPCApi_Decide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(KeyRequest)
+	in := new(DecideRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -133,7 +133,7 @@ func _RPCApi_Decide_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/trustix.RPCApi/Decide",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCApiServer).Decide(ctx, req.(*KeyRequest))
+		return srv.(RPCApiServer).Decide(ctx, req.(*DecideRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

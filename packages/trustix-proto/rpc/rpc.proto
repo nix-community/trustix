@@ -16,7 +16,7 @@ service RPCApi {
   rpc Logs (LogsRequest) returns (LogsResponse) {}
 
   // Decide on an output for key based on the configured decision method
-  rpc Decide (KeyRequest) returns (DecisionResponse) {}
+  rpc Decide (DecideRequest) returns (DecisionResponse) {}
 
   // Get values by their content-address
   rpc GetValue (ValueRequest) returns (ValueResponse) {}
@@ -32,8 +32,9 @@ service LogRPC {
   rpc Flush (FlushRequest) returns (FlushResponse) {}
 }
 
-message KeyRequest {
+message DecideRequest {
   required bytes Key = 1;
+  required string Protocol = 2;
 }
 
 message EntriesResponse {

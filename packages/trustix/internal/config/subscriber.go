@@ -9,11 +9,15 @@
 package config
 
 type Subscriber struct {
+	Protocol  string            `toml:"protocol"`
 	PublicKey *PublicKey        `toml:"key"`
 	Meta      map[string]string `toml:"meta"`
 }
 
 func (s *Subscriber) Validate() error {
+	if s.Protocol == "" {
+		return missingField("protocol")
+	}
 	return nil
 }
 

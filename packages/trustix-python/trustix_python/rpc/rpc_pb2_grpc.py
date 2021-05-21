@@ -26,7 +26,7 @@ class RPCApiStub(object):
         )
         self.Decide = channel.unary_unary(
             "/trustix.RPCApi/Decide",
-            request_serializer=rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            request_serializer=rpc_dot_rpc__pb2.DecideRequest.SerializeToString,
             response_deserializer=rpc_dot_rpc__pb2.DecisionResponse.FromString,
         )
         self.GetValue = channel.unary_unary(
@@ -69,7 +69,7 @@ def add_RPCApiServicer_to_server(servicer, server):
         ),
         "Decide": grpc.unary_unary_rpc_method_handler(
             servicer.Decide,
-            request_deserializer=rpc_dot_rpc__pb2.KeyRequest.FromString,
+            request_deserializer=rpc_dot_rpc__pb2.DecideRequest.FromString,
             response_serializer=rpc_dot_rpc__pb2.DecisionResponse.SerializeToString,
         ),
         "GetValue": grpc.unary_unary_rpc_method_handler(
@@ -136,7 +136,7 @@ class RPCApi(object):
             request,
             target,
             "/trustix.RPCApi/Decide",
-            rpc_dot_rpc__pb2.KeyRequest.SerializeToString,
+            rpc_dot_rpc__pb2.DecideRequest.SerializeToString,
             rpc_dot_rpc__pb2.DecisionResponse.FromString,
             options,
             channel_credentials,

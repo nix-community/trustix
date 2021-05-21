@@ -15,6 +15,7 @@ import (
 )
 
 type Publisher struct {
+	Protocol  string            `toml:"protocol"`
 	Signer    string            `toml:"signer"`
 	PublicKey *PublicKey        `toml:"key"`
 	Meta      map[string]string `toml:"meta"`
@@ -23,6 +24,10 @@ type Publisher struct {
 func (p *Publisher) Validate(signers map[string]*signer.Signer) error {
 	if p.Signer == "" {
 		return missingField("signer")
+	}
+
+	if p.Protocol == "" {
+		return missingField("protocol")
 	}
 
 	if err := p.PublicKey.Validate(); err != nil {

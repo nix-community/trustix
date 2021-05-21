@@ -18,6 +18,7 @@ private-key-path = "./dev/priv"  # Path to base64 encode private key file (shoul
 
 [[publisher]]
 signer = "snakeoil"
+protocol = "nix"
 
 [publisher.meta]
 upstream = "https://cache.nixos.org"

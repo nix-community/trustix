@@ -11,6 +11,7 @@ private-key-path = "./fixtures/priv"
 
 [[publisher]]
 signer = "snakeoil"
+protocol = "test"
 
 [publisher.key]
 type = "ed25519"

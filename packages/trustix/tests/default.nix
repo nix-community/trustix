@@ -75,7 +75,7 @@ in
     # about what that would look like
     sleep 5
 
-    trustix decide --key "$key" --address "unix://./agg.sock" > output
+    trustix decide --protocol test --key "$key" --address "unix://./agg.sock" > output
 
     echo "Decision output:"
     cat output

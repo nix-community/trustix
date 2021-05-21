@@ -9,11 +9,11 @@
 package log
 
 import (
-	"crypto/sha256"
+	"hash"
 )
 
-func LeafDigest(data []byte) []byte {
-	h := sha256.New()
+func leafDigest(hashFn func() hash.Hash, data []byte) []byte {
+	h := hashFn()
 	if data != nil {
 		h.Write([]byte{0}) // Write 0x00 prefix
 		h.Write(data)
@@ -21,8 +21,8 @@ func LeafDigest(data []byte) []byte {
 	return h.Sum(nil)
 }
 
-func LeafDigestKV(key []byte, value []byte) []byte {
-	h := sha256.New()
+func leafDigestKV(hashFn func() hash.Hash, key []byte, value []byte) []byte {
+	h := hashFn()
 	h.Write([]byte{0}) // Write 0x00 prefix
 	h.Write(key)
 	h.Write([]byte(":"))
@@ -46,8 +46,8 @@ func parent(node uint64) uint64 {
 	return node / 2
 }
 
-func branchHash(left []byte, right []byte) []byte {
-	h := sha256.New()
+func branchHash(hashFn func() hash.Hash, left []byte, right []byte) []byte {
+	h := hashFn()
 	h.Write([]byte{1}) // Write 0x01 prefix
 	h.Write(left)
 	h.Write(right)

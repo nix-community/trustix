@@ -10,6 +10,7 @@ require (
 	github.com/golang/protobuf v1.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.3.0
 	github.com/hashicorp/go-memdb v1.3.0
+	github.com/hashicorp/go-uuid v1.0.1
 	github.com/lazyledger/smt v0.0.0-20200827143353-42131aab296f
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v1.0.1-0.20201006035406-b97b5ead31f7

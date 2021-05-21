@@ -10,11 +10,11 @@ package log
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"fmt"
+	"hash"
 )
 
-func rootHashFromAuditProof(leafHash []byte, proof [][]byte, idx uint64, treeSize uint64) ([]byte, error) {
+func rootHashFromAuditProof(hashFn func() hash.Hash, leafHash []byte, proof [][]byte, idx uint64, treeSize uint64) ([]byte, error) {
 	if len(proof) == 0 {
 		return leafHash, nil
 	}
@@ -23,18 +23,18 @@ func rootHashFromAuditProof(leafHash []byte, proof [][]byte, idx uint64, treeSiz
 		if treeSize == 1 {
 			return nil, fmt.Errorf("No such level")
 		}
-		return rootHashFromAuditProof(leafHash, proof, idx/2, (treeSize+1)/2)
+		return rootHashFromAuditProof(hashFn, leafHash, proof, idx/2, (treeSize+1)/2)
 	}
 
 	sibling := proof[0]
 	if idx%2 == 0 {
-		return rootHashFromAuditProof(branchHash(leafHash, sibling), proof, idx/2, (treeSize+1)/2)
+		return rootHashFromAuditProof(hashFn, branchHash(hashFn, leafHash, sibling), proof, idx/2, (treeSize+1)/2)
 	} else {
-		return rootHashFromAuditProof(branchHash(sibling, leafHash), proof, idx/2, (treeSize+1)/2)
+		return rootHashFromAuditProof(hashFn, branchHash(hashFn, sibling, leafHash), proof, idx/2, (treeSize+1)/2)
 	}
 }
 
-func rootHashFromConsistencyProof(oldSize uint64, newSize uint64, proofNodes [][]byte, oldRoot []byte, computeNewRoot bool, startFromOldRoot bool) []byte {
+func rootHashFromConsistencyProof(hashFn func() hash.Hash, oldSize uint64, newSize uint64, proofNodes [][]byte, oldRoot []byte, computeNewRoot bool, startFromOldRoot bool) []byte {
 	if oldSize == newSize {
 		if startFromOldRoot {
 			return oldRoot
@@ -48,37 +48,37 @@ func rootHashFromConsistencyProof(oldSize uint64, newSize uint64, proofNodes [][
 	nextHash := proofNodes[idx]
 
 	if oldSize <= k {
-		leftChild := rootHashFromConsistencyProof(oldSize, k, proofNodes[:idx], oldRoot, computeNewRoot, startFromOldRoot)
+		leftChild := rootHashFromConsistencyProof(hashFn, oldSize, k, proofNodes[:idx], oldRoot, computeNewRoot, startFromOldRoot)
 		if computeNewRoot {
-			return branchHash(leftChild, nextHash)
+			return branchHash(hashFn, leftChild, nextHash)
 		} else {
 			return leftChild
 		}
 	} else {
-		rightChild := rootHashFromConsistencyProof(oldSize-k, newSize-k, proofNodes[:idx], oldRoot, computeNewRoot, false)
-		return branchHash(nextHash, rightChild)
+		rightChild := rootHashFromConsistencyProof(hashFn, oldSize-k, newSize-k, proofNodes[:idx], oldRoot, computeNewRoot, false)
+		return branchHash(hashFn, nextHash, rightChild)
 	}
 
 }
 
-func ValidAuditProof(rootHash []byte, treeSize uint64, idx uint64, proof [][]byte, leafData []byte) (bool, error) {
-	leafHash := sha256.New()
-	leafHash.Write([]byte{0})
-	leafHash.Write(leafData)
+// func ValidAuditProof(rootHash []byte, treeSize uint64, idx uint64, proof [][]byte, leafData []byte) (bool, error) {
+// 	leafHash := sha256.New()
+// 	leafHash.Write([]byte{0})
+// 	leafHash.Write(leafData)
 
-	fromAuditProof, err := rootHashFromAuditProof(
-		leafHash.Sum(nil),
-		proof,
-		idx,
-		treeSize)
-	if err != nil {
-		return false, err
-	}
+// 	fromAuditProof, err := rootHashFromAuditProof(
+// 		leafHash.Sum(nil),
+// 		proof,
+// 		idx,
+// 		treeSize)
+// 	if err != nil {
+// 		return false, err
+// 	}
 
-	return bytes.Compare(rootHash, fromAuditProof) == 0, nil
-}
+// 	return bytes.Compare(rootHash, fromAuditProof) == 0, nil
+// }
 
-func ValidConsistencyProof(oldRoot []byte, newRoot []byte, oldSize uint64, newSize uint64, proofNodes [][]byte) bool {
+func ValidConsistencyProof(hashFn func() hash.Hash, oldRoot []byte, newRoot []byte, oldSize uint64, newSize uint64, proofNodes [][]byte) bool {
 	if oldSize == 0 { // Empty tree consistent with any future state
 		return true
 	}
@@ -87,8 +87,8 @@ func ValidConsistencyProof(oldRoot []byte, newRoot []byte, oldSize uint64, newSi
 		return bytes.Compare(oldRoot, newRoot) == 0
 	}
 
-	computedOldRoot := rootHashFromConsistencyProof(oldSize, newSize, proofNodes, oldRoot, false, true)
-	computedNewRoot := rootHashFromConsistencyProof(oldSize, newSize, proofNodes, oldRoot, true, true)
+	computedOldRoot := rootHashFromConsistencyProof(hashFn, oldSize, newSize, proofNodes, oldRoot, false, true)
+	computedNewRoot := rootHashFromConsistencyProof(hashFn, oldSize, newSize, proofNodes, oldRoot, true, true)
 
 	return bytes.Compare(oldRoot, computedOldRoot) == 0 && bytes.Compare(newRoot, computedNewRoot) == 0
 }

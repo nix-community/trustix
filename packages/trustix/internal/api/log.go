@@ -13,6 +13,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"hash"
 
 	"github.com/tweag/trustix/packages/trustix-proto/api"
 	"github.com/tweag/trustix/packages/trustix-proto/schema"
@@ -20,10 +21,10 @@ import (
 	"github.com/tweag/trustix/packages/trustix/internal/storage"
 )
 
-func getLogConsistencyProof(txn *storage.BucketTransaction, ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
+func getLogConsistencyProof(hashFn func() hash.Hash, txn *storage.BucketTransaction, ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {
 	resp = &api.ProofResponse{}
 
-	vLog, err := vlog.NewVerifiableLog(txn, *req.SecondSize)
+	vLog, err := vlog.NewVerifiableLog(hashFn, txn, *req.SecondSize)
 	if err != nil {
 		return nil, err
 	}
@@ -38,9 +39,9 @@ func getLogConsistencyProof(txn *storage.BucketTransaction, ctx context.Context,
 	return resp, nil
 }
 
-func getLogAuditProof(txn *storage.BucketTransaction, ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
+func getLogAuditProof(hashFn func() hash.Hash, txn *storage.BucketTransaction, ctx context.Context, req *api.GetLogAuditProofRequest) (resp *api.ProofResponse, err error) {
 
-	vLog, err := vlog.NewVerifiableLog(txn, *req.TreeSize)
+	vLog, err := vlog.NewVerifiableLog(hashFn, txn, *req.TreeSize)
 	if err != nil {
 		return nil, err
 	}

@@ -22,6 +22,7 @@ import (
 	"github.com/tweag/trustix/packages/trustix/internal/constants"
 	vlog "github.com/tweag/trustix/packages/trustix/internal/log"
 	"github.com/tweag/trustix/packages/trustix/internal/pool"
+	"github.com/tweag/trustix/packages/trustix/internal/protocols"
 	"github.com/tweag/trustix/packages/trustix/internal/signer"
 	sthlib "github.com/tweag/trustix/packages/trustix/internal/sth"
 	"github.com/tweag/trustix/packages/trustix/internal/storage"
@@ -40,6 +41,7 @@ func NewSTHSyncer(
 	clients *pool.ClientPool,
 	verifier signer.TrustixVerifier,
 	pollInterval time.Duration,
+	pd *protocols.ProtocolDescriptor,
 ) io.Closer {
 	c := &sthSyncer{
 		store:     store,
@@ -108,7 +110,7 @@ func NewSTHSyncer(
 			}
 		}
 
-		valid := sthlib.VerifyLogHeadSig(verifier, sth)
+		valid := sthlib.VerifyLogHeadSig(verifier, sth, pd)
 		if !valid {
 			return fmt.Errorf("STH signature invalid")
 		}
@@ -123,6 +125,7 @@ func NewSTHSyncer(
 		}
 
 		valid = vlog.ValidConsistencyProof(
+			pd.NewHash,
 			oldSTH.LogRoot,
 			sth.LogRoot,
 			oldTreeSize,
