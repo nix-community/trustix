@@ -16,6 +16,7 @@ import (
 	"sync"
 
 	"github.com/hashicorp/go-uuid"
+	"github.com/tweag/trustix/packages/trustix-proto/api"
 )
 
 type ProtocolDescriptor struct {
@@ -46,14 +47,19 @@ func (pd *ProtocolDescriptor) Validate() error {
 }
 
 // LogID - Generate a deterministic ID based on known facts
-func (pd *ProtocolDescriptor) LogID(keyType string, publicKey []byte) string {
+func (pd *ProtocolDescriptor) LogID(keyType string, publicKey []byte, mode api.Log_LogModes) string {
 	h := pd.NewHash()
 
-	h.Write([]byte(keyType))
-	h.Write([]byte(":"))
+	writeField := func(fieldName string, data []byte) {
+		h.Write([]byte(fieldName + ":"))
+		h.Write([]byte(data))
+		h.Write([]byte(";"))
+	}
 
-	h.Write(publicKey)
-	h.Write([]byte(":"))
+	writeField("protocol", []byte(pd.ID))
+	writeField("mode", []byte(fmt.Sprintf("%d", mode)))
+	writeField("keyType", []byte(keyType))
+	writeField("pubKey", publicKey)
 
 	return hex.EncodeToString(h.Sum(nil))
 }

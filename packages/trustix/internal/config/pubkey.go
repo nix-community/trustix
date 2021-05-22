@@ -36,13 +36,13 @@ func (p *PublicKey) Decode() ([]byte, error) {
 	return base64.StdEncoding.DecodeString(p.Pub)
 }
 
-func (p *PublicKey) LogID(pd *protocols.ProtocolDescriptor) (string, error) {
+func (p *PublicKey) LogID(pd *protocols.ProtocolDescriptor, mode api.Log_LogModes) (string, error) {
 	pubBytes, err := p.Decode()
 	if err != nil {
 		return "", err
 	}
 
-	return pd.LogID(p.Type, pubBytes), nil
+	return pd.LogID(p.Type, pubBytes, mode), nil
 }
 
 func (p *PublicKey) Signer() (*api.LogSigner, error) {

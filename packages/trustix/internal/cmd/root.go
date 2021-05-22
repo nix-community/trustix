@@ -127,7 +127,9 @@ var rootCmd = &cobra.Command{
 					return err
 				}
 
-				logID, err := pubConf.PublicKey.LogID(pd)
+				logMode := api.Log_LogModes(0)
+
+				logID, err := pubConf.PublicKey.LogID(pd, logMode)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -142,7 +144,7 @@ var rootCmd = &cobra.Command{
 					Meta:     pubConf.GetMeta(),
 					Signer:   signer,
 					Protocol: &pd.ID,
-					Mode:     api.Log_LogModes(0).Enum(), // Hard-coded for now
+					Mode:     logMode.Enum(), // Hard-coded for now
 				}
 
 				logs = append(logs, log)
@@ -155,7 +157,9 @@ var rootCmd = &cobra.Command{
 					return err
 				}
 
-				logID, err := subConf.PublicKey.LogID(pd)
+				logMode := api.Log_LogModes(0)
+
+				logID, err := subConf.PublicKey.LogID(pd, logMode)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -170,7 +174,7 @@ var rootCmd = &cobra.Command{
 					Meta:     subConf.GetMeta(),
 					Signer:   signer,
 					Protocol: &pd.ID,
-					Mode:     api.Log_LogModes(0).Enum(), // Hard-coded for now
+					Mode:     logMode.Enum(),
 				}
 
 				logs = append(logs, log)
@@ -225,7 +229,9 @@ var rootCmd = &cobra.Command{
 						return err
 					}
 
-					logID, err := subConf.PublicKey.LogID(pd)
+					logMode := api.Log_LogModes(0)
+
+					logID, err := subConf.PublicKey.LogID(pd, logMode)
 					if err != nil {
 						return err
 					}
