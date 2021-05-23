@@ -56,6 +56,7 @@ var logID string
 var protocol string
 
 var timeout int
+var pollInterval float64
 
 var rootCmd = &cobra.Command{
 	Use:   "trustix",
@@ -254,11 +255,8 @@ var rootCmd = &cobra.Command{
 						}
 					}
 
-					{
-						interval := 1.0
-						duration := time.Millisecond * time.Duration(math.Round(interval/1000))
-						headSyncCloser.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), clientPool, verifier, duration, pd))
-					}
+					pollDuration := time.Millisecond * time.Duration(math.Round(pollInterval/1000))
+					headSyncCloser.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), clientPool, verifier, pollDuration, pd))
 
 					return nil
 				})
@@ -486,6 +484,9 @@ func initCommands() {
 
 	rootCmd.PersistentFlags().StringSliceVar(&listenAddresses, "listen", []string{}, "Listen to address")
 	rootCmd.PersistentFlags().IntVar(&timeout, "timeout", 20, "Timeout in seconds")
+
+	// Default poll every 30 minutes
+	rootCmd.PersistentFlags().Float64Var(&pollInterval, "interval", 60*30, "Log poll interval in seconds")
 
 	rootCmd.PersistentFlags().StringVar(&logID, "log-id", "", "Log ID")
 

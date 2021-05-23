@@ -68,7 +68,7 @@ in
     trustix --log-id "$log_id_3" submit --key "$key" --value "$evil_hash" --address "unix://./3.sock"
     trustix --log-id "$log_id_3" flush --address "unix://./3.sock"
 
-    (cd ${compare-fixtures/log-agg}; systemfd -s $build_dir/agg.sock -- trustix --state $TMPDIR/log-agg-state --config ./config.toml) &
+    (cd ${compare-fixtures/log-agg}; systemfd -s $build_dir/agg.sock -- trustix --interval 1 --state $TMPDIR/log-agg-state --config ./config.toml) &
 
     # Allow the aggregate to sync
     # Ideally waiting for a synchronised state should be exposed somehow but I'm uncertain
