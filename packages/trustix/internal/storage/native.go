@@ -12,53 +12,62 @@ import (
 	"path"
 	"sync"
 
-	badger "github.com/dgraph-io/badger/v2"
+	bolt "go.etcd.io/bbolt"
 )
 
 type nativeStorage struct {
-	db       *badger.DB
+	db       *bolt.DB
 	txnMutex *sync.RWMutex
 }
 
 type nativeTxn struct {
-	txn *badger.Txn
-}
-
-func createCompoundNativeKey(bucket *Bucket, key []byte) []byte {
-	cKey := []byte(bucket.Join())
-	cKey = append(cKey, 0x2f)
-	cKey = append(cKey, key...)
-	return cKey
+	txn *bolt.Tx
 }
 
 func (t *nativeTxn) Get(bucket *Bucket, key []byte) ([]byte, error) {
-	val, err := t.txn.Get(createCompoundNativeKey(bucket, key))
-	if err != nil {
-		// Normalise error
-		if err == badger.ErrKeyNotFound {
-			return nil, ObjectNotFoundError
-		}
-		return nil, err
+	// TODO: Better bucket scheme
+	b := t.txn.Bucket([]byte(bucket.Join()))
+	if b == nil {
+		return nil, ObjectNotFoundError
 	}
 
-	return val.ValueCopy(nil)
+	val := b.Get(key)
+	if val == nil {
+		return nil, ObjectNotFoundError
+	}
+
+	return val, nil
 }
 
 func (t *nativeTxn) Set(bucket *Bucket, key []byte, value []byte) error {
-	return t.txn.Set(createCompoundNativeKey(bucket, key), value)
+	// TODO: Better bucket scheme
+	b, err := t.txn.CreateBucketIfNotExists([]byte(bucket.Join()))
+	if err != nil {
+		return err
+	}
+
+	err = b.Put(key, value)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *nativeTxn) Delete(bucket *Bucket, key []byte) error {
-	return t.txn.Delete(createCompoundNativeKey(bucket, key))
+	// TODO: Better bucket scheme
+	b, err := t.txn.CreateBucketIfNotExists([]byte(bucket.Join()))
+	if err != nil {
+		return err
+	}
+
+	return b.Delete(key)
 }
 
 func NewNativeStorage(stateDirectory string) (*nativeStorage, error) {
 	path := path.Join(stateDirectory, "trustix.db")
 
-	options := badger.DefaultOptions(path)
-	options.Logger = nil
-
-	db, err := badger.Open(options)
+	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -79,16 +88,17 @@ func (s *nativeStorage) runTX(readWrite bool, fn func(Transaction) error) error 
 		defer s.txnMutex.RUnlock()
 	}
 
-	txn := s.db.NewTransaction(readWrite)
-	if readWrite {
-		defer txn.Discard()
+	txn, err := s.db.Begin(readWrite)
+	if err != nil {
+		return err
 	}
+	defer txn.Rollback()
 
 	t := &nativeTxn{
 		txn: txn,
 	}
 
-	err := fn(t)
+	err = fn(t)
 	if err != nil {
 		return err
 	} else {

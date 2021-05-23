@@ -30,8 +30,15 @@ type memoryTxn struct {
 	txn *memdb.Txn
 }
 
+func (t *memoryTxn) createKey(bucket *Bucket, key []byte) []byte {
+	cKey := []byte(bucket.Join())
+	cKey = append(cKey, 0x2f)
+	cKey = append(cKey, key...)
+	return cKey
+}
+
 func (t *memoryTxn) Get(bucket *Bucket, key []byte) ([]byte, error) {
-	val, err := t.txn.First("record", "id", base64.StdEncoding.EncodeToString(createCompoundNativeKey(bucket, key)))
+	val, err := t.txn.First("record", "id", base64.StdEncoding.EncodeToString(t.createKey(bucket, key)))
 	if err != nil {
 		return nil, err
 	}
@@ -50,14 +57,14 @@ func (t *memoryTxn) Get(bucket *Bucket, key []byte) ([]byte, error) {
 
 func (t *memoryTxn) Set(bucket *Bucket, key []byte, value []byte) error {
 	return t.txn.Insert("record", &memdbRecord{
-		Key:   base64.StdEncoding.EncodeToString(createCompoundNativeKey(bucket, key)),
+		Key:   base64.StdEncoding.EncodeToString(t.createKey(bucket, key)),
 		Value: base64.StdEncoding.EncodeToString(value),
 	})
 }
 
 func (t *memoryTxn) Delete(bucket *Bucket, key []byte) error {
 	return t.txn.Delete("record", &memdbRecord{
-		Key: base64.StdEncoding.EncodeToString(createCompoundNativeKey(bucket, key)),
+		Key: base64.StdEncoding.EncodeToString(t.createKey(bucket, key)),
 	})
 }
 
