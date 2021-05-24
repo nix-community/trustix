@@ -60,7 +60,7 @@ type Publisher struct {
 	signer    crypto.Signer
 	submitMux *sync.Mutex
 	logID     string
-	closeChan chan interface{}
+	// closeChan chan interface{}
 }
 
 func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket, logBucket *storage.Bucket, signer crypto.Signer, pd *protocols.ProtocolDescriptor) (*Publisher, error) {
@@ -71,7 +71,7 @@ func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket,
 		logID:     logID,
 		queueMux:  &sync.Mutex{},
 		submitMux: &sync.Mutex{},
-		closeChan: make(chan interface{}),
+		// closeChan: make(chan interface{}),
 
 		// Storage buckets
 		logBucket:    logBucket,
@@ -489,5 +489,5 @@ func (qm *Publisher) submitBatch() (*schema.SubmitQueue, error) {
 }
 
 func (qm *Publisher) Close() {
-	qm.closeChan <- nil
+	// qm.closeChan <- nil
 }
