@@ -24,8 +24,6 @@ pkgs.mkShell {
     pkgs.poetry
     pythonEnv
 
-    pkgs.nix-nar-unpack
-
     pkgs.hydra-eval-jobs
 
     pkgs.redis

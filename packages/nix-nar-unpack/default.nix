@@ -1,2 +1,0 @@
-{ naersk }:
-naersk.buildPackage ./.

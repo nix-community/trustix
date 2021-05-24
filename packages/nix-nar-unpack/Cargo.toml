@@ -1,8 +1,0 @@
-[package]
-name = "nix-nar-unpack"
-version = "0.1.0"
-authors = ["adisbladis <adam.hose@tweag.io>"]
-edition = "2018"
-
-[dependencies]
-libnar = { git = "https://github.com/ebkalderon/libnar", rev = "d5ea74ec7387faf9d080d74cf4d0ff5e4710b139" }

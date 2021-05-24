@@ -3,7 +3,6 @@ let
 in
 import sources.nixpkgs {
   overlays = [
-    (import "${sources.naersk}/overlay.nix")
     (import "${sources.gomod2nix}/overlay.nix")
     (self: super: {
       npmlock2nix = import sources.npmlock2nix { pkgs = self; };

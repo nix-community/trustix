@@ -34,9 +34,6 @@ from trustix_nix_reprod.proto import get_rpcapi
 # Uvloop has a nasty bug https://github.com/MagicStack/uvloop/issues/317
 # To work around this we run the fetching/unpacking in a separate blocking thread
 def _fetch_unpack_nar(url, location):
-    import subprocess
-
-    loc_base = os.path.basename(location)
     loc_dir = os.path.dirname(location)
 
     try:
@@ -47,7 +44,8 @@ def _fetch_unpack_nar(url, location):
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
         p = subprocess.Popen(
-            ["nix-nar-unpack", loc_base], stdin=subprocess.PIPE, cwd=loc_dir
+            ["nix-store", "--restore", loc_dir],
+            stdin=subprocess.PIPE,
         )
         for chunk in r.iter_content(chunk_size=512):
             p.stdin.write(chunk)
