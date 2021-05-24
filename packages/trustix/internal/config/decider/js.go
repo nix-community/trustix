@@ -12,12 +12,12 @@ import (
 	"fmt"
 )
 
-type LuaDecider struct {
-	Script string `toml:"script"`
+type JSDecider struct {
+	Function string `toml:"function"`
 }
 
-func (s *LuaDecider) Validate() error {
-	if s.Script == "" {
+func (s *JSDecider) Validate() error {
+	if s.Function == "" {
 		return fmt.Errorf("Empty script")
 	}
 	return nil

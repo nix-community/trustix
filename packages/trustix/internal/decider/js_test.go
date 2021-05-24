@@ -14,16 +14,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLuaScript(t *testing.T) {
+func TestJSScript(t *testing.T) {
 
-	script := `
-      function(inputs)
-        t = {}
-        t["LogIDs"] = {"DummyLog"}
-        t["Value"] = "DummyReturn"
-        return t
-      end
-    `
+	script := `function(inputs) {
+        return "DummyReturn"
+    }`
 
 	assert := assert.New(t)
 
@@ -46,7 +41,10 @@ func TestLuaScript(t *testing.T) {
 		},
 	}
 
-	decider, err := NewLuaDecider(script)
+	decider, err := NewJSDecider(script)
+	if err != nil {
+		t.Log(err) // Make error readable
+	}
 	assert.Nil(err)
 
 	output, err := decider.Decide(inputs)

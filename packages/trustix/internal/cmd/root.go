@@ -328,8 +328,8 @@ var rootCmd = &cobra.Command{
 				current := []decider.LogDecider{}
 				for _, deciderConfig := range deciderConfigs {
 					switch deciderConfig.Engine {
-					case "lua":
-						decider, err := decider.NewLuaDecider(deciderConfig.Lua.Script)
+					case "javascript":
+						decider, err := decider.NewJSDecider(deciderConfig.JS.Function)
 						if err != nil {
 							return err
 						}

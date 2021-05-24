@@ -14,15 +14,15 @@ import (
 
 type Decider struct {
 	Engine     string             `toml:"engine"`
-	Lua        *LuaDecider        `toml:"lua"`
+	JS         *JSDecider         `toml:"javascript"`
 	LogID      *LogIDDecider      `toml:"logid"`
 	Percentage *PercentageDecider `toml:"percentage"`
 }
 
 func (s *Decider) Validate() error {
 	switch s.Engine {
-	case "lua":
-		return s.Lua.Validate()
+	case "javascript":
+		return s.JS.Validate()
 	case "logid":
 		return s.LogID.Validate()
 	case "percentage":

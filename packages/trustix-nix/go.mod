@@ -15,6 +15,7 @@ require (
 	github.com/tweag/trustix/packages/trustix-proto v0.0.0-00010101000000-000000000000
 	github.com/ulikunitz/xz v0.5.10
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
+	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
 	google.golang.org/grpc v1.36.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
 	google.golang.org/protobuf v1.26.0

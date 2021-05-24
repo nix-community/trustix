@@ -4,8 +4,8 @@ go 1.15
 
 require (
 	github.com/BurntSushi/toml v0.3.1
-	github.com/Shopify/go-lua v0.0.0-20191113154418-05ce435a9edd
 	github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e
+	github.com/dop251/goja v0.0.0-20210427212725-462d53687b0d
 	github.com/golang/protobuf v1.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.3.0
 	github.com/hashicorp/go-memdb v1.3.0
@@ -20,8 +20,6 @@ require (
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
 	google.golang.org/grpc v1.36.0
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 replace github.com/tweag/trustix/packages/trustix-proto => ../trustix-proto
