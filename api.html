@@ -222,6 +222,9 @@
 <p><a href="#trustix.ValueResponse">ValueResponse</a></p>
 </li>
 <li>
+<p><a href="#trustix.Log.LogModes">Log.LogModes</a></p>
+</li>
+<li>
 <p><a href="#trustix.LogSigner.KeyTypes">LogSigner.KeyTypes</a></p>
 </li>
 <li>
@@ -236,6 +239,9 @@
 <p><a href="#rpc/rpc.proto">rpc/rpc.proto</a></p>
 <ul>
 <li>
+<p><a href="#trustix.DecideRequest">DecideRequest</a></p>
+</li>
+<li>
 <p><a href="#trustix.DecisionResponse">DecisionResponse</a></p>
 </li>
 <li>
@@ -249,9 +255,6 @@
 </li>
 <li>
 <p><a href="#trustix.FlushResponse">FlushResponse</a></p>
-</li>
-<li>
-<p><a href="#trustix.KeyRequest">KeyRequest</a></p>
 </li>
 <li>
 <p><a href="#trustix.LogValueDecision">LogValueDecision</a></p>
@@ -347,6 +350,8 @@
 <h3 id="log"><a class="header" href="#log">Log</a></h3>
 <table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="#string">string</a></td><td>required</td><td></td></tr>
+<tr><td>Mode</td><td><a href="#trustix.Log.LogModes">Log.LogModes</a></td><td>required</td><td></td></tr>
+<tr><td>Protocol</td><td><a href="#string">string</a></td><td>required</td><td></td></tr>
 <tr><td>Signer</td><td><a href="#trustix.LogSigner">LogSigner</a></td><td>required</td><td></td></tr>
 <tr><td>Meta</td><td><a href="#trustix.Log.MetaEntry">Log.MetaEntry</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
@@ -410,6 +415,11 @@
 <table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Value</td><td><a href="#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
+<p><a name="trustix.Log.LogModes"></a></p>
+<h3 id="loglogmodes"><a class="header" href="#loglogmodes">Log.LogModes</a></h3>
+<table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
+<tr><td>Log</td><td>0</td><td></td></tr>
+</tbody></table>
 <p><a name="trustix.LogSigner.KeyTypes"></a></p>
 <h3 id="logsignerkeytypes"><a class="header" href="#logsignerkeytypes">LogSigner.KeyTypes</a></h3>
 <table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
@@ -439,6 +449,12 @@ rather than individual logs.</p>
 <p><a name="rpc/rpc.proto"></a></p>
 <p align="right"><a href="#top">Top</a></p>
 <h2 id="rpcrpcproto"><a class="header" href="#rpcrpcproto">rpc/rpc.proto</a></h2>
+<p><a name="trustix.DecideRequest"></a></p>
+<h3 id="deciderequest"><a class="header" href="#deciderequest">DecideRequest</a></h3>
+<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<tr><td>Key</td><td><a href="#bytes">bytes</a></td><td>required</td><td></td></tr>
+<tr><td>Protocol</td><td><a href="#string">string</a></td><td>required</td><td></td></tr>
+</tbody></table>
 <p><a name="trustix.DecisionResponse"></a></p>
 <h3 id="decisionresponse"><a class="header" href="#decisionresponse">DecisionResponse</a></h3>
 <table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
@@ -465,11 +481,6 @@ rather than individual logs.</p>
 </tbody></table>
 <p><a name="trustix.FlushResponse"></a></p>
 <h3 id="flushresponse"><a class="header" href="#flushresponse">FlushResponse</a></h3>
-<p><a name="trustix.KeyRequest"></a></p>
-<h3 id="keyrequest"><a class="header" href="#keyrequest">KeyRequest</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>Key</td><td><a href="#bytes">bytes</a></td><td>required</td><td></td></tr>
-</tbody></table>
 <p><a name="trustix.LogValueDecision"></a></p>
 <h3 id="logvaluedecision"><a class="header" href="#logvaluedecision">LogValueDecision</a></h3>
 <table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
@@ -516,7 +527,7 @@ This should only be available to trusted parties.</p>
 This should only be available to trusted parties.</p>
 <table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
 <tr><td>Logs</td><td><a href="#trustix.LogsRequest">LogsRequest</a></td><td><a href="#trustix.LogsResponse">LogsResponse</a></td><td>Get a list of all logs published/subscribed by this node</td></tr>
-<tr><td>Decide</td><td><a href="#trustix.KeyRequest">KeyRequest</a></td><td><a href="#trustix.DecisionResponse">DecisionResponse</a></td><td>Decide on an output for key based on the configured decision method</td></tr>
+<tr><td>Decide</td><td><a href="#trustix.DecideRequest">DecideRequest</a></td><td><a href="#trustix.DecisionResponse">DecisionResponse</a></td><td>Decide on an output for key based on the configured decision method</td></tr>
 <tr><td>GetValue</td><td><a href="#trustix.ValueRequest">ValueRequest</a></td><td><a href="#trustix.ValueResponse">ValueResponse</a></td><td>Get values by their content-address</td></tr>
 </tbody></table>
 <p><a name="schema/loghead.proto"></a></p>
