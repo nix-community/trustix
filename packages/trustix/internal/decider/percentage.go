@@ -27,17 +27,17 @@ func (q *minimumPercent) Name() string {
 	return "percentage"
 }
 
-func (q *minimumPercent) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
+func (q *minimumPercent) Decide(inputs []*DeciderInput) (*DeciderOutput, error) {
 	numInputs := len(inputs)
 	pctPerEntry := 100 / numInputs
 
-	// Map OutputHash to list of matches
-	entries := make(map[string][]*LogDeciderInput)
+	// Map Value to list of matches
+	entries := make(map[string][]*DeciderInput)
 	for i := range inputs {
 		input := inputs[i]
-		l := entries[input.OutputHash]
+		l := entries[input.Value]
 		l = append(l, input)
-		entries[input.OutputHash] = l
+		entries[input.Value] = l
 	}
 
 	type sortStruct struct {
@@ -45,9 +45,9 @@ func (q *minimumPercent) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, e
 		pct int
 	}
 
-	makeReturn := func(m *sortStruct) (*LogDeciderOutput, error) {
-		ret := &LogDeciderOutput{
-			OutputHash: m.key,
+	makeReturn := func(m *sortStruct) (*DeciderOutput, error) {
+		ret := &DeciderOutput{
+			Value:      m.key,
 			Confidence: m.pct,
 		}
 		return ret, nil

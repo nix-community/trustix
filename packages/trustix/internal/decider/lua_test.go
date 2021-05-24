@@ -20,29 +20,29 @@ func TestLuaScript(t *testing.T) {
       function(inputs)
         t = {}
         t["LogIDs"] = {"DummyLog"}
-        t["OutputHash"] = "DummyReturn"
+        t["Value"] = "DummyReturn"
         return t
       end
     `
 
 	assert := assert.New(t)
 
-	inputs := []*LogDeciderInput{
-		&LogDeciderInput{
-			LogID:      "test1",
-			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
+	inputs := []*DeciderInput{
+		&DeciderInput{
+			LogID: "test1",
+			Value: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
-		&LogDeciderInput{
-			LogID:      "test2",
-			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
+		&DeciderInput{
+			LogID: "test2",
+			Value: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
-		&LogDeciderInput{
-			LogID:      "test3",
-			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
+		&DeciderInput{
+			LogID: "test3",
+			Value: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
-		&LogDeciderInput{
-			LogID:      "test4",
-			OutputHash: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
+		&DeciderInput{
+			LogID: "test4",
+			Value: "26c499a911e8376c52940e050cecc7fc1b9699e759d18856323391c82a2210aa",
 		},
 	}
 

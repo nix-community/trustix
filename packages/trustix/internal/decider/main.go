@@ -8,15 +8,15 @@
 
 package decider
 
-// LogDeciderInput
-type LogDeciderInput struct {
-	LogID      string
-	OutputHash string
+// DeciderInput
+type DeciderInput struct {
+	LogID string
+	Value string
 }
 
-type LogDeciderOutput struct {
-	// The decided OutputHash
-	OutputHash string
+type DeciderOutput struct {
+	// The decided Value
+	Value string
 	// An arbitrary number conveying the underlying engines confidence in the result
 	Confidence int
 }
@@ -26,5 +26,5 @@ type LogDecider interface {
 	Name() string
 
 	// Decide - Decide on an output hash from aggregated logs
-	Decide([]*LogDeciderInput) (*LogDeciderOutput, error)
+	Decide([]*DeciderInput) (*DeciderOutput, error)
 }

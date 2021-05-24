@@ -96,7 +96,7 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 
 	var wg sync.WaitGroup
 	var mux sync.Mutex
-	var inputs []*decider.LogDeciderInput
+	var inputs []*decider.DeciderInput
 	var misses []string
 
 	logs := l.logs
@@ -188,9 +188,9 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 				return
 			}
 
-			inputs = append(inputs, &decider.LogDeciderInput{
-				LogID:      logID,
-				OutputHash: hex.EncodeToString(mapEntry.Digest),
+			inputs = append(inputs, &decider.DeciderInput{
+				LogID: logID,
+				Value: hex.EncodeToString(mapEntry.Digest),
 			})
 
 		}()
@@ -202,7 +202,7 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 		Misses: misses,
 	}
 
-	var decision *decider.LogDeciderOutput
+	var decision *decider.DeciderOutput
 	if len(inputs) > 0 {
 
 		var err error
@@ -211,16 +211,16 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 			return nil, err
 		}
 
-		outputHash, err := hex.DecodeString(decision.OutputHash)
+		outputHash, err := hex.DecodeString(decision.Value)
 		if err != nil {
 			return nil, err
 		}
 
 		confidence := int32(decision.Confidence)
-		if decision.OutputHash != "" {
+		if decision.Value != "" {
 			logIDs := []string{}
 			for _, input := range inputs {
-				if input.OutputHash == decision.OutputHash {
+				if input.Value == decision.Value {
 					logIDs = append(logIDs, input.LogID)
 				}
 			}
@@ -249,11 +249,11 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 
 	// inputMap := make(map[string][]byte)
 	for _, input := range inputs {
-		if input.OutputHash == decision.OutputHash {
+		if input.Value == decision.Value {
 			continue
 		}
 
-		digest, err := hex.DecodeString(input.OutputHash)
+		digest, err := hex.DecodeString(input.Value)
 		if err != nil {
 			return nil, err
 		}

@@ -44,7 +44,7 @@ func (l *luaDecider) Name() string {
 	return "lua"
 }
 
-func (l *luaDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
+func (l *luaDecider) Decide(inputs []*DeciderInput) (*DeciderOutput, error) {
 	state := l.state
 
 	// TODO: Recover from panic() in call
@@ -55,16 +55,16 @@ func (l *luaDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error
 	// Reset state to function call on exit
 	defer state.Global("DeciderFunction")
 
-	// Create corresponding []*LogDeciderInput
+	// Create corresponding []*DeciderInput
 	state.NewTable()
 
-	// Create corresponding *LogDeciderInput
+	// Create corresponding *DeciderInput
 	for i, in := range inputs {
 		state.NewTable()
 		state.PushString(in.LogID)
 		state.SetField(-2, "LogID")
-		state.PushString(in.OutputHash)
-		state.SetField(-2, "OutputHash")
+		state.PushString(in.Value)
+		state.SetField(-2, "Value")
 
 		idx := i + 1             // In Lua arrays start at 1...
 		state.RawSetInt(-2, idx) // Append to list
@@ -80,15 +80,15 @@ func (l *luaDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error
 	}
 
 	// Translate lua table back to Go struct
-	ret := &LogDeciderOutput{}
+	ret := &DeciderOutput{}
 
-	state.Field(-1, "OutputHash")
+	state.Field(-1, "Value")
 	outputHash, ok := state.ToString(-1)
 	state.Pop(1)
 	if !ok {
-		return nil, fmt.Errorf("OutputHash is not of type string")
+		return nil, fmt.Errorf("Value is not of type string")
 	}
-	ret.OutputHash = outputHash
+	ret.Value = outputHash
 
 	ret.Confidence = 1
 

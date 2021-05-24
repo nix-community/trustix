@@ -27,12 +27,12 @@ func (d *logIDDecider) Name() string {
 	return "logID"
 }
 
-func (d *logIDDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
+func (d *logIDDecider) Decide(inputs []*DeciderInput) (*DeciderOutput, error) {
 	for i := range inputs {
 		input := inputs[i]
 		if input.LogID == d.logID {
-			return &LogDeciderOutput{
-				OutputHash: input.OutputHash,
+			return &DeciderOutput{
+				Value:      input.Value,
 				Confidence: 100,
 			}, nil
 		}

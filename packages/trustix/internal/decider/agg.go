@@ -28,7 +28,7 @@ func (d *aggDecider) Name() string {
 	return "aggregate"
 }
 
-func (d *aggDecider) Decide(inputs []*LogDeciderInput) (*LogDeciderOutput, error) {
+func (d *aggDecider) Decide(inputs []*DeciderInput) (*DeciderOutput, error) {
 	if len(d.deciders) == 0 {
 		return nil, fmt.Errorf("No decision making engines configured")
 	}
