@@ -71,7 +71,7 @@ func SignHead(vLog *vlog.VerifiableLog, smTree *smt.SparseMerkleTree, vMapLog *v
 	}, nil
 }
 
-func VerifyLogHeadSig(verifier signer.TrustixVerifier, head *schema.LogHead, pd *protocols.ProtocolDescriptor) bool {
+func VerifyLogHeadSig(verifier signer.Verifier, head *schema.LogHead, pd *protocols.ProtocolDescriptor) bool {
 
 	h := pd.NewHash()
 	h.Write(head.LogRoot)

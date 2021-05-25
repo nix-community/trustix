@@ -39,7 +39,7 @@ func NewSTHSyncer(
 	store storage.Storage,
 	logBucket *storage.Bucket,
 	clients *pool.ClientPool,
-	verifier signer.TrustixVerifier,
+	verifier signer.Verifier,
 	pollInterval time.Duration,
 	pd *protocols.ProtocolDescriptor,
 ) io.Closer {

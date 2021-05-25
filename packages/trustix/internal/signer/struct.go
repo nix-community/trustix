@@ -12,7 +12,7 @@ import (
 	"crypto"
 )
 
-type TrustixVerifier interface {
+type Verifier interface {
 	Verify(message, sig []byte) bool
 	Public() crypto.PublicKey
 }

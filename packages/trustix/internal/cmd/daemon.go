@@ -231,7 +231,7 @@ var daemonCmd = &cobra.Command{
 						"pubkey": subConf.PublicKey.Pub,
 					}).Info("Adding log subscriber")
 
-					var verifier signer.TrustixVerifier
+					var verifier signer.Verifier
 					{
 						switch subConf.PublicKey.Type {
 						case "ed25519":

@@ -26,7 +26,7 @@ func (v *ed25519Verifier) Verify(message, sig []byte) bool {
 	return ed25519.Verify(v.pub, message, sig)
 }
 
-func NewED25519Verifier(pub []byte) (TrustixVerifier, error) {
+func NewED25519Verifier(pub []byte) (Verifier, error) {
 	if len(pub) != 32 {
 		return nil, fmt.Errorf("Wrong key length: %d != 32", len(pub))
 	}
