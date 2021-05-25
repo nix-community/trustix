@@ -19,8 +19,8 @@ import (
 	"github.com/tweag/trustix/packages/trustix/client"
 )
 
-var keyHex string
-var valueHex string
+var submitKeyHex string
+var submitValueHex string
 
 var submitCommand = &cobra.Command{
 	Use:   "submit",
@@ -34,22 +34,22 @@ var submitCommand = &cobra.Command{
 				return fmt.Errorf("Missing log ID")
 			}
 
-			if keyHex == "" {
+			if submitKeyHex == "" {
 				return fmt.Errorf("Missing key parameter")
 			}
 
-			if valueHex == "" {
+			if submitValueHex == "" {
 				return fmt.Errorf("Missing value parameter")
 			}
 
 		}
 
-		inputBytes, err := hex.DecodeString(keyHex)
+		inputBytes, err := hex.DecodeString(submitKeyHex)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		outputBytes, err := hex.DecodeString(valueHex)
+		outputBytes, err := hex.DecodeString(submitValueHex)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -64,8 +64,8 @@ var submitCommand = &cobra.Command{
 		defer cancel()
 
 		log.WithFields(log.Fields{
-			"key":   keyHex,
-			"value": valueHex,
+			"key":   submitKeyHex,
+			"value": submitValueHex,
 		}).Debug("Submitting mapping")
 
 		r, err := c.LogRPC.Submit(ctx, &pb.SubmitRequest{
@@ -88,6 +88,6 @@ var submitCommand = &cobra.Command{
 }
 
 func initSubmit() {
-	submitCommand.Flags().StringVar(&keyHex, "key", "", "Key in hex encoding")
-	submitCommand.Flags().StringVar(&valueHex, "value", "", "Value in hex encoding")
+	submitCommand.Flags().StringVar(&submitKeyHex, "key", "", "Key in hex encoding")
+	submitCommand.Flags().StringVar(&submitValueHex, "value", "", "Value in hex encoding")
 }

@@ -20,6 +20,8 @@ import (
 	"github.com/tweag/trustix/packages/trustix/client"
 )
 
+var queryKeyHex string
+
 var queryCommand = &cobra.Command{
 	Use:   "query",
 	Short: "Query values from the log",
@@ -32,13 +34,13 @@ var queryCommand = &cobra.Command{
 				return fmt.Errorf("Missing log ID")
 			}
 
-			if keyHex == "" {
+			if queryKeyHex == "" {
 				return fmt.Errorf("Missing key parameter")
 			}
 
 		}
 
-		inputBytes, err := hex.DecodeString(keyHex)
+		inputBytes, err := hex.DecodeString(queryKeyHex)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -61,7 +63,7 @@ var queryCommand = &cobra.Command{
 		}
 
 		log.WithFields(log.Fields{
-			"key": keyHex,
+			"key": queryKeyHex,
 		}).Debug("Requesting output mapping for")
 		r, err := c.LogAPI.GetMapValue(ctx, &api.GetMapValueRequest{
 			LogID:   &logID,
@@ -85,5 +87,5 @@ var queryCommand = &cobra.Command{
 }
 
 func initQuery() {
-	queryCommand.Flags().StringVar(&keyHex, "key", "", "Key in hex encoding")
+	queryCommand.Flags().StringVar(&queryKeyHex, "key", "", "Key in hex encoding")
 }

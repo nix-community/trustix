@@ -22,6 +22,8 @@ import (
 	"github.com/tweag/trustix/packages/trustix/internal/lib"
 )
 
+var gatewayListenAddresses []string
+
 var gatewayCommand = &cobra.Command{
 	Use:   "gateway",
 	Short: "Trustix gateway translating REST calls to gRPC",
@@ -59,7 +61,7 @@ var gatewayCommand = &cobra.Command{
 			}
 		}
 
-		for _, addr := range listenAddresses {
+		for _, addr := range gatewayListenAddresses {
 			lis, err := net.Listen("tcp", addr)
 			if err != nil {
 				log.Fatalf("failed to listen: %v", err)
@@ -89,4 +91,8 @@ var gatewayCommand = &cobra.Command{
 
 		return nil
 	},
+}
+
+func initGateway() {
+	gatewayCommand.Flags().StringSliceVar(&gatewayListenAddresses, "listen", []string{}, "Listen to address")
 }

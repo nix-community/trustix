@@ -1,2 +1,2 @@
 build: reflex -r '\.go$' go build
-daemon: go build && ../../tools/wait_for_file trustix && echo trustix | entr -r ./trustix --config config.toml --state "$TRUSTIX_STATE_DIR" --listen "$TRUSTIX_RPC"
+daemon: go build && ../../tools/wait_for_file trustix && echo trustix | entr -r ./trustix daemon --config config.toml --state "$TRUSTIX_STATE_DIR" --listen "$TRUSTIX_RPC"

@@ -18,19 +18,22 @@ import (
 	"github.com/tweag/trustix/packages/trustix/client"
 )
 
+var decideKeyHex string
+var decideProtocol string
+
 var decideCommand = &cobra.Command{
 	Use:   "decide",
 	Short: "Decide on output from configured logs",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if keyHex == "" {
+		if decideKeyHex == "" {
 			return fmt.Errorf("Missing key param")
 		}
 
-		if protocol == "" {
+		if decideProtocol == "" {
 			return fmt.Errorf("Missing protocol parameter")
 		}
 
-		inputBytes, err := hex.DecodeString(keyHex)
+		inputBytes, err := hex.DecodeString(decideKeyHex)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -45,12 +48,12 @@ var decideCommand = &cobra.Command{
 		defer cancel()
 
 		log.WithFields(log.Fields{
-			"key": keyHex,
+			"key": decideKeyHex,
 		}).Debug("Requesting output mappings for")
 
 		r, err := c.RpcAPI.Decide(ctx, &pb.DecideRequest{
 			Key:      inputBytes,
-			Protocol: &protocol,
+			Protocol: &decideProtocol,
 		})
 		if err != nil {
 			log.Fatalf("could not decide: %v", err)
@@ -73,5 +76,6 @@ var decideCommand = &cobra.Command{
 }
 
 func initDecide() {
-	decideCommand.Flags().StringVar(&keyHex, "key", "", "Key in hex encoding")
+	decideCommand.Flags().StringVar(&decideKeyHex, "key", "", "Key in hex encoding")
+	decideCommand.Flags().StringVar(&decideProtocol, "protocol", "", "Protocol ID")
 }

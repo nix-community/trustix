@@ -18,16 +18,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var once sync.Once
+var initOnce sync.Once
 
-// Shared between daemon and gateway
-var listenAddresses []string
-
-var dialAddress string
-var logID string
-var protocol string
-
-var timeout int
+var (
+	dialAddress string
+	logID       string
+	timeout     int
+)
 
 var rootCmd = &cobra.Command{
 	Use:   "trustix",
@@ -37,7 +34,6 @@ var rootCmd = &cobra.Command{
 
 func initCommands() {
 
-	rootCmd.PersistentFlags().StringSliceVar(&listenAddresses, "listen", []string{}, "Listen to address")
 	rootCmd.PersistentFlags().IntVar(&timeout, "timeout", 20, "Timeout in seconds")
 
 	rootCmd.PersistentFlags().StringVar(&logID, "log-id", "", "Log ID")
@@ -45,12 +41,9 @@ func initCommands() {
 	trustixSock := os.Getenv("TRUSTIX_RPC")
 	if trustixSock == "" {
 		tmpDir := "/tmp"
-		trustixSock = filepath.Join(tmpDir, "trustix.sock")
+		trustixSock = fmt.Sprintf("unix://%s", filepath.Join(tmpDir, "trustix.sock"))
 	}
-	trustixSock = fmt.Sprintf("unix://%s", trustixSock)
-
 	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
-	rootCmd.PersistentFlags().StringVar(&protocol, "protocol", "", "Protocol ID")
 
 	log.SetLevel(log.DebugLevel)
 	log.SetOutput(os.Stderr)
@@ -74,15 +67,17 @@ func initCommands() {
 	initDecide()
 
 	rootCmd.AddCommand(flushCommand)
+	initFlush()
 
 	rootCmd.AddCommand(gatewayCommand)
+	initGateway()
 
 	rootCmd.AddCommand(docCommand)
 	initDoc()
 }
 
 func Execute() {
-	once.Do(initCommands)
+	initOnce.Do(initCommands)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)

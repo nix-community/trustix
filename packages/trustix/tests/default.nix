@@ -30,7 +30,7 @@ in
 
     export TRUSTIX_RPC=./sock
 
-    systemfd -s ./sock -- trustix --config ${./config-simple.toml} &
+    systemfd -s ./sock -- trustix daemon --config ${./config-simple.toml} &
 
     trustix --log-id "$log_id" submit --key "$key" --value "$value"
     trustix --log-id "$log_id" flush
@@ -52,11 +52,11 @@ in
     build_dir=$(pwd)
 
     # Spin up 3 log instances
-    (cd ${compare-fixtures/log1}; systemfd -s $build_dir/1.sock -- trustix --state $TMPDIR/log1-state --config ./config.toml) &
+    (cd ${compare-fixtures/log1}; systemfd -s $build_dir/1.sock -- trustix daemon --state $TMPDIR/log1-state --config ./config.toml) &
 
-    (cd ${compare-fixtures/log2}; systemfd -s $build_dir/2.sock -- trustix --state $TMPDIR/log2-state --config ./config.toml) &
+    (cd ${compare-fixtures/log2}; systemfd -s $build_dir/2.sock -- trustix daemon --state $TMPDIR/log2-state --config ./config.toml) &
 
-    (cd ${compare-fixtures/log3}; systemfd -s $build_dir/3.sock -- trustix --state $TMPDIR/log3-state --config ./config.toml) &
+    (cd ${compare-fixtures/log3}; systemfd -s $build_dir/3.sock -- trustix daemon --state $TMPDIR/log3-state --config ./config.toml) &
 
     # Submit hashes
     trustix --log-id "$log_id_1" submit --key "$key" --value "$output_hash" --address "unix://./1.sock"
@@ -68,7 +68,7 @@ in
     trustix --log-id "$log_id_3" submit --key "$key" --value "$evil_hash" --address "unix://./3.sock"
     trustix --log-id "$log_id_3" flush --address "unix://./3.sock"
 
-    (cd ${compare-fixtures/log-agg}; systemfd -s $build_dir/agg.sock -- trustix --interval 1 --state $TMPDIR/log-agg-state --config ./config.toml) &
+    (cd ${compare-fixtures/log-agg}; systemfd -s $build_dir/agg.sock -- trustix daemon --interval 1 --state $TMPDIR/log-agg-state --config ./config.toml) &
 
     # Allow the aggregate to sync
     # Ideally waiting for a synchronised state should be exposed somehow but I'm uncertain

@@ -43,37 +43,38 @@ import (
 	"google.golang.org/grpc"
 )
 
-var configPath string
-var stateDirectory string
-var pollInterval float64
+var daemonListenAddresses []string
+var daemonConfigPath string
+var daemonStateDirectory string
+var daemonPollInterval float64
 
 var daemonCmd = &cobra.Command{
 	Use:   "daemon",
 	Short: "Trustix daemon",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		if configPath == "" {
+		if daemonConfigPath == "" {
 			return fmt.Errorf("Missing config flag")
 		}
 
-		config, err := conf.NewConfigFromFile(configPath)
+		config, err := conf.NewConfigFromFile(daemonConfigPath)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		log.WithFields(log.Fields{
-			"directory": stateDirectory,
+			"directory": daemonStateDirectory,
 		}).Info("Creating state directory")
-		err = os.MkdirAll(stateDirectory, 0700)
+		err = os.MkdirAll(daemonStateDirectory, 0700)
 		if err != nil {
-			log.Fatalf("Could not create state directory: %s", stateDirectory)
+			log.Fatalf("Could not create state directory: %s", daemonStateDirectory)
 		}
 
 		var store storage.Storage
 		{
 			switch config.Storage.Type {
 			case "native":
-				store, err = storage.NewNativeStorage(stateDirectory)
+				store, err = storage.NewNativeStorage(daemonStateDirectory)
 			case "memory":
 				store, err = storage.NewMemoryStorage()
 			}
@@ -243,7 +244,7 @@ var daemonCmd = &cobra.Command{
 						}
 					}
 
-					pollDuration := time.Millisecond * time.Duration(math.Round(pollInterval/1000))
+					pollDuration := time.Millisecond * time.Duration(math.Round(daemonPollInterval/1000))
 					headSyncCloser.Add(sthsync.NewSTHSyncer(logID, store, rootBucket.Cd(logID), clientPool, verifier, pollDuration, pd))
 
 					return nil
@@ -399,7 +400,7 @@ var daemonCmd = &cobra.Command{
 		}
 
 		// Create sockets
-		for _, addr := range listenAddresses {
+		for _, addr := range daemonListenAddresses {
 			u, err := url.Parse(addr)
 			if err != nil {
 				log.Fatalf("Could not parse url: %v", err)
@@ -471,10 +472,12 @@ func initDaemon() {
 
 	homeDir, _ := os.UserHomeDir()
 	defaultStateDir := path.Join(homeDir, ".local/share/trustix")
-	daemonCmd.Flags().StringVar(&stateDirectory, "state", defaultStateDir, "State directory")
+	daemonCmd.Flags().StringVar(&daemonStateDirectory, "state", defaultStateDir, "State directory")
 
 	// Default poll every 30 minutes
-	daemonCmd.Flags().Float64Var(&pollInterval, "interval", 60*30, "Log poll interval in seconds")
+	daemonCmd.Flags().Float64Var(&daemonPollInterval, "interval", 60*30, "Log poll interval in seconds")
 
-	daemonCmd.Flags().StringVar(&configPath, "config", "", "Path to config.toml")
+	daemonCmd.Flags().StringSliceVar(&daemonListenAddresses, "listen", []string{}, "Listen to address")
+
+	daemonCmd.Flags().StringVar(&daemonConfigPath, "config", "", "Path to config.toml")
 }

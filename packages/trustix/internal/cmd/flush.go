@@ -45,3 +45,6 @@ var flushCommand = &cobra.Command{
 		return nil
 	},
 }
+
+func initFlush() {
+}
