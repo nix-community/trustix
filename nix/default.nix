@@ -7,9 +7,6 @@ import sources.nixpkgs {
     (self: super: {
       npmlock2nix = import sources.npmlock2nix { pkgs = self; };
     })
-    (self: super: {
-      npmlock2nix = import sources.npmlock2nix { pkgs = self; };
-    })
 
     (self: super: {
       # Prevent the entirety of hydra to be in $PATH/runtime closure
