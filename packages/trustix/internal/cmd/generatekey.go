@@ -20,10 +20,11 @@ import (
 
 var generatePrivateKeyOutput string
 var generatePublicKeyOutput string
+var generateKeyType string
 
 var generateKeyCmd = &cobra.Command{
 	Use:   "generate-key",
-	Short: "Generate an ed25519 public/private key pair",
+	Short: "Generate a public/private key pair",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if generatePublicKeyOutput == "" {
 			return fmt.Errorf("Missing pubkey flag")
@@ -31,6 +32,12 @@ var generateKeyCmd = &cobra.Command{
 
 		if generatePrivateKeyOutput == "" {
 			return fmt.Errorf("Missing privkey flag")
+		}
+
+		switch generateKeyType {
+		case "ed25519":
+		default:
+			log.Fatalf("Unhandled key type: %s", generateKeyType)
 		}
 
 		pub, priv, err := ed25519.GenerateKey(nil)
@@ -53,6 +60,7 @@ var generateKeyCmd = &cobra.Command{
 }
 
 func initGenerate() {
+	generateKeyCmd.Flags().StringVar(&generateKeyType, "type", "ed25519", "Key type to generate")
 	generateKeyCmd.Flags().StringVar(&generatePrivateKeyOutput, "privkey", "", "Output private key to file")
 	generateKeyCmd.Flags().StringVar(&generatePublicKeyOutput, "pubkey", "", "Output public key to file")
 }

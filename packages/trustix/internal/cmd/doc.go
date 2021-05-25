@@ -20,8 +20,9 @@ var docFormat string
 var docOutputDir string
 
 var docCommand = &cobra.Command{
-	Use:   "doc",
-	Short: "Generate documentation",
+	Use:    "__doc",
+	Short:  "Generate documentation",
+	Hidden: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		{
