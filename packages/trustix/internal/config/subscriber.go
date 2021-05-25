@@ -8,9 +8,14 @@
 
 package config
 
+import (
+	"fmt"
+)
+
 type Subscriber struct {
 	Protocol  string            `toml:"protocol"`
 	PublicKey *PublicKey        `toml:"key"`
+	SyncMode  string            `toml:"syncmode"`
 	Meta      map[string]string `toml:"meta"`
 }
 
@@ -18,6 +23,10 @@ func (s *Subscriber) Validate() error {
 	if s.Protocol == "" {
 		return missingField("protocol")
 	}
+	if s.SyncMode != "" && s.SyncMode != "light" {
+		return fmt.Errorf("Unknown sync mode: '%s'", s.SyncMode)
+	}
+
 	return nil
 }
 
