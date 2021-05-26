@@ -57,6 +57,10 @@ This information can now be used by a Trustix user to:
 -   automatically identify and exclude misbehaving builders such as `Chuck` in
     above's example.
 
+## Documentation
+
+Documentation is built as a part of CI and published on [Github Pages](https://tweag.github.io/trustix/).
+
 ## Developing
 
 For notes on development see [HACKING.md](./packages/trustix-doc/src/hacking.md)
