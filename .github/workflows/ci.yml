@@ -25,7 +25,7 @@ jobs:
 
     # Docs
     - name: build-doc
-      run: nix-build ./. -A trustix-doc
+      run: nix-build ./. -A packages.trustix-doc
     - name: deploy-doc
       uses: peaceiris/actions-gh-pages@v3
       if: github.ref == 'refs/heads/master'
