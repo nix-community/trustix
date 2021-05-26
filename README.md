@@ -35,7 +35,7 @@ that log and exchange hashes of build input/output pairs.
 This is achieved through the following methodology:
 
 -   Each builder is associated with a public-private key pair
--   In a post-build hook the output hash (NAR hash) of the build is uploaded to a ledger (and append-only log of build results).
+-   In a post-build hook the output hash (NAR hash) of the build is uploaded to a ledger (a signed append-only log of build results).
 
 This allows a user to trust binary substitutions based on an M-of-N vote among the participating builders.
 
