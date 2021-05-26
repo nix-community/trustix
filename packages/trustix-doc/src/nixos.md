@@ -13,7 +13,7 @@ How to actually publish/subscribe are laid out in other documents.
 $ git clone https://github.com/tweag/trustix.git
 ```
 
-- [Nix](https://nixos.org)
+- [NixOS](https://nixos.org)
 
 ## Making modules available
 
