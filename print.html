@@ -97,7 +97,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="nixos.html"><strong aria-hidden="true">2.</strong> NixOS setup</a></li><li class="chapter-item expanded "><a href="publishing.html"><strong aria-hidden="true">3.</strong> Publishing a build log</a></li><li class="chapter-item expanded "><a href="subscribing.html"><strong aria-hidden="true">4.</strong> Subscribing to a build log</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">5.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">6.</strong> API docs</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="nixos.html"><strong aria-hidden="true">2.</strong> NixOS setup</a></li><li class="chapter-item expanded "><a href="publishing.html"><strong aria-hidden="true">3.</strong> Publishing a build log</a></li><li class="chapter-item expanded "><a href="subscribing.html"><strong aria-hidden="true">4.</strong> Subscribing to a build log</a></li><li class="chapter-item expanded "><a href="binarycache.html"><strong aria-hidden="true">5.</strong> Usage as a binary cache</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">6.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">7.</strong> API docs</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -299,6 +299,39 @@ In this tutorial we are using <code>/keys</code> but you are free to use whateve
 </code></pre>
 <p>You can now use Nix as normal and it will publish the locally performed builds to your log!</p>
 <h1 id="trustix---using-with-nix"><a class="header" href="#trustix---using-with-nix">Trustix - Using with Nix</a></h1>
+<p>The easiest way to use Trustix is via the NixOS modules.</p>
+<p>This document walks you through how to subscribe to an already published binary cache.</p>
+<h2 id="configuring-1"><a class="header" href="#configuring-1">Configuring</a></h2>
+<ul>
+<li>Add log(s) to your <code>configuration.nix</code></li>
+</ul>
+<pre><code class="language-nix">{ pkgs, config, ... }:
+{
+
+  services.trustix = {
+    enable = true;
+
+    subscribers = [
+      {
+        protocol = &quot;nix&quot;;
+        key = {
+          type = &quot;ed25519&quot;;
+          # Contents of the generated trustix-pub
+          pub = &quot;2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=&quot;;
+        };
+      }
+    ];
+
+    # A remote can expose many logs and they are not neccesarily created by the remote in question
+    remotes = [
+      &quot;grpc+https://trustix.example.com&quot;
+    ];
+
+  };
+
+}
+</code></pre>
+<h1 id="trustix---binary-cache-setup"><a class="header" href="#trustix---binary-cache-setup">Trustix - Binary cache setup</a></h1>
 <p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
 <p>This document walks you through how to configure your local system as a binary cache.</p>
 <h2 id="requisites-2"><a class="header" href="#requisites-2">Requisites</a></h2>
@@ -314,7 +347,7 @@ Of course having keys around readable by anyone on the system is not a good idea
 In this tutorial we are using <code>/keys</code> but you are free to use whatever you wish.</li>
 </ul>
 <p><code>$ mv cache-priv-key.pem /keys/cache-priv-key.pem</code></p>
-<h2 id="configuring-1"><a class="header" href="#configuring-1">Configuring</a></h2>
+<h2 id="configuring-2"><a class="header" href="#configuring-2">Configuring</a></h2>
 <ul>
 <li>Add the binary cache to your <code>configuration.nix</code></li>
 </ul>

@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="nixos.html"><strong aria-hidden="true">2.</strong> NixOS setup</a></li><li class="chapter-item expanded "><a href="publishing.html"><strong aria-hidden="true">3.</strong> Publishing a build log</a></li><li class="chapter-item expanded "><a href="subscribing.html" class="active"><strong aria-hidden="true">4.</strong> Subscribing to a build log</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">5.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">6.</strong> API docs</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="nixos.html"><strong aria-hidden="true">2.</strong> NixOS setup</a></li><li class="chapter-item expanded "><a href="publishing.html"><strong aria-hidden="true">3.</strong> Publishing a build log</a></li><li class="chapter-item expanded "><a href="subscribing.html" class="active"><strong aria-hidden="true">4.</strong> Subscribing to a build log</a></li><li class="chapter-item expanded "><a href="binarycache.html"><strong aria-hidden="true">5.</strong> Usage as a binary cache</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">6.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">7.</strong> API docs</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -164,65 +164,38 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="trustix---using-with-nix"><a class="header" href="#trustix---using-with-nix">Trustix - Using with Nix</a></h1>
-<p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
-<p>This document walks you through how to configure your local system as a binary cache.</p>
-<h2 id="requisites"><a class="header" href="#requisites">Requisites</a></h2>
-<p>We are assuming you have already followed the steps to set up one or more subscribers to your local Trustix instance.</p>
-<ul>
-<li>Generate a public/private keypair to use with your local binary cache.</li>
-</ul>
-<pre><code class="language-sh">$ nix-store --generate-binary-cache-key binarycache.example.com cache-priv-key.pem cache-pub-key.pem
-</code></pre>
-<ul>
-<li>Move the keys somewhere persistent and safe
-Of course having keys around readable by anyone on the system is not a good idea, so we will move these somewhere safe.
-In this tutorial we are using <code>/keys</code> but you are free to use whatever you wish.</li>
-</ul>
-<p><code>$ mv cache-priv-key.pem /keys/cache-priv-key.pem</code></p>
+<p>The easiest way to use Trustix is via the NixOS modules.</p>
+<p>This document walks you through how to subscribe to an already published binary cache.</p>
 <h2 id="configuring"><a class="header" href="#configuring">Configuring</a></h2>
 <ul>
-<li>Add the binary cache to your <code>configuration.nix</code></li>
+<li>Add log(s) to your <code>configuration.nix</code></li>
 </ul>
 <pre><code class="language-nix">{ pkgs, config, ... }:
 {
 
-  # Enable the local binary cache server
-  services.trustix-nix-cache = {
-    enable = true;
-    private-key = &quot;/keys/cache-priv-key.pem&quot;;
-    port = 9001;
-  };
-
-  # Configure Nix to use it
-  nix = {
-    binaryCaches = [
-      &quot;http//localhost:9001&quot;
-    ];
-    binaryCachePublicKeys = [
-      &quot;binarycache.example.com://06YZJreoL8n9IdDlhnA3t7uJmHUI/rIIy3uO4FHRY=&quot;
-    ];
-  };
-
-  # Configure your Trustix daemon with a decision making process on how
-  # to determine if a build is trustworthy or not.
-  #
-  # In this case we configure it to have at least 2/3 majority to be substituted.
-  #
-  # Note that this configuration is incomplete and assumes you have already set up a subscriber.
   services.trustix = {
-    deciders.nix = [
+    enable = true;
+
+    subscribers = [
       {
-        {
-          type = &quot;percentage&quot;;
-          percentage.minimum = 66;
-        }
+        protocol = &quot;nix&quot;;
+        key = {
+          type = &quot;ed25519&quot;;
+          # Contents of the generated trustix-pub
+          pub = &quot;2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=&quot;;
+        };
       }
     ];
+
+    # A remote can expose many logs and they are not neccesarily created by the remote in question
+    remotes = [
+      &quot;grpc+https://trustix.example.com&quot;
+    ];
+
   };
 
 }
 </code></pre>
-<p>You are now all set up to use Trustix as a substitution method!</p>
 
                     </main>
 
@@ -235,7 +208,7 @@ In this tutorial we are using <code>/keys</code> but you are free to use whateve
                         
 
                         
-                            <a rel="next" href="hacking.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="binarycache.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -253,7 +226,7 @@ In this tutorial we are using <code>/keys</code> but you are free to use whateve
                 
 
                 
-                    <a rel="next" href="hacking.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="binarycache.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
