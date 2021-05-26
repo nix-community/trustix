@@ -8,6 +8,8 @@
 
 - [Subscribing to a build log](./subscribing.md)
 
+- [Usage as a binary cache](./binarycache.md)
+
 - [Hacking](./hacking.md)
 
 - [API docs](./api.md)
