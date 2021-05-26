@@ -1,12 +1,11 @@
 { config, lib, pkgs, ... }:
 
 {
-  config = {
-    nixpkgs.overlays = ../nix/overlays.nix;
+  nixpkgs.overlays = import ../nix/overlays.nix;
 
-    imports = [
-      ../packages/trustix/nixos
-      ../packages/trustix-nix/nixos
-    ];
-  };
+  imports = [
+    ../packages/trustix/nixos
+    ../packages/trustix-nix/nixos
+  ];
+
 }
