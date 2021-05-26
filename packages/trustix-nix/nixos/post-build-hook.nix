@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  cfg = config.services.trustix-nix-cache;
+  cfg = config.services.trustix-nix-build-hook;
 
   inherit (lib) mkOption types;
 
