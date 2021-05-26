@@ -115,6 +115,26 @@ let
       };
     };
 
+  signerOpts =
+    {
+      options = {
+
+        type = mkOption {
+          type = types.enum [ "ed25519" ];
+          example = "ed25519";
+          default = "ed25519";
+          description = "Signing backend.";
+        };
+
+        ed25519 = {
+          private-key-path = mkOption {
+            type = types.path;
+            description = "Path to private key.";
+          };
+        };
+
+      };
+    };
 
   subscriberOpts =
     {
@@ -167,6 +187,12 @@ in
       type = types.attrsOf (types.submodule deciderOpts);
       default = { };
       description = "Decision making engine configurations (scoped per subprotocol).";
+    };
+
+    signers = mkOption {
+      type = types.attrsOf (types.submodule signerOpts);
+      default = { };
+      description = "Log signers for published logs.";
     };
 
     publishers = mkOption {
