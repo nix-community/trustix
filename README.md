@@ -25,6 +25,8 @@ This means that a compromised key would realistically mean that _all_ packages i
 
 Second, the NixOS Hydra _hardware_, on which the binaries are built, may also be compromised and not considered trustworthy by more security conscious users.
 
+For some more background see the original [project announcement](https://www.tweag.io/blog/2020-12-16-trustix-announcement/).
+
 ## Trustix design
 
 `Trustix` aims to solve this problem via distributed trust & trust agility.
