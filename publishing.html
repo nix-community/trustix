@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - Trustix Doc</title>
+        <title>Publishing a build log - Trustix Doc</title>
         
         
 
@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="nixos.html"><strong aria-hidden="true">2.</strong> NixOS setup</a></li><li class="chapter-item expanded "><a href="publishing.html"><strong aria-hidden="true">3.</strong> Publishing a build log</a></li><li class="chapter-item expanded "><a href="subscribing.html"><strong aria-hidden="true">4.</strong> Subscribing to a build log</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">5.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">6.</strong> API docs</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="nixos.html"><strong aria-hidden="true">2.</strong> NixOS setup</a></li><li class="chapter-item expanded "><a href="publishing.html" class="active"><strong aria-hidden="true">3.</strong> Publishing a build log</a></li><li class="chapter-item expanded "><a href="subscribing.html"><strong aria-hidden="true">4.</strong> Subscribing to a build log</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">5.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">6.</strong> API docs</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -163,60 +163,84 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="trustix---a-new-model-for-nix-binary-substitutions"><a class="header" href="#trustix---a-new-model-for-nix-binary-substitutions">Trustix - A new model for Nix binary substitutions</a></h1>
-<p>Trustix is a tool that compares build outputs for a given build input across a group of independent providers to establish trust in software binaries.</p>
-<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
-<p>We often use pre-built software binaries and trust that they correspond to the program we want.
-But nothing assures that these binaries were really built from the program's sources and reasonable built instructions.
-Common, costly supply chain attacks exploit this to distribute malicious software, which is one reason why most software is delivered through centralized, highly secured providers.
-Trustix, a tool developed via a <a href="https://nlnet.nl/project/Trustix/">NGI Trust and Privacy grant</a>, establishes trust in binaries in a different, decentralized manner.
-This increases security, and paves the way for an internet where small providers can deliver safe code, ultimately with a safer and larger offer for the user.</p>
-<p>Trustix is developed for the Nix ecosystem.</p>
-<h2 id="how-does-this-translate-to-nix"><a class="header" href="#how-does-this-translate-to-nix">How does this translate to Nix?</a></h2>
-<p>In the Nix ecosystem, pre-built binaries are distributed through so-called <em>binary substituters</em>.
-Similar to other centralized caching systems, they are a single point of failure in the chain of trust when delivering a package to a user.
-This is problematic for several reasons:</p>
-<p>First, if anyone manages to compromise the <a href="https://hydra.nixos.org/">NixOS Hydra</a> build machines and its keys, they could upload backdoored builds to users.
-In the Nix ecosystem, a compromised key is even more dangerous because https://cache.nixos.org can't use a rolling key because of the way it is set up.
-This means that a compromised key would realistically mean that <em>all</em> packages in the cache are compromised.
-They would have to be rebuilt or garbage collected which is very costly.</p>
-<p>Second, the NixOS Hydra <em>hardware</em>, on which the binaries are built, may also be compromised and not considered trustworthy by more security conscious users.</p>
-<h2 id="trustix-design"><a class="header" href="#trustix-design">Trustix design</a></h2>
-<p><code>Trustix</code> aims to solve this problem via distributed trust &amp; trust agility.
-Essentially it compares build outputs across a group of independent builders
-that log and exchange hashes of build input/output pairs.
-This is achieved through the following methodology:</p>
+                        <h1 id="trustix---publishing-with-nix"><a class="header" href="#trustix---publishing-with-nix">Trustix - Publishing with Nix</a></h1>
+<p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
+<p>This document walks you through creating key pairs and publishing a log.</p>
+<h2 id="requisites"><a class="header" href="#requisites">Requisites</a></h2>
+<p>The commands in this document assumes you have a git checkout of Trustix and that you already have the NixOS module import set up.</p>
+<h2 id="preparation"><a class="header" href="#preparation">Preparation</a></h2>
 <ul>
-<li>Each builder is associated with a public-private key pair</li>
-<li>In a post-build hook the output hash (NAR hash) of the build is uploaded to a ledger</li>
+<li>Enter the Trustix git repository</li>
 </ul>
-<p>This allows a user to trust binary substitutions based on an M-of-N vote among the participating builders.</p>
-<p>Here is an example:
-Let's say we have 4 builders configured: <code>Alice</code>, <code>Bob</code>, <code>Chuck</code> &amp; <code>Dan</code>.
-We have configured <code>Trustix</code> to require a 3/4 majority for a build to be trusted.
-<code>Alice</code>, <code>Bob</code>, <code>Dan</code> and <code>Chuck</code> all claim to have built the <code>hello</code> derivation.
-All builders participate in the Trustix network and communicate precisely
-what they have built with a hash that describes the build inputs of <code>hello</code>, and
-what have obtained as output with another hash.
-For the same input, the first 3 builders have arrived at the same output hash but <code>Chuck</code> has
-obtained something different.</p>
-<p>This information can now be used by a Trustix user to:</p>
+<pre><code class="language-sh">$ cd trustix
+</code></pre>
 <ul>
-<li>track build reproducability across a large number of builders.</li>
-<li>trust only builds that have been confirmed by a majority of selected
-builders.</li>
-<li>automatically identify and exclude misbehaving builders such as <code>Chuck</code> in
-above's example.</li>
+<li>
+<p>Build the Trustix command to generate key material
+<code>$ nix-build ./. -A packages.trustix</code></p>
+</li>
+<li>
+<p>Generate an ed25519 keypair
+<code>$ ./result/bin/trustix generate-key --privkey ./trustix-priv --pubkey ./trustix-pub</code></p>
+</li>
 </ul>
+<p>This will create two files, <code>pub</code> and <code>priv</code>.</p>
+<ul>
+<li>Move the keys somewhere persistent and safe
+Of course having keys around readable by anyone on the system is not a good idea, so we will move these somewhere safe.
+In this tutorial we are using <code>/keys</code> but you are free to use whatever you wish.</li>
+</ul>
+<p><code>$ mv trustix-priv /keys/trustix-priv</code></p>
+<h2 id="configuring"><a class="header" href="#configuring">Configuring</a></h2>
+<ul>
+<li>Add log to your <code>configuration.nix</code></li>
+</ul>
+<pre><code class="language-nix">{ pkgs, config, ... }:
+{
+
+  services.trustix = {
+    enable = true;
+
+    signer.snakeoil = {
+      type = &quot;ed25519&quot;;
+      ed25519 = {
+        private-key-path = &quot;/keys/trustix-priv&quot;;
+      };
+    };
+
+    publishers = [
+      {
+        signer = &quot;snakeoil&quot;;
+        protocol = &quot;nix&quot;;
+        key = {
+          type = &quot;ed25519&quot;;
+          # Contents of the generated trustix-pub
+          pub = &quot;2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=&quot;;
+        };
+      }
+    ];
+
+  };
+
+  # Push local builds via the post-build hook
+  services.trustix-nix-build-hook.enable = true;
+
+}
+</code></pre>
+<p>You can now use Nix as normal and it will publish the locally performed builds to your log!</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
+                            <a rel="prev" href="nixos.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
 
                         
-                            <a rel="next" href="nixos.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="subscribing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -228,9 +252,13 @@ above's example.</li>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
+                    <a rel="prev" href="nixos.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
 
                 
-                    <a rel="next" href="nixos.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="subscribing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

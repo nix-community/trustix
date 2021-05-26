@@ -97,7 +97,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">2.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">3.</strong> API docs</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="nixos.html"><strong aria-hidden="true">2.</strong> NixOS setup</a></li><li class="chapter-item expanded "><a href="publishing.html"><strong aria-hidden="true">3.</strong> Publishing a build log</a></li><li class="chapter-item expanded "><a href="subscribing.html"><strong aria-hidden="true">4.</strong> Subscribing to a build log</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">5.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">6.</strong> API docs</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -210,6 +210,154 @@ builders.</li>
 <li>automatically identify and exclude misbehaving builders such as <code>Chuck</code> in
 above's example.</li>
 </ul>
+<h1 id="trustix---usage-via-nix"><a class="header" href="#trustix---usage-via-nix">Trustix - Usage via Nix</a></h1>
+<p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
+<p>This document will guide you through the very basic NixOS setup required both by log clients and log publishers.</p>
+<p>How to actually publish/subscribe are laid out in other documents.</p>
+<h2 id="requisites"><a class="header" href="#requisites">Requisites</a></h2>
+<ul>
+<li>A git checkout of trustix</li>
+</ul>
+<pre><code class="language-sh">$ git clone https://github.com/tweag/trustix.git
+</code></pre>
+<ul>
+<li><a href="https://nixos.org">Nix</a></li>
+</ul>
+<h2 id="making-modules-available"><a class="header" href="#making-modules-available">Making modules available</a></h2>
+<p>Add the module import to your <code>configuration.nix</code> as such:</p>
+<pre><code class="language-nix">{ pkgs, config, ...}:
+{
+  imports = [
+    /path/to/trustix/git/checkout/nixos
+  ];
+}
+</code></pre>
+<p>This will add all relevant services to your system (but not enable them) and adds packages to the pkgs set via an overlay.</p>
+<h1 id="trustix---publishing-with-nix"><a class="header" href="#trustix---publishing-with-nix">Trustix - Publishing with Nix</a></h1>
+<p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
+<p>This document walks you through creating key pairs and publishing a log.</p>
+<h2 id="requisites-1"><a class="header" href="#requisites-1">Requisites</a></h2>
+<p>The commands in this document assumes you have a git checkout of Trustix and that you already have the NixOS module import set up.</p>
+<h2 id="preparation"><a class="header" href="#preparation">Preparation</a></h2>
+<ul>
+<li>Enter the Trustix git repository</li>
+</ul>
+<pre><code class="language-sh">$ cd trustix
+</code></pre>
+<ul>
+<li>
+<p>Build the Trustix command to generate key material
+<code>$ nix-build ./. -A packages.trustix</code></p>
+</li>
+<li>
+<p>Generate an ed25519 keypair
+<code>$ ./result/bin/trustix generate-key --privkey ./trustix-priv --pubkey ./trustix-pub</code></p>
+</li>
+</ul>
+<p>This will create two files, <code>pub</code> and <code>priv</code>.</p>
+<ul>
+<li>Move the keys somewhere persistent and safe
+Of course having keys around readable by anyone on the system is not a good idea, so we will move these somewhere safe.
+In this tutorial we are using <code>/keys</code> but you are free to use whatever you wish.</li>
+</ul>
+<p><code>$ mv trustix-priv /keys/trustix-priv</code></p>
+<h2 id="configuring"><a class="header" href="#configuring">Configuring</a></h2>
+<ul>
+<li>Add log to your <code>configuration.nix</code></li>
+</ul>
+<pre><code class="language-nix">{ pkgs, config, ... }:
+{
+
+  services.trustix = {
+    enable = true;
+
+    signer.snakeoil = {
+      type = &quot;ed25519&quot;;
+      ed25519 = {
+        private-key-path = &quot;/keys/trustix-priv&quot;;
+      };
+    };
+
+    publishers = [
+      {
+        signer = &quot;snakeoil&quot;;
+        protocol = &quot;nix&quot;;
+        key = {
+          type = &quot;ed25519&quot;;
+          # Contents of the generated trustix-pub
+          pub = &quot;2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=&quot;;
+        };
+      }
+    ];
+
+  };
+
+  # Push local builds via the post-build hook
+  services.trustix-nix-build-hook.enable = true;
+
+}
+</code></pre>
+<p>You can now use Nix as normal and it will publish the locally performed builds to your log!</p>
+<h1 id="trustix---using-with-nix"><a class="header" href="#trustix---using-with-nix">Trustix - Using with Nix</a></h1>
+<p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
+<p>This document walks you through how to configure your local system as a binary cache.</p>
+<h2 id="requisites-2"><a class="header" href="#requisites-2">Requisites</a></h2>
+<p>We are assuming you have already followed the steps to set up one or more subscribers to your local Trustix instance.</p>
+<ul>
+<li>Generate a public/private keypair to use with your local binary cache.</li>
+</ul>
+<pre><code class="language-sh">$ nix-store --generate-binary-cache-key binarycache.example.com cache-priv-key.pem cache-pub-key.pem
+</code></pre>
+<ul>
+<li>Move the keys somewhere persistent and safe
+Of course having keys around readable by anyone on the system is not a good idea, so we will move these somewhere safe.
+In this tutorial we are using <code>/keys</code> but you are free to use whatever you wish.</li>
+</ul>
+<p><code>$ mv cache-priv-key.pem /keys/cache-priv-key.pem</code></p>
+<h2 id="configuring-1"><a class="header" href="#configuring-1">Configuring</a></h2>
+<ul>
+<li>Add the binary cache to your <code>configuration.nix</code></li>
+</ul>
+<pre><code class="language-nix">{ pkgs, config, ... }:
+{
+
+  # Enable the local binary cache server
+  services.trustix-nix-cache = {
+    enable = true;
+    private-key = &quot;/keys/cache-priv-key.pem&quot;;
+    port = 9001;
+  };
+
+  # Configure Nix to use it
+  nix = {
+    binaryCaches = [
+      &quot;http//localhost:9001&quot;
+    ];
+    binaryCachePublicKeys = [
+      &quot;binarycache.example.com://06YZJreoL8n9IdDlhnA3t7uJmHUI/rIIy3uO4FHRY=&quot;
+    ];
+  };
+
+  # Configure your Trustix daemon with a decision making process on how
+  # to determine if a build is trustworthy or not.
+  #
+  # In this case we configure it to have at least 2/3 majority to be substituted.
+  #
+  # Note that this configuration is incomplete and assumes you have already set up a subscriber.
+  services.trustix = {
+    deciders.nix = [
+      {
+        {
+          type = &quot;percentage&quot;;
+          percentage.minimum = 66;
+        }
+      }
+    ];
+  };
+
+}
+</code></pre>
+<p>You are now all set up to use Trustix as a substitution method!</p>
 <h2 id="project-structure"><a class="header" href="#project-structure">Project structure</a></h2>
 <p>Trustix is structured as a monorepo consisting of many subpackages:</p>
 <ul>
