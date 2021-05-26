@@ -1,12 +1,14 @@
 { pkgs ? import ../../../nix
 , lib ? pkgs.lib
-, system ? builtins.currentSystem,
+, system ? builtins.currentSystem
+,
 }:
 
 let
   testing = import "${pkgs.path}/nixos/lib/testing-python.nix" { inherit pkgs system; };
 
-in testing.makeTest {
+in
+testing.makeTest {
 
   inherit pkgs;
 

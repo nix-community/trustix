@@ -3,15 +3,19 @@
 let
   cfg = config.services.trustix;
 
-  configFile = let
-    configJSON = pkgs.writeText "trustix-config.json" (builtins.toJSON (
-      builtins.removeAttrs cfg [ "enable" "package" ]));
-  in pkgs.runCommand "trustix-config.toml" {
-    nativeBuildInputs = [ pkgs.remarshal ];
-    preferLocalBuild = true;
-  } ''
-    remarshal -i ${configJSON} --if json -o $out --of toml
-  '';
+  configFile =
+    let
+      configJSON = pkgs.writeText "trustix-config.json" (builtins.toJSON (
+        builtins.removeAttrs cfg [ "enable" "package" ]
+      ));
+    in
+    pkgs.runCommand "trustix-config.toml"
+      {
+        nativeBuildInputs = [ pkgs.remarshal ];
+        preferLocalBuild = true;
+      } ''
+      remarshal -i ${configJSON} --if json -o $out --of toml
+    '';
 
   inherit (lib) mkOption types;
 
@@ -63,19 +67,19 @@ let
   pubKeyOpts =
     {
 
-        type = mkOption {
-          type = types.enum [ "ed25519" ];
-          example = "ed25519";
-          default = "ed25519";
-          description = "Key type.";
-        };
+      type = mkOption {
+        type = types.enum [ "ed25519" ];
+        example = "ed25519";
+        default = "ed25519";
+        description = "Key type.";
+      };
 
-        pub = mkOption {
-          type = types.str;
-          example = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
-          default = "Base64 encoded public key";
-          description = "Key data.";
-        };
+      pub = mkOption {
+        type = types.str;
+        example = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
+        default = "Base64 encoded public key";
+        description = "Key data.";
+      };
 
     };
 
