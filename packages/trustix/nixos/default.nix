@@ -99,7 +99,7 @@ let
         };
 
         meta = mkOption {
-          type = types.AttrsOf types.str;
+          type = types.attrsOf types.str;
           default = { };
           description = ''
             Arbitrary metadata to set for a log.
@@ -152,7 +152,7 @@ let
         };
 
         meta = mkOption {
-          type = types.AttrsOf types.str;
+          type = types.attrsOf types.str;
           default = { };
           description = ''
             Arbitrary metadata to set for a log.
