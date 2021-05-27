@@ -39,7 +39,7 @@ In this tutorial we are using `/keys` but you are free to use whatever you wish.
   services.trustix = {
     enable = true;
 
-    signer.snakeoil = {
+    signers.snakeoil = {
       type = "ed25519";
       ed25519 = {
         private-key-path = "/keys/trustix-priv";
@@ -50,7 +50,7 @@ In this tutorial we are using `/keys` but you are free to use whatever you wish.
       {
         signer = "snakeoil";
         protocol = "nix";
-        key = {
+        publicKey = {
           type = "ed25519";
           # Contents of the generated trustix-pub
           pub = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
