@@ -201,7 +201,7 @@ In this tutorial we are using <code>/keys</code> but you are free to use whateve
   services.trustix = {
     enable = true;
 
-    signers.snakeoil = {
+    signer.snakeoil = {
       type = &quot;ed25519&quot;;
       ed25519 = {
         private-key-path = &quot;/keys/trustix-priv&quot;;
@@ -212,7 +212,7 @@ In this tutorial we are using <code>/keys</code> but you are free to use whateve
       {
         signer = &quot;snakeoil&quot;;
         protocol = &quot;nix&quot;;
-        publicKey = {
+        key = {
           type = &quot;ed25519&quot;;
           # Contents of the generated trustix-pub
           pub = &quot;2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=&quot;;
