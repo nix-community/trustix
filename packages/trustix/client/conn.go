@@ -36,10 +36,10 @@ func CreateClientConn(address string) (*Client, error) {
 	case "grpc+unix", "unix", "grpc+https", "grpc+http":
 		conn, err = tgrpc.Dial(address)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Error dialing grpc: %w", err)
 		}
 	default:
-		return nil, fmt.Errorf("URL scheme '%s' not supported", u.Scheme)
+		return nil, fmt.Errorf("URL '%s' with scheme '%s' not supported", address, u.Scheme)
 
 	}
 

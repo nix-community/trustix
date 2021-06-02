@@ -28,7 +28,7 @@ in
     expected="5768f7201db3dccf3ec8c5ec2be5108c411396ad8c1351d89294f515456cdc23"
     log_id="5fea3cb44ef951dfb2a2ec37ebfd759174003ea9300756e26128dceb0987a30a"
 
-    export TRUSTIX_RPC=./sock
+    export TRUSTIX_RPC=unix://./sock
 
     systemfd -s ./sock -- trustix daemon --config ${./config-simple.toml} &
 

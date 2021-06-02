@@ -58,7 +58,7 @@ func Dial(address string) (*grpc.ClientConn, error) {
 			return nil, err
 		}
 	default:
-		return nil, fmt.Errorf("URL scheme '%s' not supported", u.Scheme)
+		return nil, fmt.Errorf("URL '%s' with scheme '%s' not supported", address, u.Scheme)
 
 	}
 
