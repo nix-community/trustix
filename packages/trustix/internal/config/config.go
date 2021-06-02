@@ -9,7 +9,11 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/BurntSushi/toml"
 	decider "github.com/tweag/trustix/packages/trustix/internal/config/decider"
@@ -17,12 +21,12 @@ import (
 )
 
 type Config struct {
-	Deciders    map[string][]*decider.Decider `toml:"decider"`
-	Publishers  []*Publisher                  `toml:"publisher"`
-	Subscribers []*Subscriber                 `toml:"subscriber"`
-	Signers     map[string]*signer.Signer     `toml:"signer"`
-	Storage     *Storage                      `toml:"storage"`
-	Remotes     []string                      `toml:"remotes"`
+	Deciders    map[string][]*decider.Decider `toml:"decider" json:"decider"`
+	Publishers  []*Publisher                  `toml:"publisher" json:"publisher"`
+	Subscribers []*Subscriber                 `toml:"subscriber" json:"subscriber"`
+	Signers     map[string]*signer.Signer     `toml:"signer" json:"signer"`
+	Storage     *Storage                      `toml:"storage" json:"storage"`
+	Remotes     []string                      `toml:"remotes" json:"remotes"`
 }
 
 func (c *Config) Validate() error {
@@ -68,8 +72,32 @@ func (c *Config) Validate() error {
 func NewConfigFromFile(path string) (*Config, error) {
 	conf := &Config{}
 
-	if _, err := toml.DecodeFile(path, &conf); err != nil {
-		return nil, err
+	switch filepath.Ext(path) {
+
+	case ".toml":
+		if _, err := toml.DecodeFile(path, &conf); err != nil {
+			return nil, err
+		}
+
+	case ".json":
+		f, err := os.Open(path)
+		if err != nil {
+			return nil, err
+		}
+		defer f.Close()
+
+		b, err := io.ReadAll(f)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(b, &conf)
+		if err != nil {
+			return nil, err
+		}
+
+	default:
+		return nil, fmt.Errorf("Unhandled config file extension: '%s'", filepath.Ext(path))
 	}
 
 	if err := conf.Validate(); err != nil {

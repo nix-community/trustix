@@ -13,10 +13,10 @@ import (
 )
 
 type Subscriber struct {
-	Protocol  string            `toml:"protocol"`
-	PublicKey *PublicKey        `toml:"key"`
-	SyncMode  string            `toml:"syncmode"`
-	Meta      map[string]string `toml:"meta"`
+	Protocol  string            `toml:"protocol" json:"protocol"`
+	PublicKey *PublicKey        `toml:"key" json:"key"`
+	SyncMode  string            `toml:"syncmode" json:"syncmode"`
+	Meta      map[string]string `toml:"meta" json:"meta"`
 }
 
 func (s *Subscriber) Validate() error {

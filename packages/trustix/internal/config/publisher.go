@@ -15,10 +15,10 @@ import (
 )
 
 type Publisher struct {
-	Protocol  string            `toml:"protocol"`
-	Signer    string            `toml:"signer"`
-	PublicKey *PublicKey        `toml:"key"`
-	Meta      map[string]string `toml:"meta"`
+	Protocol  string            `toml:"protocol" json:"protocol"`
+	Signer    string            `toml:"signer" json:"signer"`
+	PublicKey *PublicKey        `toml:"key" json:"key"`
+	Meta      map[string]string `toml:"meta" json:"meta"`
 }
 
 func (p *Publisher) Validate(signers map[string]*signer.Signer) error {

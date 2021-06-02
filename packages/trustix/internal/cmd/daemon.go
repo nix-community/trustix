@@ -479,5 +479,5 @@ func initDaemon() {
 
 	daemonCmd.Flags().StringSliceVar(&daemonListenAddresses, "listen", []string{}, "Listen to address")
 
-	daemonCmd.Flags().StringVar(&daemonConfigPath, "config", "", "Path to config.toml")
+	daemonCmd.Flags().StringVar(&daemonConfigPath, "config", "", "Path to config.toml/json")
 }

@@ -17,8 +17,8 @@ import (
 )
 
 type PublicKey struct {
-	Type string `toml:"type"`
-	Pub  string `toml:"pub"`
+	Type string `toml:"type" json:"type"`
+	Pub  string `toml:"pub" json:"pub"`
 }
 
 func (p *PublicKey) Validate() error {

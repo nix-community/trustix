@@ -13,7 +13,7 @@ import (
 )
 
 type JSDecider struct {
-	Function string `toml:"function"`
+	Function string `toml:"function" json:"function"`
 }
 
 func (s *JSDecider) Validate() error {

@@ -16,8 +16,8 @@ type NativeStorage struct {
 }
 
 type Storage struct {
-	Type   string         `toml:"type"`
-	Native *NativeStorage `toml:"native"`
+	Type   string         `toml:"type" json:"type"`
+	Native *NativeStorage `toml:"native" json:"native"`
 }
 
 func (s *Storage) Validate() error {

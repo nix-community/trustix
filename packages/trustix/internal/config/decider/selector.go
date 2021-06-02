@@ -13,10 +13,10 @@ import (
 )
 
 type Decider struct {
-	Engine     string             `toml:"engine"`
-	JS         *JSDecider         `toml:"javascript"`
-	LogID      *LogIDDecider      `toml:"logid"`
-	Percentage *PercentageDecider `toml:"percentage"`
+	Engine     string             `toml:"engine" json:"engine"`
+	JS         *JSDecider         `toml:"javascript" json:"javascript"`
+	LogID      *LogIDDecider      `toml:"logid" json:"logid"`
+	Percentage *PercentageDecider `toml:"percentage" json:"percentage"`
 }
 
 func (s *Decider) Validate() error {

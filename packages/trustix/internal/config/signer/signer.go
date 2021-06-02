@@ -13,7 +13,7 @@ import (
 )
 
 type ED25519 struct {
-	PrivateKeyPath string `toml:"private-key-path"`
+	PrivateKeyPath string `toml:"private-key-path" json:"private-key-path"`
 }
 
 func (s *ED25519) Validate() error {
@@ -24,8 +24,8 @@ func (s *ED25519) Validate() error {
 }
 
 type Signer struct {
-	Type    string   `toml:"type"`
-	ED25519 *ED25519 `toml:"ed25519"`
+	Type    string   `toml:"type" json:"type"`
+	ED25519 *ED25519 `toml:"ed25519" json:"ed25519"`
 }
 
 func (s *Signer) Validate() error {

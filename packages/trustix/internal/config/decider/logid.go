@@ -13,7 +13,7 @@ import (
 )
 
 type LogIDDecider struct {
-	ID string `toml:"id"`
+	ID string `toml:"id" json:"id"`
 }
 
 func (s *LogIDDecider) Validate() error {

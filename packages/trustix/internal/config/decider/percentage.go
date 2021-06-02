@@ -13,7 +13,7 @@ import (
 )
 
 type PercentageDecider struct {
-	Minimum int `toml:"minimum"`
+	Minimum int `toml:"minimum" json:"minimum"`
 }
 
 func (s *PercentageDecider) Validate() error {
