@@ -1,0 +1,20 @@
+[devshell]
+packages = [
+  "nixpkgs-fmt",
+  "hivemind",
+  "niv",
+  "mdbook"
+]
+
+[[env]]
+name = "STATE_DIR"
+prefix = "${DEVSHELL_ROOT}/state"
+
+
+[[env]]
+name = "TRUSTIX_RPC"
+prefix = "unix://${STATE_DIR}/trustix.sock"
+
+[[env]]
+name = "TRUSTIX_ROOT"
+prefix = "${DEVSHELL_ROOT}"
