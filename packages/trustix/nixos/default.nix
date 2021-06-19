@@ -30,17 +30,10 @@ let
         description = "Configuration for the ${name} decision engine.";
         default = null;
       };
-    in
-    {
-      options = {
+      mkDeciderModules = attrs: lib.mapAttrs (name: options: mkDeciderModule name options) attrs;
 
-        engine = mkOption {
-          type = types.enum [ "percentage" "lua" "logid" ];
-          example = "percentage";
-          description = "Which decision engine to use.";
-        };
-
-        percentage = mkDeciderModule "percentage" {
+      deciderModules = {
+        percentage = {
           minimum = mkOption {
             type = types.nullOr types.int;
             description = "Minimum agreement percentage.";
@@ -48,7 +41,7 @@ let
           };
         };
 
-        javascript = mkDeciderModule "javascript" {
+        javascript = {
           minimum = mkOption {
             type = types.nullOr types.lines;
             description = "JS script.";
@@ -56,15 +49,26 @@ let
           };
         };
 
-        logid = mkDeciderModule "logid" {
+        logid = {
           minimum = mkOption {
             type = types.nullOr types.str;
             description = "Configured log name to match.";
             default = null;
           };
         };
-
       };
+
+    in
+    {
+      options = {
+
+        engine = mkOption {
+          type = types.enum (lib.mapAttrsToList (name: _: name) deciderModules);
+          example = "percentage";
+          description = "Which decision engine to use.";
+        };
+
+      } // mkDeciderModules deciderModules;
     };
 
   pubKeyOpts =
