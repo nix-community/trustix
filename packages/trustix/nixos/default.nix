@@ -5,8 +5,10 @@ let
 
   configFile =
     let
+      # toml doesn't have a "NoneType" so we must remove null attributes
+      filterNull = attrs: lib.filterAttrsRecursive (n: v: v != null) attrs;
       configJSON = pkgs.writeText "trustix-config.json" (builtins.toJSON (
-        builtins.removeAttrs cfg [ "enable" "package" ]
+        filterNull (builtins.removeAttrs cfg [ "enable" "package" ])
       ));
     in
     pkgs.runCommand "trustix-config.toml"
@@ -22,10 +24,11 @@ let
   deciderOpts =
     let
       mkDeciderModule = name: { ... }@options: mkOption {
-        type = types.submodule {
+        type = types.nullOr (types.submodule {
           inherit options;
-        };
+        });
         description = "Configuration for the ${name} decision engine.";
+        default = null;
       };
     in
     {
