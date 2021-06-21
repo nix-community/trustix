@@ -3,8 +3,12 @@
 let
   cfg = config.services.trustix-nix-build-hook;
 
-  inherit (lib) mkOption types;
+  hook-script = pkgs.writeScript "trustix-hook"
+    ''
+      ${lib.getBin pkgs.trustix-nix}/bin/trustix-nix post-build-hook --address ${cfg.trustix-rpc}
+    '';
 
+  inherit (lib) mkOption types;
 in
 {
 
@@ -29,7 +33,7 @@ in
 
   config = lib.mkIf cfg.enable {
     nix.extraOptions = ''
-      post-build-hook = ${lib.getBin pkgs.trustix-nix}/bin/trustix-nix post-build-hook --address ${cfg.trustix-rpc}
+      post-build-hook = ${hook-script}
     '';
   };
 
