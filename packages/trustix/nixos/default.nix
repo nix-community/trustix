@@ -67,18 +67,21 @@ let
   pubKeyOpts =
     {
 
-      type = mkOption {
-        type = types.enum [ "ed25519" ];
-        example = "ed25519";
-        default = "ed25519";
-        description = "Key type.";
-      };
+      options = {
 
-      pub = mkOption {
-        type = types.str;
-        example = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
-        default = "Base64 encoded public key";
-        description = "Key data.";
+        type = mkOption {
+          type = types.enum [ "ed25519" ];
+          example = "ed25519";
+          default = "ed25519";
+          description = "Key type.";
+        };
+
+        pub = mkOption {
+          type = types.str;
+          example = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
+          default = "Base64 encoded public key";
+          description = "Key data.";
+        };
       };
 
     };
