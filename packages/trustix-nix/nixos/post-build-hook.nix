@@ -5,7 +5,7 @@ let
 
   hook-script = pkgs.writeScript "trustix-hook"
     ''
-      ${lib.getBin pkgs.trustix-nix}/bin/trustix-nix post-build-hook --address ${cfg.trustix-rpc}
+      ${lib.getBin pkgs.trustix-nix}/bin/trustix-nix --log-id ${cfg.logID} post-build-hook --address ${cfg.trustix-rpc}
     '';
 
   inherit (lib) mkOption types;
@@ -21,6 +21,11 @@ in
       default = pkgs.trustix-nix;
       defaultText = "pkgs.trustix-nix";
       description = "Which Trustix-Nix derivation to use.";
+    };
+
+    logID = mkOption {
+      type = types.str;
+      description = "Which local Trustix log to submit build results to.";
     };
 
     trustix-rpc = mkOption {
