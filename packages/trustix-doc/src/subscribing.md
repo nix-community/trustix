@@ -17,7 +17,7 @@ This document walks you through how to subscribe to an already published binary 
     subscribers = [
       {
         protocol = "nix";
-        key = {
+        publicKey = {
           type = "ed25519";
           # Contents of the generated trustix-pub
           pub = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";

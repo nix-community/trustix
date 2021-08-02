@@ -36,7 +36,7 @@ In this tutorial we are using `/keys` but you are free to use whatever you wish.
   # Configure Nix to use it
   nix = {
     binaryCaches = [
-      "http//localhost:9001"
+      "http://localhost:9001"
     ];
     binaryCachePublicKeys = [
       "binarycache.example.com://06YZJreoL8n9IdDlhnA3t7uJmHUI/rIIy3uO4FHRY="
@@ -52,10 +52,8 @@ In this tutorial we are using `/keys` but you are free to use whatever you wish.
   services.trustix = {
     deciders.nix = [
       {
-        {
-          type = "percentage";
-          percentage.minimum = 66;
-        }
+        engine = "percentage";
+        percentage.minimum = 66;
       }
     ];
   };
