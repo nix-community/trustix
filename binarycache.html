@@ -196,7 +196,7 @@ In this tutorial we are using <code>/keys</code> but you are free to use whateve
   # Configure Nix to use it
   nix = {
     binaryCaches = [
-      &quot;http//localhost:9001&quot;
+      &quot;http://localhost:9001&quot;
     ];
     binaryCachePublicKeys = [
       &quot;binarycache.example.com://06YZJreoL8n9IdDlhnA3t7uJmHUI/rIIy3uO4FHRY=&quot;
@@ -212,10 +212,8 @@ In this tutorial we are using <code>/keys</code> but you are free to use whateve
   services.trustix = {
     deciders.nix = [
       {
-        {
-          type = &quot;percentage&quot;;
-          percentage.minimum = 66;
-        }
+        engine = &quot;percentage&quot;;
+        percentage.minimum = 66;
       }
     ];
   };
