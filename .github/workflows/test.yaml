@@ -1,5 +1,5 @@
 on: push
-name: Test
+name: tests
 jobs:
   test:
     strategy:
