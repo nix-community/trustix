@@ -82,10 +82,6 @@ func roundTripAdapter(next http.RoundTripper) http.RoundTripper {
 			return nil, fmt.Errorf("unix transport: missing '+unix' suffix in scheme %s", req.URL.Scheme)
 		}
 
-		if req.URL.Host != "" {
-			return nil, fmt.Errorf("unix transport: invalid host")
-		}
-
 		parts := strings.SplitN(req.URL.Path, ":", 2)
 		if len(parts) != 2 {
 			return nil, errors.New("unix transport: invalid path")

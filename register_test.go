@@ -99,8 +99,8 @@ func TestBasics(t *testing.T) {
 	// didn't mix things up too badly.
 	{
 		var (
-			rawurl = "http+unix://" + socket1 + ":/baz/baz/baz"
-			want   = "1 /baz/baz/baz"
+			rawurl = "http+unix://" + socket1 + ":/baz:baz:baz"
+			want   = "1 /baz:baz:baz"
 			have   = get(t, client, rawurl)
 		)
 		if want != have {
