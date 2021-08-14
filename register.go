@@ -14,7 +14,7 @@ import (
 // requests to Unix domain sockets via the "http+unix" or "https+unix" schemes.
 // Request URLs should have the following form:
 //
-//    https+unix://unix:/path/to/socket:/request/path?query=val&...
+//    https+unix:///path/to/socket:/request/path?query=val&...
 //
 // The registered transport is based on a clone of the provided transport, and
 // so uses the same configuration: timeouts, TLS settings, and so on. Connection
@@ -82,7 +82,7 @@ func roundTripAdapter(next http.RoundTripper) http.RoundTripper {
 			return nil, fmt.Errorf("unix transport: missing '+unix' suffix in scheme %s", req.URL.Scheme)
 		}
 
-		if req.URL.Host != "unix" {
+		if req.URL.Host != "" {
 			return nil, fmt.Errorf("unix transport: invalid host")
 		}
 
@@ -112,6 +112,4 @@ var defaultDialContextFunc = (&net.Dialer{}).DialContext
 
 type roundTripFunc func(req *http.Request) (*http.Response, error)
 
-func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
-	return f(req)
-}
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) { return f(req) }

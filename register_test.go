@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestBasics(t *testing.T) {
 	// This first server will do HTTP.
 	var (
 		tempdir = t.TempDir()
-		socket1 = tempdir + "/1" // HTTP
+		socket1 = filepath.Join(tempdir, "1")
 	)
 	{
 		ln, err := net.Listen("unix", socket1)
@@ -40,8 +41,8 @@ func TestBasics(t *testing.T) {
 	// it uses a hard-coded cert with "example.com" as a server name. We'll get
 	// that cert in the config's pool after we start the server.
 	var (
-		socket2         = tempdir + "/2" // HTTPS
-		clientTLSConfig = &tls.Config{ServerName: "example.com"}
+		socket2         = filepath.Join(tempdir, "2")
+		tlsClientConfig = &tls.Config{ServerName: "example.com"}
 	)
 	{
 		ln, err := net.Listen("unix", socket2)
@@ -58,13 +59,13 @@ func TestBasics(t *testing.T) {
 
 		certpool := x509.NewCertPool()
 		certpool.AddCert(server.Certificate())
-		clientTLSConfig.RootCAs = certpool
+		tlsClientConfig.RootCAs = certpool
 	}
 
 	// We could just use a plain http.Client, but for the TLS config required by
 	// the second server. Create the transport with the TLS config, and a client
 	// that utilizes that transport.
-	transport := &http.Transport{TLSClientConfig: clientTLSConfig}
+	transport := &http.Transport{TLSClientConfig: tlsClientConfig}
 	client := &http.Client{Transport: transport}
 
 	// The magic.
@@ -73,7 +74,7 @@ func TestBasics(t *testing.T) {
 	// http+unix should work.
 	{
 		var (
-			rawurl = "http+unix://unix:" + socket1 + ":/foo?a=1"
+			rawurl = "http+unix://" + socket1 + ":/foo?a=1"
 			want   = "1 /foo"
 			have   = get(t, client, rawurl)
 		)
@@ -85,7 +86,7 @@ func TestBasics(t *testing.T) {
 	// https+unix should also work.
 	{
 		var (
-			rawurl = "https+unix://unix:" + socket2 + ":/bar#fragment"
+			rawurl = "https+unix://" + socket2 + ":/bar#fragment"
 			want   = "2 /bar"
 			have   = get(t, client, rawurl)
 		)
@@ -98,7 +99,7 @@ func TestBasics(t *testing.T) {
 	// didn't mix things up too badly.
 	{
 		var (
-			rawurl = "http+unix://unix:" + socket1 + ":/baz/baz/baz"
+			rawurl = "http+unix://" + socket1 + ":/baz/baz/baz"
 			want   = "1 /baz/baz/baz"
 			have   = get(t, client, rawurl)
 		)

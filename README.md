@@ -13,10 +13,10 @@ client := &http.Client{Transport: t}
 Now you can make requests with URLs like this:
 
 ```go
-resp, err := client.Get("https+unix://unix:/path/to/socket:/request/path?a=b")
+resp, err := client.Get("https+unix:///path/to/socket:/request/path?a=b")
 ```
 
-Use scheme `http+unix` or `https+unix`. The host has to be just `unix`.
+Use scheme `http+unix` or `https+unix`.
 
 Inspiration taken from, and thanks given to, both
 [tv42/httpunix](https://github.com/tv42/httpunix) and
