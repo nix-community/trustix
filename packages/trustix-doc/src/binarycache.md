@@ -15,9 +15,9 @@ $ nix-store --generate-binary-cache-key binarycache.example.com cache-priv-key.p
 
 - Move the keys somewhere persistent and safe
 Of course having keys around readable by anyone on the system is not a good idea, so we will move these somewhere safe.
-In this tutorial we are using `/keys` but you are free to use whatever you wish.
+In this tutorial we are using `/var/trustix/keys` but you are free to use whatever you wish.
 
-`$ mv cache-priv-key.pem /keys/cache-priv-key.pem`
+`$ mv cache-priv-key.pem /var/trustix/keys/cache-priv-key.pem`
 
 ## Configuring
 
@@ -29,7 +29,7 @@ In this tutorial we are using `/keys` but you are free to use whatever you wish.
   # Enable the local binary cache server
   services.trustix-nix-cache = {
     enable = true;
-    private-key = "/keys/cache-priv-key.pem";
+    private-key = "/var/trustix/keys/cache-priv-key.pem";
     port = 9001;
   };
 

@@ -25,9 +25,9 @@ This will create two files, `pub` and `priv`.
 
 - Move the keys somewhere persistent and safe
 Of course having keys around readable by anyone on the system is not a good idea, so we will move these somewhere safe.
-In this tutorial we are using `/keys` but you are free to use whatever you wish.
+In this tutorial we are using `/var/trustix/keys` but you are free to use whatever you wish.
 
-`$ mv trustix-priv /keys/trustix-priv`
+`$ mv trustix-priv /var/trustix/keys/trustix-priv`
 
 ## Configuring
 
@@ -42,7 +42,7 @@ In this tutorial we are using `/keys` but you are free to use whatever you wish.
     signers.snakeoil = {
       type = "ed25519";
       ed25519 = {
-        private-key-path = "/keys/trustix-priv";
+        private-key-path = "/var/trustix/keys/trustix-priv";
       };
     };
 
