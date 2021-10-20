@@ -2,34 +2,34 @@
 
 Trustix is structured as a monorepo consisting of many subpackages:
 
-- [trustix](../../packages/trustix)
+- [trustix](https://github.com/tweag/trustix/blob/master/packages/trustix)
 
 The main package with all log functionality.
 This component is generic and doesn't know anything about any Nix or other package manager specifics.
 
-- [trustix-doc](../../packages/trustix-doc)
+- [trustix-doc](https://github.com/tweag/trustix/blob/master/packages/trustix-doc)
 
 The main documentation package that aggregates documentation from the various subpackages.
 
-- [trustix-nix](../../packages/trustix-nix)
+- [trustix-nix](https://github.com/tweag/trustix/blob/master/packages/trustix-nix)
 
 This is a supplemental daemon to the main Trustix daemon that layers some knowledge about Nix on top of the generic log functionality.
 It contains a [post-build hook](https://www.tweag.io/blog/2019-11-21-untrusted-ci/) used to submit newly built packages to the logs, a binary cache HTTP interface and a development tool to submit already built closures.
 
-- [trustix-nix-reprod](../../packages/trustix-nix-reprod)
+- [trustix-nix-reprod](https://github.com/tweag/trustix/blob/master/packages/trustix-nix-reprod)
 
 This package is an implementation of a reproducibility tracker backed by logs.
 
-- [trustix-proto](../../packages/trustix-proto)
+- [trustix-proto](https://github.com/tweag/trustix/blob/master/packages/trustix-proto)
 
 Trustix-proto contains all shared protobuf definitions shared by various components, as well as generated Go libraries to interact with Trustix over it's RPC mechanism (gRPC).
 
-- [trustix-python](../../packages/trustix-python)
+- [trustix-python](https://github.com/tweag/trustix/blob/master/packages/trustix-python)
 
 Trustix-python contains generated code from trustix-proto for Python.
 If you want to interact with Trustix over it's RPC interface from Python this is what you want to use.
 
-- [pynix](./packages/pynix)
+- [pynix](https://github.com/tweag/trustix/blob/master/packages/pynix)
 
 A number of generic small utility functions to work with Nix files.
 At the time of writing this document it has an implementation of the Nix base32 encoding and a derivation file parser.
