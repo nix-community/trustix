@@ -7,7 +7,7 @@ Trustix is a tool that compares build outputs for a given build input across a g
 We often use pre-built software binaries and trust that they correspond to the program we want.
 But nothing assures that these binaries were really built from the program's sources and reasonable built instructions.
 Common, costly supply chain attacks exploit this to distribute malicious software, which is one reason why most software is delivered through centralized, highly secured providers.
-Trustix, a tool developed via a [NGI Trust and Privacy grant](https://nlnet.nl/project/Trustix/), establishes trust in binaries in a different, decentralized manner.
+Trustix, a tool developed via an [NGI0 PET grant](https://nlnet.nl/project/Trustix/), establishes trust in binaries in a different, decentralized manner.
 This increases security, and paves the way for an internet where small providers can deliver safe code, ultimately with a safer and larger offer for the user.
 
 Trustix is developed for the Nix ecosystem.
