@@ -188,9 +188,9 @@
 <ul>
 <li>Move the keys somewhere persistent and safe
 Of course having keys around readable by anyone on the system is not a good idea, so we will move these somewhere safe.
-In this tutorial we are using <code>/keys</code> but you are free to use whatever you wish.</li>
+In this tutorial we are using <code>/var/trustix/keys</code> but you are free to use whatever you wish.</li>
 </ul>
-<p><code>$ mv trustix-priv /keys/trustix-priv</code></p>
+<p><code>$ mv trustix-priv /var/trustix/keys/trustix-priv</code></p>
 <h2 id="configuring"><a class="header" href="#configuring">Configuring</a></h2>
 <ul>
 <li>Add log to your <code>configuration.nix</code></li>
@@ -204,7 +204,7 @@ In this tutorial we are using <code>/keys</code> but you are free to use whateve
     signers.snakeoil = {
       type = &quot;ed25519&quot;;
       ed25519 = {
-        private-key-path = &quot;/keys/trustix-priv&quot;;
+        private-key-path = &quot;/var/trustix/keys/trustix-priv&quot;;
       };
     };
 
