@@ -236,6 +236,14 @@ in
 
   config = lib.mkIf cfg.enable {
 
+    users.users.trustix = {
+      isSystemUser = true;
+      description = "The user that the trustix daemon runs as.";
+      group = "trustix";
+    };
+
+    users.groups.trustix = {};
+
     systemd.sockets.trustix = {
       description = "Socket for the Trustix daemon";
       wantedBy = [ "sockets.target" ];
@@ -249,6 +257,8 @@ in
 
       serviceConfig = {
         Type = "simple";
+        User = "trustix";
+        Group = "trustix";
         ExecStart = "${lib.getBin cfg.package}/bin/trustix daemon --state . --config ${configFile}";
         StateDirectory = "trustix";
         WorkingDirectory = "%S/trustix";
