@@ -7,17 +7,10 @@ let
     let
       # toml doesn't have a "NoneType" so we must remove null attributes
       filterNull = attrs: lib.filterAttrsRecursive (n: v: v != null) attrs;
-      configJSON = pkgs.writeText "trustix-config.json" (builtins.toJSON (
+    in
+      pkgs.writeText "trustix-config.json" (builtins.toJSON (
         filterNull (builtins.removeAttrs cfg [ "enable" "package" ])
       ));
-    in
-    pkgs.runCommand "trustix-config.toml"
-      {
-        nativeBuildInputs = [ pkgs.remarshal ];
-        preferLocalBuild = true;
-      } ''
-      remarshal -i ${configJSON} --if json -o $out --of toml
-    '';
 
   inherit (lib) mkOption types;
 
