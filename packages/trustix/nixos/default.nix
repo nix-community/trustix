@@ -83,7 +83,7 @@ let
           description = "Key type.";
         };
 
-        pub = mkOption {
+        key = mkOption {
           type = types.str;
           example = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
           default = "Base64 encoded public key";

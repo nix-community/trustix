@@ -22,9 +22,9 @@ import (
 
 type Config struct {
 	Deciders    map[string][]*decider.Decider `toml:"decider" json:"decider"`
-	Publishers  []*Publisher                  `toml:"publisher" json:"publisher"`
-	Subscribers []*Subscriber                 `toml:"subscriber" json:"subscriber"`
-	Signers     map[string]*signer.Signer     `toml:"signer" json:"signer"`
+	Publishers  []*Publisher                  `toml:"publishers" json:"publishers"`
+	Subscribers []*Subscriber                 `toml:"subscribers" json:"subscribers"`
+	Signers     map[string]*signer.Signer     `toml:"signers" json:"signers"`
 	Storage     *Storage                      `toml:"storage" json:"storage"`
 	Remotes     []string                      `toml:"remotes" json:"remotes"`
 }

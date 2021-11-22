@@ -17,7 +17,7 @@ import (
 type Publisher struct {
 	Protocol  string            `toml:"protocol" json:"protocol"`
 	Signer    string            `toml:"signer" json:"signer"`
-	PublicKey *PublicKey        `toml:"key" json:"key"`
+	PublicKey *PublicKey        `toml:"publicKey" json:"publicKey"`
 	Meta      map[string]string `toml:"meta" json:"meta"`
 }
 
