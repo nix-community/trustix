@@ -5,7 +5,7 @@ let
 
   hook-script = pkgs.writeScript "trustix-hook"
     ''
-      ${lib.getBin pkgs.trustix-nix}/bin/trustix-nix --log-id ${cfg.logID} post-build-hook --address ${cfg.trustix-rpc}
+      ${lib.getBin pkgs.trustix-nix}/bin/trustix-nix --log-id ${cfg.logID} post-build-hook --address unix://${cfg.trustix-rpc}
     '';
 
   inherit (lib) mkOption types;
