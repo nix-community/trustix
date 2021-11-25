@@ -15,23 +15,23 @@ engine = "percentage"
 [decider."test".percentage]
 minimum = 50
 
-[[subscriber]]
+[[subscribers]]
 protocol = "test"
 
-[subscriber.key]
+[subscribers.publicKey]
 type = "ed25519"
-pub = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
+key = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
-[[subscriber]]
+[[subscribers]]
 protocol = "test"
 
-[subscriber.key]
+[subscribers.publicKey]
 type = "ed25519"
-pub = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
+key = "fNbeFTViYo3hny+Gv+TQw0mfDjnv6Fc+vMK7INMx0rQ="
 
-[[subscriber]]
+[[subscribers]]
 protocol = "test"
 
-[subscriber.key]
+[subscribers.publicKey]
 type = "ed25519"
-pub = "BneDQe44Wmeypis3B1KfLmipzd+B38UAzmuoH2Nvmso="
+key = "BneDQe44Wmeypis3B1KfLmipzd+B38UAzmuoH2Nvmso="

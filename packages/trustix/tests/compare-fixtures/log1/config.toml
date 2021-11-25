@@ -3,17 +3,17 @@ type = "memory"
 
 [storage.native]
 
-[[publisher]]
+[[publishers]]
 signer = "snakeoil"
 protocol = "test"
 
-[publisher.key]
+[publishers.publicKey]
 type = "ed25519"
-pub = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
+key = "QUR9i6xPiigzO/JAfcX082KT2P+Ajipf2H65fEqq+6E="
 
-[signer.snakeoil]
+[signers.snakeoil]
 type = "ed25519"
 
 # Implementation dependent
-[signer.snakeoil.ed25519]
+[signers.snakeoil.ed25519]
 private-key-path = "./priv"

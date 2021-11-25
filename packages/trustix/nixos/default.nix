@@ -8,9 +8,9 @@ let
       # toml doesn't have a "NoneType" so we must remove null attributes
       filterNull = attrs: lib.filterAttrsRecursive (n: v: v != null) attrs;
     in
-      pkgs.writeText "trustix-config.json" (builtins.toJSON (
-        filterNull (builtins.removeAttrs cfg [ "enable" "package" ])
-      ));
+    pkgs.writeText "trustix-config.json" (builtins.toJSON (
+      filterNull (builtins.removeAttrs cfg [ "enable" "package" ])
+    ));
 
   inherit (lib) mkOption types;
 
@@ -235,7 +235,7 @@ in
       group = "trustix";
     };
 
-    users.groups.trustix = {};
+    users.groups.trustix = { };
 
     systemd.sockets.trustix = {
       description = "Socket for the Trustix daemon";

@@ -14,7 +14,7 @@ import (
 
 type Subscriber struct {
 	Protocol  string            `toml:"protocol" json:"protocol"`
-	PublicKey *PublicKey        `toml:"key" json:"key"`
+	PublicKey *PublicKey        `toml:"publicKey" json:"publicKey"`
 	SyncMode  string            `toml:"syncmode" json:"syncmode"`
 	Meta      map[string]string `toml:"meta" json:"meta"`
 }

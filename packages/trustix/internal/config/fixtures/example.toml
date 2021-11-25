@@ -3,16 +3,16 @@ type = "native"
 
 [storage.native]
 
-[[publisher]]
+[[publishers]]
 signer = "snakeoil"
 protocol = "test"
 
-[publisher.key]
+[publishers.publicKey]
 type = "ed25519"
-pub = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo="
+key = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo="
 
-[signer.snakeoil]
+[signers.snakeoil]
 type = "ed25519"
 
-[signer.snakeoil.ed25519]
+[signers.snakeoil.ed25519]
 private-key-path = "./priv"
