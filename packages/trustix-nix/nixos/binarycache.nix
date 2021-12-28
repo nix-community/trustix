@@ -40,7 +40,7 @@ in
   config = lib.mkIf cfg.enable {
 
     systemd.sockets.trustix = {
-      description = "Socket for the Trustix Nix binary cache daemon";
+      description = "Socket for the Trustix daemon";
       wantedBy = [ "sockets.target" ];
       listenStreams = [ (toString cfg.port) ];
     };
