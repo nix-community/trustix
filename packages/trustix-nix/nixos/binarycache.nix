@@ -52,7 +52,7 @@ in
 
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${lib.getBin cfg.package}/bin/trustix-nix binary-cache-proxy --privkey ${cfg.private-key}";
+        ExecStart = "${lib.getBin cfg.package}/bin/trustix-nix binary-cache-proxy --address unix://${cfg.trustix-rpc} --privkey ${cfg.private-key}";
         DynamicUser = true;
       };
     };
