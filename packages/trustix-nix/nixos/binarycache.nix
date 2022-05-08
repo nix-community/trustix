@@ -3,7 +3,7 @@
 let
   cfg = config.services.trustix-nix-cache;
 
-  inherit (lib) mkOption types;
+  inherit (lib) mkOption mkIf types optional;
 
 in
 {
@@ -19,9 +19,25 @@ in
       description = "Which Trustix-Nix derivation to use.";
     };
 
+    listen = mkOption {
+      type = types.str;
+      default = "127.0.0.1";
+      example = "0.0.0.0";
+      description = "The IP address to bind the trustix-nix-cache to.";
+    };
+
     port = mkOption {
-      type = types.int;
+      type = types.port;
+      default = 9001;
       description = "Which port to listen to.";
+    };
+
+    openFirewall = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Open the appropriate ports in the firewall for trustix-nix-cache.
+      '';
     };
 
     private-key = mkOption {
@@ -39,12 +55,6 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    systemd.sockets.trustix = {
-      description = "Socket for the Trustix daemon";
-      wantedBy = [ "sockets.target" ];
-      listenStreams = [ (toString cfg.port) ];
-    };
-
     systemd.services.trustix-nix-cache = {
       description = "Trustix Nix binary cache daemon";
       wantedBy = [ "multi-user.target" ];
@@ -52,10 +62,13 @@ in
 
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${lib.getBin cfg.package}/bin/trustix-nix binary-cache-proxy --address unix://${cfg.trustix-rpc} --privkey ${cfg.private-key}";
+        ExecStart = "${lib.getBin cfg.package}/bin/trustix-nix binary-cache-proxy --address unix://${cfg.trustix-rpc} --listen ${cfg.listen}:${(toString cfg.port)} --privkey ${cfg.private-key}";
         DynamicUser = true;
       };
     };
+
+    networking.firewall =
+      mkIf cfg.openFirewall { allowedTCPPorts = [ ] ++ optional (cfg.listen != "127.0.0.1") cfg.port; };
 
   };
 
