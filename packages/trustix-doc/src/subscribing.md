@@ -20,7 +20,7 @@ This document walks you through how to subscribe to an already published binary 
         publicKey = {
           type = "ed25519";
           # Contents of the generated trustix-pub
-          pub = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
+          key = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
         };
       }
     ];
