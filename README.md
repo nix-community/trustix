@@ -51,10 +51,10 @@ obtained something different.
 
 This information can now be used by a Trustix user to:
 
--   track build reproducability across a large number of builders.
--   trust only builds that have been confirmed by a majority of selected
-    builders.
--   automatically identify and exclude misbehaving builders such as `Chuck` in
+- track build reproducibility across a large number of builders.
+- trust only builds that have been confirmed by a majority of selected
+  builders.
+- automatically identify and exclude misbehaving builders such as `Chuck` in
     above's example.
 
 ## Documentation
