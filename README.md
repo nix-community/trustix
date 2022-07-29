@@ -66,7 +66,7 @@ Documentation is built as a part of CI and published on [Github Pages](https://t
 For notes on development see [HACKING.md](./packages/trustix-doc/src/hacking.md)
 
 ## About the project
-The developmentent of Trustix is carried out by Tweag I/O and funded by the NLNet foundation and the European Commission’s Next Generation Internet programme through the NGI Zero PET (privacy and trust enhancing technologies) fund.
+The developmentent of Trustix is carried out by [Tweag I/O](https://tweag.io/) and funded by the [NLNet foundation](https://nlnet.nl/project/Trustix) and the European Commission’s [Next Generation Internet programme](https://www.ngi.eu/funded_solution/trustix-nix/) through the NGI Zero PET (privacy and trust enhancing technologies) fund.
 
 ![NGI0 logo](./assets/NGI0_tag.png)
 ![NLNet banner](./assets/nlnet-banner.png)
