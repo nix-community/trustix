@@ -53,7 +53,7 @@ In this tutorial we are using `/var/trustix/keys` but you are free to use whatev
         publicKey = {
           type = "ed25519";
           # Contents of the generated trustix-pub
-          pub = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
+          key = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
         };
       }
     ];
