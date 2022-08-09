@@ -51,10 +51,10 @@ obtained something different.
 
 This information can now be used by a Trustix user to:
 
--   track build reproducability across a large number of builders.
--   trust only builds that have been confirmed by a majority of selected
-    builders.
--   automatically identify and exclude misbehaving builders such as `Chuck` in
+- track build reproducibility across a large number of builders.
+- trust only builds that have been confirmed by a majority of selected
+  builders.
+- automatically identify and exclude misbehaving builders such as `Chuck` in
     above's example.
 
 ## Documentation
@@ -73,3 +73,9 @@ A collection of external resources to dive deeper into Trustix and its ideas.
 ## Developing
 
 For notes on development see [HACKING.md](./packages/trustix-doc/src/hacking.md)
+
+## About the project
+The developmentent of Trustix is carried out by [Tweag I/O](https://tweag.io/) and funded by the [NLNet foundation](https://nlnet.nl/project/Trustix) and the European Commission’s [Next Generation Internet programme](https://www.ngi.eu/funded_solution/trustix-nix/) through the NGI Zero PET (privacy and trust enhancing technologies) fund.
+
+![NGI0 logo](./assets/NGI0_tag.png)
+![NLNet banner](./assets/nlnet-banner.png)
