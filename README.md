@@ -61,6 +61,15 @@ This information can now be used by a Trustix user to:
 
 Documentation is built as a part of CI and published on [Github Pages](https://tweag.github.io/trustix/).
 
+## Further resources
+
+A collection of external resources to dive deeper into Trustix and its ideas.
+
+- The [Trustix announcement post](https://www.tweag.io/blog/2020-12-16-trustix-announcement/)
+- Details on the [data structure](https://www.tweag.io/blog/2022-01-14-trustix-trees/) behind Trustix
+- A post about how Trustix achieves decentralized [trusted consensus](https://www.tweag.io/blog/2022-02-03-trustix-voting/)
+- The NGI0 PET grant page with an overview of the [Trustix](https://nlnet.nl/project/Trustix/)'s main ideas
+
 ## Developing
 
 For notes on development see [HACKING.md](./packages/trustix-doc/src/hacking.md)
