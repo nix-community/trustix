@@ -1,4 +1,4 @@
-{ pkgs ? import ../../nix }:
+{ pkgs ? import ../../pkgs.nix { } }:
 
 let
   pythonEnv = pkgs.poetry2nix.mkPoetryEnv {

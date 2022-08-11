@@ -1,5 +1,5 @@
 let
-  pkgs = import ./nix;
+  pkgs = import ./pkgs.nix { };
 
   STATE_DIR = "${builtins.toString ./.}/state";
   TRUSTIX_RPC = "unix://${STATE_DIR}/trustix.sock";
@@ -11,11 +11,14 @@ pkgs.mkShell {
   buildInputs = [
     pkgs.nixpkgs-fmt
     pkgs.hivemind
-    pkgs.niv
 
     pkgs.mdbook
   ];
 
   inherit STATE_DIR TRUSTIX_RPC TRUSTIX_ROOT;
+
+  shellHook = ''
+    unset NIX_PATH
+  '';
 
 }

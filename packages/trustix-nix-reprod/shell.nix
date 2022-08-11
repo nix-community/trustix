@@ -1,4 +1,4 @@
-{ pkgs ? import ../../nix }:
+{ pkgs ? import ../../pkgs.nix { } }:
 
 let
   inherit (pkgs) poetry2nix;
@@ -33,7 +33,7 @@ pkgs.mkShell {
     pkgs.hivemind
 
     pkgs.yajl
-    pkgs.pkgconfig
+    pkgs.pkg-config
   ];
 
   shellHook = ''

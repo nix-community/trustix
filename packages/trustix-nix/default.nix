@@ -1,4 +1,4 @@
-{ buildGoApplication, lib, pkgconfig }:
+{ buildGoApplication, lib, pkg-config }:
 
 buildGoApplication {
   pname = "trustix";
@@ -15,7 +15,7 @@ buildGoApplication {
 
   subPackages = [ "." ];
 
-  nativeBuildInputs = [ pkgconfig ];
+  nativeBuildInputs = [ pkg-config ];
 
   CGO_ENABLED = "1";
 
