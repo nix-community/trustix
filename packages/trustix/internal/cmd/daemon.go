@@ -35,7 +35,7 @@ import (
 	"github.com/tweag/trustix/packages/trustix/internal/pool"
 	"github.com/tweag/trustix/packages/trustix/internal/protocols"
 	pub "github.com/tweag/trustix/packages/trustix/internal/publisher"
-	"github.com/tweag/trustix/packages/trustix/internal/rpc/auth"
+	// "github.com/tweag/trustix/packages/trustix/internal/rpc/auth"
 	"github.com/tweag/trustix/packages/trustix/internal/server"
 	"github.com/tweag/trustix/packages/trustix/internal/signer"
 	"github.com/tweag/trustix/packages/trustix/internal/sthsync"
@@ -360,9 +360,7 @@ var daemonCmd = &cobra.Command{
 			_, isUnix := lis.(*net.UnixListener)
 
 			if isUnix {
-				s = grpc.NewServer(
-					grpc.Creds(&auth.SoPeercred{}), // Attach SO_PEERCRED auth to UNIX sockets
-				)
+				s = grpc.NewServer()
 
 				pb.RegisterLogRPCServer(s, logRpcServer)
 				pb.RegisterRPCApiServer(s, rpcServer)
