@@ -35,7 +35,7 @@ import ijson  # type: ignore
 from trustix_python.api import api_pb2  # type: ignore
 from async_lru import alru_cache  # type: ignore
 import typing
-import pynix
+import pynixutil
 import aiofiles
 import os.path
 import asyncio
@@ -83,7 +83,7 @@ async def index_eval(commit_sha: str):  # noqa: C901
     @alru_cache(maxsize=30_000)
     async def drv_read(drv_path: str) -> typing.Dict:
         async with aiofiles.open(drv_path) as f:  # type: ignore
-            return pynix.drvparse(await f.read())
+            return pynixutil.drvparse(await f.read())
 
     async def gen_drvs(
         attr: typing.Optional[str], drv_path: str
@@ -210,7 +210,7 @@ async def index_eval(commit_sha: str):  # noqa: C901
                 output: str, store_path_meta: typing.Dict[str, str]
             ):
                 store_path = store_path_meta["path"]
-                input_hash = pynix.b32decode(store_path.split("/")[-1].split("-", 1)[0])
+                input_hash = pynixutil.b32decode(store_path.split("/")[-1].split("-", 1)[0])
                 try:
                     await DerivationOutput.get(input_hash=input_hash)
                 except DoesNotExist:

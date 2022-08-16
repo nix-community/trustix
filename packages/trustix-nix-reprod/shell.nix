@@ -5,6 +5,7 @@ let
 
   pythonEnv = poetry2nix.mkPoetryEnv {
     projectDir = ./.;
+    python = pkgs.python39;
     overrides = poetry2nix.overrides.withDefaults (
       import ./overrides.nix { inherit pkgs; }
     );

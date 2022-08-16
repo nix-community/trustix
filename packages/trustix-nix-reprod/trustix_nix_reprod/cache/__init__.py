@@ -23,19 +23,20 @@ from typing import (
 )
 import hashlib
 import asyncio
-import orjson
+
+import json
 
 
 def _cache_key(fn, args, kwargs) -> str:
     return hashlib.sha256(
-        orjson.dumps(
+        json.dumps(
             [
                 fn.__module__,
                 fn.__name__,
                 args,
                 kwargs,
             ]
-        )
+        ).encode()
     ).hexdigest()
 
 

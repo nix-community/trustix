@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 from trustix_nix_reprod import models as db_models
-from pynix import b32encode
+from pynixutil import b32encode
 from typing import (
     Dict,
     List,
@@ -26,7 +26,7 @@ from typing import (
 )
 from pydantic import BaseModel as _BaseModel
 import codecs
-import orjson
+import json
 
 
 __all__ = (
@@ -35,14 +35,14 @@ __all__ = (
 )
 
 
-def _orjson_dumps(v, *, default) -> str:
-    return orjson.dumps(v, default=default, option=orjson.OPT_NON_STR_KEYS).decode()
+def _json_dumps(v, *, default) -> str:
+    return json.dumps(v, default=default, option=json.OPT_NON_STR_KEYS).decode()
 
 
 class BaseModel(_BaseModel):
     class Config:
-        json_loads = orjson.loads
-        json_dumps = _orjson_dumps
+        json_loads = json.loads
+        json_dumps = _json_dumps
 
 
 class DerivationOutputResult(BaseModel):
