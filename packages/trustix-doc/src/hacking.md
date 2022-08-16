@@ -29,11 +29,6 @@ Trustix-proto contains all shared protobuf definitions shared by various compone
 Trustix-python contains generated code from trustix-proto for Python.
 If you want to interact with Trustix over it's RPC interface from Python this is what you want to use.
 
-- [pynix](https://github.com/nix-community/trustix/blob/master/packages/pynix)
-
-A number of generic small utility functions to work with Nix files.
-At the time of writing this document it has an implementation of the Nix base32 encoding and a derivation file parser.
-
 ## Globally installed tooling
 
 Trustix doesn't depend on much in the way of globally installed tools.
