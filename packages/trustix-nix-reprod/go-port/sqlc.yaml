@@ -1,0 +1,9 @@
+version: "1"
+project:
+    id: ""
+packages:
+  - name: "db"
+    path: "db"
+    engine: "sqlite"
+    schema: "sql/schema"
+    queries: "sql/queries"
