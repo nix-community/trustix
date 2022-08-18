@@ -10,11 +10,15 @@ package cmd
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/trustix-nix-reprod/eval"
+	_ "modernc.org/sqlite"
 )
+
+const sqlDialect = "sqlite"
 
 var indexEvalCommand = &cobra.Command{
 	Use:   "index-eval",
@@ -25,6 +29,16 @@ var indexEvalCommand = &cobra.Command{
 		evalConfig.Expr = "./pkgs.nix"
 
 		ctx := context.Background()
+
+		db, err := sql.Open(sqlDialect, "./foo.sqlite3")
+		if err != nil {
+			return err
+		}
+
+		err = migrate(db, sqlDialect)
+		if err != nil {
+			panic(err)
+		}
 
 		results, err := eval.Eval(ctx, evalConfig)
 		if err != nil {
