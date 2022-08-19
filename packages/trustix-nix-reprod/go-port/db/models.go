@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+type Derivation struct {
+	Drv    string
+	System string
+}
+
 type Evaluation struct {
 	CommitSha string
 	Timestamp time.Time

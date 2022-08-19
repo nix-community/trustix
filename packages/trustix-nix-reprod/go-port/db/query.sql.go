@@ -9,6 +9,18 @@ import (
 	"context"
 )
 
+const getDerivation = `-- name: GetDerivation :one
+SELECT drv, system FROM derivation
+WHERE drv = ? LIMIT 1
+`
+
+func (q *Queries) GetDerivation(ctx context.Context, drv string) (Derivation, error) {
+	row := q.db.QueryRowContext(ctx, getDerivation, drv)
+	var i Derivation
+	err := row.Scan(&i.Drv, &i.System)
+	return i, err
+}
+
 const getEval = `-- name: GetEval :one
 SELECT commit_sha, timestamp FROM evaluation
 WHERE commit_sha = ? LIMIT 1

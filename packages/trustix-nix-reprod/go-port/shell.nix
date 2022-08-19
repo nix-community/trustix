@@ -14,15 +14,17 @@ pkgs.mkShell {
 
   NIX_REPROD_STATE_DIR = "${rootShell.STATE_DIR}/nix-reprod";
 
+  CGO_ENABLED = false;
+
   buildInputs = [
     pkgs.nixpkgs-fmt
     pkgs.nix-eval-jobs
 
-    pkgs.redis
     goEnv
 
     pkgs.go
     pkgs.gomod2nix
+    pkgs.sqlite
 
     pkgs.hivemind
   ];

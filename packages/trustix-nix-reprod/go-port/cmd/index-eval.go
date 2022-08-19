@@ -30,6 +30,10 @@ var indexEvalCommand = &cobra.Command{
 
 		ctx := context.Background()
 
+		commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
+
+		fmt.Println(commitSha)
+
 		db, err := sql.Open(sqlDialect, "./foo.sqlite3")
 		if err != nil {
 			return err
@@ -45,13 +49,38 @@ var indexEvalCommand = &cobra.Command{
 			panic(err)
 		}
 
+		drvParser, err := NewCachedDrvParser()
+		if err != nil {
+			panic(err)
+		}
+
+		// // Map drv to it's direct references
+		// refs := make(map[string][]string)
+
 		for wrappedResult := range results {
 			result, err := wrappedResult.Unwrap()
 			if err != nil {
 				panic(err)
 			}
 
-			fmt.Println(result)
+			drv, err := drvParser.ReadPath(result.DrvPath)
+			if err != nil {
+				panic(err)
+			}
+
+			// Direct dependencies
+			refsDirect := NewSet[string]()
+			for inputDrv, _ := range drv.InputDerivations {
+				refsDirect.Add(inputDrv)
+			}
+
+			// All dependencies (recursive, flattened)
+			refsAll := refsDirect.Copy()
+
+			// for inputDrv, _ := range drv.InputDerivations {
+			// }
+
+			fmt.Println(refsAll.Values())
 		}
 
 		return nil
