@@ -14,6 +14,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	set "github.com/tweag/trustix/packages/go-lib/set"
 	"github.com/tweag/trustix/packages/trustix-nix-reprod/eval"
 	_ "modernc.org/sqlite"
 )
@@ -69,7 +70,7 @@ var indexEvalCommand = &cobra.Command{
 			}
 
 			// Direct dependencies
-			refsDirect := NewSet[string]()
+			refsDirect := set.NewSet[string]()
 			for inputDrv, _ := range drv.InputDerivations {
 				refsDirect.Add(inputDrv)
 			}

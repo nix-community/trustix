@@ -1,4 +1,4 @@
-package cmd
+package set
 
 import (
 	"golang.org/x/exp/constraints"
@@ -80,7 +80,7 @@ func (s *Set[T]) Copy() *Set[T] {
 // Returns the difference between two sets.
 func (s *Set[T]) Diff(set *Set[T]) *Set[T] {
 	diff := &Set[T]{
-		values: make(map[T]struct{}, len(s.values)),
+		values: make(map[T]struct{}),
 	}
 
 	for v, _ := range s.values {
@@ -90,4 +90,11 @@ func (s *Set[T]) Diff(set *Set[T]) *Set[T] {
 	}
 
 	return diff
+}
+
+// Update a set with the union of itself and set.
+func (s *Set[T]) Update(set *Set[T]) {
+	for v, _ := range set.values {
+		s.Add(v)
+	}
 }
