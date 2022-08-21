@@ -14,12 +14,15 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	set "github.com/tweag/trustix/packages/go-lib/set"
+	"github.com/tweag/trustix/packages/go-lib/set"
+	drvparse "github.com/tweag/trustix/packages/trustix-nix-reprod/derivation"
 	"github.com/tweag/trustix/packages/trustix-nix-reprod/eval"
 	_ "modernc.org/sqlite"
 )
 
 const sqlDialect = "sqlite"
+
+// func indexDrv(attr string, drv *derivation.Derivation
 
 var indexEvalCommand = &cobra.Command{
 	Use:   "index-eval",
@@ -50,7 +53,7 @@ var indexEvalCommand = &cobra.Command{
 			panic(err)
 		}
 
-		drvParser, err := NewCachedDrvParser()
+		drvParser, err := drvparse.NewCachedDrvParser()
 		if err != nil {
 			panic(err)
 		}
