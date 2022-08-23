@@ -11,16 +11,11 @@ package auth
 import (
 	"context"
 	"fmt"
-	"os/user"
-	"strconv"
-	"syscall"
 
 	"google.golang.org/grpc/peer"
 )
 
-type AuthInfo struct {
-	Ucred syscall.Ucred
-}
+type AuthInfo struct{}
 
 func (AuthInfo) AuthType() string {
 	return "ucred"
@@ -39,17 +34,6 @@ func AuthInfoFromContext(ctx context.Context) (*AuthInfo, bool) {
 }
 
 func CanWrite(ctx context.Context) error {
-
-	u, err := user.Current()
-	if err != nil {
-		return fmt.Errorf("failed to get current user: %v", err)
-	}
-
-	uid, err := strconv.Atoi(u.Uid)
-	if err != nil {
-		return fmt.Errorf("failed to get current user uid: %v", err)
-	}
-
 	pr, ok := peer.FromContext(ctx)
 	if !ok {
 		return fmt.Errorf("Could not get peer from context")
@@ -57,16 +41,6 @@ func CanWrite(ctx context.Context) error {
 
 	if pr.Addr.Network() != "unix" {
 		return fmt.Errorf("Write only allowed over UNIX socket")
-	}
-
-	info, ok := pr.AuthInfo.(AuthInfo)
-	if !ok {
-		return fmt.Errorf("Could not get peer creds for socket")
-	}
-
-	// Deny connection from other than root and self
-	if info.Ucred.Uid == 0 || info.Ucred.Uid == uint32(uid) {
-		return nil
 	}
 
 	return fmt.Errorf("Denied peer creds")
