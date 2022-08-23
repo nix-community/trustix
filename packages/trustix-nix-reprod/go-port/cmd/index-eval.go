@@ -17,7 +17,6 @@ import (
 	"github.com/tweag/trustix/packages/go-lib/set"
 	drvparse "github.com/tweag/trustix/packages/trustix-nix-reprod/derivation"
 	"github.com/tweag/trustix/packages/trustix-nix-reprod/eval"
-	_ "modernc.org/sqlite"
 )
 
 const sqlDialect = "sqlite"

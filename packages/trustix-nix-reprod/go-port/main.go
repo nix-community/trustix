@@ -6,9 +6,12 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package main // import "github.com/tweag/trustix/packages/trustix-nix"
+package main // import "github.com/tweag/trustix/packages/trustix-nix-reprod"
 
-import "github.com/tweag/trustix/packages/trustix-nix-reprod/cmd"
+import (
+	"github.com/tweag/trustix/packages/trustix-nix-reprod/cmd"
+	_ "modernc.org/sqlite"
+)
 
 func main() {
 	cmd.Execute()
