@@ -9,11 +9,13 @@ import (
 )
 
 type Derivation struct {
+	ID     int64
 	Drv    string
 	System string
 }
 
 type Evaluation struct {
+	ID        int64
 	CommitSha string
 	Timestamp time.Time
 }

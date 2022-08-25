@@ -1,13 +1,17 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE evaluation (
-    commit_sha VARCHAR(40) NOT NULL  PRIMARY KEY,
-    timestamp TIMESTAMP NOT NULL  DEFAULT CURRENT_TIMESTAMP
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    commit_sha VARCHAR(40) NOT NULL,
+    timestamp TIMESTAMP NOT NULL  DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(commit_sha)
 );
 
 CREATE TABLE IF NOT EXISTS derivation (
-    drv VARCHAR(255) NOT NULL  PRIMARY KEY,
-    system VARCHAR(255) NOT NULL
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    drv VARCHAR(255) NOT NULL,
+    system VARCHAR(255) NOT NULL,
+    UNIQUE(drv)
 );
 -- +goose StatementEnd
 
