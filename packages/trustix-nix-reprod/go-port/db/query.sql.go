@@ -25,6 +25,34 @@ func (q *Queries) CreateDerivation(ctx context.Context, arg CreateDerivationPara
 	return i, err
 }
 
+const createDerivationRefDirect = `-- name: CreateDerivationRefDirect :exec
+INSERT INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?)
+`
+
+type CreateDerivationRefDirectParams struct {
+	DrvID      int64
+	ReferrerID int64
+}
+
+func (q *Queries) CreateDerivationRefDirect(ctx context.Context, arg CreateDerivationRefDirectParams) error {
+	_, err := q.db.ExecContext(ctx, createDerivationRefDirect, arg.DrvID, arg.ReferrerID)
+	return err
+}
+
+const createDerivationRefRecursive = `-- name: CreateDerivationRefRecursive :exec
+INSERT INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?)
+`
+
+type CreateDerivationRefRecursiveParams struct {
+	DrvID      int64
+	ReferrerID int64
+}
+
+func (q *Queries) CreateDerivationRefRecursive(ctx context.Context, arg CreateDerivationRefRecursiveParams) error {
+	_, err := q.db.ExecContext(ctx, createDerivationRefRecursive, arg.DrvID, arg.ReferrerID)
+	return err
+}
+
 const createEval = `-- name: CreateEval :one
 INSERT INTO evaluation (commit_sha) VALUES (?) RETURNING id, commit_sha, timestamp
 `

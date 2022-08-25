@@ -14,6 +14,18 @@ type Derivation struct {
 	System string
 }
 
+type Derivationrefdirect struct {
+	ID         int64
+	DrvID      int64
+	ReferrerID int64
+}
+
+type Derivationrefrecursive struct {
+	ID         int64
+	DrvID      int64
+	ReferrerID int64
+}
+
 type Evaluation struct {
 	ID        int64
 	CommitSha string

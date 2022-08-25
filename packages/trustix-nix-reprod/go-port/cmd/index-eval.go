@@ -82,12 +82,15 @@ var indexEvalCommand = &cobra.Command{
 		// Map drv to it's direct references for later re-use
 		refs := safemap.NewMap[string, *set.Set[string]]()
 
+		// Map drv paths to DB ids so we can avoid queries in the hot indexing path
+		drvDBIDs := safemap.NewMap[string, int64]()
+
 		alreadyIndexed := set.NewSet[string]()
 
 		// Index a derivation including it's dependencies
 		var indexDrv func(string) error
 		indexDrv = func(drvPath string) error {
-			// No-op if already indexed
+			// No-op if already indexed, populate map early to act as a lock per drvPath
 			if alreadyIndexed.Has(drvPath) {
 				return nil
 			} else {
@@ -148,6 +151,8 @@ var indexEvalCommand = &cobra.Command{
 						Drv:    drvPath,
 						System: drv.Platform,
 					})
+
+					// TODO: Create derivation outputs
 				}
 
 				if err != nil {
@@ -155,7 +160,36 @@ var indexEvalCommand = &cobra.Command{
 				}
 			}
 
-			fmt.Println(dbDrv)
+			drvDBIDs.Set(drvPath, dbDrv.ID)
+
+			// Create relations to referenced derivations
+			{
+				// Create relation for direct references
+				for _, ref := range refsDirect.Values() {
+					dbID, err := drvDBIDs.Get(ref)
+					if err != nil {
+						panic(err)
+					}
+
+					qtx.CreateDerivationRefDirect(ctx, idb.CreateDerivationRefDirectParams{
+						ReferrerID: dbDrv.ID,
+						DrvID:      dbID,
+					})
+				}
+
+				// Create relation for all recursive references
+				for _, ref := range refsDirect.Values() {
+					dbID, err := drvDBIDs.Get(ref)
+					if err != nil {
+						panic(err)
+					}
+
+					qtx.CreateDerivationRefRecursive(ctx, idb.CreateDerivationRefRecursiveParams{
+						ReferrerID: dbDrv.ID,
+						DrvID:      dbID,
+					})
+				}
+			}
 
 			return nil
 		}
