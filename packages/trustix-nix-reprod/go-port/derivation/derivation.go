@@ -2,19 +2,18 @@ package derivation
 
 import (
 	"os"
+	"sync"
 
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/nix-community/go-nix/pkg/derivation"
 )
 
-// Arbitrary large number of derivations to cache
-const cacheSize = 30_000
-
 type CachedDrvParser struct {
 	cache *lru.Cache
+	mux   *sync.RWMutex
 }
 
-func NewCachedDrvParser() (*CachedDrvParser, error) {
+func NewCachedDrvParser(cacheSize int) (*CachedDrvParser, error) {
 	cache, err := lru.New(cacheSize)
 	if err != nil {
 		return nil, err
@@ -22,14 +21,26 @@ func NewCachedDrvParser() (*CachedDrvParser, error) {
 
 	return &CachedDrvParser{
 		cache: cache,
+		mux:   &sync.RWMutex{},
 	}, nil
 }
 
 func (c *CachedDrvParser) ReadPath(drvPath string) (*derivation.Derivation, error) {
-	cached, ok := c.cache.Get(drvPath)
-	if ok {
-		return cached.(*derivation.Derivation), nil
+
+	{
+		c.mux.RLock()
+
+		cached, ok := c.cache.Get(drvPath)
+		if ok {
+			c.mux.RUnlock()
+			return cached.(*derivation.Derivation), nil
+		}
+
+		c.mux.RUnlock()
 	}
+
+	c.mux.Lock()
+	defer c.mux.Unlock()
 
 	f, err := os.Open(drvPath)
 	if err != nil {

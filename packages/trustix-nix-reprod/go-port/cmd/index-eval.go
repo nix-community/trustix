@@ -24,6 +24,9 @@ import (
 
 const sqlDialect = "sqlite"
 
+// Arbitrary large number of derivations to cache
+const drvCacheSize = 30_000
+
 var indexEvalCommand = &cobra.Command{
 	Use:   "index-eval",
 	Short: "Index evaluation",
@@ -74,7 +77,7 @@ var indexEvalCommand = &cobra.Command{
 			panic(err)
 		}
 
-		drvParser, err := drvparse.NewCachedDrvParser()
+		drvParser, err := drvparse.NewCachedDrvParser(drvCacheSize)
 		if err != nil {
 			panic(err)
 		}
