@@ -13,8 +13,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/nix-community/go-nix/pkg/derivation"
 	"github.com/spf13/cobra"
+	"github.com/tweag/trustix/packages/go-lib/executor"
 	"github.com/tweag/trustix/packages/go-lib/safemap"
 	"github.com/tweag/trustix/packages/go-lib/set"
 	idb "github.com/tweag/trustix/packages/trustix-nix-reprod/db"
@@ -23,10 +23,6 @@ import (
 )
 
 const sqlDialect = "sqlite"
-
-func indexToDb(attr string, drv *derivation.Derivation) error {
-	return nil
-}
 
 var indexEvalCommand = &cobra.Command{
 	Use:   "index-eval",
@@ -50,6 +46,7 @@ var indexEvalCommand = &cobra.Command{
 
 		// Indexing impl
 		commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
+		maxWorkers := 15
 
 		tx, err := db.Begin()
 		if err != nil {
@@ -60,6 +57,7 @@ var indexEvalCommand = &cobra.Command{
 		queries := idb.New(db)
 		qtx := queries.WithTx(tx)
 
+		// Create the evaluation in the database
 		_, err = qtx.GetEval(ctx, commitSha)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -81,15 +79,19 @@ var indexEvalCommand = &cobra.Command{
 			panic(err)
 		}
 
-		// Map drv to it's direct references
+		// Map drv to it's direct references for later re-use
 		refs := safemap.NewMap[string, *set.Set[string]]()
+
+		alreadyIndexed := set.NewSet[string]()
 
 		// Index a derivation including it's dependencies
 		var indexDrv func(string) error
 		indexDrv = func(drvPath string) error {
 			// No-op if already indexed
-			if refs.Has(drvPath) {
+			if alreadyIndexed.Has(drvPath) {
 				return nil
+			} else {
+				alreadyIndexed.Add(drvPath)
 			}
 
 			drv, err := drvParser.ReadPath(drvPath)
@@ -138,6 +140,7 @@ var indexEvalCommand = &cobra.Command{
 
 			refs.Set(drvPath, refsDirect)
 
+			// Create the derivation in the database
 			dbDrv, err := qtx.GetDerivation(ctx, drvPath)
 			if err != nil {
 				if err == sql.ErrNoRows {
@@ -157,17 +160,22 @@ var indexEvalCommand = &cobra.Command{
 			return nil
 		}
 
+		e := executor.NewLimitedParallellExecutor(maxWorkers)
+
 		for wrappedResult := range results {
 			result, err := wrappedResult.Unwrap()
 			if err != nil {
 				panic(err)
 			}
 
-			// TODO: Launch in goroutine
-			err = indexDrv(result.DrvPath)
-			if err != nil {
-				panic(err)
-			}
+			e.Add(func() error {
+				return indexDrv(result.DrvPath)
+			})
+		}
+
+		err = e.Wait()
+		if err != nil {
+			panic(err)
 		}
 
 		err = tx.Commit()
