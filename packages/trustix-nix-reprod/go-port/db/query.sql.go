@@ -25,6 +25,21 @@ func (q *Queries) CreateDerivation(ctx context.Context, arg CreateDerivationPara
 	return i, err
 }
 
+const createDerivationOutput = `-- name: CreateDerivationOutput :exec
+INSERT INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?)
+`
+
+type CreateDerivationOutputParams struct {
+	Output       string
+	StorePath    string
+	DerivationID int64
+}
+
+func (q *Queries) CreateDerivationOutput(ctx context.Context, arg CreateDerivationOutputParams) error {
+	_, err := q.db.ExecContext(ctx, createDerivationOutput, arg.Output, arg.StorePath, arg.DerivationID)
+	return err
+}
+
 const createDerivationRefDirect = `-- name: CreateDerivationRefDirect :exec
 INSERT INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?)
 `
@@ -73,6 +88,28 @@ func (q *Queries) GetDerivation(ctx context.Context, drv string) (Derivation, er
 	row := q.db.QueryRowContext(ctx, getDerivation, drv)
 	var i Derivation
 	err := row.Scan(&i.ID, &i.Drv, &i.System)
+	return i, err
+}
+
+const getDerivationOutput = `-- name: GetDerivationOutput :one
+SELECT id, output, store_path, derivation_id FROM derivationoutput
+WHERE derivation_id = ? AND store_path = ? LIMIT 1
+`
+
+type GetDerivationOutputParams struct {
+	DerivationID int64
+	StorePath    string
+}
+
+func (q *Queries) GetDerivationOutput(ctx context.Context, arg GetDerivationOutputParams) (Derivationoutput, error) {
+	row := q.db.QueryRowContext(ctx, getDerivationOutput, arg.DerivationID, arg.StorePath)
+	var i Derivationoutput
+	err := row.Scan(
+		&i.ID,
+		&i.Output,
+		&i.StorePath,
+		&i.DerivationID,
+	)
 	return i, err
 }
 

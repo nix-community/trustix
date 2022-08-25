@@ -14,6 +14,13 @@ type Derivation struct {
 	System string
 }
 
+type Derivationoutput struct {
+	ID           int64
+	Output       string
+	StorePath    string
+	DerivationID int64
+}
+
 type Derivationrefdirect struct {
 	ID         int64
 	DrvID      int64

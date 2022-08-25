@@ -14,7 +14,7 @@ CREATE TABLE derivation (
     UNIQUE(drv)
 );
 
-CREATE TABLE IF NOT EXISTS derivationrefdirect (
+CREATE TABLE derivationrefdirect (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     drv_id INTEGER NOT NULL REFERENCES derivation (id) ON DELETE CASCADE,
     referrer_id INTEGER NOT NULL REFERENCES derivation (id) ON DELETE CASCADE,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS derivationrefdirect (
 CREATE INDEX idx_derivationrefdirect_drv_id ON derivationrefdirect (drv_id);
 CREATE INDEX idx_derivationrefdirect_referrer_id ON derivationrefdirect (referrer_id);
 
-CREATE TABLE IF NOT EXISTS derivationrefrecursive (
+CREATE TABLE derivationrefrecursive (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     drv_id INTEGER NOT NULL REFERENCES derivation (id) ON DELETE CASCADE,
     referrer_id INTEGER NOT NULL REFERENCES derivation (id) ON DELETE CASCADE,
@@ -31,6 +31,17 @@ CREATE TABLE IF NOT EXISTS derivationrefrecursive (
 );
 CREATE INDEX derivationrefrecursive_idx_drv_id ON derivationrefrecursive (drv_id);
 CREATE INDEX derivationrefrecursive_idx_referrer_id ON derivationrefrecursive (referrer_id);
+
+CREATE TABLE derivationoutput (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    output VARCHAR(255) NOT NULL,
+    store_path VARCHAR(255) NOT NULL,
+    derivation_id INTEGER NOT NULL REFERENCES derivation (id) ON DELETE CASCADE,
+    UNIQUE (derivation_id, output)
+);
+CREATE INDEX idx_derivationoutput_output ON derivationoutput (output);
+CREATE INDEX idx_derivationoutput_store_path ON derivationoutput (store_path);
+
 -- +goose StatementEnd
 
 -- +goose Down

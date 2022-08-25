@@ -146,24 +146,47 @@ var indexEvalCommand = &cobra.Command{
 
 			refs.Set(drvPath, refsDirect)
 
-			// Create the derivation in the database
+			// Check if the derivation is already indexed
 			dbDrv, err := qtx.GetDerivation(ctx, drvPath)
+			if err == nil {
+				drvDBIDs.Set(drvPath, dbDrv.ID)
+				return nil
+			} else if err != sql.ErrNoRows {
+				return err
+			}
+
+			// Create the derivation in the DB
+			dbDrv, err = qtx.CreateDerivation(ctx, idb.CreateDerivationParams{
+				Drv:    drvPath,
+				System: drv.Platform,
+			})
 			if err != nil {
-				if err == sql.ErrNoRows {
-					dbDrv, err = qtx.CreateDerivation(ctx, idb.CreateDerivationParams{
-						Drv:    drvPath,
-						System: drv.Platform,
-					})
-
-					// TODO: Create derivation outputs
-				}
-
-				if err != nil {
-					panic(err)
-				}
+				return err
 			}
 
 			drvDBIDs.Set(drvPath, dbDrv.ID)
+
+			// Create derivation outputs
+			for output, pathInfo := range drv.Outputs {
+				_, err := qtx.GetDerivationOutput(ctx, idb.GetDerivationOutputParams{
+					DerivationID: dbDrv.ID,
+					StorePath:    pathInfo.Path,
+				})
+				if err == nil {
+					continue
+				} else if err != sql.ErrNoRows {
+					return fmt.Errorf("Error fetching derivation output: %w", err)
+				}
+
+				err = qtx.CreateDerivationOutput(ctx, idb.CreateDerivationOutputParams{
+					Output:       output,
+					StorePath:    pathInfo.Path,
+					DerivationID: dbDrv.ID,
+				})
+				if err != nil {
+					return fmt.Errorf("Error creating derivation output: %w", err)
+				}
+			}
 
 			// Create relations to referenced derivations
 			{
