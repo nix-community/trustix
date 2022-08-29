@@ -56,6 +56,10 @@ This information can now be used by a Trustix user to:
   builders.
 - automatically identify and exclude misbehaving builders such as `Chuck` in
     above's example.
+    
+## Related Projects
+
+- JFrog has started a similar project: [code](https://github.com/pyrsia/pyrsia/network), [website](https://pyrsia.io/)
 
 ## Documentation
 
