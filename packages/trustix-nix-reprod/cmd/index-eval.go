@@ -88,7 +88,7 @@ var indexEvalCommand = &cobra.Command{
 		// Map drv paths to DB ids so we can avoid queries in the hot indexing path
 		drvDBIDs := safemap.NewMap[string, int64]()
 
-		alreadyIndexed := set.NewSet[string]()
+		alreadyIndexed := set.NewSafeSet[string]()
 
 		// Index a derivation including it's dependencies
 		var indexDrv func(string) error
