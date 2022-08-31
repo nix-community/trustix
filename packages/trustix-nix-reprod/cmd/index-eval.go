@@ -37,7 +37,7 @@ var indexEvalCommand = &cobra.Command{
 
 		ctx := context.Background()
 
-		db, err := sql.Open(sqlDialect, "./foo.sqlite3")
+		db, err := sql.Open(sqlDialect, "/home/adisbladis/foo.sqlite3?_journal_mode=WAL")
 		if err != nil {
 			return err
 		}
@@ -102,16 +102,32 @@ var indexEvalCommand = &cobra.Command{
 				alreadyIndexed.Add(drvPath)
 			}
 
-			// Technically this is racy but it's OK since we're only approximating the number of indexed
-			// derivations for debug logging purposes
-			drvCount++
-			if drvCount%1000 == 0 {
-				fmt.Printf("Indexed %d derivations\n", drvCount)
-			}
-
 			drv, err := drvParser.ReadPath(drvPath)
 			if err != nil {
 				return fmt.Errorf("Error reading '%s': %w", drvPath, err)
+			}
+
+			var dbDrv idb.Derivation
+			{
+				// Check if the derivation is already indexed
+				dbDrv, err = qtx.GetDerivation(ctx, drvPath)
+				if err == nil {
+					drvDBIDs.Set(drvPath, dbDrv.ID)
+					return nil
+				} else if err != sql.ErrNoRows {
+					return err
+				}
+
+				// Create the derivation in the DB
+				dbDrv, err = qtx.CreateDerivation(ctx, idb.CreateDerivationParams{
+					Drv:    drvPath,
+					System: drv.Platform,
+				})
+				if err != nil {
+					return err
+				}
+
+				drvDBIDs.Set(drvPath, dbDrv.ID)
 			}
 
 			// Direct dependencies
@@ -155,26 +171,6 @@ var indexEvalCommand = &cobra.Command{
 			}
 
 			refs.Set(drvPath, refsDirect)
-
-			// Check if the derivation is already indexed
-			dbDrv, err := qtx.GetDerivation(ctx, drvPath)
-			if err == nil {
-				drvDBIDs.Set(drvPath, dbDrv.ID)
-				return nil
-			} else if err != sql.ErrNoRows {
-				return err
-			}
-
-			// Create the derivation in the DB
-			dbDrv, err = qtx.CreateDerivation(ctx, idb.CreateDerivationParams{
-				Drv:    drvPath,
-				System: drv.Platform,
-			})
-			if err != nil {
-				return err
-			}
-
-			drvDBIDs.Set(drvPath, dbDrv.ID)
 
 			// Create derivation outputs
 			for output, pathInfo := range drv.Outputs {
@@ -225,6 +221,13 @@ var indexEvalCommand = &cobra.Command{
 						DrvID:      dbID,
 					})
 				}
+			}
+
+			// Technically this is racy but it's OK since we're only approximating the number of indexed
+			// derivations for debug logging purposes
+			drvCount++
+			if drvCount%1000 == 0 {
+				fmt.Printf("Indexed %d derivations\n", drvCount)
 			}
 
 			return nil
