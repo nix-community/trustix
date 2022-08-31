@@ -18,8 +18,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix/client"
+	"github.com/nix-community/trustix/packages/go-lib/executor"
 	tgrpc "github.com/nix-community/trustix/packages/trustix/internal/grpc"
-	"github.com/nix-community/trustix/packages/trustix/internal/lib"
 )
 
 var gatewayListenAddresses []string
@@ -78,7 +78,7 @@ var gatewayCommand = &cobra.Command{
 			log.Fatal("No listeners configured")
 		}
 
-		listenerExecutor := lib.NewParallellExecutor()
+		listenerExecutor := executor.NewParallellExecutor()
 		for _, listener := range listeners {
 			l := listener
 			listenerExecutor.Add(func() error {

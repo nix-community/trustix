@@ -31,6 +31,7 @@ import (
 	conf "github.com/nix-community/trustix/packages/trustix/internal/config"
 	"github.com/nix-community/trustix/packages/trustix/internal/constants"
 	"github.com/nix-community/trustix/packages/trustix/internal/decider"
+	"github.com/nix-community/trustix/packages/go-lib/executor"
 	"github.com/nix-community/trustix/packages/trustix/internal/lib"
 	"github.com/nix-community/trustix/packages/trustix/internal/pool"
 	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
@@ -202,8 +203,7 @@ var daemonCmd = &cobra.Command{
 		defer pubMap.Close()
 
 		{
-
-			logInitExecutor := lib.NewParallellExecutor()
+			logInitExecutor := executor.NewParallellExecutor()
 
 			for _, subscriberConfig := range config.Subscribers {
 				subConf := subscriberConfig
