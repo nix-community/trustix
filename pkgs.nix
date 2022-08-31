@@ -1,4 +1,4 @@
-{ flakeInputs ? (builtins.getFlake "${builtins.toString ./.}").inputs
+{ flakeInputs ? import ./flake-fetch.nix
 , system ? builtins.currentSystem
 }:
 
@@ -10,7 +10,7 @@ import nixpkgs {
   inherit system;
   config.allowAliases = false;
   overlays = [
-    gomod2nix.overlays.default
+    (import "${gomod2nix}/overlay.nix")
 
     (final: prev: {
       # Prevent the entirety of hydra to be in $PATH/runtime closure
