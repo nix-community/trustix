@@ -228,9 +228,16 @@ var indexEvalCommand = &cobra.Command{
 				panic(err)
 			}
 
-			e.Add(func() error {
+			if result.Error != "" || result.DrvPath == "" {
+				continue
+			}
+
+			err = e.Add(func() error {
 				return indexDrv(result.DrvPath)
 			})
+			if err != nil {
+				panic(err)
+			}
 		}
 
 		err = e.Wait()
