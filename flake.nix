@@ -22,9 +22,7 @@
           };
         in
         {
-          packages = {
-            inherit (pkgs) trustix trustix-doc trustix-nix trustix-nix-reprod;
-          };
+          packages = import ./default.nix { inherit pkgs; };
         })
     );
 }
