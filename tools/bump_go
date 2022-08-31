@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+find . -name go.mod | while read mod; do
+    dir=$(dirname $mod)
+
+    cd $dir
+    nix-shell --run 'go get -u ./... && go mod tidy && gomod2nix'
+    cd -
+done
