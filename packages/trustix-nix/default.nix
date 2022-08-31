@@ -1,7 +1,7 @@
 { buildGoApplication, lib, pkg-config }:
 
 buildGoApplication {
-  pname = "trustix";
+  pname = "trustix_nix";
   version = "dev";
 
   pwd = ./.;
