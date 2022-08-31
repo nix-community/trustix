@@ -90,6 +90,8 @@ var indexEvalCommand = &cobra.Command{
 
 		alreadyIndexed := set.NewSafeSet[string]()
 
+		drvCount := 0
+
 		// Index a derivation including it's dependencies
 		var indexDrv func(string) error
 		indexDrv = func(drvPath string) error {
@@ -98,6 +100,13 @@ var indexEvalCommand = &cobra.Command{
 				return nil
 			} else {
 				alreadyIndexed.Add(drvPath)
+			}
+
+			// Technically this is racy but it's OK since we're only approximating the number of indexed
+			// derivations for debug logging purposes
+			drvCount++
+			if drvCount%1000 == 0 {
+				fmt.Printf("Indexed %d derivations\n", drvCount)
 			}
 
 			drv, err := drvParser.ReadPath(drvPath)
@@ -115,6 +124,7 @@ var indexEvalCommand = &cobra.Command{
 			refsAll := refsDirect.Copy()
 
 			for inputDrv, _ := range drv.InputDerivations {
+				// Recursively index drvs
 				if !refs.Has(inputDrv) {
 					err := indexDrv(inputDrv)
 					if err != nil {
