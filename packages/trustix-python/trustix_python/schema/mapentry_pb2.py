@@ -17,9 +17,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     name="schema/mapentry.proto",
     package="",
     syntax="proto2",
-    serialized_options=b"Z6github.com/tweag/trustix/packages/trustix-proto/schema",
+    serialized_options=b"Z6github.com/nix-community/trustix/packages/trustix-proto/schema",
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\x15schema/mapentry.proto")\n\x08MapEntry\x12\x0e\n\x06\x44igest\x18\x01 \x02(\x0c\x12\r\n\x05Index\x18\x02 \x02(\x04\x42\x38Z6github.com/tweag/trustix/packages/trustix-proto/schema',
+    serialized_pb=b'\n\x15schema/mapentry.proto")\n\x08MapEntry\x12\x0e\n\x06\x44igest\x18\x01 \x02(\x0c\x12\r\n\x05Index\x18\x02 \x02(\x04\x42\x38Z6github.com/nix-community/trustix/packages/trustix-proto/schema',
 )
 
 

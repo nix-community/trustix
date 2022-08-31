@@ -13,12 +13,12 @@ import (
 	"fmt"
 
 	"github.com/lazyledger/smt"
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/interfaces"
-	"github.com/tweag/trustix/packages/trustix/internal/constants"
-	"github.com/tweag/trustix/packages/trustix/internal/protocols"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	"github.com/nix-community/trustix/packages/trustix/interfaces"
+	"github.com/nix-community/trustix/packages/trustix/internal/constants"
+	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 type kvStoreLogApi struct {

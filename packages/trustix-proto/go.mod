@@ -1,4 +1,4 @@
-module github.com/tweag/trustix/packages/trustix-proto
+module github.com/nix-community/trustix/packages/trustix-proto
 
 go 1.15
 

@@ -15,7 +15,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 type testInput struct {

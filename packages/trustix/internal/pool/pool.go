@@ -15,8 +15,8 @@ import (
 	"sync"
 
 	log "github.com/sirupsen/logrus"
-	api "github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix/client"
+	api "github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix/client"
 )
 
 const (

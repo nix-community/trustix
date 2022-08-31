@@ -12,8 +12,8 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix/internal/protocols"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 )
 
 type PublicKey struct {

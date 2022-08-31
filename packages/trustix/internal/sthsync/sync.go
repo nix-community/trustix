@@ -17,15 +17,15 @@ import (
 
 	proto "github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
-	apipb "github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/internal/constants"
-	vlog "github.com/tweag/trustix/packages/trustix/internal/log"
-	"github.com/tweag/trustix/packages/trustix/internal/pool"
-	"github.com/tweag/trustix/packages/trustix/internal/protocols"
-	"github.com/tweag/trustix/packages/trustix/internal/signer"
-	sthlib "github.com/tweag/trustix/packages/trustix/internal/sth"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	apipb "github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	"github.com/nix-community/trustix/packages/trustix/internal/constants"
+	vlog "github.com/nix-community/trustix/packages/trustix/internal/log"
+	"github.com/nix-community/trustix/packages/trustix/internal/pool"
+	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
+	"github.com/nix-community/trustix/packages/trustix/internal/signer"
+	sthlib "github.com/nix-community/trustix/packages/trustix/internal/sth"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 type sthSyncer struct {

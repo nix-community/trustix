@@ -11,8 +11,8 @@ package log
 import (
 	"hash"
 
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 type VerifiableLog struct {

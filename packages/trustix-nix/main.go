@@ -6,9 +6,9 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package main // import "github.com/tweag/trustix/packages/trustix-nix"
+package main // import "github.com/nix-community/trustix/packages/trustix-nix"
 
-import "github.com/tweag/trustix/packages/trustix-nix/cmd"
+import "github.com/nix-community/trustix/packages/trustix-nix/cmd"
 
 func main() {
 	cmd.Execute()

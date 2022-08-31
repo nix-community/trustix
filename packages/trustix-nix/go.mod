@@ -1,4 +1,4 @@
-module github.com/tweag/trustix/packages/trustix-nix
+module github.com/nix-community/trustix/packages/trustix-nix
 
 go 1.15
 
@@ -11,8 +11,8 @@ require (
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v1.0.1-0.20201006035406-b97b5ead31f7
 	github.com/stretchr/testify v1.7.0
-	github.com/tweag/trustix/packages/trustix v0.0.0-20201216011910-cb45e22716fa
-	github.com/tweag/trustix/packages/trustix-proto v0.0.0-00010101000000-000000000000
+	github.com/nix-community/trustix/packages/trustix v0.0.0-20201216011910-cb45e22716fa
+	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-00010101000000-000000000000
 	github.com/ulikunitz/xz v0.5.10
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
@@ -22,6 +22,6 @@ require (
 )
 
 replace (
-	github.com/tweag/trustix/packages/trustix => ../trustix
-	github.com/tweag/trustix/packages/trustix-proto => ../trustix-proto
+	github.com/nix-community/trustix/packages/trustix => ../trustix
+	github.com/nix-community/trustix/packages/trustix-proto => ../trustix-proto
 )

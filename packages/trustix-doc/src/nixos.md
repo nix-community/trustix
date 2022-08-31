@@ -10,7 +10,7 @@ How to actually publish/subscribe are laid out in other documents.
 
 - A git checkout of trustix
 ``` sh
-$ git clone https://github.com/tweag/trustix.git
+$ git clone https://github.com/nix-community/trustix.git
 ```
 
 - [NixOS](https://nixos.org)

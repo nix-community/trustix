@@ -11,7 +11,7 @@ package config
 import (
 	"fmt"
 
-	signer "github.com/tweag/trustix/packages/trustix/internal/config/signer"
+	signer "github.com/nix-community/trustix/packages/trustix/internal/config/signer"
 )
 
 type Publisher struct {

@@ -14,8 +14,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
-	"github.com/tweag/trustix/packages/trustix/client"
+	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
+	"github.com/nix-community/trustix/packages/trustix/client"
 )
 
 var decideKeyHex string

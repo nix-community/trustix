@@ -15,7 +15,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	tgrpc "github.com/tweag/trustix/packages/trustix/internal/grpc"
+	tgrpc "github.com/nix-community/trustix/packages/trustix/internal/grpc"
 	"google.golang.org/grpc"
 )
 

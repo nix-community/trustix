@@ -17,9 +17,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     name="schema/queue.proto",
     package="",
     syntax="proto2",
-    serialized_options=b"Z6github.com/tweag/trustix/packages/trustix-proto/schema",
+    serialized_options=b"Z6github.com/nix-community/trustix/packages/trustix-proto/schema",
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b"\n\x12schema/queue.proto\"'\n\x0bSubmitQueue\x12\x0b\n\x03Min\x18\x01 \x02(\x04\x12\x0b\n\x03Max\x18\x02 \x02(\x04\x42\x38Z6github.com/tweag/trustix/packages/trustix-proto/schema",
+    serialized_pb=b"\n\x12schema/queue.proto\"'\n\x0bSubmitQueue\x12\x0b\n\x03Min\x18\x01 \x02(\x04\x12\x0b\n\x03Max\x18\x02 \x02(\x04\x42\x38Z6github.com/nix-community/trustix/packages/trustix-proto/schema",
 )
 
 

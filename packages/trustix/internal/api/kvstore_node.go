@@ -14,9 +14,9 @@ import (
 	"crypto/sha256"
 	"fmt"
 
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix/interfaces"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix/interfaces"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 type kvStoreNodeApi struct {

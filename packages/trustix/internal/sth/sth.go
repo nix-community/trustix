@@ -14,10 +14,10 @@ import (
 	"encoding/binary"
 
 	"github.com/lazyledger/smt"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	vlog "github.com/tweag/trustix/packages/trustix/internal/log"
-	"github.com/tweag/trustix/packages/trustix/internal/protocols"
-	"github.com/tweag/trustix/packages/trustix/internal/signer"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	vlog "github.com/nix-community/trustix/packages/trustix/internal/log"
+	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
+	"github.com/nix-community/trustix/packages/trustix/internal/signer"
 )
 
 func uint64ToBytes(i uint64) []byte {

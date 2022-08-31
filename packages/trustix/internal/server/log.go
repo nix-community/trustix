@@ -12,10 +12,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/interfaces"
-	"github.com/tweag/trustix/packages/trustix/internal/pool"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	"github.com/nix-community/trustix/packages/trustix/interfaces"
+	"github.com/nix-community/trustix/packages/trustix/internal/pool"
 )
 
 // LogAPIServer wraps kvStoreLogApi and turns it into a gRPC implementation

@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 
-package main // import "github.com/tweag/trustix/packages/trustix"
+package main // import "github.com/nix-community/trustix/packages/trustix"
 
 func main() {
 }

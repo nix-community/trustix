@@ -10,7 +10,7 @@ package log
 
 import (
 	proto "github.com/golang/protobuf/proto"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 )
 
 func NewLeaf(digest []byte, value []byte) (*schema.LogLeaf, error) {

@@ -11,8 +11,8 @@ package client
 import (
 	"context"
 
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix-proto/rpc"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"google.golang.org/grpc"
 )
 
