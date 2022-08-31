@@ -1,6 +1,6 @@
 module github.com/nix-community/trustix/packages/trustix-proto
 
-go 1.15
+go 1.18
 
 require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.3.0

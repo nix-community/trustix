@@ -1,6 +1,6 @@
 module github.com/nix-community/trustix/packages/trustix-nix
 
-go 1.15
+go 1.18
 
 require (
 	github.com/bakins/logrus-middleware v0.0.0-20180426214643-ce4c6f8deb07
