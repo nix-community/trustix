@@ -43,7 +43,9 @@ func (e *LimitedParallellExecutor) Add(fn func() error) {
 
 		err := fn()
 		if err != nil {
-			e.errChan <- err
+			go func() {
+				e.errChan <- err
+			}()
 		}
 	}()
 }

@@ -194,7 +194,7 @@ var indexEvalCommand = &cobra.Command{
 				for _, ref := range refsDirect.Values() {
 					dbID, err := drvDBIDs.Get(ref)
 					if err != nil {
-						panic(err)
+						return err
 					}
 
 					qtx.CreateDerivationRefDirect(ctx, idb.CreateDerivationRefDirectParams{
@@ -207,7 +207,7 @@ var indexEvalCommand = &cobra.Command{
 				for _, ref := range refsDirect.Values() {
 					dbID, err := drvDBIDs.Get(ref)
 					if err != nil {
-						panic(err)
+						return err
 					}
 
 					qtx.CreateDerivationRefRecursive(ctx, idb.CreateDerivationRefRecursiveParams{
