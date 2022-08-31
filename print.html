@@ -218,7 +218,7 @@ above's example.</li>
 <ul>
 <li>A git checkout of trustix</li>
 </ul>
-<pre><code class="language-sh">$ git clone https://github.com/tweag/trustix.git
+<pre><code class="language-sh">$ git clone https://github.com/nix-community/trustix.git
 </code></pre>
 <ul>
 <li><a href="https://nixos.org">NixOS</a></li>
@@ -392,34 +392,34 @@ In this tutorial we are using <code>/var/trustix/keys</code> but you are free to
 <h2 id="project-structure"><a class="header" href="#project-structure">Project structure</a></h2>
 <p>Trustix is structured as a monorepo consisting of many subpackages:</p>
 <ul>
-<li><a href="https://github.com/tweag/trustix/blob/master/packages/trustix">trustix</a></li>
+<li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix">trustix</a></li>
 </ul>
 <p>The main package with all log functionality.
 This component is generic and doesn't know anything about any Nix or other package manager specifics.</p>
 <ul>
-<li><a href="https://github.com/tweag/trustix/blob/master/packages/trustix-doc">trustix-doc</a></li>
+<li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix-doc">trustix-doc</a></li>
 </ul>
 <p>The main documentation package that aggregates documentation from the various subpackages.</p>
 <ul>
-<li><a href="https://github.com/tweag/trustix/blob/master/packages/trustix-nix">trustix-nix</a></li>
+<li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix-nix">trustix-nix</a></li>
 </ul>
 <p>This is a supplemental daemon to the main Trustix daemon that layers some knowledge about Nix on top of the generic log functionality.
 It contains a <a href="https://www.tweag.io/blog/2019-11-21-untrusted-ci/">post-build hook</a> used to submit newly built packages to the logs, a binary cache HTTP interface and a development tool to submit already built closures.</p>
 <ul>
-<li><a href="https://github.com/tweag/trustix/blob/master/packages/trustix-nix-reprod">trustix-nix-reprod</a></li>
+<li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix-nix-reprod">trustix-nix-reprod</a></li>
 </ul>
 <p>This package is an implementation of a reproducibility tracker backed by logs.</p>
 <ul>
-<li><a href="https://github.com/tweag/trustix/blob/master/packages/trustix-proto">trustix-proto</a></li>
+<li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix-proto">trustix-proto</a></li>
 </ul>
 <p>Trustix-proto contains all shared protobuf definitions shared by various components, as well as generated Go libraries to interact with Trustix over it's RPC mechanism (gRPC).</p>
 <ul>
-<li><a href="https://github.com/tweag/trustix/blob/master/packages/trustix-python">trustix-python</a></li>
+<li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix-python">trustix-python</a></li>
 </ul>
 <p>Trustix-python contains generated code from trustix-proto for Python.
 If you want to interact with Trustix over it's RPC interface from Python this is what you want to use.</p>
 <ul>
-<li><a href="https://github.com/tweag/trustix/blob/master/packages/pynix">pynix</a></li>
+<li><a href="https://github.com/nix-community/trustix/blob/master/packages/pynix">pynix</a></li>
 </ul>
 <p>A number of generic small utility functions to work with Nix files.
 At the time of writing this document it has an implementation of the Nix base32 encoding and a derivation file parser.</p>
