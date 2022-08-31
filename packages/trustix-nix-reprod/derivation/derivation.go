@@ -46,6 +46,7 @@ func (c *CachedDrvParser) ReadPath(drvPath string) (*derivation.Derivation, erro
 	if err != nil {
 		return nil, err
 	}
+	defer f.Close()
 
 	drv, err := derivation.ReadDerivation(f)
 	if err != nil {
