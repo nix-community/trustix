@@ -1,29 +1,16 @@
 { pkgs ? import ../../pkgs.nix { } }:
 
 let
-  rootShell = import ../../shell.nix;
-
+  goEnv = pkgs.mkGoEnv { pwd = ./.; };
 in
 pkgs.mkShell {
-
-  # Speed up compilation
-  CGO_ENABLED = "0";
-
-  TRUSTIX_STATE_DIR = rootShell.STATE_DIR + "/trustix";
-  inherit (rootShell) TRUSTIX_RPC;
-
   buildInputs = [
-    pkgs.hivemind # Process monitoring in development
-    pkgs.go
-
-    pkgs.reflex
-    pkgs.entr
-
-    pkgs.gomod2nix
-
-    pkgs.protobuf
-
+    goEnv
     pkgs.systemfd # Socket activation testing
   ];
+
+  shellHook = ''
+    TRUSTIX_STATE_DIR="$STATE_DIR/trustix";
+  '';
 
 }

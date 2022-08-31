@@ -7,10 +7,8 @@ let
 
 in
 pkgs.mkShell {
-
   buildInputs = [
     pythonEnv
     pkgs.poetry
   ];
-
 }

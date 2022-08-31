@@ -1,19 +1,11 @@
 { pkgs ? import ../../pkgs.nix { } }:
 
+let
+  goEnv = pkgs.mkGoEnv { pwd = ./.; };
+in
 pkgs.mkShell {
   buildInputs = [
-    pkgs.hivemind
-    pkgs.protobuf
-    pkgs.reflex
-    pkgs.go
-
+    goEnv
     pkgs.protoc-gen-doc
-    pkgs.mdbook
   ];
-
-  shellHook = ''
-    export GOBIN=$(mktemp -d)
-    export PATH=$GOBIN:$PATH
-    go list -f '{{range .Imports}}{{.}} {{end}}' tools.go | xargs go install
-  '';
 }
