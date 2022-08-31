@@ -7,8 +7,8 @@
 package rpc
 
 import (
-	api "github.com/tweag/trustix/packages/trustix-proto/api"
-	schema "github.com/tweag/trustix/packages/trustix-proto/schema"
+	api "github.com/nix-community/trustix/packages/trustix-proto/api"
+	schema "github.com/nix-community/trustix/packages/trustix-proto/schema"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

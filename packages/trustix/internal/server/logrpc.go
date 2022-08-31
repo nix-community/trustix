@@ -11,14 +11,14 @@ package server
 import (
 	"context"
 
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
-	rpc "github.com/tweag/trustix/packages/trustix-proto/rpc"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/internal/pool"
-	pub "github.com/tweag/trustix/packages/trustix/internal/publisher"
-	"github.com/tweag/trustix/packages/trustix/internal/rpc/auth"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
+	rpc "github.com/nix-community/trustix/packages/trustix-proto/rpc"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	"github.com/nix-community/trustix/packages/trustix/internal/pool"
+	pub "github.com/nix-community/trustix/packages/trustix/internal/publisher"
+	"github.com/nix-community/trustix/packages/trustix/internal/rpc/auth"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 type LogRPCServer struct {

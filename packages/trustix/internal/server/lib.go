@@ -9,8 +9,8 @@
 package server
 
 import (
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 func getLogHead(rootBucket *storage.Bucket, txn storage.Transaction, logID string) (*schema.LogHead, error) {

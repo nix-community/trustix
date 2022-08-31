@@ -15,10 +15,10 @@ import (
 	"fmt"
 	"hash"
 
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	vlog "github.com/tweag/trustix/packages/trustix/internal/log"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	vlog "github.com/nix-community/trustix/packages/trustix/internal/log"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 func getLogConsistencyProof(hashFn func() hash.Hash, txn *storage.BucketTransaction, ctx context.Context, req *api.GetLogConsistencyProofRequest) (resp *api.ProofResponse, err error) {

@@ -4,7 +4,7 @@ import "schema/mapentry.proto";
 import "schema/loghead.proto";
 import "api/api.proto";
 
-option go_package = "github.com/tweag/trustix/packages/trustix-proto/rpc";
+option go_package = "github.com/nix-community/trustix/packages/trustix-proto/rpc";
 
 package trustix;
 

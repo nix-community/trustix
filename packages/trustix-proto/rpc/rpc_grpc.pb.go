@@ -4,8 +4,8 @@ package rpc
 
 import (
 	context "context"
-	api "github.com/tweag/trustix/packages/trustix-proto/api"
-	schema "github.com/tweag/trustix/packages/trustix-proto/schema"
+	api "github.com/nix-community/trustix/packages/trustix-proto/api"
+	schema "github.com/nix-community/trustix/packages/trustix-proto/schema"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

@@ -16,7 +16,7 @@ import (
 	"sync"
 
 	"github.com/hashicorp/go-uuid"
-	"github.com/tweag/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
 )
 
 type ProtocolDescriptor struct {

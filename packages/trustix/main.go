@@ -6,12 +6,12 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package main // import "github.com/tweag/trustix/packages/trustix/internal"
+package main // import "github.com/nix-community/trustix/packages/trustix/internal"
 
 import (
 	"runtime"
 
-	"github.com/tweag/trustix/packages/trustix/internal/cmd"
+	"github.com/nix-community/trustix/packages/trustix/internal/cmd"
 )
 
 func main() {

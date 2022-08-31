@@ -20,14 +20,14 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	rpc "github.com/tweag/trustix/packages/trustix-proto/rpc"
-	schema "github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/internal/constants"
-	vlog "github.com/tweag/trustix/packages/trustix/internal/log"
-	"github.com/tweag/trustix/packages/trustix/internal/protocols"
-	sthsig "github.com/tweag/trustix/packages/trustix/internal/sth"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	rpc "github.com/nix-community/trustix/packages/trustix-proto/rpc"
+	schema "github.com/nix-community/trustix/packages/trustix-proto/schema"
+	"github.com/nix-community/trustix/packages/trustix/internal/constants"
+	vlog "github.com/nix-community/trustix/packages/trustix/internal/log"
+	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
+	sthsig "github.com/nix-community/trustix/packages/trustix/internal/sth"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 func minUint64(x, y uint64) uint64 {

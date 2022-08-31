@@ -16,8 +16,8 @@ import (
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
-	decider "github.com/tweag/trustix/packages/trustix/internal/config/decider"
-	signer "github.com/tweag/trustix/packages/trustix/internal/config/signer"
+	decider "github.com/nix-community/trustix/packages/trustix/internal/config/decider"
+	signer "github.com/nix-community/trustix/packages/trustix/internal/config/signer"
 )
 
 type Config struct {

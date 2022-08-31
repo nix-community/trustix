@@ -14,9 +14,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
-	"github.com/tweag/trustix/packages/trustix/client"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
+	"github.com/nix-community/trustix/packages/trustix/client"
 )
 
 var submitKeyHex string

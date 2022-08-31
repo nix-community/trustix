@@ -17,15 +17,15 @@ import (
 
 	"github.com/lazyledger/smt"
 	log "github.com/sirupsen/logrus"
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	pb "github.com/tweag/trustix/packages/trustix-proto/rpc"
-	"github.com/tweag/trustix/packages/trustix-proto/schema"
-	"github.com/tweag/trustix/packages/trustix/client"
-	"github.com/tweag/trustix/packages/trustix/internal/decider"
-	"github.com/tweag/trustix/packages/trustix/internal/pool"
-	"github.com/tweag/trustix/packages/trustix/internal/protocols"
-	pub "github.com/tweag/trustix/packages/trustix/internal/publisher"
-	"github.com/tweag/trustix/packages/trustix/internal/storage"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
+	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	"github.com/nix-community/trustix/packages/trustix/client"
+	"github.com/nix-community/trustix/packages/trustix/internal/decider"
+	"github.com/nix-community/trustix/packages/trustix/internal/pool"
+	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
+	pub "github.com/nix-community/trustix/packages/trustix/internal/publisher"
+	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
 type RPCServer struct {

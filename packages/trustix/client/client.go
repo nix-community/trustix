@@ -9,7 +9,7 @@
 package client
 
 import (
-	"github.com/tweag/trustix/packages/trustix/interfaces"
+	"github.com/nix-community/trustix/packages/trustix/interfaces"
 )
 
 const (

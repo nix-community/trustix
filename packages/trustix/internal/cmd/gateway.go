@@ -16,10 +16,10 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix/client"
-	tgrpc "github.com/tweag/trustix/packages/trustix/internal/grpc"
-	"github.com/tweag/trustix/packages/trustix/internal/lib"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix/client"
+	tgrpc "github.com/nix-community/trustix/packages/trustix/internal/grpc"
+	"github.com/nix-community/trustix/packages/trustix/internal/lib"
 )
 
 var gatewayListenAddresses []string

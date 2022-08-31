@@ -11,8 +11,8 @@ package server
 import (
 	"context"
 
-	"github.com/tweag/trustix/packages/trustix-proto/api"
-	"github.com/tweag/trustix/packages/trustix/interfaces"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix/interfaces"
 )
 
 // NodeAPIServer wraps NodeAPI and turns it into a gRPC implementation
