@@ -6,32 +6,34 @@ import (
 
 // LimitedParallellExecutor - Execute callback functions in parallell
 type LimitedParallellExecutor struct {
-	errChan chan error
-	wg      *sync.WaitGroup
-	mux     *sync.Mutex
-	guard   chan struct{}
+	wg    *sync.WaitGroup
+	mux   *sync.Mutex
+	guard chan struct{}
 
-	// Error returned by Wait(), cached for other Wait() invocations
+	// Error returned by Wait(), cached for other Wait() & Add() invocations
 	err  error
 	done bool
 }
 
 func NewLimitedParallellExecutor(maxWorkers int) *LimitedParallellExecutor {
-	return &LimitedParallellExecutor{
-		errChan: make(chan error),
-		mux:     new(sync.Mutex),
-		wg:      new(sync.WaitGroup),
-		guard:   make(chan struct{}, maxWorkers),
+	e := &LimitedParallellExecutor{
+		mux:   new(sync.Mutex),
+		wg:    new(sync.WaitGroup),
+		guard: make(chan struct{}, maxWorkers),
 
 		err:  nil,
 		done: false,
 	}
+
+	return e
 }
 
-func (e *LimitedParallellExecutor) Add(fn func() error) {
-	e.wg.Add(1)
+func (e *LimitedParallellExecutor) Add(fn func() error) error {
+	if e.err != nil {
+		return e.err
+	}
 
-	// TODO: Return error if a previously executed function has errored out
+	e.wg.Add(1)
 
 	e.guard <- struct{}{} // Block until a worker is available
 
@@ -42,38 +44,25 @@ func (e *LimitedParallellExecutor) Add(fn func() error) {
 		}()
 
 		err := fn()
-		if err != nil {
-			go func() {
-				e.errChan <- err
-			}()
+
+		if err != nil && e.err == nil {
+			e.mux.Lock()
+			e.err = err
+			e.mux.Unlock()
 		}
 	}()
+
+	return nil
 }
 
 func (e *LimitedParallellExecutor) Wait() error {
-	e.mux.Lock()
-	defer e.mux.Unlock()
-
 	if e.done {
 		return e.err
 	}
 
-	var err error
-
-	// Ensure channel is closed
-	go func() {
-		e.wg.Wait()
-		close(e.errChan)
-	}()
-
-	for err = range e.errChan {
-		if err != nil {
-			break
-		}
-	}
+	e.wg.Wait()
 
 	e.done = true
-	e.err = err
 
-	return err
+	return e.err
 }
