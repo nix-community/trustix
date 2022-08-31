@@ -2,7 +2,7 @@ module github.com/tweag/trustix/packages/trustix-nix-reprod
 
 go 1.18
 
-replace github.com/tweag/trustix/packages/go-lib => ../../go-lib
+replace github.com/tweag/trustix/packages/go-lib => ../go-lib
 
 require (
 	github.com/buger/jsonparser v1.1.1

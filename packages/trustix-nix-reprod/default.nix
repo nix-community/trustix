@@ -1,19 +1,12 @@
-{ poetry2nix
-, nix
-, hydra-eval-jobs
-, diffoscope
-, pkgs
-}:
+{ buildGoApplication, lib }:
 
-poetry2nix.mkPoetryApplication {
-  projectDir = ./.;
-
-  propagatedBuildInputs = [ hydra-eval-jobs nix diffoscope ];
-
-  # Don't propagate anything, hydra-eval-jobs is already wrapped in $PATH
-  postFixup = "rm $out/nix-support/propagated-build-inputs";
-
-  overrides = poetry2nix.overrides.withDefaults (
-    import ./overrides.nix { inherit pkgs; }
-  );
+buildGoApplication {
+  pname = "trustix-nix-reprod";
+  version = "dev";
+  pwd = ./.;
+  src = lib.cleanSourceWith {
+    filter = name: type: ! lib.hasSuffix "tests" name;
+    src = lib.cleanSource ./.;
+  };
+  modules = ./gomod2nix.toml;
 }

@@ -40,21 +40,36 @@ schema = 3
   [mod."github.com/golang/protobuf"]
     version = "v1.5.2"
     hash = "sha256-IVwooaIo46iq7euSSVWTBAdKd+2DUaJ67MtBao1DpBI="
+  [mod."github.com/google/uuid"]
+    version = "v1.3.0"
+    hash = "sha256-QoR55eBtA94T2tBszyxfDtO7/pjZZSGb5vm7U0Xhs0Y="
+  [mod."github.com/hashicorp/golang-lru"]
+    version = "v0.5.4"
+    hash = "sha256-1skUMZX+iIf66J1TBVYGWO1OWwQcaoXut3mne331q+k="
   [mod."github.com/inconshreveable/mousetrap"]
     version = "v1.0.1"
     hash = "sha256-ZTP9pLgwAAvHYK5A4PqwWCHGt00x5zMSOpCPoomQ3Sg="
   [mod."github.com/jinzhu/inflection"]
     version = "v1.0.0"
     hash = "sha256-3h3pHib5MaCXKyKLIMyQnSptDJ16kPjCOQPoEBoQsZg="
+  [mod."github.com/kballard/go-shellquote"]
+    version = "v0.0.0-20180428030007-95032a82bc51"
+    hash = "sha256-AOEdKETBMUC39ln6jBJ9NYdJWp++jV5lSbjNqG3dV+c="
   [mod."github.com/kyleconroy/sqlc"]
     version = "v1.15.0"
     hash = "sha256-MzeNP+G9g507G9s0wTZfQLVHGYKilMoBXClANEP+oH0="
   [mod."github.com/lib/pq"]
     version = "v1.10.6"
     hash = "sha256-8EhFwY/9YH5L/fd6l2beOnC3VvpegRAmCCsnDVJBqBM="
+  [mod."github.com/mattn/go-isatty"]
+    version = "v0.0.12"
+    hash = "sha256-noBpx3K4sa7tJcPpSUh+h7wJ8CRfrObaraKC2dE6VWU="
   [mod."github.com/mattn/go-sqlite3"]
     version = "v1.14.15"
     hash = "sha256-fSrs2sdBKFTAiffBHNnAkN8kDTqiXgm4HNqzJAOF1RM="
+  [mod."github.com/nix-community/go-nix"]
+    version = "v0.0.0-20220719075106-6d028e2435f3"
+    hash = "sha256-MQfooFleKQo7irpxACJBcqsFIbM+RvxEaNj3L8pFW4k="
   [mod."github.com/pbnjay/memory"]
     version = "v0.0.0-20210728143218-7b4eea64cf58"
     hash = "sha256-QI+F1oPLOOtwNp8+m45OOoSfYFs3QVjGzE0rFdpF/IA="
@@ -76,6 +91,9 @@ schema = 3
   [mod."github.com/pressly/goose"]
     version = "v2.7.0+incompatible"
     hash = "sha256-tIoIYGqFIkGxaVG0NM4DelK+iedlB8jgtEqWJiN+7K4="
+  [mod."github.com/pressly/goose/v3"]
+    version = "v3.6.1"
+    hash = "sha256-3EaLtel73vPhAhll6vyYRYIOVFqHcekxywaY053zx2M="
   [mod."github.com/remyoudompheng/bigfft"]
     version = "v0.0.0-20200410134404-eec4a21b6bb0"
     hash = "sha256-16MkbAZXXUVbB9fObyHtQyBPqnhwNv/cjtJXrNiYAXQ="
@@ -88,9 +106,6 @@ schema = 3
   [mod."github.com/spf13/pflag"]
     version = "v1.0.5"
     hash = "sha256-w9LLYzxxP74WHT4ouBspH/iQZXjuAh2WQCHsuvyEjAw="
-  [mod."github.com/stretchr/testify"]
-    version = "v1.7.2"
-    hash = "sha256-ITCzt75vwTtQqHrkCEQtiYMfdmkUd+bIQVX18cg5kns="
   [mod."github.com/ziutek/mymysql"]
     version = "v1.5.4"
     hash = "sha256-kOAoAGINbmby8UhfxVvZPQ4tRQd92Tp96HyAPLE0cts="
@@ -109,12 +124,21 @@ schema = 3
   [mod."golang.org/x/exp"]
     version = "v0.0.0-20220722155223-a9213eeb770e"
     hash = "sha256-kNgzydWRpjm0sZl4uXEs3LX5L0xjJtJRAFf/CTlYUN4="
+  [mod."golang.org/x/mod"]
+    version = "v0.6.0-dev.0.20220106191415-9b9b3d81d5e3"
+    hash = "sha256-S3jBYnuOhrLzhUb8Bqc/OE6va+4dF+4H9wvZpWwkLug="
   [mod."golang.org/x/sys"]
     version = "v0.0.0-20220817070843-5a390386f1f2"
     hash = "sha256-ezJdYUBFK02CCRe9lwRbC4GtW9SfgCmT8Z/+O0UZIqM="
   [mod."golang.org/x/text"]
     version = "v0.3.7"
     hash = "sha256-XH2pUzzQx95O0rak00grQvfACfL+EmZiV7ZzJBkX+XY="
+  [mod."golang.org/x/tools"]
+    version = "v0.1.10"
+    hash = "sha256-dJr5LZ4nFQZFTvm5fFGRswCs71/qaTjbs72KeJJvAAw="
+  [mod."golang.org/x/xerrors"]
+    version = "v0.0.0-20200804184101-5ec99f83aff1"
+    hash = "sha256-62f++IO8Ia32CYy+xX8XDxCcT9r1sbPvVwoKV99gf7U="
   [mod."google.golang.org/protobuf"]
     version = "v1.28.1"
     hash = "sha256-sTJYgvlv5is7vHNxcuigF2lNASp0QonhUgnrguhfHSU="
@@ -124,3 +148,33 @@ schema = 3
   [mod."gopkg.in/yaml.v3"]
     version = "v3.0.1"
     hash = "sha256-FqL9TKYJ0XkNwJFnq9j0VvJ5ZUU1RvH/52h/f5bkYAU="
+  [mod."lukechampine.com/uint128"]
+    version = "v1.1.1"
+    hash = "sha256-Aepytz2QabkYDie8V81AfiD6Dv+IUe7RMFsQu9Vm+RA="
+  [mod."modernc.org/cc/v3"]
+    version = "v3.36.0"
+    hash = "sha256-3ULdUnDNcWKIe0QUxedPw28VRq5qLUuhdIUP4PZ2naI="
+  [mod."modernc.org/ccgo/v3"]
+    version = "v3.16.8"
+    hash = "sha256-ciUn8+DnFaCOq9UhS3FeJUbgxkdKqaVpH+oPTsh5/Ek="
+  [mod."modernc.org/libc"]
+    version = "v1.16.19"
+    hash = "sha256-XGpvUilM7egoS4dJOuLL/SckQc44bPJIv0uhuiztUAA="
+  [mod."modernc.org/mathutil"]
+    version = "v1.4.1"
+    hash = "sha256-m7eq/ApKpGZ6vvWUYn4Im6ymwn50OdkqdpjKloQa+nc="
+  [mod."modernc.org/memory"]
+    version = "v1.1.1"
+    hash = "sha256-Hnil6Q+pwH7e3GvaGWvfY+GtvDJfr3VSJtRu06tc6K4="
+  [mod."modernc.org/opt"]
+    version = "v0.1.1"
+    hash = "sha256-ztGH4HrTl+txCox3Y3GiclEkpwttSYv0sUe4lIRlPfQ="
+  [mod."modernc.org/sqlite"]
+    version = "v1.18.1"
+    hash = "sha256-fa0qena0P13eP7XDeZrFyDoZ3rPu0O8sXsKCE1zubxk="
+  [mod."modernc.org/strutil"]
+    version = "v1.1.1"
+    hash = "sha256-gDr01e9BnAnT/93qdafjbdVtvkVyRiOLQRuoizs4FLs="
+  [mod."modernc.org/token"]
+    version = "v1.0.0"
+    hash = "sha256-p+X+qnYm1TUtgMcKzLte5MQ5d8QMd9+Urv1EA8MQQj8="
