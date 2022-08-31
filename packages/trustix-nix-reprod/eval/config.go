@@ -37,7 +37,7 @@ func NewConfig() *EvalConfig {
 	// This attempts to give each worker about equal ram.
 	freeMem := memory.FreeMemory()
 	if freeMem > 0 {
-		maxMemorySize = int(float64(freeMem/uint64(workers))*0.9) / 1_000_000
+		maxMemorySize = int(float64(freeMem/uint64(workers))*0.5) / 1_000_000
 	}
 
 	return &EvalConfig{
