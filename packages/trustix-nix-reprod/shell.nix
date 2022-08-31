@@ -1,10 +1,11 @@
-{ pkgs ? import ../../nix }:
+{ pkgs ? import ../../pkgs.nix { } }:
 
 let
   inherit (pkgs) poetry2nix;
 
   pythonEnv = poetry2nix.mkPoetryEnv {
     projectDir = ./.;
+    python = pkgs.python39;
     overrides = poetry2nix.overrides.withDefaults (
       import ./overrides.nix { inherit pkgs; }
     );
@@ -33,7 +34,7 @@ pkgs.mkShell {
     pkgs.hivemind
 
     pkgs.yajl
-    pkgs.pkgconfig
+    pkgs.pkg-config
   ];
 
   shellHook = ''

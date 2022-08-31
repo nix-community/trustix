@@ -35,7 +35,6 @@ import (
 	"github.com/nix-community/trustix/packages/trustix/internal/pool"
 	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	pub "github.com/nix-community/trustix/packages/trustix/internal/publisher"
-	// "github.com/nix-community/trustix/packages/trustix/internal/rpc/auth"
 	"github.com/nix-community/trustix/packages/trustix/internal/server"
 	"github.com/nix-community/trustix/packages/trustix/internal/signer"
 	"github.com/nix-community/trustix/packages/trustix/internal/sthsync"

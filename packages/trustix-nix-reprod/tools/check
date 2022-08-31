@@ -17,7 +17,7 @@ def run() -> typing.List[int]:
     codes: typing.List[int] = []
 
     cmds = [
-        ["mypy", ROOT_DIR],
+        # ["mypy", ROOT_DIR],
         ["flake8", ROOT_DIR],
         ["black", "--quiet", "--check"] + get_watch_files(),
     ]

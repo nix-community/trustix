@@ -21,7 +21,7 @@ import requests
 import tempfile
 import asyncio
 import codecs
-import orjson
+import json
 import os
 
 from trustix_nix_reprod.cache import cached
@@ -99,7 +99,7 @@ def _diff(narinfo1: Dict, narinfo2: Dict) -> Dict:
     if proc.stderr:
         raise ValueError(proc.stderr)
 
-    return orjson.loads(proc.stdout)
+    return json.loads(proc.stdout)
 
 
 @cached(model=DiffResponse, ttl=settings.cache_ttl.diff)
@@ -110,7 +110,7 @@ async def diff(output_hash_1_hex: str, output_hash_2_hex: str) -> DiffResponse:
     rpc_client = get_rpcapi()
 
     narinfo1, narinfo2 = [
-        orjson.loads(resp.Value)
+        json.loads(resp.Value)
         for resp in (
             await asyncio.gather(
                 rpc_client.GetValue(api_pb2.ValueRequest(Digest=output_hash_1)),  # type: ignore

@@ -32,8 +32,8 @@ TOOLS_DIR = os.path.dirname(_SCRIPT_DIR)
 ROOT_DIR = os.path.dirname(TOOLS_DIR)
 STATE_DIR = os.environ["NIX_REPROD_STATE_DIR"]
 
-PSQL_DATA_DIR = os.path.join(STATE_DIR, "psql-data")
-PSQL_SOCKETS_DIR = os.path.join(os.environ["TMPDIR"], "nix-trustix-reprod-psql-sockets")
+PSQL_DATA_DIR = os.path.join("/tmp/trustix-psql/", "psql-data")
+PSQL_SOCKETS_DIR = os.path.join(STATE_DIR, "psql.s")
 PSQL_DB_NAME = "nix-trustix-reprod"
 PSQL_DB_URI = f"postgres:///{PSQL_DB_NAME}?host={PSQL_SOCKETS_DIR}"
 
