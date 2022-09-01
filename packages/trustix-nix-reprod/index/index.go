@@ -47,7 +47,7 @@ var indexEvalCommand = &cobra.Command{
 
 		db, err := sql.Open(sqlDialect, "/home/adisbladis/foo.sqlite3?_journal_mode=WAL")
 		if err != nil {
-			return err
+			return fmt.Errorf("error opening database: %w", err)
 		}
 
 		err = migrate(db, sqlDialect)
