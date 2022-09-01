@@ -238,7 +238,7 @@ var indexEvalCommand = &cobra.Command{
 				}
 
 				// Create relation for all recursive references
-				for _, ref := range refsDirect.Values() {
+				for _, ref := range refsAll.Values() {
 					dbID, err := getDrvID(ref)
 					if err != nil {
 						return errorID, err
