@@ -6,7 +6,7 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package cmd
+package index
 
 import (
 	"context"
@@ -15,7 +15,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/go-lib/executor"
 	"github.com/tweag/trustix/packages/go-lib/safemap"
 	"github.com/tweag/trustix/packages/go-lib/set"
@@ -35,283 +34,266 @@ const (
 	fixedOutputID = -2
 )
 
-var indexEvalCommand = &cobra.Command{
-	Use:   "index-eval",
-	Short: "Index evaluation",
-	RunE: func(cmd *cobra.Command, args []string) error {
+func IndexEval(ctx context.Context, db *sql.DB) error {
+	evalConfig := eval.NewConfig()
+	evalConfig.Expr = "./pkgs.nix"
 
-		evalConfig := eval.NewConfig()
-		evalConfig.Expr = "./pkgs.nix"
+	// Indexing impl
+	commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
+	maxWorkers := 15
 
-		ctx := context.Background()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err := tx.Rollback()
+		if err != nil && err != sql.ErrTxDone {
+			panic(err)
+		}
+	}()
 
-		db, err := sql.Open(sqlDialect, "/home/adisbladis/foo.sqlite3?_journal_mode=WAL")
-		if err != nil {
-			return fmt.Errorf("error opening database: %w", err)
+	queries := idb.New(db)
+	qtx := queries.WithTx(tx)
+
+	// Create the evaluation in the database
+	_, err = qtx.GetEval(ctx, commitSha)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			_, err = qtx.CreateEval(ctx, commitSha)
 		}
 
-		err = migrate(db, sqlDialect)
 		if err != nil {
 			panic(err)
 		}
+	}
 
-		// Indexing impl
-		commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
-		maxWorkers := 15
+	results, err := eval.Eval(ctx, evalConfig)
+	if err != nil {
+		panic(err)
+	}
 
-		tx, err := db.Begin()
-		if err != nil {
-			return err
-		}
-		defer func() {
-			err := tx.Rollback()
-			if err != nil && err != sql.ErrTxDone {
-				panic(err)
-			}
-		}()
+	drvParser, err := drvparse.NewCachedDrvParser(drvCacheSize)
+	if err != nil {
+		panic(err)
+	}
 
-		queries := idb.New(db)
-		qtx := queries.WithTx(tx)
+	// Map drv to it's direct references for later re-use
+	refs := safemap.NewMap[string, *set.Set[string]]()
 
-		// Create the evaluation in the database
-		_, err = qtx.GetEval(ctx, commitSha)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				_, err = qtx.CreateEval(ctx, commitSha)
-			}
+	// Map drv paths to DB ids so we can avoid queries in the hot indexing path
+	drvDBIDs := safemap.NewMap[string, int64]()
 
-			if err != nil {
-				panic(err)
-			}
-		}
+	alreadyIndexed := set.NewSafeSet[string]()
 
-		results, err := eval.Eval(ctx, evalConfig)
-		if err != nil {
-			panic(err)
-		}
-
-		drvParser, err := drvparse.NewCachedDrvParser(drvCacheSize)
-		if err != nil {
-			panic(err)
-		}
-
-		// Map drv to it's direct references for later re-use
-		refs := safemap.NewMap[string, *set.Set[string]]()
-
-		// Map drv paths to DB ids so we can avoid queries in the hot indexing path
-		drvDBIDs := safemap.NewMap[string, int64]()
-
-		alreadyIndexed := set.NewSafeSet[string]()
-
-		// indexDrv is somewhat racy but we can work around that by getting
-		// a value in a loop with a timeout
-		getDrvID := func(drvPath string) (dbID int64, err error) {
-			for i := 0; i < 10_000; i++ {
-				dbID, err = drvDBIDs.Get(drvPath)
-				if err == nil {
-					return dbID, nil
-				}
-
-				if err != nil && !errors.Is(err, safemap.ErrNotExist) {
-					return errorID, err
-				}
-
-				time.Sleep(5 * time.Millisecond)
-			}
-
-			return -1, fmt.Errorf("Couldnt get derivation id for derivation path '%s': %w", drvPath, err)
-		}
-
-		// Index a derivation including it's dependencies
-		var indexDrv func(string) (int64, error)
-		indexDrv = func(drvPath string) (int64, error) {
-			// No-op if already indexed, populate map early to act as a lock per drvPath
-			if alreadyIndexed.Has(drvPath) {
-				dbID, err := getDrvID(drvPath)
-				if err != nil {
-					return errorID, err
-				}
-
+	// indexDrv is somewhat racy but we can work around that by getting
+	// a value in a loop with a timeout
+	getDrvID := func(drvPath string) (dbID int64, err error) {
+		for i := 0; i < 10_000; i++ {
+			dbID, err = drvDBIDs.Get(drvPath)
+			if err == nil {
 				return dbID, nil
-			} else {
-				alreadyIndexed.Add(drvPath)
 			}
 
-			drv, err := drvParser.ReadPath(drvPath)
-			if err != nil {
-				return errorID, fmt.Errorf("Error reading '%s': %w", drvPath, err)
+			if err != nil && !errors.Is(err, safemap.ErrNotExist) {
+				return errorID, err
 			}
 
-			var dbDrv idb.Derivation
-			{
-				// Check if the derivation is already indexed
-				dbDrv, err = qtx.GetDerivation(ctx, drvPath)
-				if err == nil {
-					drvDBIDs.Set(drvPath, dbDrv.ID)
-					return dbDrv.ID, nil
-				} else if err != sql.ErrNoRows {
-					return errorID, err
-				}
-
-				// Create the derivation in the DB
-				dbDrv, err = qtx.CreateDerivation(ctx, idb.CreateDerivationParams{
-					Drv:    drvPath,
-					System: drv.Platform,
-				})
-				if err != nil {
-					return errorID, err
-				}
-
-				drvDBIDs.Set(drvPath, dbDrv.ID)
-			}
-
-			// Direct dependencies
-			refsDirect := set.NewSet[string]()
-			for inputDrv := range drv.InputDerivations {
-				refsDirect.Add(inputDrv)
-			}
-
-			// All dependencies (recursive, flattened)
-			refsAll := refsDirect.Copy()
-
-			for inputDrv := range drv.InputDerivations {
-				// Recursively index drvs
-				if !refs.Has(inputDrv) {
-					_, err := indexDrv(inputDrv)
-					if err != nil {
-						return errorID, err
-					}
-				}
-
-				// If the input _still_ doesn't exist it means it's a fixed-output
-				// and should be filtered out
-				if refs.Has(inputDrv) {
-					inputRefs, err := refs.Get(inputDrv)
-					if err != nil {
-						return errorID, err
-					}
-
-					refsAll.Update(inputRefs)
-				} else {
-					refsDirect.Remove(inputDrv)
-					refsAll.Remove(inputDrv)
-				}
-			}
-
-			// Filter fixed outputs
-			for _, output := range drv.Outputs {
-				if output.HashAlgorithm != "" {
-					return fixedOutputID, nil
-				}
-			}
-
-			refs.Set(drvPath, refsDirect)
-
-			// Create derivation outputs
-			for output, pathInfo := range drv.Outputs {
-				err = qtx.CreateDerivationOutput(ctx, idb.CreateDerivationOutputParams{
-					Output:       output,
-					StorePath:    pathInfo.Path,
-					DerivationID: dbDrv.ID,
-				})
-				if err != nil {
-					return errorID, fmt.Errorf("Error creating derivation output: %w", err)
-				}
-			}
-
-			// Create relations to referenced derivations
-			{
-				// Create relation for direct references
-				for _, ref := range refsDirect.Values() {
-					dbID, err := getDrvID(ref)
-					if err != nil {
-						return errorID, err
-					}
-
-					err = qtx.CreateDerivationRefDirect(ctx, idb.CreateDerivationRefDirectParams{
-						ReferrerID: dbDrv.ID,
-						DrvID:      dbID,
-					})
-					if err != nil {
-						return errorID, err
-					}
-				}
-
-				// Create relation for all recursive references
-				for _, ref := range refsAll.Values() {
-					dbID, err := getDrvID(ref)
-					if err != nil {
-						return errorID, err
-					}
-
-					err = qtx.CreateDerivationRefRecursive(ctx, idb.CreateDerivationRefRecursiveParams{
-						ReferrerID: dbDrv.ID,
-						DrvID:      dbID,
-					})
-					if err != nil {
-						return errorID, err
-					}
-				}
-			}
-
-			return dbDrv.ID, nil
+			time.Sleep(5 * time.Millisecond)
 		}
 
-		e := executor.NewLimitedParallellExecutor(maxWorkers)
+		return -1, fmt.Errorf("Couldnt get derivation id for derivation path '%s': %w", drvPath, err)
+	}
 
-		for wrappedResult := range results {
-			result, err := wrappedResult.Unwrap()
+	// Index a derivation including it's dependencies
+	var indexDrv func(string) (int64, error)
+	indexDrv = func(drvPath string) (int64, error) {
+		// No-op if already indexed, populate map early to act as a lock per drvPath
+		if alreadyIndexed.Has(drvPath) {
+			dbID, err := getDrvID(drvPath)
 			if err != nil {
-				panic(err)
+				return errorID, err
 			}
 
-			if result.Error != "" || result.DrvPath == "" {
-				continue
+			return dbID, nil
+		} else {
+			alreadyIndexed.Add(drvPath)
+		}
+
+		drv, err := drvParser.ReadPath(drvPath)
+		if err != nil {
+			return errorID, fmt.Errorf("Error reading '%s': %w", drvPath, err)
+		}
+
+		var dbDrv idb.Derivation
+		{
+			// Check if the derivation is already indexed
+			dbDrv, err = qtx.GetDerivation(ctx, drvPath)
+			if err == nil {
+				drvDBIDs.Set(drvPath, dbDrv.ID)
+				return dbDrv.ID, nil
+			} else if err != sql.ErrNoRows {
+				return errorID, err
 			}
 
-			// Index the derivation + attribute mappings
-			err = e.Add(func() error {
-				// Index the derivation
-				drvID, err := indexDrv(result.DrvPath)
+			// Create the derivation in the DB
+			dbDrv, err = qtx.CreateDerivation(ctx, idb.CreateDerivationParams{
+				Drv:    drvPath,
+				System: drv.Platform,
+			})
+			if err != nil {
+				return errorID, err
+			}
+
+			drvDBIDs.Set(drvPath, dbDrv.ID)
+		}
+
+		// Direct dependencies
+		refsDirect := set.NewSet[string]()
+		for inputDrv := range drv.InputDerivations {
+			refsDirect.Add(inputDrv)
+		}
+
+		// All dependencies (recursive, flattened)
+		refsAll := refsDirect.Copy()
+
+		for inputDrv := range drv.InputDerivations {
+			// Recursively index drvs
+			if !refs.Has(inputDrv) {
+				_, err := indexDrv(inputDrv)
+				if err != nil {
+					return errorID, err
+				}
+			}
+
+			// If the input _still_ doesn't exist it means it's a fixed-output
+			// and should be filtered out
+			if refs.Has(inputDrv) {
+				inputRefs, err := refs.Get(inputDrv)
+				if err != nil {
+					return errorID, err
+				}
+
+				refsAll.Update(inputRefs)
+			} else {
+				refsDirect.Remove(inputDrv)
+				refsAll.Remove(inputDrv)
+			}
+		}
+
+		// Filter fixed outputs
+		for _, output := range drv.Outputs {
+			if output.HashAlgorithm != "" {
+				return fixedOutputID, nil
+			}
+		}
+
+		refs.Set(drvPath, refsDirect)
+
+		// Create derivation outputs
+		for output, pathInfo := range drv.Outputs {
+			err = qtx.CreateDerivationOutput(ctx, idb.CreateDerivationOutputParams{
+				Output:       output,
+				StorePath:    pathInfo.Path,
+				DerivationID: dbDrv.ID,
+			})
+			if err != nil {
+				return errorID, fmt.Errorf("Error creating derivation output: %w", err)
+			}
+		}
+
+		// Create relations to referenced derivations
+		{
+			// Create relation for direct references
+			for _, ref := range refsDirect.Values() {
+				dbID, err := getDrvID(ref)
+				if err != nil {
+					return errorID, err
+				}
+
+				err = qtx.CreateDerivationRefDirect(ctx, idb.CreateDerivationRefDirectParams{
+					ReferrerID: dbDrv.ID,
+					DrvID:      dbID,
+				})
+				if err != nil {
+					return errorID, err
+				}
+			}
+
+			// Create relation for all recursive references
+			for _, ref := range refsAll.Values() {
+				dbID, err := getDrvID(ref)
+				if err != nil {
+					return errorID, err
+				}
+
+				err = qtx.CreateDerivationRefRecursive(ctx, idb.CreateDerivationRefRecursiveParams{
+					ReferrerID: dbDrv.ID,
+					DrvID:      dbID,
+				})
+				if err != nil {
+					return errorID, err
+				}
+			}
+		}
+
+		return dbDrv.ID, nil
+	}
+
+	e := executor.NewLimitedParallellExecutor(maxWorkers)
+
+	for wrappedResult := range results {
+		result, err := wrappedResult.Unwrap()
+		if err != nil {
+			panic(err)
+		}
+
+		if result.Error != "" || result.DrvPath == "" {
+			continue
+		}
+
+		// Index the derivation + attribute mappings
+		err = e.Add(func() error {
+			// Index the derivation
+			drvID, err := indexDrv(result.DrvPath)
+			if err != nil {
+				return err
+			}
+
+			// Don't index fixed outputs
+			if drvID == fixedOutputID {
+				return nil
+			}
+
+			// Add mapping from attribute to derivation
+			if result.Attr != "" {
+				err = qtx.CreateDerivationAttr(ctx, idb.CreateDerivationAttrParams{
+					Attr:         result.Attr,
+					DerivationID: drvID,
+				})
 				if err != nil {
 					return err
 				}
-
-				// Don't index fixed outputs
-				if drvID == fixedOutputID {
-					return nil
-				}
-
-				// Add mapping from attribute to derivation
-				if result.Attr != "" {
-					err = qtx.CreateDerivationAttr(ctx, idb.CreateDerivationAttrParams{
-						Attr:         result.Attr,
-						DerivationID: drvID,
-					})
-					if err != nil {
-						return err
-					}
-				}
-
-				fmt.Println(result.Attr, drvID)
-
-				return nil
-			})
-			if err != nil {
-				panic(err)
 			}
-		}
 
-		err = e.Wait()
+			fmt.Println(result.Attr, drvID)
+
+			return nil
+		})
 		if err != nil {
 			panic(err)
 		}
+	}
 
-		err = tx.Commit()
-		if err != nil {
-			panic(err)
-		}
+	err = e.Wait()
+	if err != nil {
+		panic(err)
+	}
 
-		return nil
-	},
+	err = tx.Commit()
+	if err != nil {
+		panic(err)
+	}
+
+	return nil
 }
