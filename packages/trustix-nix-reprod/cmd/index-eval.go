@@ -27,6 +27,12 @@ const sqlDialect = "sqlite"
 // Arbitrary large number of derivations to cache
 const drvCacheSize = 30_000
 
+// Sentinel values returned when indexing a derivation with errors or filtered
+const (
+	errorID       = -1
+	fixedOutputID = -2
+)
+
 var indexEvalCommand = &cobra.Command{
 	Use:   "index-eval",
 	Short: "Index evaluation",
@@ -49,7 +55,7 @@ var indexEvalCommand = &cobra.Command{
 
 		// Indexing impl
 		commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
-		maxWorkers := 15
+		maxWorkers := 1
 
 		tx, err := db.Begin()
 		if err != nil {
@@ -93,18 +99,23 @@ var indexEvalCommand = &cobra.Command{
 		drvCount := 0
 
 		// Index a derivation including it's dependencies
-		var indexDrv func(string) error
-		indexDrv = func(drvPath string) error {
+		var indexDrv func(string) (int64, error)
+		indexDrv = func(drvPath string) (int64, error) {
 			// No-op if already indexed, populate map early to act as a lock per drvPath
 			if alreadyIndexed.Has(drvPath) {
-				return nil
+				dbID, err := drvDBIDs.Get(drvPath)
+				if err != nil {
+					return errorID, err
+				}
+
+				return dbID, nil
 			} else {
 				alreadyIndexed.Add(drvPath)
 			}
 
 			drv, err := drvParser.ReadPath(drvPath)
 			if err != nil {
-				return fmt.Errorf("Error reading '%s': %w", drvPath, err)
+				return errorID, fmt.Errorf("Error reading '%s': %w", drvPath, err)
 			}
 
 			var dbDrv idb.Derivation
@@ -113,9 +124,9 @@ var indexEvalCommand = &cobra.Command{
 				dbDrv, err = qtx.GetDerivation(ctx, drvPath)
 				if err == nil {
 					drvDBIDs.Set(drvPath, dbDrv.ID)
-					return nil
+					return dbDrv.ID, nil
 				} else if err != sql.ErrNoRows {
-					return err
+					return errorID, err
 				}
 
 				// Create the derivation in the DB
@@ -124,7 +135,7 @@ var indexEvalCommand = &cobra.Command{
 					System: drv.Platform,
 				})
 				if err != nil {
-					return err
+					return errorID, err
 				}
 
 				drvDBIDs.Set(drvPath, dbDrv.ID)
@@ -142,9 +153,9 @@ var indexEvalCommand = &cobra.Command{
 			for inputDrv, _ := range drv.InputDerivations {
 				// Recursively index drvs
 				if !refs.Has(inputDrv) {
-					err := indexDrv(inputDrv)
+					_, err := indexDrv(inputDrv)
 					if err != nil {
-						return err
+						return errorID, err
 					}
 				}
 
@@ -153,7 +164,7 @@ var indexEvalCommand = &cobra.Command{
 				if refs.Has(inputDrv) {
 					inputRefs, err := refs.Get(inputDrv)
 					if err != nil {
-						return err
+						return errorID, err
 					}
 
 					refsAll.Update(inputRefs)
@@ -166,7 +177,7 @@ var indexEvalCommand = &cobra.Command{
 			// Filter fixed outputs
 			for _, output := range drv.Outputs {
 				if output.HashAlgorithm != "" {
-					return nil
+					return fixedOutputID, nil
 				}
 			}
 
@@ -181,7 +192,7 @@ var indexEvalCommand = &cobra.Command{
 				if err == nil {
 					continue
 				} else if err != sql.ErrNoRows {
-					return fmt.Errorf("Error fetching derivation output: %w", err)
+					return errorID, fmt.Errorf("Error fetching derivation output: %w", err)
 				}
 
 				err = qtx.CreateDerivationOutput(ctx, idb.CreateDerivationOutputParams{
@@ -190,7 +201,7 @@ var indexEvalCommand = &cobra.Command{
 					DerivationID: dbDrv.ID,
 				})
 				if err != nil {
-					return fmt.Errorf("Error creating derivation output: %w", err)
+					return errorID, fmt.Errorf("Error creating derivation output: %w", err)
 				}
 			}
 
@@ -200,7 +211,7 @@ var indexEvalCommand = &cobra.Command{
 				for _, ref := range refsDirect.Values() {
 					dbID, err := drvDBIDs.Get(ref)
 					if err != nil {
-						return err
+						return errorID, err
 					}
 
 					qtx.CreateDerivationRefDirect(ctx, idb.CreateDerivationRefDirectParams{
@@ -213,7 +224,7 @@ var indexEvalCommand = &cobra.Command{
 				for _, ref := range refsDirect.Values() {
 					dbID, err := drvDBIDs.Get(ref)
 					if err != nil {
-						return err
+						return errorID, err
 					}
 
 					qtx.CreateDerivationRefRecursive(ctx, idb.CreateDerivationRefRecursiveParams{
@@ -230,7 +241,7 @@ var indexEvalCommand = &cobra.Command{
 				fmt.Printf("Indexed %d derivations\n", drvCount)
 			}
 
-			return nil
+			return dbDrv.ID, nil
 		}
 
 		e := executor.NewLimitedParallellExecutor(maxWorkers)
@@ -245,8 +256,25 @@ var indexEvalCommand = &cobra.Command{
 				continue
 			}
 
+			// Index the derivation + attribute mappings
 			err = e.Add(func() error {
-				return indexDrv(result.DrvPath)
+				// Index the derivation
+				drvID, err := indexDrv(result.DrvPath)
+				if err != nil {
+					return err
+				}
+
+				// Don't index fixed outputs
+				if drvID == fixedOutputID {
+					return nil
+				}
+
+				// Add mapping from attribute to derivation
+				if result.Attr != "" {
+					fmt.Println(drvID, result.Attr)
+				}
+
+				return nil
 			})
 			if err != nil {
 				panic(err)
