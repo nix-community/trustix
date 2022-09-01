@@ -11,7 +11,9 @@ package cmd
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/tweag/trustix/packages/go-lib/executor"
@@ -55,7 +57,7 @@ var indexEvalCommand = &cobra.Command{
 
 		// Indexing impl
 		commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
-		maxWorkers := 1
+		maxWorkers := 15
 
 		tx, err := db.Begin()
 		if err != nil {
@@ -96,12 +98,31 @@ var indexEvalCommand = &cobra.Command{
 
 		alreadyIndexed := set.NewSafeSet[string]()
 
+		// indexDrv is somewhat racy but we can work around that by getting
+		// a value in a loop with a timeout
+		getDrvID := func(drvPath string) (dbID int64, err error) {
+			for i := 0; i < 10_000; i++ {
+				dbID, err = drvDBIDs.Get(drvPath)
+				if err == nil {
+					return dbID, nil
+				}
+
+				if err != nil && !errors.Is(err, safemap.ErrNotExist) {
+					return errorID, err
+				}
+
+				time.Sleep(5 * time.Millisecond)
+			}
+
+			return -1, fmt.Errorf("Couldnt get derivation id for derivation path '%s': %w", drvPath, err)
+		}
+
 		// Index a derivation including it's dependencies
 		var indexDrv func(string) (int64, error)
 		indexDrv = func(drvPath string) (int64, error) {
 			// No-op if already indexed, populate map early to act as a lock per drvPath
 			if alreadyIndexed.Has(drvPath) {
-				dbID, err := drvDBIDs.Get(drvPath)
+				dbID, err := getDrvID(drvPath)
 				if err != nil {
 					return errorID, err
 				}
@@ -207,7 +228,7 @@ var indexEvalCommand = &cobra.Command{
 			{
 				// Create relation for direct references
 				for _, ref := range refsDirect.Values() {
-					dbID, err := drvDBIDs.Get(ref)
+					dbID, err := getDrvID(ref)
 					if err != nil {
 						return errorID, err
 					}
@@ -220,7 +241,7 @@ var indexEvalCommand = &cobra.Command{
 
 				// Create relation for all recursive references
 				for _, ref := range refsDirect.Values() {
-					dbID, err := drvDBIDs.Get(ref)
+					dbID, err := getDrvID(ref)
 					if err != nil {
 						return errorID, err
 					}
