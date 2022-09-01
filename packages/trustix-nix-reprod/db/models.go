@@ -14,6 +14,12 @@ type Derivation struct {
 	System string
 }
 
+type Derivationattr struct {
+	ID           int64
+	Attr         string
+	DerivationID int64
+}
+
 type Derivationoutput struct {
 	ID           int64
 	Output       string

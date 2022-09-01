@@ -25,6 +25,20 @@ func (q *Queries) CreateDerivation(ctx context.Context, arg CreateDerivationPara
 	return i, err
 }
 
+const createDerivationAttr = `-- name: CreateDerivationAttr :exec
+INSERT OR IGNORE INTO derivationattr (attr, derivation_id) VALUES (?, ?)
+`
+
+type CreateDerivationAttrParams struct {
+	Attr         string
+	DerivationID int64
+}
+
+func (q *Queries) CreateDerivationAttr(ctx context.Context, arg CreateDerivationAttrParams) error {
+	_, err := q.db.ExecContext(ctx, createDerivationAttr, arg.Attr, arg.DerivationID)
+	return err
+}
+
 const createDerivationOutput = `-- name: CreateDerivationOutput :exec
 INSERT OR IGNORE INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?)
 `
@@ -91,6 +105,22 @@ func (q *Queries) GetDerivation(ctx context.Context, drv string) (Derivation, er
 	return i, err
 }
 
+const getDerivationAttr = `-- name: GetDerivationAttr :one
+SELECT id, attr, derivation_id FROM derivationattr WHERE derivation_id = ? AND attr = ? LIMIT 1
+`
+
+type GetDerivationAttrParams struct {
+	DerivationID int64
+	Attr         string
+}
+
+func (q *Queries) GetDerivationAttr(ctx context.Context, arg GetDerivationAttrParams) (Derivationattr, error) {
+	row := q.db.QueryRowContext(ctx, getDerivationAttr, arg.DerivationID, arg.Attr)
+	var i Derivationattr
+	err := row.Scan(&i.ID, &i.Attr, &i.DerivationID)
+	return i, err
+}
+
 const getDerivationOutputs = `-- name: GetDerivationOutputs :many
 SELECT id, output, store_path, derivation_id FROM derivationoutput WHERE store_path = ?
 `
@@ -123,12 +153,12 @@ func (q *Queries) GetDerivationOutputs(ctx context.Context, storePath string) ([
 	return items, nil
 }
 
-const getDerivationOutputsByID = `-- name: GetDerivationOutputsByID :many
+const getDerivationOutputsByDerivationID = `-- name: GetDerivationOutputsByDerivationID :many
 SELECT id, output, store_path, derivation_id FROM derivationoutput WHERE derivation_id = ?
 `
 
-func (q *Queries) GetDerivationOutputsByID(ctx context.Context, derivationID int64) ([]Derivationoutput, error) {
-	rows, err := q.db.QueryContext(ctx, getDerivationOutputsByID, derivationID)
+func (q *Queries) GetDerivationOutputsByDerivationID(ctx context.Context, derivationID int64) ([]Derivationoutput, error) {
+	rows, err := q.db.QueryContext(ctx, getDerivationOutputsByDerivationID, derivationID)
 	if err != nil {
 		return nil, err
 	}

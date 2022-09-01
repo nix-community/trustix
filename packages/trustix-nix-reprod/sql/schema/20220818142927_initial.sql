@@ -42,11 +42,21 @@ CREATE TABLE derivationoutput (
 CREATE INDEX idx_derivationoutput_output ON derivationoutput (output);
 CREATE INDEX idx_derivationoutput_store_path ON derivationoutput (store_path);
 
+CREATE TABLE derivationattr (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    attr VARCHAR(255) NOT NULL,
+    derivation_id INTEGER NOT NULL REFERENCES derivation (id) ON DELETE CASCADE,
+    UNIQUE (derivation_id, attr)
+);
+CREATE INDEX idx_derivationattr_attr ON derivationattr (attr);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE evaluation;
-
 DROP TABLE derivation;
+DROP TABLE derivationrefdirect;
+DROP TABLE derivationrefrecursive;
+DROP TABLE derivationoutput;
+DROP TABLE derivationattr;
 -- +goose StatementEnd

@@ -284,8 +284,16 @@ var indexEvalCommand = &cobra.Command{
 
 				// Add mapping from attribute to derivation
 				if result.Attr != "" {
-					fmt.Println(drvID, result.Attr)
+					err = qtx.CreateDerivationAttr(ctx, idb.CreateDerivationAttrParams{
+						Attr:         result.Attr,
+						DerivationID: drvID,
+					})
+					if err != nil {
+						return err
+					}
 				}
+
+				fmt.Println(result.Attr, drvID)
 
 				return nil
 			})
