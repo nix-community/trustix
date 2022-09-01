@@ -13,10 +13,10 @@ WHERE drv = ? LIMIT 1;
 INSERT INTO derivation (drv, system) VALUES (?, ?) RETURNING *;
 
 -- name: CreateDerivationRefDirect :exec
-INSERT INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?);
+INSERT OR IGNORE INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?);
 
 -- name: CreateDerivationRefRecursive :exec
-INSERT INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?);
+INSERT OR IGNORE INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?);
 
 -- name: GetDerivationOutput :one
 SELECT * FROM derivationoutput

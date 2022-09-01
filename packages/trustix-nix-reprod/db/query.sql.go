@@ -41,7 +41,7 @@ func (q *Queries) CreateDerivationOutput(ctx context.Context, arg CreateDerivati
 }
 
 const createDerivationRefDirect = `-- name: CreateDerivationRefDirect :exec
-INSERT INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?)
+INSERT OR IGNORE INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?)
 `
 
 type CreateDerivationRefDirectParams struct {
@@ -55,7 +55,7 @@ func (q *Queries) CreateDerivationRefDirect(ctx context.Context, arg CreateDeriv
 }
 
 const createDerivationRefRecursive = `-- name: CreateDerivationRefRecursive :exec
-INSERT INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?)
+INSERT OR IGNORE INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?)
 `
 
 type CreateDerivationRefRecursiveParams struct {
