@@ -40,7 +40,7 @@ func (q *Queries) CreateDerivationAttr(ctx context.Context, arg CreateDerivation
 }
 
 const createDerivationOutput = `-- name: CreateDerivationOutput :exec
-INSERT OR IGNORE INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?)
+INSERT INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?)
 `
 
 type CreateDerivationOutputParams struct {

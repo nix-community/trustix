@@ -25,7 +25,7 @@ SELECT * FROM derivationoutput WHERE store_path = ?;
 SELECT * FROM derivationoutput WHERE derivation_id = ?;
 
 -- name: CreateDerivationOutput :exec
-INSERT OR IGNORE INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?);
+INSERT INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?);
 
 -- name: GetDerivationAttr :one
 SELECT * FROM derivationattr WHERE derivation_id = ? AND attr = ? LIMIT 1;
