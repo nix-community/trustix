@@ -96,8 +96,6 @@ var indexEvalCommand = &cobra.Command{
 
 		alreadyIndexed := set.NewSafeSet[string]()
 
-		drvCount := 0
-
 		// Index a derivation including it's dependencies
 		var indexDrv func(string) (int64, error)
 		indexDrv = func(drvPath string) (int64, error) {
@@ -232,13 +230,6 @@ var indexEvalCommand = &cobra.Command{
 						DrvID:      dbID,
 					})
 				}
-			}
-
-			// Technically this is racy but it's OK since we're only approximating the number of indexed
-			// derivations for debug logging purposes
-			drvCount++
-			if drvCount%1000 == 0 {
-				fmt.Printf("Indexed %d derivations\n", drvCount)
 			}
 
 			return dbDrv.ID, nil
