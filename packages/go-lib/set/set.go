@@ -19,7 +19,7 @@ func NewSet[T constraints.Ordered]() *Set[T] {
 	}
 }
 
-// NewSet returns a new set (thread safe)
+// NewSafeSet returns a new set (thread safe)
 func NewSafeSet[T constraints.Ordered]() *Set[T] {
 	return &Set[T]{
 		values: make(map[T]struct{}),
