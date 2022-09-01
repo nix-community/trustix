@@ -16,7 +16,7 @@ INSERT INTO derivation (drv, system) VALUES (?, ?) RETURNING *;
 INSERT OR IGNORE INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?);
 
 -- name: CreateDerivationRefRecursive :exec
-INSERT OR IGNORE INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?);
+INSERT OR IGNORE INTO derivationrefrecursive (drv_id, referrer_id) VALUES (?, ?);
 
 -- name: GetDerivationOutputs :many
 SELECT * FROM derivationoutput WHERE store_path = ?;
