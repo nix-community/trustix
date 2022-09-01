@@ -1,9 +1,11 @@
 package safemap
 
 import (
-	"fmt"
+	"errors"
 	"sync"
 )
+
+var ErrNotExist = errors.New("item does not exist")
 
 type SafeMap[K comparable, V any] struct {
 	store map[K]V
@@ -23,7 +25,7 @@ func (m *SafeMap[K, V]) Get(key K) (V, error) {
 
 	value, ok := m.store[key]
 	if !ok {
-		return value, fmt.Errorf("Value with key %v not found", key)
+		return value, ErrNotExist
 	}
 
 	return value, nil
