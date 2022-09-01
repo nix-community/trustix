@@ -65,7 +65,7 @@ var indexEvalCommand = &cobra.Command{
 		}
 		defer func() {
 			err := tx.Rollback()
-			if err != nil {
+			if err != nil && err != sql.ErrTxDone {
 				panic(err)
 			}
 		}()
