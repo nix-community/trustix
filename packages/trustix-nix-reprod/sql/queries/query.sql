@@ -18,9 +18,11 @@ INSERT OR IGNORE INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?);
 -- name: CreateDerivationRefRecursive :exec
 INSERT OR IGNORE INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?);
 
--- name: GetDerivationOutput :one
-SELECT * FROM derivationoutput
-WHERE derivation_id = ? AND store_path = ? LIMIT 1;
+-- name: GetDerivationOutputs :many
+SELECT * FROM derivationoutput WHERE store_path = ?;
+
+-- name: GetDerivationOutputsByID :many
+SELECT * FROM derivationoutput WHERE derivation_id = ?;
 
 -- name: CreateDerivationOutput :exec
-INSERT INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?);
+INSERT OR IGNORE INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?);

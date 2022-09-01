@@ -209,16 +209,6 @@ var indexEvalCommand = &cobra.Command{
 
 			// Create derivation outputs
 			for output, pathInfo := range drv.Outputs {
-				_, err := qtx.GetDerivationOutput(ctx, idb.GetDerivationOutputParams{
-					DerivationID: dbDrv.ID,
-					StorePath:    pathInfo.Path,
-				})
-				if err == nil {
-					continue
-				} else if err != sql.ErrNoRows {
-					return errorID, fmt.Errorf("Error fetching derivation output: %w", err)
-				}
-
 				err = qtx.CreateDerivationOutput(ctx, idb.CreateDerivationOutputParams{
 					Output:       output,
 					StorePath:    pathInfo.Path,

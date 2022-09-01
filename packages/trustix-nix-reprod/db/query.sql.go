@@ -26,7 +26,7 @@ func (q *Queries) CreateDerivation(ctx context.Context, arg CreateDerivationPara
 }
 
 const createDerivationOutput = `-- name: CreateDerivationOutput :exec
-INSERT INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?)
+INSERT OR IGNORE INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?)
 `
 
 type CreateDerivationOutputParams struct {
@@ -91,26 +91,68 @@ func (q *Queries) GetDerivation(ctx context.Context, drv string) (Derivation, er
 	return i, err
 }
 
-const getDerivationOutput = `-- name: GetDerivationOutput :one
-SELECT id, output, store_path, derivation_id FROM derivationoutput
-WHERE derivation_id = ? AND store_path = ? LIMIT 1
+const getDerivationOutputs = `-- name: GetDerivationOutputs :many
+SELECT id, output, store_path, derivation_id FROM derivationoutput WHERE store_path = ?
 `
 
-type GetDerivationOutputParams struct {
-	DerivationID int64
-	StorePath    string
+func (q *Queries) GetDerivationOutputs(ctx context.Context, storePath string) ([]Derivationoutput, error) {
+	rows, err := q.db.QueryContext(ctx, getDerivationOutputs, storePath)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Derivationoutput
+	for rows.Next() {
+		var i Derivationoutput
+		if err := rows.Scan(
+			&i.ID,
+			&i.Output,
+			&i.StorePath,
+			&i.DerivationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
-func (q *Queries) GetDerivationOutput(ctx context.Context, arg GetDerivationOutputParams) (Derivationoutput, error) {
-	row := q.db.QueryRowContext(ctx, getDerivationOutput, arg.DerivationID, arg.StorePath)
-	var i Derivationoutput
-	err := row.Scan(
-		&i.ID,
-		&i.Output,
-		&i.StorePath,
-		&i.DerivationID,
-	)
-	return i, err
+const getDerivationOutputsByID = `-- name: GetDerivationOutputsByID :many
+SELECT id, output, store_path, derivation_id FROM derivationoutput WHERE derivation_id = ?
+`
+
+func (q *Queries) GetDerivationOutputsByID(ctx context.Context, derivationID int64) ([]Derivationoutput, error) {
+	rows, err := q.db.QueryContext(ctx, getDerivationOutputsByID, derivationID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Derivationoutput
+	for rows.Next() {
+		var i Derivationoutput
+		if err := rows.Scan(
+			&i.ID,
+			&i.Output,
+			&i.StorePath,
+			&i.DerivationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getEval = `-- name: GetEval :one
