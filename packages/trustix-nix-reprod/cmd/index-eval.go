@@ -63,7 +63,12 @@ var indexEvalCommand = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		defer tx.Rollback()
+		defer func() {
+			err := tx.Rollback()
+			if err != nil {
+				panic(err)
+			}
+		}()
 
 		queries := idb.New(db)
 		qtx := queries.WithTx(tx)
@@ -162,14 +167,14 @@ var indexEvalCommand = &cobra.Command{
 
 			// Direct dependencies
 			refsDirect := set.NewSet[string]()
-			for inputDrv, _ := range drv.InputDerivations {
+			for inputDrv := range drv.InputDerivations {
 				refsDirect.Add(inputDrv)
 			}
 
 			// All dependencies (recursive, flattened)
 			refsAll := refsDirect.Copy()
 
-			for inputDrv, _ := range drv.InputDerivations {
+			for inputDrv := range drv.InputDerivations {
 				// Recursively index drvs
 				if !refs.Has(inputDrv) {
 					_, err := indexDrv(inputDrv)
@@ -233,10 +238,13 @@ var indexEvalCommand = &cobra.Command{
 						return errorID, err
 					}
 
-					qtx.CreateDerivationRefDirect(ctx, idb.CreateDerivationRefDirectParams{
+					err = qtx.CreateDerivationRefDirect(ctx, idb.CreateDerivationRefDirectParams{
 						ReferrerID: dbDrv.ID,
 						DrvID:      dbID,
 					})
+					if err != nil {
+						return errorID, err
+					}
 				}
 
 				// Create relation for all recursive references
@@ -246,10 +254,13 @@ var indexEvalCommand = &cobra.Command{
 						return errorID, err
 					}
 
-					qtx.CreateDerivationRefRecursive(ctx, idb.CreateDerivationRefRecursiveParams{
+					err = qtx.CreateDerivationRefRecursive(ctx, idb.CreateDerivationRefRecursiveParams{
 						ReferrerID: dbDrv.ID,
 						DrvID:      dbID,
 					})
+					if err != nil {
+						return errorID, err
+					}
 				}
 			}
 

@@ -22,8 +22,6 @@ var once sync.Once
 
 var dialAddress string
 
-var logID string
-
 var rootCmd = &cobra.Command{
 	Use:   "trustix-nix-reprod",
 	Short: "Trustix Nix build reproducibility dashboard",
@@ -47,6 +45,7 @@ func initCommands() {
 
 	rootCmd.AddCommand(indexEvalCommand)
 	rootCmd.AddCommand(indexLogsCommand)
+	rootCmd.AddCommand(serveCommand)
 }
 
 func Execute() {
