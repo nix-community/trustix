@@ -30,8 +30,7 @@ const drvCacheSize = 30_000
 
 // Sentinel values returned when indexing a derivation with errors or filtered
 const (
-	errorID       = -1
-	fixedOutputID = -2
+	errorID = -1
 )
 
 func IndexEval(ctx context.Context, db *sql.DB) error {
@@ -181,13 +180,6 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 			}
 		}
 
-		// Filter fixed outputs
-		for _, output := range drv.Outputs {
-			if output.HashAlgorithm != "" {
-				return fixedOutputID, nil
-			}
-		}
-
 		refs.Set(drvPath, refsDirect)
 
 		// Create derivation outputs
@@ -258,11 +250,6 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 			drvID, err := indexDrv(result.DrvPath)
 			if err != nil {
 				return fmt.Errorf("error indexing derivation %s: %w", result.DrvPath, err)
-			}
-
-			// Don't index fixed outputs
-			if drvID == fixedOutputID {
-				return nil
 			}
 
 			// Add mapping from attribute to derivation
