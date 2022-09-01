@@ -44,7 +44,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 
 	tx, err := db.Begin()
 	if err != nil {
-		return err
+		return fmt.Errorf("error creating db transaction: %w", err)
 	}
 	defer func() {
 		err := tx.Rollback()
@@ -64,18 +64,18 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 		}
 
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("error retreiving eval: %w", err)
 		}
 	}
 
 	results, err := eval.Eval(ctx, evalConfig)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error initialising eval: %w", err)
 	}
 
 	drvParser, err := drvparse.NewCachedDrvParser(drvCacheSize)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error creating cached derivation parser: %w", err)
 	}
 
 	// Map drv to it's direct references for later re-use
@@ -96,7 +96,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 			}
 
 			if err != nil && !errors.Is(err, safemap.ErrNotExist) {
-				return errorID, err
+				return errorID, fmt.Errorf("error getting map value: %w", err)
 			}
 
 			time.Sleep(5 * time.Millisecond)
@@ -112,7 +112,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 		if alreadyIndexed.Has(drvPath) {
 			dbID, err := getDrvID(drvPath)
 			if err != nil {
-				return errorID, err
+				return errorID, fmt.Errorf("error getting derivation id: %w", err)
 			}
 
 			return dbID, nil
@@ -133,7 +133,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 				drvDBIDs.Set(drvPath, dbDrv.ID)
 				return dbDrv.ID, nil
 			} else if err != sql.ErrNoRows {
-				return errorID, err
+				return errorID, fmt.Errorf("error getting derivation: %w", err)
 			}
 
 			// Create the derivation in the DB
@@ -142,7 +142,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 				System: drv.Platform,
 			})
 			if err != nil {
-				return errorID, err
+				return errorID, fmt.Errorf("error creating derivation: %w", err)
 			}
 
 			drvDBIDs.Set(drvPath, dbDrv.ID)
@@ -162,7 +162,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 			if !refs.Has(inputDrv) {
 				_, err := indexDrv(inputDrv)
 				if err != nil {
-					return errorID, err
+					return errorID, fmt.Errorf("error indexing ref derivation: %w", err)
 				}
 			}
 
@@ -171,7 +171,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 			if refs.Has(inputDrv) {
 				inputRefs, err := refs.Get(inputDrv)
 				if err != nil {
-					return errorID, err
+					return errorID, fmt.Errorf("error getting references: %w", err)
 				}
 
 				refsAll.Update(inputRefs)
@@ -216,7 +216,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 					DrvID:      dbID,
 				})
 				if err != nil {
-					return errorID, err
+					return errorID, fmt.Errorf("error creating direct derivation ref: %w", err)
 				}
 			}
 
@@ -232,7 +232,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 					DrvID:      dbID,
 				})
 				if err != nil {
-					return errorID, err
+					return errorID, fmt.Errorf("error creating recursive derivation ref: %w", err)
 				}
 			}
 		}
@@ -257,7 +257,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 			// Index the derivation
 			drvID, err := indexDrv(result.DrvPath)
 			if err != nil {
-				return err
+				return fmt.Errorf("error indexing derivation %s: %w", result.DrvPath, err)
 			}
 
 			// Don't index fixed outputs
@@ -272,7 +272,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 					DerivationID: drvID,
 				})
 				if err != nil {
-					return err
+					return fmt.Errorf("error creating attr reference for drv %s (%d): %w", result.DrvPath, drvID, err)
 				}
 			}
 
@@ -287,12 +287,12 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 
 	err = e.Wait()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error in indexing: %w", err)
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error committing transaction: %w", err)
 	}
 
 	return nil
