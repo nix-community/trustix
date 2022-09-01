@@ -17,6 +17,8 @@ pkgs.mkShell {
     pkgs.gomod2nix
     pkgs.protobuf
 
+    pkgs.golangci-lint
+
     # File system watchers
     pkgs.reflex
     pkgs.entr
