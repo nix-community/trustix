@@ -18,7 +18,7 @@ import (
 	"syscall"
 
 	"github.com/buger/jsonparser"
-	"github.com/nix-community/trustix/packages/trustix-nix-reprod/lib"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/lib"
 )
 
 type EvalResult struct {

@@ -3,8 +3,8 @@ package cmd
 import (
 	"database/sql"
 
-	"github.com/pressly/goose/v3"
 	schema "github.com/nix-community/trustix/packages/trustix-nix-reprod/sql"
+	"github.com/pressly/goose/v3"
 )
 
 func migrate(db *sql.DB, dialect string) error {

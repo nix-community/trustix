@@ -9,7 +9,7 @@
 package main // import "github.com/nix-community/trustix/packages/trustix-nix-reprod"
 
 import (
-	"github.com/nix-community/trustix/packages/trustix-nix-reprod/cmd"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/cmd"
 	_ "modernc.org/sqlite"
 )
 

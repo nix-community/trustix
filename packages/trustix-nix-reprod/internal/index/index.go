@@ -18,9 +18,9 @@ import (
 	"github.com/nix-community/trustix/packages/go-lib/executor"
 	"github.com/nix-community/trustix/packages/go-lib/safemap"
 	"github.com/nix-community/trustix/packages/go-lib/set"
-	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/db"
-	drvparse "github.com/nix-community/trustix/packages/trustix-nix-reprod/derivation"
-	"github.com/nix-community/trustix/packages/trustix-nix-reprod/eval"
+	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
+	drvparse "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/derivation"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/eval"
 )
 
 const sqlDialect = "sqlite"

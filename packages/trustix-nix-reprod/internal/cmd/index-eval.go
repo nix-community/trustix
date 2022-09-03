@@ -14,7 +14,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/nix-community/trustix/packages/trustix-nix-reprod/index"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/index"
 )
 
 const sqlDialect = "sqlite"
