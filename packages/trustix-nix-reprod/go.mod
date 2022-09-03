@@ -1,20 +1,20 @@
-module github.com/tweag/trustix/packages/trustix-nix-reprod
+module github.com/nix-community/trustix/packages/trustix-nix-reprod
 
 go 1.18
 
-replace github.com/tweag/trustix/packages/go-lib => ../go-lib
+replace github.com/nix-community/trustix/packages/go-lib => ../go-lib
 
 require (
 	github.com/buger/jsonparser v1.1.1
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/kyleconroy/sqlc v1.15.0
 	github.com/nix-community/go-nix v0.0.0-20220822154651-3df711b31eb2
+	github.com/nix-community/trustix/packages/go-lib v0.0.0-00010101000000-000000000000
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/pressly/goose v2.7.0+incompatible
 	github.com/pressly/goose/v3 v3.6.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.5.0
-	github.com/tweag/trustix/packages/go-lib v0.0.0-00010101000000-000000000000
 	modernc.org/sqlite v1.18.1
 )
 

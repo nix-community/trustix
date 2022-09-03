@@ -15,12 +15,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tweag/trustix/packages/go-lib/executor"
-	"github.com/tweag/trustix/packages/go-lib/safemap"
-	"github.com/tweag/trustix/packages/go-lib/set"
-	idb "github.com/tweag/trustix/packages/trustix-nix-reprod/db"
-	drvparse "github.com/tweag/trustix/packages/trustix-nix-reprod/derivation"
-	"github.com/tweag/trustix/packages/trustix-nix-reprod/eval"
+	"github.com/nix-community/trustix/packages/go-lib/executor"
+	"github.com/nix-community/trustix/packages/go-lib/safemap"
+	"github.com/nix-community/trustix/packages/go-lib/set"
+	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/db"
+	drvparse "github.com/nix-community/trustix/packages/trustix-nix-reprod/derivation"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/eval"
 )
 
 const sqlDialect = "sqlite"

@@ -1,4 +1,4 @@
-module github.com/tweag/trustix/packages/go-lib
+module github.com/nix-community/trustix/packages/go-lib
 
 go 1.18
 

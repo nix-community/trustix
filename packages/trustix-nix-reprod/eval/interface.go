@@ -10,7 +10,7 @@ package eval
 
 import (
 	"context"
-	"github.com/tweag/trustix/packages/trustix-nix-reprod/lib"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/lib"
 )
 
 type Evaluator func(context.Context, *EvalConfig) (chan *lib.Result[*EvalResult], error)

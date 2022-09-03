@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/pressly/goose/v3"
-	schema "github.com/tweag/trustix/packages/trustix-nix-reprod/sql"
+	schema "github.com/nix-community/trustix/packages/trustix-nix-reprod/sql"
 )
 
 func migrate(db *sql.DB, dialect string) error {
