@@ -6,38 +6,32 @@
 //
 // You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package cmd
+package index
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
 
-	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/index"
-	"github.com/spf13/cobra"
+	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
 )
 
-var indexLogsCommand = &cobra.Command{
-	Use:   "index-logs",
-	Short: "Index log build outputs (all known logs)",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		ctx := context.Background()
-
-		db, err := sql.Open(sqlDialect, "/home/adisbladis/foo.sqlite3?_journal_mode=WAL")
-		if err != nil {
-			return fmt.Errorf("error opening database: %w", err)
-		}
-
-		err = migrate(db, sqlDialect)
-		if err != nil {
+func IndexLogs(ctx context.Context, db *sql.DB) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("error creating db transaction: %w", err)
+	}
+	defer func() {
+		err := tx.Rollback()
+		if err != nil && err != sql.ErrTxDone {
 			panic(err)
 		}
+	}()
 
-		err = index.IndexLogs(ctx, db)
-		if err != nil {
-			panic(err)
-		}
+	queries := idb.New(db)
+	qtx := queries.WithTx(tx)
 
-		return nil
-	},
+	fmt.Println(qtx)
+
+	return nil
 }

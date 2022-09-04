@@ -13,20 +13,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/index"
+	"github.com/spf13/cobra"
 )
 
 const sqlDialect = "sqlite"
-
-// Arbitrary large number of derivations to cache
-const drvCacheSize = 30_000
-
-// Sentinel values returned when indexing a derivation with errors or filtered
-const (
-	errorID       = -1
-	fixedOutputID = -2
-)
 
 var indexEvalCommand = &cobra.Command{
 	Use:   "index-eval",

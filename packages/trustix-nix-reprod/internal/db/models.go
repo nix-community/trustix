@@ -54,6 +54,6 @@ type Evaluation struct {
 
 type Log struct {
 	ID       int64
-	Name     string
+	LogID    string
 	TreeSize int64
 }

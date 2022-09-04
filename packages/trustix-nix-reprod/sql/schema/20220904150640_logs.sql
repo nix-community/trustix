@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(255) NOT NULL,
+    log_id VARCHAR(255) NOT NULL,
     tree_size INT NOT NULL
 );
 CREATE INDEX idx_log_name ON log (name);
@@ -19,9 +19,9 @@ CREATE TABLE derivationoutputresult (
     store_path VARCHAR(255) NOT NULL REFERENCES derivationoutput (store_path),
 
     log_id INT NOT NULL REFERENCES log (id) ON DELETE CASCADE,
-    UNIQUE (output_id, log_id)
+    UNIQUE (store_path, log_id)
 );
-CREATE INDEX idx_derivationoutputresult_output_id ON derivationoutputresult (output_id);
+CREATE INDEX idx_derivationoutputresult_store_path ON derivationoutputresult (store_path);
 -- +goose StatementEnd
 
 -- +goose Down
