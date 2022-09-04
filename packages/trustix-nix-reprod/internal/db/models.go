@@ -27,6 +27,13 @@ type Derivationoutput struct {
 	DerivationID int64
 }
 
+type Derivationoutputresult struct {
+	ID         int64
+	OutputHash string
+	StorePath  string
+	LogID      int64
+}
+
 type Derivationrefdirect struct {
 	ID         int64
 	DrvID      int64
@@ -43,4 +50,10 @@ type Evaluation struct {
 	ID        int64
 	CommitSha string
 	Timestamp time.Time
+}
+
+type Log struct {
+	ID       int64
+	Name     string
+	TreeSize int64
 }
