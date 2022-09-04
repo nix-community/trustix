@@ -1,2 +1,0 @@
-all:
-	./mkproto.py
