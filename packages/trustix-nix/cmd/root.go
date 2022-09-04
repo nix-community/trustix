@@ -37,9 +37,8 @@ func initCommands() {
 	trustixSock := os.Getenv("TRUSTIX_RPC")
 	if trustixSock == "" {
 		tmpDir := "/tmp"
-		trustixSock = filepath.Join(tmpDir, "trustix.sock")
+		trustixSock = fmt.Sprintf("unix://%s", filepath.Join(tmpDir, "trustix.sock"))
 	}
-	trustixSock = fmt.Sprintf("unix://%s", trustixSock)
 
 	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
 	rootCmd.PersistentFlags().StringVar(&logID, "log-id", "", "Log ID")
