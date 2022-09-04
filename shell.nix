@@ -12,10 +12,18 @@ pkgs.mkShell {
   CGO_ENABLED = "0";
 
   buildInputs = [
+    # Format Nix expressions
     pkgs.nixpkgs-fmt
+
+    # Procfile process runner
     pkgs.hivemind
+
+    # Nix go modules code generator
     pkgs.gomod2nix
+
+    # Protobuf
     pkgs.protobuf
+    pkgs.grpcurl  # gRPC CLI
 
     pkgs.golangci-lint
 
