@@ -3,92 +3,72 @@
 
 ## Table of Contents
 
-- [api/api.proto](#api/api.proto)
-    - [GetLogAuditProofRequest](#trustix.GetLogAuditProofRequest)
-    - [GetLogConsistencyProofRequest](#trustix.GetLogConsistencyProofRequest)
-    - [GetLogEntriesRequest](#trustix.GetLogEntriesRequest)
-    - [GetMapValueRequest](#trustix.GetMapValueRequest)
-    - [KeyValuePair](#trustix.KeyValuePair)
-    - [Log](#trustix.Log)
-    - [Log.MetaEntry](#trustix.Log.MetaEntry)
-    - [LogEntriesResponse](#trustix.LogEntriesResponse)
-    - [LogHeadRequest](#trustix.LogHeadRequest)
-    - [LogSigner](#trustix.LogSigner)
-    - [LogsRequest](#trustix.LogsRequest)
-    - [LogsResponse](#trustix.LogsResponse)
-    - [MapValueResponse](#trustix.MapValueResponse)
-    - [ProofResponse](#trustix.ProofResponse)
-    - [SparseCompactMerkleProof](#trustix.SparseCompactMerkleProof)
-    - [ValueRequest](#trustix.ValueRequest)
-    - [ValueResponse](#trustix.ValueResponse)
+- [api/api.proto](#api_api-proto)
+    - [GetLogAuditProofRequest](#trustix-GetLogAuditProofRequest)
+    - [GetLogConsistencyProofRequest](#trustix-GetLogConsistencyProofRequest)
+    - [GetLogEntriesRequest](#trustix-GetLogEntriesRequest)
+    - [GetMapValueRequest](#trustix-GetMapValueRequest)
+    - [KeyValuePair](#trustix-KeyValuePair)
+    - [Log](#trustix-Log)
+    - [Log.MetaEntry](#trustix-Log-MetaEntry)
+    - [LogEntriesResponse](#trustix-LogEntriesResponse)
+    - [LogHeadRequest](#trustix-LogHeadRequest)
+    - [LogSigner](#trustix-LogSigner)
+    - [LogsRequest](#trustix-LogsRequest)
+    - [LogsResponse](#trustix-LogsResponse)
+    - [MapValueResponse](#trustix-MapValueResponse)
+    - [ProofResponse](#trustix-ProofResponse)
+    - [SparseCompactMerkleProof](#trustix-SparseCompactMerkleProof)
+    - [ValueRequest](#trustix-ValueRequest)
+    - [ValueResponse](#trustix-ValueResponse)
   
-    - [Log.LogModes](#trustix.Log.LogModes)
-    - [LogSigner.KeyTypes](#trustix.LogSigner.KeyTypes)
+    - [Log.LogModes](#trustix-Log-LogModes)
+    - [LogSigner.KeyTypes](#trustix-LogSigner-KeyTypes)
   
+    - [LogAPI](#trustix-LogAPI)
+    - [NodeAPI](#trustix-NodeAPI)
   
-    - [LogAPI](#trustix.LogAPI)
-    - [NodeAPI](#trustix.NodeAPI)
+- [rpc/rpc.proto](#rpc_rpc-proto)
+    - [DecideRequest](#trustix-DecideRequest)
+    - [DecisionResponse](#trustix-DecisionResponse)
+    - [EntriesResponse](#trustix-EntriesResponse)
+    - [EntriesResponse.EntriesEntry](#trustix-EntriesResponse-EntriesEntry)
+    - [FlushRequest](#trustix-FlushRequest)
+    - [FlushResponse](#trustix-FlushResponse)
+    - [LogValueDecision](#trustix-LogValueDecision)
+    - [LogValueResponse](#trustix-LogValueResponse)
+    - [SubmitRequest](#trustix-SubmitRequest)
+    - [SubmitResponse](#trustix-SubmitResponse)
   
-
-- [rpc/rpc.proto](#rpc/rpc.proto)
-    - [DecideRequest](#trustix.DecideRequest)
-    - [DecisionResponse](#trustix.DecisionResponse)
-    - [EntriesResponse](#trustix.EntriesResponse)
-    - [EntriesResponse.EntriesEntry](#trustix.EntriesResponse.EntriesEntry)
-    - [FlushRequest](#trustix.FlushRequest)
-    - [FlushResponse](#trustix.FlushResponse)
-    - [LogValueDecision](#trustix.LogValueDecision)
-    - [LogValueResponse](#trustix.LogValueResponse)
-    - [SubmitRequest](#trustix.SubmitRequest)
-    - [SubmitResponse](#trustix.SubmitResponse)
+    - [SubmitResponse.Status](#trustix-SubmitResponse-Status)
   
-    - [SubmitResponse.Status](#trustix.SubmitResponse.Status)
+    - [LogRPC](#trustix-LogRPC)
+    - [RPCApi](#trustix-RPCApi)
   
+- [schema/loghead.proto](#schema_loghead-proto)
+    - [LogHead](#-LogHead)
   
-    - [LogRPC](#trustix.LogRPC)
-    - [RPCApi](#trustix.RPCApi)
+- [schema/logleaf.proto](#schema_logleaf-proto)
+    - [LogLeaf](#-LogLeaf)
   
-
-- [schema/loghead.proto](#schema/loghead.proto)
-    - [LogHead](#.LogHead)
+- [schema/mapentry.proto](#schema_mapentry-proto)
+    - [MapEntry](#-MapEntry)
   
+- [schema/queue.proto](#schema_queue-proto)
+    - [SubmitQueue](#-SubmitQueue)
   
-  
-  
-
-- [schema/logleaf.proto](#schema/logleaf.proto)
-    - [LogLeaf](#.LogLeaf)
-  
-  
-  
-  
-
-- [schema/mapentry.proto](#schema/mapentry.proto)
-    - [MapEntry](#.MapEntry)
-  
-  
-  
-  
-
-- [schema/queue.proto](#schema/queue.proto)
-    - [SubmitQueue](#.SubmitQueue)
-  
-  
-  
-  
-
 - [Scalar Value Types](#scalar-value-types)
 
 
 
-<a name="api/api.proto"></a>
+<a name="api_api-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
 ## api/api.proto
 
 
 
-<a name="trustix.GetLogAuditProofRequest"></a>
+<a name="trustix-GetLogAuditProofRequest"></a>
 
 ### GetLogAuditProofRequest
 Get log audit proof for a given tree
@@ -105,7 +85,7 @@ Get log audit proof for a given tree
 
 
 
-<a name="trustix.GetLogConsistencyProofRequest"></a>
+<a name="trustix-GetLogConsistencyProofRequest"></a>
 
 ### GetLogConsistencyProofRequest
 Get a consistency proof between two given log sizes
@@ -122,7 +102,7 @@ Get a consistency proof between two given log sizes
 
 
 
-<a name="trustix.GetLogEntriesRequest"></a>
+<a name="trustix-GetLogEntriesRequest"></a>
 
 ### GetLogEntriesRequest
 
@@ -139,7 +119,7 @@ Get a consistency proof between two given log sizes
 
 
 
-<a name="trustix.GetMapValueRequest"></a>
+<a name="trustix-GetMapValueRequest"></a>
 
 ### GetMapValueRequest
 
@@ -156,7 +136,7 @@ Get a consistency proof between two given log sizes
 
 
 
-<a name="trustix.KeyValuePair"></a>
+<a name="trustix-KeyValuePair"></a>
 
 ### KeyValuePair
 
@@ -172,7 +152,7 @@ Get a consistency proof between two given log sizes
 
 
 
-<a name="trustix.Log"></a>
+<a name="trustix-Log"></a>
 
 ### Log
 
@@ -181,17 +161,17 @@ Get a consistency proof between two given log sizes
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | LogID | [string](#string) | required |  |
-| Mode | [Log.LogModes](#trustix.Log.LogModes) | required |  |
+| Mode | [Log.LogModes](#trustix-Log-LogModes) | required |  |
 | Protocol | [string](#string) | required |  |
-| Signer | [LogSigner](#trustix.LogSigner) | required |  |
-| Meta | [Log.MetaEntry](#trustix.Log.MetaEntry) | repeated |  |
+| Signer | [LogSigner](#trustix-LogSigner) | required |  |
+| Meta | [Log.MetaEntry](#trustix-Log-MetaEntry) | repeated |  |
 
 
 
 
 
 
-<a name="trustix.Log.MetaEntry"></a>
+<a name="trustix-Log-MetaEntry"></a>
 
 ### Log.MetaEntry
 
@@ -207,7 +187,7 @@ Get a consistency proof between two given log sizes
 
 
 
-<a name="trustix.LogEntriesResponse"></a>
+<a name="trustix-LogEntriesResponse"></a>
 
 ### LogEntriesResponse
 
@@ -222,7 +202,7 @@ Get a consistency proof between two given log sizes
 
 
 
-<a name="trustix.LogHeadRequest"></a>
+<a name="trustix-LogHeadRequest"></a>
 
 ### LogHeadRequest
 Request a signed head for a given log
@@ -237,7 +217,7 @@ Request a signed head for a given log
 
 
 
-<a name="trustix.LogSigner"></a>
+<a name="trustix-LogSigner"></a>
 
 ### LogSigner
 
@@ -245,7 +225,7 @@ Request a signed head for a given log
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| KeyType | [LogSigner.KeyTypes](#trustix.LogSigner.KeyTypes) | required |  |
+| KeyType | [LogSigner.KeyTypes](#trustix-LogSigner-KeyTypes) | required |  |
 | Public | [string](#string) | required |  |
 
 
@@ -253,7 +233,7 @@ Request a signed head for a given log
 
 
 
-<a name="trustix.LogsRequest"></a>
+<a name="trustix-LogsRequest"></a>
 
 ### LogsRequest
 
@@ -263,7 +243,7 @@ Request a signed head for a given log
 
 
 
-<a name="trustix.LogsResponse"></a>
+<a name="trustix-LogsResponse"></a>
 
 ### LogsResponse
 
@@ -271,14 +251,14 @@ Request a signed head for a given log
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Logs | [Log](#trustix.Log) | repeated |  |
+| Logs | [Log](#trustix-Log) | repeated |  |
 
 
 
 
 
 
-<a name="trustix.MapValueResponse"></a>
+<a name="trustix-MapValueResponse"></a>
 
 ### MapValueResponse
 
@@ -287,14 +267,14 @@ Request a signed head for a given log
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | Value | [bytes](#bytes) | required | Note that the Value field is actually a MapEntry but we need to return the marshaled version as that&#39;s what the proof is created from |
-| Proof | [SparseCompactMerkleProof](#trustix.SparseCompactMerkleProof) | required |  |
+| Proof | [SparseCompactMerkleProof](#trustix-SparseCompactMerkleProof) | required |  |
 
 
 
 
 
 
-<a name="trustix.ProofResponse"></a>
+<a name="trustix-ProofResponse"></a>
 
 ### ProofResponse
 
@@ -309,7 +289,7 @@ Request a signed head for a given log
 
 
 
-<a name="trustix.SparseCompactMerkleProof"></a>
+<a name="trustix-SparseCompactMerkleProof"></a>
 
 ### SparseCompactMerkleProof
 Sparse merkle tree proof
@@ -327,7 +307,7 @@ Sparse merkle tree proof
 
 
 
-<a name="trustix.ValueRequest"></a>
+<a name="trustix-ValueRequest"></a>
 
 ### ValueRequest
 
@@ -342,7 +322,7 @@ Sparse merkle tree proof
 
 
 
-<a name="trustix.ValueResponse"></a>
+<a name="trustix-ValueResponse"></a>
 
 ### ValueResponse
 
@@ -359,7 +339,7 @@ Sparse merkle tree proof
  
 
 
-<a name="trustix.Log.LogModes"></a>
+<a name="trustix-Log-LogModes"></a>
 
 ### Log.LogModes
 
@@ -370,7 +350,7 @@ Sparse merkle tree proof
 
 
 
-<a name="trustix.LogSigner.KeyTypes"></a>
+<a name="trustix-LogSigner-KeyTypes"></a>
 
 ### LogSigner.KeyTypes
 
@@ -385,24 +365,24 @@ Sparse merkle tree proof
  
 
 
-<a name="trustix.LogAPI"></a>
+<a name="trustix-LogAPI"></a>
 
 ### LogAPI
 LogAPI is a logical grouping for RPC methods that are specific to a given log.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetHead | [LogHeadRequest](#trustix.LogHeadRequest) | [.LogHead](#LogHead) | Get signed head |
-| GetLogConsistencyProof | [GetLogConsistencyProofRequest](#trustix.GetLogConsistencyProofRequest) | [ProofResponse](#trustix.ProofResponse) |  |
-| GetLogAuditProof | [GetLogAuditProofRequest](#trustix.GetLogAuditProofRequest) | [ProofResponse](#trustix.ProofResponse) |  |
-| GetLogEntries | [GetLogEntriesRequest](#trustix.GetLogEntriesRequest) | [LogEntriesResponse](#trustix.LogEntriesResponse) |  |
-| GetMapValue | [GetMapValueRequest](#trustix.GetMapValueRequest) | [MapValueResponse](#trustix.MapValueResponse) |  |
-| GetMHLogConsistencyProof | [GetLogConsistencyProofRequest](#trustix.GetLogConsistencyProofRequest) | [ProofResponse](#trustix.ProofResponse) |  |
-| GetMHLogAuditProof | [GetLogAuditProofRequest](#trustix.GetLogAuditProofRequest) | [ProofResponse](#trustix.ProofResponse) |  |
-| GetMHLogEntries | [GetLogEntriesRequest](#trustix.GetLogEntriesRequest) | [LogEntriesResponse](#trustix.LogEntriesResponse) |  |
+| GetHead | [LogHeadRequest](#trustix-LogHeadRequest) | [.LogHead](#LogHead) | Get signed head |
+| GetLogConsistencyProof | [GetLogConsistencyProofRequest](#trustix-GetLogConsistencyProofRequest) | [ProofResponse](#trustix-ProofResponse) |  |
+| GetLogAuditProof | [GetLogAuditProofRequest](#trustix-GetLogAuditProofRequest) | [ProofResponse](#trustix-ProofResponse) |  |
+| GetLogEntries | [GetLogEntriesRequest](#trustix-GetLogEntriesRequest) | [LogEntriesResponse](#trustix-LogEntriesResponse) |  |
+| GetMapValue | [GetMapValueRequest](#trustix-GetMapValueRequest) | [MapValueResponse](#trustix-MapValueResponse) |  |
+| GetMHLogConsistencyProof | [GetLogConsistencyProofRequest](#trustix-GetLogConsistencyProofRequest) | [ProofResponse](#trustix-ProofResponse) |  |
+| GetMHLogAuditProof | [GetLogAuditProofRequest](#trustix-GetLogAuditProofRequest) | [ProofResponse](#trustix-ProofResponse) |  |
+| GetMHLogEntries | [GetLogEntriesRequest](#trustix-GetLogEntriesRequest) | [LogEntriesResponse](#trustix-LogEntriesResponse) |  |
 
 
-<a name="trustix.NodeAPI"></a>
+<a name="trustix-NodeAPI"></a>
 
 ### NodeAPI
 NodeAPI is a logical grouping for RPC methods that are for the entire node
@@ -410,21 +390,21 @@ rather than individual logs.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Logs | [LogsRequest](#trustix.LogsRequest) | [LogsResponse](#trustix.LogsResponse) | Get a list of all logs published by this node |
-| GetValue | [ValueRequest](#trustix.ValueRequest) | [ValueResponse](#trustix.ValueResponse) | Get values by their content-address |
+| Logs | [LogsRequest](#trustix-LogsRequest) | [LogsResponse](#trustix-LogsResponse) | Get a list of all logs published by this node |
+| GetValue | [ValueRequest](#trustix-ValueRequest) | [ValueResponse](#trustix-ValueResponse) | Get values by their content-address |
 
  
 
 
 
-<a name="rpc/rpc.proto"></a>
+<a name="rpc_rpc-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
 ## rpc/rpc.proto
 
 
 
-<a name="trustix.DecideRequest"></a>
+<a name="trustix-DecideRequest"></a>
 
 ### DecideRequest
 
@@ -440,7 +420,7 @@ rather than individual logs.
 
 
 
-<a name="trustix.DecisionResponse"></a>
+<a name="trustix-DecisionResponse"></a>
 
 ### DecisionResponse
 
@@ -448,8 +428,8 @@ rather than individual logs.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Decision | [LogValueDecision](#trustix.LogValueDecision) | required |  |
-| Mismatches | [LogValueResponse](#trustix.LogValueResponse) | repeated | Non-matches (hash mismatch) |
+| Decision | [LogValueDecision](#trustix-LogValueDecision) | required |  |
+| Mismatches | [LogValueResponse](#trustix-LogValueResponse) | repeated | Non-matches (hash mismatch) |
 | Misses | [string](#string) | repeated | Full misses (log ids missing log entry entirely) |
 
 
@@ -457,7 +437,7 @@ rather than individual logs.
 
 
 
-<a name="trustix.EntriesResponse"></a>
+<a name="trustix-EntriesResponse"></a>
 
 ### EntriesResponse
 
@@ -466,14 +446,14 @@ rather than individual logs.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | Key | [bytes](#bytes) | required |  |
-| Entries | [EntriesResponse.EntriesEntry](#trustix.EntriesResponse.EntriesEntry) | repeated |  |
+| Entries | [EntriesResponse.EntriesEntry](#trustix-EntriesResponse-EntriesEntry) | repeated |  |
 
 
 
 
 
 
-<a name="trustix.EntriesResponse.EntriesEntry"></a>
+<a name="trustix-EntriesResponse-EntriesEntry"></a>
 
 ### EntriesResponse.EntriesEntry
 
@@ -489,7 +469,7 @@ rather than individual logs.
 
 
 
-<a name="trustix.FlushRequest"></a>
+<a name="trustix-FlushRequest"></a>
 
 ### FlushRequest
 
@@ -504,7 +484,7 @@ rather than individual logs.
 
 
 
-<a name="trustix.FlushResponse"></a>
+<a name="trustix-FlushResponse"></a>
 
 ### FlushResponse
 
@@ -514,7 +494,7 @@ rather than individual logs.
 
 
 
-<a name="trustix.LogValueDecision"></a>
+<a name="trustix-LogValueDecision"></a>
 
 ### LogValueDecision
 
@@ -532,7 +512,7 @@ rather than individual logs.
 
 
 
-<a name="trustix.LogValueResponse"></a>
+<a name="trustix-LogValueResponse"></a>
 
 ### LogValueResponse
 
@@ -548,7 +528,7 @@ rather than individual logs.
 
 
 
-<a name="trustix.SubmitRequest"></a>
+<a name="trustix-SubmitRequest"></a>
 
 ### SubmitRequest
 
@@ -557,14 +537,14 @@ rather than individual logs.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | LogID | [string](#string) | required |  |
-| Items | [KeyValuePair](#trustix.KeyValuePair) | repeated |  |
+| Items | [KeyValuePair](#trustix-KeyValuePair) | repeated |  |
 
 
 
 
 
 
-<a name="trustix.SubmitResponse"></a>
+<a name="trustix-SubmitResponse"></a>
 
 ### SubmitResponse
 
@@ -572,7 +552,7 @@ rather than individual logs.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| status | [SubmitResponse.Status](#trustix.SubmitResponse.Status) | required |  |
+| status | [SubmitResponse.Status](#trustix-SubmitResponse-Status) | required |  |
 
 
 
@@ -581,7 +561,7 @@ rather than individual logs.
  
 
 
-<a name="trustix.SubmitResponse.Status"></a>
+<a name="trustix-SubmitResponse-Status"></a>
 
 ### SubmitResponse.Status
 
@@ -596,7 +576,7 @@ rather than individual logs.
  
 
 
-<a name="trustix.LogRPC"></a>
+<a name="trustix-LogRPC"></a>
 
 ### LogRPC
 RPCApi are &#34;private&#34; rpc methods for an instance related to a specific log.
@@ -604,13 +584,13 @@ This should only be available to trusted parties.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetHead | [LogHeadRequest](#trustix.LogHeadRequest) | [.LogHead](#LogHead) |  |
-| GetLogEntries | [GetLogEntriesRequest](#trustix.GetLogEntriesRequest) | [LogEntriesResponse](#trustix.LogEntriesResponse) |  |
-| Submit | [SubmitRequest](#trustix.SubmitRequest) | [SubmitResponse](#trustix.SubmitResponse) |  |
-| Flush | [FlushRequest](#trustix.FlushRequest) | [FlushResponse](#trustix.FlushResponse) |  |
+| GetHead | [LogHeadRequest](#trustix-LogHeadRequest) | [.LogHead](#LogHead) |  |
+| GetLogEntries | [GetLogEntriesRequest](#trustix-GetLogEntriesRequest) | [LogEntriesResponse](#trustix-LogEntriesResponse) |  |
+| Submit | [SubmitRequest](#trustix-SubmitRequest) | [SubmitResponse](#trustix-SubmitResponse) |  |
+| Flush | [FlushRequest](#trustix-FlushRequest) | [FlushResponse](#trustix-FlushResponse) |  |
 
 
-<a name="trustix.RPCApi"></a>
+<a name="trustix-RPCApi"></a>
 
 ### RPCApi
 RPCApi are &#34;private&#34; rpc methods for an instance.
@@ -618,22 +598,22 @@ This should only be available to trusted parties.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Logs | [LogsRequest](#trustix.LogsRequest) | [LogsResponse](#trustix.LogsResponse) | Get a list of all logs published/subscribed by this node |
-| Decide | [DecideRequest](#trustix.DecideRequest) | [DecisionResponse](#trustix.DecisionResponse) | Decide on an output for key based on the configured decision method |
-| GetValue | [ValueRequest](#trustix.ValueRequest) | [ValueResponse](#trustix.ValueResponse) | Get values by their content-address |
+| Logs | [LogsRequest](#trustix-LogsRequest) | [LogsResponse](#trustix-LogsResponse) | Get a list of all logs published/subscribed by this node |
+| Decide | [DecideRequest](#trustix-DecideRequest) | [DecisionResponse](#trustix-DecisionResponse) | Decide on an output for key based on the configured decision method |
+| GetValue | [ValueRequest](#trustix-ValueRequest) | [ValueResponse](#trustix-ValueResponse) | Get values by their content-address |
 
  
 
 
 
-<a name="schema/loghead.proto"></a>
+<a name="schema_loghead-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
 ## schema/loghead.proto
 
 
 
-<a name=".LogHead"></a>
+<a name="-LogHead"></a>
 
 ### LogHead
 Log
@@ -662,14 +642,14 @@ Log
 
 
 
-<a name="schema/logleaf.proto"></a>
+<a name="schema_logleaf-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
 ## schema/logleaf.proto
 
 
 
-<a name=".LogLeaf"></a>
+<a name="-LogLeaf"></a>
 
 ### LogLeaf
 Leaf value of a merkle tree
@@ -695,14 +675,14 @@ Leaf value of a merkle tree
 
 
 
-<a name="schema/mapentry.proto"></a>
+<a name="schema_mapentry-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
 ## schema/mapentry.proto
 
 
 
-<a name=".MapEntry"></a>
+<a name="-MapEntry"></a>
 
 ### MapEntry
 
@@ -727,14 +707,14 @@ Leaf value of a merkle tree
 
 
 
-<a name="schema/queue.proto"></a>
+<a name="schema_queue-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
 ## schema/queue.proto
 
 
 
-<a name=".SubmitQueue"></a>
+<a name="-SubmitQueue"></a>
 
 ### SubmitQueue
 This type is internal only and not guaranteed stable
@@ -761,21 +741,21 @@ This type is internal only and not guaranteed stable
 
 ## Scalar Value Types
 
-| .proto Type | Notes | C++ Type | Java Type | Python Type |
-| ----------- | ----- | -------- | --------- | ----------- |
-| <a name="double" /> double |  | double | double | float |
-| <a name="float" /> float |  | float | float | float |
-| <a name="int32" /> int32 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. | int32 | int | int |
-| <a name="int64" /> int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead. | int64 | long | int/long |
-| <a name="uint32" /> uint32 | Uses variable-length encoding. | uint32 | int | int/long |
-| <a name="uint64" /> uint64 | Uses variable-length encoding. | uint64 | long | int/long |
-| <a name="sint32" /> sint32 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s. | int32 | int | int |
-| <a name="sint64" /> sint64 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s. | int64 | long | int/long |
-| <a name="fixed32" /> fixed32 | Always four bytes. More efficient than uint32 if values are often greater than 2^28. | uint32 | int | int |
-| <a name="fixed64" /> fixed64 | Always eight bytes. More efficient than uint64 if values are often greater than 2^56. | uint64 | long | int/long |
-| <a name="sfixed32" /> sfixed32 | Always four bytes. | int32 | int | int |
-| <a name="sfixed64" /> sfixed64 | Always eight bytes. | int64 | long | int/long |
-| <a name="bool" /> bool |  | bool | boolean | boolean |
-| <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode |
-| <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str |
+| .proto Type | Notes | C++ | Java | Python | Go | C# | PHP | Ruby |
+| ----------- | ----- | --- | ---- | ------ | -- | -- | --- | ---- |
+| <a name="double" /> double |  | double | double | float | float64 | double | float | Float |
+| <a name="float" /> float |  | float | float | float | float32 | float | float | Float |
+| <a name="int32" /> int32 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
+| <a name="int64" /> int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead. | int64 | long | int/long | int64 | long | integer/string | Bignum |
+| <a name="uint32" /> uint32 | Uses variable-length encoding. | uint32 | int | int/long | uint32 | uint | integer | Bignum or Fixnum (as required) |
+| <a name="uint64" /> uint64 | Uses variable-length encoding. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum or Fixnum (as required) |
+| <a name="sint32" /> sint32 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
+| <a name="sint64" /> sint64 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s. | int64 | long | int/long | int64 | long | integer/string | Bignum |
+| <a name="fixed32" /> fixed32 | Always four bytes. More efficient than uint32 if values are often greater than 2^28. | uint32 | int | int | uint32 | uint | integer | Bignum or Fixnum (as required) |
+| <a name="fixed64" /> fixed64 | Always eight bytes. More efficient than uint64 if values are often greater than 2^56. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum |
+| <a name="sfixed32" /> sfixed32 | Always four bytes. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
+| <a name="sfixed64" /> sfixed64 | Always eight bytes. | int64 | long | int/long | int64 | long | integer/string | Bignum |
+| <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
+| <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
+| <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
 
