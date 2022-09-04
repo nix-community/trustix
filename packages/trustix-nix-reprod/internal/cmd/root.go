@@ -14,13 +14,16 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/adrg/xdg"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 var once sync.Once
 
+// Dial address to trustix daemon
 var dialAddress string
+var stateDirectory string
 
 var rootCmd = &cobra.Command{
 	Use:   "trustix-nix-reprod",
@@ -32,13 +35,23 @@ var rootCmd = &cobra.Command{
 }
 
 func initCommands() {
-	trustixSock := os.Getenv("TRUSTIX_RPC")
-	if trustixSock == "" {
-		tmpDir := "/tmp"
-		trustixSock = fmt.Sprintf("unix://%s", filepath.Join(tmpDir, "trustix.sock"))
+
+	// Trustix daemon RPC flag
+	{
+		trustixSock := os.Getenv("TRUSTIX_RPC")
+		if trustixSock == "" {
+			tmpDir := "/tmp"
+			trustixSock = fmt.Sprintf("unix://%s", filepath.Join(tmpDir, "trustix.sock"))
+		}
+
+		rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
 	}
 
-	rootCmd.PersistentFlags().StringVar(&dialAddress, "address", trustixSock, "Connect to address")
+	// State directory
+	{
+		defaultStateDir := filepath.Join(xdg.DataHome, "trustix-nix-reprod")
+		rootCmd.PersistentFlags().StringVar(&stateDirectory, "state", defaultStateDir, "State directory")
+	}
 
 	log.SetLevel(log.DebugLevel)
 	log.SetOutput(os.Stderr)

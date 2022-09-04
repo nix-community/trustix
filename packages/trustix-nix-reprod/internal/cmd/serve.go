@@ -9,6 +9,8 @@
 package cmd
 
 import (
+	"time"
+
 	"github.com/spf13/cobra"
 )
 
@@ -16,6 +18,11 @@ var serveCommand = &cobra.Command{
 	Use:   "serve",
 	Short: "Run server",
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		for {
+			time.Sleep(1 * time.Second)
+		}
+
 		return nil
 	},
 }

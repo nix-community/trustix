@@ -20,6 +20,7 @@ require (
 
 require (
 	github.com/ClickHouse/clickhouse-go v1.5.4 // indirect
+	github.com/adrg/xdg v0.4.0 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220826213629-cd8f367ca010 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/bytecodealliance/wasmtime-go v0.40.0 // indirect

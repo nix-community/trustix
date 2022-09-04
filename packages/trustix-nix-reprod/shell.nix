@@ -14,6 +14,6 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
-    NIX_REPROD_STATE_DIR="$STATE_DIR/nix-reprod"
+    export TRUSTIX_NIX_REPROD_STATE_DIR="$STATE_DIR/nix-reprod"
   '';
 }

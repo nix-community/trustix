@@ -4,6 +4,9 @@ schema = 3
   [mod."github.com/ClickHouse/clickhouse-go"]
     version = "v1.5.4"
     hash = "sha256-De5oreE/B/y5fjlFzxDafjr7wGjnAPPooqOFTGtuSoA="
+  [mod."github.com/adrg/xdg"]
+    version = "v0.4.0"
+    hash = "sha256-zGjkdUQmrVqD6rMO9oDY+TeJCpuqnHyvkPCaXDlac/U="
   [mod."github.com/antlr/antlr4/runtime/Go/antlr"]
     version = "v0.0.0-20220826213629-cd8f367ca010"
     hash = "sha256-QZn1eltqxkZYvf7g/GQv6HftH+OuKJTVjIjyyHZw9jI="

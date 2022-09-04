@@ -22,8 +22,7 @@ import (
 	"time"
 
 	"github.com/coreos/go-systemd/activation"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
+	"github.com/nix-community/trustix/packages/go-lib/executor"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"github.com/nix-community/trustix/packages/trustix/client"
@@ -31,7 +30,6 @@ import (
 	conf "github.com/nix-community/trustix/packages/trustix/internal/config"
 	"github.com/nix-community/trustix/packages/trustix/internal/constants"
 	"github.com/nix-community/trustix/packages/trustix/internal/decider"
-	"github.com/nix-community/trustix/packages/go-lib/executor"
 	"github.com/nix-community/trustix/packages/trustix/internal/lib"
 	"github.com/nix-community/trustix/packages/trustix/internal/pool"
 	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
@@ -40,6 +38,8 @@ import (
 	"github.com/nix-community/trustix/packages/trustix/internal/signer"
 	"github.com/nix-community/trustix/packages/trustix/internal/sthsync"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
 
