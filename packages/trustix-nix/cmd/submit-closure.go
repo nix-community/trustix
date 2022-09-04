@@ -12,17 +12,17 @@ import (
 	"os/exec"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"github.com/nix-community/trustix/packages/trustix/client"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 var submitClosureCommand = &cobra.Command{
 	Use:   "submit-closure",
-	Short: "Submit an entire closur for inclusion in the log (development/testing ONLY)",
-	Long: `Submit an entire closur for inclusion in the log.
+	Short: "Submit an entire closure for inclusion in the log (development/testing ONLY)",
+	Long: `Submit an entire closure for inclusion in the log.
            This is meant for development use ONLY as it will submit all packages, even substituted ones.`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
