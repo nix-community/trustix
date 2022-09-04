@@ -25,9 +25,9 @@ schema = 3
   [mod."github.com/golang/protobuf"]
     version = "v1.5.2"
     hash = "sha256-IVwooaIo46iq7euSSVWTBAdKd+2DUaJ67MtBao1DpBI="
-  [mod."github.com/grpc-ecosystem/grpc-gateway/v2"]
-    version = "v2.11.3"
-    hash = "sha256-jnuNObVfKtdS/YZWNG17aRtKskG3gieSHGOBgyOcTmg="
+  [mod."github.com/google/go-cmp"]
+    version = "v0.5.8"
+    hash = "sha256-8zkIo+Sr1NXMnj3PNmvjX2sZKnAKWXOFvmnX7D9bwxQ="
   [mod."github.com/hashicorp/go-immutable-radix"]
     version = "v1.3.1"
     hash = "sha256-65+A2HiVfS/GV9G+6/TkXXjzXhI/V98e6RlJWjxy+mg="
