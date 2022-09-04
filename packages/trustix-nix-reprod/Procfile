@@ -1,0 +1,3 @@
+build: reflex -r '\.go$' go build
+sqlc: reflex -r '\.sql$' sqlc generate
+serve: go build && ../../tools/wait_for_file trustix-nix-reprod && echo trustix-nix-reprod | entr -r ./trustix-nix-reprod serve
