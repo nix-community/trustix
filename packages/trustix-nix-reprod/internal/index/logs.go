@@ -14,9 +14,22 @@ import (
 	"fmt"
 
 	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
+	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix/client"
 )
 
-func IndexLogs(ctx context.Context, db *sql.DB) error {
+func IndexLogs(ctx context.Context, db *sql.DB, client *client.Client) error {
+	logsResp, err := client.NodeAPI.Logs(ctx, &api.LogsRequest{})
+	if err != nil {
+		return fmt.Errorf("error getting logs list: %w", err)
+	}
+
+	fmt.Println(logsResp)
+
+	if true {
+		return nil
+	}
+
 	tx, err := db.Begin()
 	if err != nil {
 		return fmt.Errorf("error creating db transaction: %w", err)

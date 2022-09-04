@@ -14,6 +14,7 @@ import (
 	"fmt"
 
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/index"
+	tclient "github.com/nix-community/trustix/packages/trustix/client"
 	"github.com/spf13/cobra"
 )
 
@@ -33,9 +34,16 @@ var indexLogsCommand = &cobra.Command{
 			panic(err)
 		}
 
-		err = index.IndexLogs(ctx, db)
-		if err != nil {
-			panic(err)
+		{
+			client, err := tclient.CreateClientConnectConn(dialAddress)
+			if err != nil {
+				panic(err)
+			}
+
+			err = index.IndexLogs(ctx, db, client)
+			if err != nil {
+				panic(err)
+			}
 		}
 
 		return nil

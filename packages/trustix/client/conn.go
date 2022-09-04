@@ -11,16 +11,16 @@ package client
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"net/url"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	tgrpc "github.com/nix-community/trustix/packages/trustix/internal/grpc"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
 func CreateClientConn(address string) (*Client, error) {
-
 	u, err := url.Parse(address)
 	if err != nil {
 		return nil, err
@@ -53,6 +53,22 @@ func CreateClientConn(address string) (*Client, error) {
 	}
 
 	return client, nil
+}
+
+func CreateClientConnectConn(URL string) (*Client, error) {
+	// TODO: UNIX socket support
+	client := &http.Client{}
+
+	log.WithFields(log.Fields{
+		"address": URL,
+	}).Debug("Creating client for remote")
+
+	return &Client{
+		LogAPI:  newLogAPIConnectClient(client, URL),
+		RpcAPI:  newRpcAPIConnectClient(client, URL),
+		NodeAPI: newNodeAPIConnectClient(client, URL),
+		LogRPC:  newLogRPCConnectClient(client, URL),
+	}, nil
 }
 
 // Create a context with the default timeout set

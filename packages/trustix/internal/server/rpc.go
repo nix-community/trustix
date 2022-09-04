@@ -16,7 +16,6 @@ import (
 	"sync"
 
 	"github.com/lazyledger/smt"
-	log "github.com/sirupsen/logrus"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
@@ -26,6 +25,7 @@ import (
 	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	pub "github.com/nix-community/trustix/packages/trustix/internal/publisher"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
+	log "github.com/sirupsen/logrus"
 )
 
 type RPCServer struct {

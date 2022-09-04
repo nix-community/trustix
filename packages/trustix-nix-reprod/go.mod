@@ -2,7 +2,11 @@ module github.com/nix-community/trustix/packages/trustix-nix-reprod
 
 go 1.18
 
-replace github.com/nix-community/trustix/packages/go-lib => ../go-lib
+replace (
+	github.com/nix-community/trustix/packages/go-lib => ../go-lib
+	github.com/nix-community/trustix/packages/trustix => ../trustix
+	github.com/nix-community/trustix/packages/trustix-proto => ../trustix-proto
+)
 
 require (
 	github.com/adrg/xdg v0.4.0
@@ -12,6 +16,8 @@ require (
 	github.com/kyleconroy/sqlc v1.15.0
 	github.com/nix-community/go-nix v0.0.0-20220822154651-3df711b31eb2
 	github.com/nix-community/trustix/packages/go-lib v0.0.0-00010101000000-000000000000
+	github.com/nix-community/trustix/packages/trustix v0.0.0-20220831055858-ad6617ff041f
+	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20220831055858-ad6617ff041f
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/pressly/goose v2.7.0+incompatible
 	github.com/pressly/goose/v3 v3.6.1
@@ -39,6 +45,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/klauspost/cpuid/v2 v2.1.1 // indirect
+	github.com/kr/pretty v0.3.0 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-sqlite3 v1.14.15 // indirect
@@ -46,7 +53,6 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/multiformats/go-multihash v0.2.1 // indirect
 	github.com/multiformats/go-varint v0.0.6 // indirect
-	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pganalyze/pg_query_go/v2 v2.1.2 // indirect
 	github.com/pingcap/errors v0.11.5-0.20210425183316-da1aaba5fb63 // indirect
 	github.com/pingcap/log v1.1.0 // indirect
@@ -62,10 +68,13 @@ require (
 	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90 // indirect
 	golang.org/x/exp v0.0.0-20220827204233-334a2380cb91 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
+	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b // indirect
 	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
-	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
+	google.golang.org/genproto v0.0.0-20220829175752-36a9c930ecbf // indirect
+	google.golang.org/grpc v1.49.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
