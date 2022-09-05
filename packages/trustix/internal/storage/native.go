@@ -28,12 +28,12 @@ func (t *nativeTxn) Get(bucket *Bucket, key []byte) ([]byte, error) {
 	// TODO: Better bucket scheme
 	b := t.txn.Bucket([]byte(bucket.Join()))
 	if b == nil {
-		return nil, ObjectNotFoundError
+		return nil, objectNotFoundError(key)
 	}
 
 	val := b.Get(key)
 	if val == nil {
-		return nil, ObjectNotFoundError
+		return nil, objectNotFoundError(key)
 	}
 
 	return val, nil
