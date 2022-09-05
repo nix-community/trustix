@@ -15,9 +15,11 @@ import (
 	"fmt"
 	"sync"
 
+	connect "github.com/bufbuild/connect-go"
 	"github.com/lazyledger/smt"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
-	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
+	"github.com/nix-community/trustix/packages/trustix-proto/rpc"
+	"github.com/nix-community/trustix/packages/trustix-proto/rpc/rpcconnect"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/client"
 	"github.com/nix-community/trustix/packages/trustix/internal/decider"
@@ -29,7 +31,8 @@ import (
 )
 
 type RPCServer struct {
-	pb.UnimplementedRPCApiServer
+	rpcconnect.UnimplementedRPCApiHandler
+
 	decider    map[string]decider.LogDecider
 	store      storage.Storage
 	publishers *pub.PublisherMap
@@ -65,26 +68,33 @@ func parseProof(p *api.SparseCompactMerkleProof) smt.SparseCompactMerkleProof {
 	}
 }
 
-func (l *RPCServer) GetLogEntries(ctx context.Context, in *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
+func (l *RPCServer) GetLogEntries(ctx context.Context, req *connect.Request[api.GetLogEntriesRequest]) (*connect.Response[api.LogEntriesResponse], error) {
+	msg := req.Msg
 
-	client, err := l.clients.Get(*in.LogID)
+	client, err := l.clients.Get(*msg.LogID)
 	if err != nil {
 		return nil, err
 	}
 
-	return client.LogAPI.GetLogEntries(ctx, &api.GetLogEntriesRequest{
-		LogID:  in.LogID,
-		Start:  in.Start,
-		Finish: in.Finish,
+	resp, err := client.LogAPI.GetLogEntries(ctx, &api.GetLogEntriesRequest{
+		LogID:  msg.LogID,
+		Start:  msg.Start,
+		Finish: msg.Finish,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }
 
-func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.DecisionResponse, error) {
+func (l *RPCServer) Decide(ctx context.Context, req *connect.Request[rpc.DecideRequest]) (*connect.Response[rpc.DecisionResponse], error) {
+	msg := req.Msg
 
-	hexInput := hex.EncodeToString(in.Key)
+	hexInput := hex.EncodeToString(msg.Key)
 	log.WithField("key", hexInput).Info("Received Decide request")
 
-	pd, err := protocols.Get(*in.Protocol)
+	pd, err := protocols.Get(*msg.Protocol)
 	if err != nil {
 		return nil, fmt.Errorf("Unknown protocol: %w", err)
 	}
@@ -153,7 +163,7 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 			}
 			resp, err := clients[logID].LogAPI.GetMapValue(ctx, &api.GetMapValueRequest{
 				LogID:   &logID,
-				Key:     in.Key,
+				Key:     msg.Key,
 				MapRoot: sth.MapRoot,
 			})
 			if err != nil {
@@ -161,7 +171,7 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 				return
 			}
 
-			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, in.Key, resp.Value, pd.NewHash())
+			valid := smt.VerifyCompactProof(parseProof(resp.Proof), sth.MapRoot, msg.Key, resp.Value, pd.NewHash())
 			if !valid {
 				log.Error("SMT proof verification failed")
 				return
@@ -198,7 +208,7 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 
 	wg.Wait()
 
-	resp := &pb.DecisionResponse{
+	resp := &rpc.DecisionResponse{
 		Misses: misses,
 	}
 
@@ -236,7 +246,7 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 				value = resp.Value
 			}
 
-			resp.Decision = &pb.LogValueDecision{
+			resp.Decision = &rpc.LogValueDecision{
 				LogIDs:     logIDs,
 				Digest:     outputHash,
 				Confidence: &confidence,
@@ -258,17 +268,17 @@ func (l *RPCServer) Decide(ctx context.Context, in *pb.DecideRequest) (*pb.Decis
 			return nil, err
 		}
 
-		resp.Mismatches = append(resp.Mismatches, &pb.LogValueResponse{
+		resp.Mismatches = append(resp.Mismatches, &rpc.LogValueResponse{
 			LogID:  &input.LogID,
 			Digest: digest,
 		})
 	}
 
-	return resp, nil
-
+	return connect.NewResponse(resp), nil
 }
 
-func (l *RPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
+func (l *RPCServer) GetValue(ctx context.Context, req *connect.Request[api.ValueRequest]) (*connect.Response[api.ValueResponse], error) {
+	msg := req.Msg
 
 	log.Info("Received Value request")
 
@@ -283,7 +293,7 @@ func (l *RPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.Va
 			continue
 		}
 
-		resp, err := client.NodeAPI.GetValue(ctx, in)
+		resp, err := client.NodeAPI.GetValue(ctx, msg)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"logID": logID,
@@ -292,14 +302,16 @@ func (l *RPCServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.Va
 			continue
 		}
 
-		return resp, nil
+		return connect.NewResponse(resp), nil
 	}
 
 	return nil, fmt.Errorf("Value could not be retreived")
 }
 
-func (l *RPCServer) Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error) {
-	return &api.LogsResponse{
+func (l *RPCServer) Logs(ctx context.Context, req *connect.Request[api.LogsRequest]) (*connect.Response[api.LogsResponse], error) {
+	resp := &api.LogsResponse{
 		Logs: l.logs,
-	}, nil
+	}
+
+	return connect.NewResponse(resp), nil
 }

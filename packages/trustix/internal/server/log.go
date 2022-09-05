@@ -12,7 +12,9 @@ import (
 	"context"
 	"fmt"
 
+	connect "github.com/bufbuild/connect-go"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/api/apiconnect"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/interfaces"
 	"github.com/nix-community/trustix/packages/trustix/internal/pool"
@@ -20,7 +22,7 @@ import (
 
 // LogAPIServer wraps kvStoreLogApi and turns it into a gRPC implementation
 type LogAPIServer struct {
-	api.UnimplementedLogAPIServer
+	apiconnect.UnimplementedNodeAPIHandler
 
 	clients *pool.ClientPool
 
@@ -54,67 +56,130 @@ func (s *LogAPIServer) getClient(logID string) (interfaces.LogAPI, error) {
 	return client.LogAPI, nil
 }
 
-func (s *LogAPIServer) GetHead(ctx context.Context, req *api.LogHeadRequest) (*schema.LogHead, error) {
-	log, err := s.getClient(*req.LogID)
+func (s *LogAPIServer) GetHead(ctx context.Context, req *connect.Request[api.LogHeadRequest]) (*connect.Response[schema.LogHead], error) {
+	msg := req.Msg
+
+	log, err := s.getClient(*msg.LogID)
 	if err != nil {
 		return nil, err
 	}
 
-	return log.GetHead(ctx, req)
+	resp, err := log.GetHead(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }
 
-func (s *LogAPIServer) GetLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {
-	log, err := s.getClient(*req.LogID)
+func (s *LogAPIServer) GetLogConsistencyProof(ctx context.Context, req *connect.Request[api.GetLogConsistencyProofRequest]) (*connect.Response[api.ProofResponse], error) {
+	msg := req.Msg
+
+	log, err := s.getClient(*msg.LogID)
 	if err != nil {
 		return nil, err
 	}
-	return log.GetLogConsistencyProof(ctx, req)
+
+	resp, err := log.GetLogConsistencyProof(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }
 
-func (s *LogAPIServer) GetLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (*api.ProofResponse, error) {
-	log, err := s.getClient(*req.LogID)
+func (s *LogAPIServer) GetLogAuditProof(ctx context.Context, req *connect.Request[api.GetLogAuditProofRequest]) (*connect.Response[api.ProofResponse], error) {
+	msg := req.Msg
+
+	log, err := s.getClient(*msg.LogID)
 	if err != nil {
 		return nil, err
 	}
-	return log.GetLogAuditProof(ctx, req)
+
+	resp, err := log.GetLogAuditProof(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }
 
-func (s *LogAPIServer) GetLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
-	log, err := s.getClient(*req.LogID)
+func (s *LogAPIServer) GetLogEntries(ctx context.Context, req *connect.Request[api.GetLogEntriesRequest]) (*connect.Response[api.LogEntriesResponse], error) {
+	msg := req.Msg
+
+	log, err := s.getClient(*msg.LogID)
 	if err != nil {
 		return nil, err
 	}
-	return log.GetLogEntries(ctx, req)
+
+	resp, err := log.GetLogEntries(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }
 
-func (s *LogAPIServer) GetMapValue(ctx context.Context, req *api.GetMapValueRequest) (*api.MapValueResponse, error) {
-	log, err := s.getClient(*req.LogID)
+func (s *LogAPIServer) GetMapValue(ctx context.Context, req *connect.Request[api.GetMapValueRequest]) (*connect.Response[api.MapValueResponse], error) {
+	msg := req.Msg
+
+	log, err := s.getClient(*msg.LogID)
 	if err != nil {
 		return nil, err
 	}
-	return log.GetMapValue(ctx, req)
+
+	resp, err := log.GetMapValue(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }
 
-func (s *LogAPIServer) GetMHLogConsistencyProof(ctx context.Context, req *api.GetLogConsistencyProofRequest) (*api.ProofResponse, error) {
-	log, err := s.getClient(*req.LogID)
+func (s *LogAPIServer) GetMHLogConsistencyProof(ctx context.Context, req *connect.Request[api.GetLogConsistencyProofRequest]) (*connect.Response[api.ProofResponse], error) {
+	msg := req.Msg
+
+	log, err := s.getClient(*msg.LogID)
 	if err != nil {
 		return nil, err
 	}
-	return log.GetMHLogConsistencyProof(ctx, req)
+
+	resp, err := log.GetMHLogConsistencyProof(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }
 
-func (s *LogAPIServer) GetMHLogAuditProof(ctx context.Context, req *api.GetLogAuditProofRequest) (*api.ProofResponse, error) {
-	log, err := s.getClient(*req.LogID)
+func (s *LogAPIServer) GetMHLogAuditProof(ctx context.Context, req *connect.Request[api.GetLogAuditProofRequest]) (*connect.Response[api.ProofResponse], error) {
+	msg := req.Msg
+
+	log, err := s.getClient(*msg.LogID)
 	if err != nil {
 		return nil, err
 	}
-	return log.GetMHLogAuditProof(ctx, req)
+
+	resp, err := log.GetMHLogAuditProof(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }
 
-func (s *LogAPIServer) GetMHLogEntries(ctx context.Context, req *api.GetLogEntriesRequest) (*api.LogEntriesResponse, error) {
-	log, err := s.getClient(*req.LogID)
+func (s *LogAPIServer) GetMHLogEntries(ctx context.Context, req *connect.Request[api.GetLogEntriesRequest]) (*connect.Response[api.LogEntriesResponse], error) {
+	msg := req.Msg
+
+	log, err := s.getClient(*msg.LogID)
 	if err != nil {
 		return nil, err
 	}
-	return log.GetMHLogEntries(ctx, req)
+
+	resp, err := log.GetMHLogEntries(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }

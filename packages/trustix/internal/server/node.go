@@ -11,13 +11,15 @@ package server
 import (
 	"context"
 
+	connect "github.com/bufbuild/connect-go"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/api/apiconnect"
 	"github.com/nix-community/trustix/packages/trustix/interfaces"
 )
 
 // NodeAPIServer wraps NodeAPI and turns it into a gRPC implementation
 type NodeAPIServer struct {
-	api.UnimplementedNodeAPIServer
+	apiconnect.UnimplementedNodeAPIHandler
 	node interfaces.NodeAPI
 }
 
@@ -27,10 +29,24 @@ func NewNodeAPIServer(node interfaces.NodeAPI) *NodeAPIServer {
 	}
 }
 
-func (s *NodeAPIServer) Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error) {
-	return s.node.Logs(ctx, in)
+func (s *NodeAPIServer) Logs(ctx context.Context, req *connect.Request[api.LogsRequest]) (*connect.Response[api.LogsResponse], error) {
+	msg := req.Msg
+
+	resp, err := s.node.Logs(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }
 
-func (s *NodeAPIServer) GetValue(ctx context.Context, in *api.ValueRequest) (*api.ValueResponse, error) {
-	return s.node.GetValue(ctx, in)
+func (s *NodeAPIServer) GetValue(ctx context.Context, req *connect.Request[api.ValueRequest]) (*connect.Response[api.ValueResponse], error) {
+	msg := req.Msg
+
+	resp, err := s.node.GetValue(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
 }

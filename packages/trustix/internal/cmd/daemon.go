@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"math"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"os/signal"
@@ -24,7 +25,8 @@ import (
 	"github.com/coreos/go-systemd/activation"
 	"github.com/nix-community/trustix/packages/go-lib/executor"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
-	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
+	"github.com/nix-community/trustix/packages/trustix-proto/api/apiconnect"
+	"github.com/nix-community/trustix/packages/trustix-proto/rpc/rpcconnect"
 	"github.com/nix-community/trustix/packages/trustix/client"
 	tapi "github.com/nix-community/trustix/packages/trustix/internal/api"
 	conf "github.com/nix-community/trustix/packages/trustix/internal/config"
@@ -40,7 +42,8 @@ import (
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 var daemonListenAddresses []string
@@ -348,40 +351,43 @@ var daemonCmd = &cobra.Command{
 			}
 		}
 
+		// Private RPC methods to enumerate logs, decide on outputs and get raw values from storage
 		logRpcServer := server.NewLogRPCServer(store, rootBucket, clientPool, pubMap)
+
+		// Private RPC methods to get log heads, log entries, submit entries & commit queue
 		rpcServer := server.NewRPCServer(store, rootBucket, clientPool, pubMap, logs, deciders)
 
 		log.Debug("Creating gRPC servers")
 
 		errChan := make(chan error)
 
-		createServer := func(lis net.Listener) (s *grpc.Server) {
+		createServer := func(lis net.Listener) *http.Server {
 			_, isUnix := lis.(*net.UnixListener)
 
+			mux := http.NewServeMux()
+
+			// TODO: Better auth method than socket type
 			if isUnix {
-				s = grpc.NewServer()
-
-				pb.RegisterLogRPCServer(s, logRpcServer)
-				pb.RegisterRPCApiServer(s, rpcServer)
-
-			} else {
-				s = grpc.NewServer()
+				mux.Handle(rpcconnect.NewLogRPCHandler(logRpcServer))
+				mux.Handle(rpcconnect.NewRPCApiHandler(rpcServer))
 			}
 
-			api.RegisterLogAPIServer(s, logAPIServer)
-			api.RegisterNodeAPIServer(s, nodeAPIServer)
+			mux.Handle(apiconnect.NewLogAPIHandler(logAPIServer))
+			mux.Handle(apiconnect.NewNodeAPIHandler(nodeAPIServer))
+
+			server := &http.Server{Handler: h2c.NewHandler(mux, &http2.Server{})}
 
 			go func() {
-				err := s.Serve(lis)
+				err := server.Serve(lis)
 				if err != nil {
 					errChan <- fmt.Errorf("failed to serve: %v", err)
 				}
 			}()
 
-			return s
+			return server
 		}
 
-		var servers []*grpc.Server
+		var servers []*http.Server
 
 		// Systemd socket activation
 		listeners, err := activation.Listeners()
@@ -446,7 +452,7 @@ var daemonCmd = &cobra.Command{
 				wg.Add(1)
 				go func() {
 					defer wg.Done()
-					server.GracefulStop()
+					server.Close()
 				}()
 			}
 

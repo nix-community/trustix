@@ -73,7 +73,7 @@ message SubmitResponse {
   enum Status {
     OK = 0;
   }
- required Status status = 1;
+  required Status status = 1;
 }
 
 message FlushRequest {
