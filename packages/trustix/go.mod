@@ -5,12 +5,11 @@ go 1.18
 require (
 	github.com/BurntSushi/toml v1.2.0
 	github.com/bufbuild/connect-go v0.4.0
+	github.com/celestiaorg/smt v0.3.0
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
 	github.com/dop251/goja v0.0.0-20220815083517-0c74f9139fd6
-	github.com/golang/protobuf v1.5.2
 	github.com/hashicorp/go-memdb v1.3.3
 	github.com/hashicorp/go-uuid v1.0.3
-	github.com/lazyledger/smt v0.2.0
 	github.com/nix-community/trustix/packages/go-lib v0.0.0-00010101000000-000000000000
 	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20220831055858-ad6617ff041f
 	github.com/nix-community/trustix/packages/unixtransport v0.0.0-00010101000000-000000000000
@@ -20,6 +19,7 @@ require (
 	go.etcd.io/bbolt v1.3.6
 	go.uber.org/multierr v1.8.0
 	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b
+	google.golang.org/protobuf v1.28.1
 )
 
 require (
@@ -36,7 +36,6 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

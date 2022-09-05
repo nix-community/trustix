@@ -12,7 +12,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lazyledger/smt"
+	"github.com/celestiaorg/smt"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/interfaces"

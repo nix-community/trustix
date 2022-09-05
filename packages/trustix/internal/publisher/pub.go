@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/lazyledger/smt"
+	"github.com/celestiaorg/smt"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	rpc "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	schema "github.com/nix-community/trustix/packages/trustix-proto/schema"
