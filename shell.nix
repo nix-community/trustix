@@ -21,6 +21,9 @@ pkgs.mkShell {
     # Meta code formatter
     treefmt
 
+    # Only build job if it's not in the binary cache
+    pkgs.nix-build-uncached
+
     # Protobuf formatter (clang-format)
     pkgs.clang-tools
 
@@ -37,6 +40,7 @@ pkgs.mkShell {
     pkgs.protobuf
     pkgs.grpcurl # gRPC CLI
 
+    # Go linter
     pkgs.golangci-lint
 
     # File system watchers
