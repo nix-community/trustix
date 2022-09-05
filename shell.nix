@@ -5,6 +5,12 @@ let
   TRUSTIX_RPC = "unix://${STATE_DIR}/trustix.sock";
   TRUSTIX_ROOT = builtins.toString ./.;
 
+  # Wrap treefmt with a Go compiler so it can do gofmt without recursively loading subprojects
+  treefmt = pkgs.writeShellScriptBin "treefmt" ''
+    export PATH=${pkgs.go}/bin:$PATH
+    exec ${pkgs.treefmt}/bin/treefmt "$@"
+  '';
+
 in
 pkgs.mkShell {
 
@@ -12,6 +18,9 @@ pkgs.mkShell {
   CGO_ENABLED = "0";
 
   buildInputs = [
+    # Meta code formatter
+    treefmt
+
     # Format Nix expressions
     pkgs.nixpkgs-fmt
 

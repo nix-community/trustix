@@ -16,7 +16,7 @@ func TestAdd(t *testing.T) {
 func TestHas(t *testing.T) {
 	set := NewSet[string]()
 	set.Add("123")
-	
+
 	assert.Equal(t, set.Has("123"), true)
 	assert.Equal(t, set.Has("1234"), false)
 }
@@ -39,7 +39,7 @@ func TestValues(t *testing.T) {
 	set.Add("123")
 
 	values := set.Values()
-	
+
 	assert.Equal(t, len(values), 2)
 	assert.Equal(t, values[0], "123")
 	assert.Equal(t, values[1], "321")
@@ -48,7 +48,7 @@ func TestValues(t *testing.T) {
 func TestUnion(t *testing.T) {
 	a := NewSet[string]()
 	a.Add("A")
-	
+
 	b := NewSet[string]()
 	b.Add("B")
 
@@ -64,7 +64,7 @@ func TestUnion(t *testing.T) {
 func TestDiff(t *testing.T) {
 	a := NewSet[string]()
 	a.Add("A")
-	
+
 	b := NewSet[string]()
 	b.Add("A")
 	b.Add("B")
