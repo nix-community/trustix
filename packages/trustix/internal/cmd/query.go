@@ -13,11 +13,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/client"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 var queryKeyHex string
@@ -45,7 +45,7 @@ var queryCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		c, err := client.CreateClientConn(dialAddress)
+		c, err := client.CreateClient(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}

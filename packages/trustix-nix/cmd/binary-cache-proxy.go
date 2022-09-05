@@ -24,14 +24,14 @@ import (
 
 	"github.com/bakins/logrus-middleware"
 	"github.com/coreos/go-systemd/activation"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"github.com/nix-community/trustix/packages/trustix-nix/nar"
 	"github.com/nix-community/trustix/packages/trustix-nix/schema"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"github.com/nix-community/trustix/packages/trustix/client"
 	"github.com/nix-community/trustix/packages/trustix/interfaces"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 	"github.com/ulikunitz/xz"
 )
 
@@ -103,7 +103,7 @@ var binaryCacheCommand = &cobra.Command{
 			panic(err)
 		}
 
-		c, err := client.CreateClientConn(dialAddress)
+		c, err := client.CreateClient(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}

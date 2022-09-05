@@ -16,7 +16,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func CreateClientConn(URL string) (*Client, error) {
+func CreateClient(URL string) (*Client, error) {
 	// TODO: UNIX socket support
 	client := &http.Client{}
 

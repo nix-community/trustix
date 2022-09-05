@@ -35,7 +35,7 @@ var indexLogsCommand = &cobra.Command{
 		}
 
 		{
-			client, err := tclient.CreateClientConnectConn(dialAddress)
+			client, err := tclient.CreateClient(dialAddress)
 			if err != nil {
 				panic(err)
 			}

@@ -11,10 +11,10 @@ package cmd
 import (
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"github.com/nix-community/trustix/packages/trustix/client"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 var flushCommand = &cobra.Command{
@@ -26,7 +26,7 @@ var flushCommand = &cobra.Command{
 			return fmt.Errorf("Missing log ID")
 		}
 
-		c, err := client.CreateClientConn(dialAddress)
+		c, err := client.CreateClient(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}

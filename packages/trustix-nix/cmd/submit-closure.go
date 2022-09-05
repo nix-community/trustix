@@ -73,7 +73,7 @@ var submitClosureCommand = &cobra.Command{
 			Items: items,
 		}
 
-		c, err := client.CreateClientConn(dialAddress)
+		c, err := client.CreateClient(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
