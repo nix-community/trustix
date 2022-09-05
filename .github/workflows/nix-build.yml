@@ -19,7 +19,7 @@ jobs:
       - id: set-matrix
         run: |
           set -euo pipefail
-          matrix="$(nix-instantiate --eval --json --expr 'builtins.attrNames (import ./. {})' | jq -rcM '{attr: ., os: ["ubuntu-latest", "macos-latest"]}')"
+          matrix="$(nix-instantiate --eval --json --expr 'builtins.attrNames (import ./. {})' | jq -rcM '{attr: ., os: ["ubuntu-latest"]}')"
           echo "::set-output name=matrix::$matrix"
 
   builds:
