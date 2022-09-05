@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nix-community/trustix/packages/trustix/client/unixtransport"
+	"github.com/nix-community/trustix/packages/unixtransport"
 )
 
 func TestBasics(t *testing.T) {
