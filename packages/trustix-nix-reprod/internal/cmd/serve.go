@@ -17,12 +17,9 @@ import (
 var serveCommand = &cobra.Command{
 	Use:   "serve",
 	Short: "Run server",
-	RunE: func(cmd *cobra.Command, args []string) error {
-
+	Run: func(cmd *cobra.Command, args []string) {
 		for {
 			time.Sleep(1 * time.Second)
 		}
-
-		return nil
 	},
 }

@@ -23,8 +23,6 @@ import (
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/eval"
 )
 
-const sqlDialect = "sqlite"
-
 // Arbitrary large number of derivations to cache
 const drvCacheSize = 30_000
 
