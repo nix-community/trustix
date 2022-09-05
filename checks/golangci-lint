@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+args="./... --out-format github-actions"
+
+ls ./packages/*/go.mod | xargs dirname | while read pkgdir; do
+    nix-shell "$pkgdir/shell.nix" --run "cd $pkgdir && golangci-lint run $args"
+done
