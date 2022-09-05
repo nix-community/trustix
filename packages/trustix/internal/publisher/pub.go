@@ -14,6 +14,7 @@ import (
 	"crypto"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -93,7 +94,7 @@ func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket,
 		if err == nil {
 			return nil
 		}
-		if err != storage.ObjectNotFoundError {
+		if !errors.Is(err, storage.ObjectNotFoundError) {
 			return err
 		}
 
@@ -265,8 +266,7 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 
 	// The sparse merkle tree
 	log.Debug("Creating sparse merkle tree from persisted data")
-	mapBucketTxn := qm.mapBucket.Txn(txn)
-	smTree := smt.ImportSparseMerkleTree(mapBucketTxn, qm.pd.NewHash(), sth.MapRoot)
+	smTree := smt.ImportSparseMerkleTree(qm.mapBucket.Txn(txn), qm.pd.NewHash(), sth.MapRoot)
 
 	// The append-only log tracking published map heads
 	vMapLogBucketTxn := qm.mapLogBucket.Txn(txn)
@@ -412,7 +412,7 @@ func (qm *Publisher) getQueueMeta(txn *storage.BucketTransaction) (*schema.Submi
 	q := &schema.SubmitQueue{}
 
 	qBytes, err := txn.Get([]byte(constants.QueueMetaBlob))
-	if err != nil && err == storage.ObjectNotFoundError {
+	if err != nil && errors.Is(err, storage.ObjectNotFoundError) {
 		min := uint64(0)
 		max := uint64(0)
 		q.Min = &min

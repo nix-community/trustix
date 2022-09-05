@@ -44,7 +44,7 @@ func (t *memoryTxn) Get(bucket *Bucket, key []byte) ([]byte, error) {
 	}
 
 	if val == nil {
-		return nil, ObjectNotFoundError
+		return nil, objectNotFoundError(key)
 	}
 
 	record, ok := val.(*memdbRecord)

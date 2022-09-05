@@ -26,7 +26,7 @@ func GetLogHead(txn *BucketTransaction) (*schema.LogHead, error) {
 		buf = v
 	}
 	if len(buf) == 0 {
-		return nil, ObjectNotFoundError
+		return nil, objectNotFoundError([]byte(constants.HeadBlob))
 	}
 
 	sth := &schema.LogHead{}

@@ -9,7 +9,13 @@
 package storage
 
 import (
+	"errors"
 	"fmt"
 )
 
-var ObjectNotFoundError = fmt.Errorf("Could not find object")
+var ObjectNotFoundError = errors.New("could not find object")
+
+// Factory function to create a nice error message that contains the key
+func objectNotFoundError(key []byte) error {
+	return fmt.Errorf("error retreiving object with key '%v': %w", key, ObjectNotFoundError)
+}

@@ -11,6 +11,7 @@ package sthsync
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"time"
@@ -59,7 +60,7 @@ func NewSTHSyncer(
 			return err
 		})
 		if err != nil {
-			if err != storage.ObjectNotFoundError {
+			if !errors.Is(err, storage.ObjectNotFoundError) {
 				return err
 			} else {
 				// New tree, no local state yet
