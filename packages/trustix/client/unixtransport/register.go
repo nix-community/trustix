@@ -3,15 +3,21 @@ package unixtransport
 import (
 	"context"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
 	"strings"
 )
 
+// When UNIX sockets URLs come in they have no meaningful way to
+// separate the file system path from the server URL
+//
+// We can work around this issue by enforcing a file extension
+// that makes it possible to separate the two.
+var socketSuffixes = []string{".sock", ".socket"}
+
 // Register adds a protocol handler to the provided transport that can serve
-// requests to Unix domain sockets via the "http+unix" or "https+unix" schemes.
+// requests to Unix domain sockets via the "unix" or "https+unix" schemes.
 // Request URLs should have the following form:
 //
 //    https+unix:///path/to/socket:/request/path?query=val&...
@@ -24,8 +30,8 @@ import (
 func Register(t *http.Transport) {
 	copy := t.Clone()
 
-	copy.Dial = nil    //lint:ignore SA1019 yes, it's deprecated, that's the point
-	copy.DialTLS = nil //lint:ignore SA1019 yes, it's deprecated, that's the point
+	copy.Dial = nil // nolint <= deprecated function
+	copy.DialTLS = nil
 
 	switch {
 	case copy.DialContext == nil && copy.DialTLSContext == nil:
@@ -45,8 +51,7 @@ func Register(t *http.Transport) {
 
 	tt := roundTripAdapter(copy)
 
-	t.RegisterProtocol("http+unix", tt)
-	t.RegisterProtocol("https+unix", tt)
+	t.RegisterProtocol("unix", tt)
 }
 
 // dialContextAdapter decorates the provided DialContext function by trying to base64 decode
@@ -77,24 +82,31 @@ func roundTripAdapter(next http.RoundTripper) http.RoundTripper {
 			return nil, fmt.Errorf("unix transport: no request URL")
 		}
 
-		scheme := strings.TrimSuffix(req.URL.Scheme, "+unix")
-		if scheme == req.URL.Scheme {
-			return nil, fmt.Errorf("unix transport: missing '+unix' suffix in scheme %s", req.URL.Scheme)
+		if req.URL.Scheme != "unix" {
+			return nil, fmt.Errorf("unix transport: invalid scheme '%s'", req.URL.Scheme)
 		}
 
-		parts := strings.SplitN(req.URL.Path, ":", 2)
-		if len(parts) != 2 {
-			return nil, errors.New("unix transport: invalid path")
+		var socketPath string
+		var requestPath string
+
+		for _, suffix := range socketSuffixes {
+			idx := strings.Index(req.URL.Path, suffix)
+			if idx != -1 {
+				sepIdx := idx + len(suffix)
+				socketPath = req.URL.Path[0:sepIdx]
+				requestPath = req.URL.Path[sepIdx:len(req.URL.Path)]
+				break
+			}
 		}
 
-		var (
-			socketPath  = parts[0]
-			requestPath = parts[1]
-			encodedHost = base64.RawURLEncoding.EncodeToString([]byte(socketPath))
-		)
+		if socketPath == "" {
+			return nil, fmt.Errorf("unix transport: could not extract socket path: missing .sock/.socket file suffix")
+		}
+
+		encodedHost := base64.RawURLEncoding.EncodeToString([]byte(socketPath))
 
 		req = req.Clone(req.Context())
-		req.URL.Scheme = scheme
+		req.URL.Scheme = "http" // Remove?
 		req.URL.Host = encodedHost
 		req.URL.Path = requestPath
 

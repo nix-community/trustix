@@ -1,8 +1,6 @@
 package unixtransport_test
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"fmt"
 	"io"
 	"net"
@@ -12,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/peterbourgon/unixtransport"
+	"github.com/nix-community/trustix/packages/trustix/client/unixtransport"
 )
 
 func TestBasics(t *testing.T) {
@@ -21,7 +19,7 @@ func TestBasics(t *testing.T) {
 	// This first server will do HTTP.
 	var (
 		tempdir = t.TempDir()
-		socket1 = filepath.Join(tempdir, "1")
+		socket1 = filepath.Join(tempdir, "1.sock")
 	)
 	{
 		ln, err := net.Listen("unix", socket1)
@@ -37,44 +35,16 @@ func TestBasics(t *testing.T) {
 		defer server.Close()
 	}
 
-	// This second server will speak HTTPS. The httptest.Server can do TLS, but
-	// it uses a hard-coded cert with "example.com" as a server name. We'll get
-	// that cert in the config's pool after we start the server.
-	var (
-		socket2         = filepath.Join(tempdir, "2")
-		tlsClientConfig = &tls.Config{ServerName: "example.com"}
-	)
-	{
-		ln, err := net.Listen("unix", socket2)
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer ln.Close()
-
-		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { fmt.Fprintln(w, 2, r.URL.Path) })
-		server := httptest.NewUnstartedServer(handler)
-		server.Listener = ln
-		server.StartTLS()
-		defer server.Close()
-
-		certpool := x509.NewCertPool()
-		certpool.AddCert(server.Certificate())
-		tlsClientConfig.RootCAs = certpool
-	}
-
-	// We could just use a plain http.Client, but for the TLS config required by
-	// the second server. Create the transport with the TLS config, and a client
-	// that utilizes that transport.
-	transport := &http.Transport{TLSClientConfig: tlsClientConfig}
+	transport := &http.Transport{}
 	client := &http.Client{Transport: transport}
 
 	// The magic.
 	unixtransport.Register(transport)
 
-	// http+unix should work.
+	// unix should work.
 	{
 		var (
-			rawurl = "http+unix://" + socket1 + ":/foo?a=1"
+			rawurl = "unix://" + socket1 + "/foo"
 			want   = "1 /foo"
 			have   = get(t, client, rawurl)
 		)
@@ -83,24 +53,12 @@ func TestBasics(t *testing.T) {
 		}
 	}
 
-	// https+unix should also work.
-	{
-		var (
-			rawurl = "https+unix://" + socket2 + ":/bar#fragment"
-			want   = "2 /bar"
-			have   = get(t, client, rawurl)
-		)
-		if want != have {
-			t.Errorf("%s: want %q, have %q", rawurl, want, have)
-		}
-	}
-
-	// Do another http+unix request, to kind of verify the connection pool
+	// Do another unix request, to kind of verify the connection pool
 	// didn't mix things up too badly.
 	{
 		var (
-			rawurl = "http+unix://" + socket1 + ":/baz:baz:baz"
-			want   = "1 /baz:baz:baz"
+			rawurl = "unix://" + socket1 + "/bar"
+			want   = "1 /bar"
 			have   = get(t, client, rawurl)
 		)
 		if want != have {
