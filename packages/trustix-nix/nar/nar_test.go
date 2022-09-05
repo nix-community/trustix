@@ -28,20 +28,19 @@ Sig: cache.nixos.org-1:IHkSz9VMQC/KGYgah2Vr2ISz0uawXUKqm/yP4JtcaBkyLO13B3yD2k578
 `
 
 func TestParseNarInfo(t *testing.T) {
-
 	assert := assert.New(t)
 
-	n, err := ParseNarInfo(testInput)
+	n, err := ParseNarInfo([]byte(testInput))
 	assert.Nil(err)
 	assert.NotNil(n)
 
-	assert.Equal("/nix/store/byghkc1k0xmrrl2jk04lp0qipmpmz547-hello-2.10", *n.StorePath)
-	assert.Equal("nar/06vv5hjmdyrklwsxxq5d4fnslkgfzpy3z3ri4s7a9fawi2d20ivb.nar.xz", *n.URL)
-	assert.Equal("xz", *n.Compression)
-	assert.Equal("sha256:06vv5hjmdyrklwsxxq5d4fnslkgfzpy3z3ri4s7a9fawi2d20ivb", *n.FileHash)
-	assert.Equal(uint64(41272), *n.FileSize)
-	assert.Equal("sha256:1llxabk0xq0gc15yi6kkysfbvn5gzisj9dxk6g29sh5ncqx3if8y", *n.NarHash)
-	assert.Equal(uint64(206000), *n.NarSize)
+	assert.Equal("/nix/store/byghkc1k0xmrrl2jk04lp0qipmpmz547-hello-2.10", n.StorePath)
+	assert.Equal("nar/06vv5hjmdyrklwsxxq5d4fnslkgfzpy3z3ri4s7a9fawi2d20ivb.nar.xz", n.URL)
+	assert.Equal("xz", n.Compression)
+	assert.Equal("sha256:06vv5hjmdyrklwsxxq5d4fnslkgfzpy3z3ri4s7a9fawi2d20ivb", n.FileHash)
+	assert.Equal(uint64(41272), n.FileSize)
+	assert.Equal("sha256:1llxabk0xq0gc15yi6kkysfbvn5gzisj9dxk6g29sh5ncqx3if8y", n.NarHash)
+	assert.Equal(uint64(206000), n.NarSize)
 	assert.Equal(2, len(n.References))
 
 }

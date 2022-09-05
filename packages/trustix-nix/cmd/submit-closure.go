@@ -47,7 +47,7 @@ var submitClosureCommand = &cobra.Command{
 				}
 			}
 
-			for key, _ := range requisites {
+			for key := range requisites {
 				storePaths = append(storePaths, key)
 			}
 

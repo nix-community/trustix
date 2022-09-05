@@ -180,7 +180,7 @@ var binaryCacheCommand = &cobra.Command{
 						}
 
 						w.Header().Set("Content-Type", "text/x-nix-narinfo")
-						fmt.Fprintf(w, narinfo.ToString(
+						fmt.Fprint(w, narinfo.ToString(
 							fmt.Sprintf("URL: nar/%s/%s", storePrefix, narHash),
 							fmt.Sprintf("Sig: %s:%s", keyPrefix, base64.StdEncoding.EncodeToString(sig)),
 						))
