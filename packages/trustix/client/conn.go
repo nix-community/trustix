@@ -10,52 +10,13 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
-	tgrpc "github.com/nix-community/trustix/packages/trustix/internal/grpc"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
 )
 
-func CreateClientConn(address string) (*Client, error) {
-	u, err := url.Parse(address)
-	if err != nil {
-		return nil, err
-	}
-
-	log.WithFields(log.Fields{
-		"address": address,
-	}).Debug("Dialing remote")
-
-	var conn *grpc.ClientConn
-
-	switch u.Scheme {
-	case "grpc+unix", "unix", "grpc+https", "grpc+http":
-		conn, err = tgrpc.Dial(address)
-		if err != nil {
-			return nil, fmt.Errorf("Error dialing grpc: %w", err)
-		}
-	default:
-		return nil, fmt.Errorf("URL '%s' with scheme '%s' not supported", address, u.Scheme)
-
-	}
-
-	client := &Client{
-		LogAPI:  newLogAPIGRPCClient(conn),
-		RpcAPI:  newRpcAPIGRPCClient(conn),
-		NodeAPI: newNodeAPIGRPCClient(conn),
-		LogRPC:  newLogRPCGRPCClient(conn),
-
-		close: conn.Close,
-	}
-
-	return client, nil
-}
-
-func CreateClientConnectConn(URL string) (*Client, error) {
+func CreateClientConn(URL string) (*Client, error) {
 	// TODO: UNIX socket support
 	client := &http.Client{}
 
