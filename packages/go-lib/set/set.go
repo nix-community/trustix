@@ -37,7 +37,7 @@ func (s *Set[T]) Values() []T {
 	values := make([]T, len(s.values))
 
 	i := 0
-	for v, _ := range s.values {
+	for v := range s.values {
 		values[i] = v
 		i++
 	}
@@ -90,11 +90,11 @@ func (s *Set[T]) Union(set *Set[T]) *Set[T] {
 		values: make(map[T]struct{}, len(s.values)),
 	}
 
-	for v, _ := range s.values {
+	for v := range s.values {
 		us.Add(v)
 	}
 
-	for v, _ := range set.values {
+	for v := range set.values {
 		us.Add(v)
 	}
 
@@ -112,7 +112,7 @@ func (s *Set[T]) Copy() *Set[T] {
 		values: make(map[T]struct{}, len(s.values)),
 	}
 
-	for v, _ := range s.values {
+	for v := range s.values {
 		copy.Add(v)
 	}
 
@@ -130,7 +130,7 @@ func (s *Set[T]) Diff(set *Set[T]) *Set[T] {
 		values: make(map[T]struct{}),
 	}
 
-	for v, _ := range s.values {
+	for v := range s.values {
 		if !set.Has(v) {
 			diff.Add(v)
 		}
@@ -146,7 +146,7 @@ func (s *Set[T]) Update(set *Set[T]) {
 		defer s.mux.Unlock()
 	}
 
-	for v, _ := range set.values {
+	for v := range set.values {
 		s.Add(v)
 	}
 }
