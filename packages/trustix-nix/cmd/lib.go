@@ -19,9 +19,9 @@ import (
 	"sort"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/nix-community/trustix/packages/trustix-nix/schema"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	log "github.com/sirupsen/logrus"
 )
 
 var NixB32Encoding = base32.NewEncoding("0123456789abcdfghijklmnpqrsvwxyz")

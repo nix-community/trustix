@@ -14,9 +14,9 @@ import (
 	"sort"
 	"sync"
 
-	log "github.com/sirupsen/logrus"
 	api "github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix/client"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -207,7 +207,7 @@ func (p *ClientPool) Add(c *client.Client, tags []string) (*PoolClient, error) {
 func (p *ClientPool) Dial(address string) (*PoolClient, error) {
 
 	// TODO: Retry loop (probably managed by PoolClient somehow)
-	c, err := client.CreateClientConn(address)
+	c, err := client.CreateClient(address)
 	if err != nil {
 		return nil, err
 	}

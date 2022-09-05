@@ -1,7 +1,3 @@
-postgres: ./tools/postgresql
-createdb: ./tools/createdb
-app: ./tools/app
-check: ./tools/check --watch
-migrate: ./tools/migrate
-js: bash -c "cd trustix_nix_reprod/js && nix-shell --run hivemind"
-redis: ./tools/redis
+build: reflex -r '\.go$' go build
+sqlc: reflex -r '\.sql$' sqlc generate
+serve: go build && ../../tools/wait_for_file trustix-nix-reprod && echo trustix-nix-reprod | entr -r ./trustix-nix-reprod serve

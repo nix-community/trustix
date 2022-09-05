@@ -13,11 +13,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/client"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 var queryKeyHex string
@@ -26,10 +26,8 @@ var queryCommand = &cobra.Command{
 	Use:   "query",
 	Short: "Query values from the log",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		// Verify input params
 		{
-
 			if logID == "" {
 				return fmt.Errorf("Missing log ID")
 			}
@@ -45,7 +43,7 @@ var queryCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		c, err := client.CreateClientConn(dialAddress)
+		c, err := client.CreateClient(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -80,7 +78,7 @@ var queryCommand = &cobra.Command{
 			log.Fatalf("Could not unmarshal value")
 		}
 
-		fmt.Println(fmt.Sprintf("Output digest: %s", hex.EncodeToString(mapEntry.Digest)))
+		fmt.Printf("Output digest: %s\n", hex.EncodeToString(mapEntry.Digest))
 
 		return nil
 	},

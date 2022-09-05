@@ -29,13 +29,10 @@ type Signer struct {
 }
 
 func (s *Signer) Validate() error {
-
 	switch s.Type {
 	case "ed25519":
 		return s.ED25519.Validate()
 	default:
 		return fmt.Errorf("Unhandled signer type: %s", s.Type)
 	}
-
-	return nil
 }

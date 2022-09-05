@@ -92,7 +92,12 @@ func (s *nativeStorage) runTX(readWrite bool, fn func(Transaction) error) error 
 	if err != nil {
 		return err
 	}
-	defer txn.Rollback()
+	defer func() {
+		err := txn.Rollback()
+		if err != nil && err != bolt.ErrTxClosed {
+			panic(err)
+		}
+	}()
 
 	t := &nativeTxn{
 		txn: txn,

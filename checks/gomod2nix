@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Check if all gomod2nix.toml files are up to date
+set -euo pipefail
+
+ls ./packages/*/gomod2nix.toml | xargs dirname | while read pkgdir; do
+    bash -c "cd $pkgdir && gomod2nix generate"
+done
+
+git diff --exit-code

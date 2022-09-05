@@ -1,9 +1,0 @@
-{% extends "includes/base.jinja2" %}
-
-{% block main %}
-
-  {% for attr, attr_data in model.attr_stats.items() %}
-    {% include "includes/attr.jinja2" %}
-  {% endfor %}
-
-{% endblock %}

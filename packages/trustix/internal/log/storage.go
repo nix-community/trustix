@@ -11,9 +11,9 @@ package log
 import (
 	"fmt"
 
-	proto "github.com/golang/protobuf/proto"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
+	"google.golang.org/protobuf/proto"
 )
 
 type LogStorage struct {

@@ -14,8 +14,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
+	"github.com/stretchr/testify/assert"
 )
 
 type testInput struct {
@@ -132,7 +132,7 @@ func TestLogRoots(t *testing.T) {
 	root, err := tree.Root()
 	assert.Nil(err)
 
-	assert.Equal("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", hex.EncodeToString(root), fmt.Sprintf("Correct root for zero inputs"))
+	assert.Equal("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", hex.EncodeToString(root), "Correct root for zero inputs")
 
 	for _, input := range mkInputs() {
 		_, err = tree.Append(input.Input)

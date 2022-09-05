@@ -15,8 +15,6 @@ import (
 	"io"
 	"time"
 
-	proto "github.com/golang/protobuf/proto"
-	log "github.com/sirupsen/logrus"
 	apipb "github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/internal/constants"
@@ -26,6 +24,8 @@ import (
 	"github.com/nix-community/trustix/packages/trustix/internal/signer"
 	sthlib "github.com/nix-community/trustix/packages/trustix/internal/sth"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
+	log "github.com/sirupsen/logrus"
+	proto "google.golang.org/protobuf/proto"
 )
 
 type sthSyncer struct {
@@ -176,7 +176,7 @@ func NewSTHSyncer(
 		for {
 			timeout.Reset(pollInterval)
 			select {
-			case _ = <-c.closeChan:
+			case <-c.closeChan:
 				timeout.Stop()
 				return
 			case <-timeout.C:

@@ -43,6 +43,8 @@ func (m *MultiCloser) Close() error {
 	mux := &sync.Mutex{}
 
 	for _, s := range m.closers {
+		s := s
+
 		wg.Add(1)
 		go func() {
 			err := s.Close()

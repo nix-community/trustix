@@ -53,8 +53,17 @@ func (j *jsDecider) Decide(inputs []*DeciderInput) (*DeciderOutput, error) {
 	objects := make([]*goja.Object, len(inputs))
 	for i, input := range inputs {
 		obj := vm.NewObject()
-		obj.Set("LogID", input.LogID)
-		obj.Set("Value", input.Value)
+
+		err = obj.Set("LogID", input.LogID)
+		if err != nil {
+			return nil, fmt.Errorf("error setting VM object value: %w", err)
+		}
+
+		err = obj.Set("Value", input.Value)
+		if err != nil {
+			return nil, fmt.Errorf("error setting VM object value: %w", err)
+		}
+
 		objects[i] = obj
 	}
 

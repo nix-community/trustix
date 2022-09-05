@@ -10,7 +10,7 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
-    TRUSTIX_STATE_DIR="$STATE_DIR/trustix";
+    export TRUSTIX_STATE_DIR="$STATE_DIR/trustix";
   '';
 
 }

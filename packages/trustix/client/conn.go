@@ -10,49 +10,35 @@ package client
 
 import (
 	"context"
-	"fmt"
-	"net/url"
+	"net/http"
+	"sync"
 	"time"
 
+	"github.com/nix-community/trustix/packages/unixtransport"
 	log "github.com/sirupsen/logrus"
-	tgrpc "github.com/nix-community/trustix/packages/trustix/internal/grpc"
-	"google.golang.org/grpc"
 )
 
-func CreateClientConn(address string) (*Client, error) {
+// Use a shared client connection pool
+var initOnce sync.Once
+var client *http.Client
 
-	u, err := url.Parse(address)
-	if err != nil {
-		return nil, err
-	}
+func CreateClient(URL string) (*Client, error) {
+	initOnce.Do(func() {
+		t := &http.Transport{}
+		unixtransport.Register(t)
+		client = &http.Client{Transport: t}
+	})
 
 	log.WithFields(log.Fields{
-		"address": address,
-	}).Debug("Dialing remote")
+		"address": URL,
+	}).Debug("Creating client for remote")
 
-	var conn *grpc.ClientConn
-
-	switch u.Scheme {
-	case "grpc+unix", "unix", "grpc+https", "grpc+http":
-		conn, err = tgrpc.Dial(address)
-		if err != nil {
-			return nil, fmt.Errorf("Error dialing grpc: %w", err)
-		}
-	default:
-		return nil, fmt.Errorf("URL '%s' with scheme '%s' not supported", address, u.Scheme)
-
-	}
-
-	client := &Client{
-		LogAPI:  newLogAPIGRPCClient(conn),
-		RpcAPI:  newRpcAPIGRPCClient(conn),
-		NodeAPI: newNodeAPIGRPCClient(conn),
-		LogRPC:  newLogRPCGRPCClient(conn),
-
-		close: conn.Close,
-	}
-
-	return client, nil
+	return &Client{
+		LogAPI:  newLogAPIConnectClient(client, URL),
+		RpcAPI:  newRpcAPIConnectClient(client, URL),
+		NodeAPI: newNodeAPIConnectClient(client, URL),
+		LogRPC:  newLogRPCConnectClient(client, URL),
+	}, nil
 }
 
 // Create a context with the default timeout set

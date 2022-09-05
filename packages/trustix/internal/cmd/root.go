@@ -69,9 +69,6 @@ func initCommands() {
 	rootCmd.AddCommand(flushCommand)
 	initFlush()
 
-	rootCmd.AddCommand(gatewayCommand)
-	initGateway()
-
 	rootCmd.AddCommand(docCommand)
 	initDoc()
 }

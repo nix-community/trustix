@@ -24,11 +24,6 @@ This package is an implementation of a reproducibility tracker backed by logs.
 
 Trustix-proto contains all shared protobuf definitions shared by various components, as well as generated Go libraries to interact with Trustix over it's RPC mechanism (gRPC).
 
-- [trustix-python](https://github.com/nix-community/trustix/blob/master/packages/trustix-python)
-
-Trustix-python contains generated code from trustix-proto for Python.
-If you want to interact with Trustix over it's RPC interface from Python this is what you want to use.
-
 ## Globally installed tooling
 
 Trustix doesn't depend on much in the way of globally installed tools.

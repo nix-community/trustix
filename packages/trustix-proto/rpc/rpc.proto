@@ -13,23 +13,22 @@ package trustix;
 service RPCApi {
 
   // Get a list of all logs published/subscribed by this node
-  rpc Logs (LogsRequest) returns (LogsResponse) {}
+  rpc Logs(LogsRequest) returns (LogsResponse) {}
 
   // Decide on an output for key based on the configured decision method
-  rpc Decide (DecideRequest) returns (DecisionResponse) {}
+  rpc Decide(DecideRequest) returns (DecisionResponse) {}
 
   // Get values by their content-address
-  rpc GetValue (ValueRequest) returns (ValueResponse) {}
-
+  rpc GetValue(ValueRequest) returns (ValueResponse) {}
 }
 
 // RPCApi are "private" rpc methods for an instance related to a specific log.
 // This should only be available to trusted parties.
 service LogRPC {
-  rpc GetHead (LogHeadRequest) returns (LogHead) {}
+  rpc GetHead(LogHeadRequest) returns (LogHead) {}
   rpc GetLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
-  rpc Submit (SubmitRequest) returns (SubmitResponse) {}
-  rpc Flush (FlushRequest) returns (FlushResponse) {}
+  rpc Submit(SubmitRequest) returns (SubmitResponse) {}
+  rpc Flush(FlushRequest) returns (FlushResponse) {}
 }
 
 message DecideRequest {
@@ -70,15 +69,10 @@ message SubmitRequest {
 }
 
 message SubmitResponse {
-  enum Status {
-    OK = 0;
-  }
- required Status status = 1;
+  enum Status { OK = 0; }
+  required Status status = 1;
 }
 
-message FlushRequest {
-  required string LogID = 1;
-}
+message FlushRequest { required string LogID = 1; }
 
-message FlushResponse {
-}
+message FlushResponse {}

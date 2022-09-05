@@ -12,11 +12,11 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"github.com/nix-community/trustix/packages/trustix/client"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 var submitKeyHex string
@@ -54,7 +54,7 @@ var submitCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		c, err := client.CreateClientConn(dialAddress)
+		c, err := client.CreateClient(dialAddress)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}

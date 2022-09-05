@@ -9,9 +9,9 @@
 package storage
 
 import (
-	proto "github.com/golang/protobuf/proto"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/internal/constants"
+	"google.golang.org/protobuf/proto"
 )
 
 // TODO: I don't like this living here but I also don't have a better option

@@ -12,7 +12,6 @@ message LogHeadRequest {
 
   // Log identifier
   required string LogID = 1;
-
 }
 
 // Get a consistency proof between two given log sizes
@@ -26,12 +25,9 @@ message GetLogConsistencyProofRequest {
 
   // To tree size
   required uint64 SecondSize = 3;
-
 }
 
-message ProofResponse {
-  repeated bytes Proof = 1;
-}
+message ProofResponse { repeated bytes Proof = 1; }
 
 // Get log audit proof for a given tree
 message GetLogAuditProofRequest {
@@ -44,7 +40,6 @@ message GetLogAuditProofRequest {
 
   // Tree size (proof reference)
   required uint64 TreeSize = 3;
-
 }
 
 message GetLogEntriesRequest {
@@ -57,12 +52,11 @@ message GetLogEntriesRequest {
 
   // Get entries to
   required uint64 Finish = 3;
-
 }
 
 message GetMapValueRequest {
 
-    // Log identifier
+  // Log identifier
   required string LogID = 1;
 
   // Map key
@@ -88,9 +82,7 @@ message MapValueResponse {
   required SparseCompactMerkleProof Proof = 2;
 }
 
-message LogEntriesResponse {
-  repeated LogLeaf Leaves = 1;
-}
+message LogEntriesResponse { repeated LogLeaf Leaves = 1; }
 
 message KeyValuePair {
 
@@ -99,24 +91,16 @@ message KeyValuePair {
 
   // Map value
   required bytes Value = 2;
-
 }
 
-message ValueRequest {
-  required bytes Digest = 1;
-}
+message ValueRequest { required bytes Digest = 1; }
 
-message ValueResponse {
-  required bytes Value = 1;
-}
+message ValueResponse { required bytes Value = 1; }
 
-message LogsRequest {
-}
+message LogsRequest {}
 
 message LogSigner {
-  enum KeyTypes {
-    ed25519 = 0;
-  }
+  enum KeyTypes { ed25519 = 0; }
   required KeyTypes KeyType = 1;
   required string Public = 2;
 }
@@ -124,9 +108,7 @@ message LogSigner {
 message Log {
   required string LogID = 1;
 
-  enum LogModes {
-    Log = 0;
-  }
+  enum LogModes { Log = 0; }
   required LogModes Mode = 2;
 
   required string Protocol = 3;
@@ -135,31 +117,30 @@ message Log {
   map<string, string> Meta = 5;
 }
 
-message LogsResponse {
-  repeated Log Logs = 1;
-}
+message LogsResponse { repeated Log Logs = 1; }
 
 // NodeAPI is a logical grouping for RPC methods that are for the entire node
 // rather than individual logs.
 service NodeAPI {
 
   // Get a list of all logs published by this node
-  rpc Logs (LogsRequest) returns (LogsResponse) {}
+  rpc Logs(LogsRequest) returns (LogsResponse) {}
 
   // Get values by their content-address
   rpc GetValue(ValueRequest) returns (ValueResponse) {}
-
 }
 
-// LogAPI is a logical grouping for RPC methods that are specific to a given log.
+// LogAPI is a logical grouping for RPC methods that are specific to a given
+// log.
 service LogAPI {
 
   // Get signed head
-  rpc GetHead (LogHeadRequest) returns (LogHead) {}
+  rpc GetHead(LogHeadRequest) returns (LogHead) {}
 
   // Log
 
-  rpc GetLogConsistencyProof(GetLogConsistencyProofRequest) returns (ProofResponse) {}
+  rpc GetLogConsistencyProof(GetLogConsistencyProofRequest)
+      returns (ProofResponse) {}
 
   rpc GetLogAuditProof(GetLogAuditProofRequest) returns (ProofResponse) {}
 
@@ -171,10 +152,10 @@ service LogAPI {
 
   // Maphead log
 
-  rpc GetMHLogConsistencyProof(GetLogConsistencyProofRequest) returns (ProofResponse) {}
+  rpc GetMHLogConsistencyProof(GetLogConsistencyProofRequest)
+      returns (ProofResponse) {}
 
   rpc GetMHLogAuditProof(GetLogAuditProofRequest) returns (ProofResponse) {}
 
   rpc GetMHLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
-
 }

@@ -10,38 +10,9 @@ package auth
 
 import (
 	"context"
-	"fmt"
-
-	"google.golang.org/grpc/peer"
 )
 
-type AuthInfo struct{}
-
-func (AuthInfo) AuthType() string {
-	return "ucred"
-}
-
-func AuthInfoFromContext(ctx context.Context) (*AuthInfo, bool) {
-	pr, ok := peer.FromContext(ctx)
-	if !ok {
-		return nil, false
-	}
-	info, ok := pr.AuthInfo.(AuthInfo)
-	if !ok {
-		return nil, false
-	}
-	return &info, true
-}
-
 func CanWrite(ctx context.Context) error {
-	pr, ok := peer.FromContext(ctx)
-	if !ok {
-		return fmt.Errorf("Could not get peer from context")
-	}
-
-	if pr.Addr.Network() != "unix" {
-		return fmt.Errorf("Write only allowed over UNIX socket")
-	}
-
-	return fmt.Errorf("Denied peer creds")
+	// TODO: Introduce a concept of an auth token to write
+	return nil
 }

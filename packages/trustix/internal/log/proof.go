@@ -10,29 +10,28 @@ package log
 
 import (
 	"bytes"
-	"fmt"
 	"hash"
 )
 
-func rootHashFromAuditProof(hashFn func() hash.Hash, leafHash []byte, proof [][]byte, idx uint64, treeSize uint64) ([]byte, error) {
-	if len(proof) == 0 {
-		return leafHash, nil
-	}
+// func rootHashFromAuditProof(hashFn func() hash.Hash, leafHash []byte, proof [][]byte, idx uint64, treeSize uint64) ([]byte, error) {
+// 	if len(proof) == 0 {
+// 		return leafHash, nil
+// 	}
 
-	if idx%2 == 0 && idx+1 == treeSize {
-		if treeSize == 1 {
-			return nil, fmt.Errorf("No such level")
-		}
-		return rootHashFromAuditProof(hashFn, leafHash, proof, idx/2, (treeSize+1)/2)
-	}
+// 	if idx%2 == 0 && idx+1 == treeSize {
+// 		if treeSize == 1 {
+// 			return nil, fmt.Errorf("No such level")
+// 		}
+// 		return rootHashFromAuditProof(hashFn, leafHash, proof, idx/2, (treeSize+1)/2)
+// 	}
 
-	sibling := proof[0]
-	if idx%2 == 0 {
-		return rootHashFromAuditProof(hashFn, branchHash(hashFn, leafHash, sibling), proof, idx/2, (treeSize+1)/2)
-	} else {
-		return rootHashFromAuditProof(hashFn, branchHash(hashFn, sibling, leafHash), proof, idx/2, (treeSize+1)/2)
-	}
-}
+// 	sibling := proof[0]
+// 	if idx%2 == 0 {
+// 		return rootHashFromAuditProof(hashFn, branchHash(hashFn, leafHash, sibling), proof, idx/2, (treeSize+1)/2)
+// 	} else {
+// 		return rootHashFromAuditProof(hashFn, branchHash(hashFn, sibling, leafHash), proof, idx/2, (treeSize+1)/2)
+// 	}
+// }
 
 func rootHashFromConsistencyProof(hashFn func() hash.Hash, oldSize uint64, newSize uint64, proofNodes [][]byte, oldRoot []byte, computeNewRoot bool, startFromOldRoot bool) []byte {
 	if oldSize == newSize {
@@ -84,11 +83,11 @@ func ValidConsistencyProof(hashFn func() hash.Hash, oldRoot []byte, newRoot []by
 	}
 
 	if oldSize == newSize {
-		return bytes.Compare(oldRoot, newRoot) == 0
+		return bytes.Equal(oldRoot, newRoot)
 	}
 
 	computedOldRoot := rootHashFromConsistencyProof(hashFn, oldSize, newSize, proofNodes, oldRoot, false, true)
 	computedNewRoot := rootHashFromConsistencyProof(hashFn, oldSize, newSize, proofNodes, oldRoot, true, true)
 
-	return bytes.Compare(oldRoot, computedOldRoot) == 0 && bytes.Compare(newRoot, computedNewRoot) == 0
+	return bytes.Equal(oldRoot, computedOldRoot) && bytes.Equal(newRoot, computedNewRoot)
 }
