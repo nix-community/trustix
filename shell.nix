@@ -21,6 +21,9 @@ pkgs.mkShell {
     # Meta code formatter
     treefmt
 
+    # Protobuf formatter (clang-format)
+    pkgs.clang-tools
+
     # Format Nix expressions
     pkgs.nixpkgs-fmt
 

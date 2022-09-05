@@ -6,3 +6,8 @@ includes = ["*.nix"]
 command = "gofmt"
 options = ["-w"]
 includes = ["*.go"]
+
+[formatter.proto]
+command = "clang-format"
+options = [ "-i" ]
+includes = [ "*.proto" ]

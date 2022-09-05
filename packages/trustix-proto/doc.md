@@ -368,7 +368,8 @@ Sparse merkle tree proof
 <a name="trustix-LogAPI"></a>
 
 ### LogAPI
-LogAPI is a logical grouping for RPC methods that are specific to a given log.
+LogAPI is a logical grouping for RPC methods that are specific to a given
+log.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
