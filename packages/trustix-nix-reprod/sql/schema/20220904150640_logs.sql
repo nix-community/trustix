@@ -5,7 +5,7 @@ CREATE TABLE log (
     log_id VARCHAR(255) NOT NULL,
     tree_size INT NOT NULL
 );
-CREATE INDEX idx_log_name ON log (name);
+CREATE INDEX idx_log_name ON log (log_id);
 
 
 CREATE TABLE derivationoutputresult (
