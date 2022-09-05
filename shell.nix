@@ -49,6 +49,9 @@ pkgs.mkShell {
 
     # Docs
     pkgs.mdbook
+
+    # License
+    pkgs.reuse
   ];
 
   inherit STATE_DIR TRUSTIX_RPC TRUSTIX_ROOT;

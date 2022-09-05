@@ -1,0 +1,32 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: trustix
+Upstream-Contact: adisbladis <adisbladis@gmail.com>
+Source: https://github.com/nix-community/trustix
+
+Files: packages/go-lib
+Copyright: 2022 adisbladis
+License: MIT
+
+Files: packages/trustix
+Copyright: 2021 Tweag IO / 2020-2022 adisbladis
+License: GPL-3.0-only
+
+Files: packages/trustix-nix
+Copyright: 2021 Tweag IO / 2020-2022 adisbladis
+License: GPL-3.0-only
+
+Files: packages/trustix-doc
+Copyright: 2021 Tweag IO / 2020-2022 adisbladis
+License: GPL-3.0-only
+
+Files: packages/trustix-nix-reprod
+Copyright: 2021 Tweag IO / 2020-2022 adisbladis
+License: GPL-3.0-only
+
+Files: packages/trustix-proto
+Copyright: 2021 Tweag IO / 2020-2022 adisbladis
+License: MIT
+
+Files: packages/unixtransport
+Copyright: 2021 Peter Bourgon <peter@bourgon.org> / 2022 adisbladis
+License: Apache-2.0
