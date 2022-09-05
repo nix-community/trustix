@@ -20,6 +20,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/nix-community/trustix/packages/unixtransport v0.0.0-00010101000000-000000000000 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
@@ -32,4 +33,5 @@ replace (
 	github.com/nix-community/trustix/packages/go-lib => ../go-lib
 	github.com/nix-community/trustix/packages/trustix => ../trustix
 	github.com/nix-community/trustix/packages/trustix-proto => ../trustix-proto
+	github.com/nix-community/trustix/packages/unixtransport => ../unixtransport
 )

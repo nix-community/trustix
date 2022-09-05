@@ -13,6 +13,7 @@ require (
 	github.com/lazyledger/smt v0.2.0
 	github.com/nix-community/trustix/packages/go-lib v0.0.0-00010101000000-000000000000
 	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20220831055858-ad6617ff041f
+	github.com/nix-community/trustix/packages/unixtransport v0.0.0-00010101000000-000000000000
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
@@ -40,6 +41,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/nix-community/trustix/packages/trustix-proto => ../trustix-proto
-
-replace github.com/nix-community/trustix/packages/go-lib => ../go-lib
+replace (
+	github.com/nix-community/trustix/packages/go-lib => ../go-lib
+	github.com/nix-community/trustix/packages/trustix-proto => ../trustix-proto
+	github.com/nix-community/trustix/packages/unixtransport => ../unixtransport
+)

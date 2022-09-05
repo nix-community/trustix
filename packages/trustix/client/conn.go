@@ -11,14 +11,23 @@ package client
 import (
 	"context"
 	"net/http"
+	"sync"
 	"time"
 
+	"github.com/nix-community/trustix/packages/unixtransport"
 	log "github.com/sirupsen/logrus"
 )
 
+// Use a shared client connection pool
+var initOnce sync.Once
+var client *http.Client
+
 func CreateClient(URL string) (*Client, error) {
-	// TODO: UNIX socket support
-	client := &http.Client{}
+	initOnce.Do(func() {
+		t := &http.Transport{}
+		unixtransport.Register(t)
+		client = &http.Client{Transport: t}
+	})
 
 	log.WithFields(log.Fields{
 		"address": URL,

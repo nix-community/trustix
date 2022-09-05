@@ -107,7 +107,7 @@ schema = 3
     version = "v1.1.0"
     hash = "sha256-JT33CJMknTXha1ERt4s6vV9fyx99J+Ot8rFrNKXTsTc="
   [mod."github.com/pingcap/tidb/parser"]
-    version = "v0.0.0-20220905063855-a942121a3469"
+    version = "v0.0.0-20220905075856-6b8cf9d5b29b"
     hash = "sha256-Zx/LAjLEcs7lGCYhWHlMrVMXea05ld+WTiiGTK+zZ4E="
   [mod."github.com/pkg/errors"]
     version = "v0.9.1"
@@ -182,8 +182,8 @@ schema = 3
     version = "v1.2.0"
     hash = "sha256-gwpTC3V+1pxjzxZvCnum+qpaGD84WtHncywddTSPye4="
   [mod."modernc.org/cc/v3"]
-    version = "v3.37.0"
-    hash = "sha256-KLJNvCG+6BEo7s/ME4sq+okyEqXsNTm3ZKeeKzk3FpA="
+    version = "v3.38.0"
+    hash = "sha256-AM7WbQBaOPYfkKg9RFMOfZnaJ1oxMu9uCHxUJUoyCKw="
   [mod."modernc.org/ccgo/v3"]
     version = "v3.16.9"
     hash = "sha256-XQPXBO8adhTxxP+mDa4bt8tDWL5luFUwtA0q5KUS7bM="
