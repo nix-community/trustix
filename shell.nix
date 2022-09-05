@@ -23,7 +23,7 @@ pkgs.mkShell {
 
     # Protobuf
     pkgs.protobuf
-    pkgs.grpcurl  # gRPC CLI
+    pkgs.grpcurl # gRPC CLI
 
     pkgs.golangci-lint
 
