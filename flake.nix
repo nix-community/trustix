@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    gomod2nix.url = "github:tweag/gomod2nix";
+    gomod2nix.url = "github:nix-community/gomod2nix";
 
     npmlock2nix = {
       url = "github:nix-community/npmlock2nix/master";
