@@ -16,9 +16,6 @@ schema = 3
   [mod."github.com/davecgh/go-spew"]
     version = "v1.1.1"
     hash = "sha256-nhzSUrE1fCkN0+RL04N4h8jWmRFPPPWbCuDc7Ss0akI="
-  [mod."github.com/golang/protobuf"]
-    version = "v1.5.2"
-    hash = "sha256-IVwooaIo46iq7euSSVWTBAdKd+2DUaJ67MtBao1DpBI="
   [mod."github.com/inconshreveable/mousetrap"]
     version = "v1.0.1"
     hash = "sha256-ZTP9pLgwAAvHYK5A4PqwWCHGt00x5zMSOpCPoomQ3Sg="
@@ -46,21 +43,9 @@ schema = 3
   [mod."github.com/ulikunitz/xz"]
     version = "v0.5.10"
     hash = "sha256-bogOwQNmQVS7W+C7wci7XEUeYm9TB7PnxnyBIXKYbm0="
-  [mod."golang.org/x/net"]
-    version = "v0.0.0-20220826154423-83b083e8dc8b"
-    hash = "sha256-50A1EeE7HxKbnLBy1vdxtrbH+7d6/mnZA0cOwHJr5XA="
   [mod."golang.org/x/sys"]
     version = "v0.0.0-20220829200755-d48e67d00261"
     hash = "sha256-59QemXKVd6kAYAL5fWHfJJHKc1Hi+uzZlzumigha9jE="
-  [mod."golang.org/x/text"]
-    version = "v0.3.7"
-    hash = "sha256-XH2pUzzQx95O0rak00grQvfACfL+EmZiV7ZzJBkX+XY="
-  [mod."google.golang.org/genproto"]
-    version = "v0.0.0-20220829175752-36a9c930ecbf"
-    hash = "sha256-Vm1kzaSMQBbG9XAs8rr8jM5kl635o6d/BH0+5lKPZzs="
-  [mod."google.golang.org/grpc"]
-    version = "v1.49.0"
-    hash = "sha256-x4+/XjxI2HY8fZYMiEV7Kv+2SrnlmaTJX3tBl+dPUoI="
   [mod."google.golang.org/protobuf"]
     version = "v1.28.1"
     hash = "sha256-sTJYgvlv5is7vHNxcuigF2lNASp0QonhUgnrguhfHSU="

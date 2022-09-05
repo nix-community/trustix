@@ -82,12 +82,6 @@ schema = 3
   [mod."golang.org/x/text"]
     version = "v0.3.7"
     hash = "sha256-XH2pUzzQx95O0rak00grQvfACfL+EmZiV7ZzJBkX+XY="
-  [mod."google.golang.org/genproto"]
-    version = "v0.0.0-20220829175752-36a9c930ecbf"
-    hash = "sha256-Vm1kzaSMQBbG9XAs8rr8jM5kl635o6d/BH0+5lKPZzs="
-  [mod."google.golang.org/grpc"]
-    version = "v1.49.0"
-    hash = "sha256-x4+/XjxI2HY8fZYMiEV7Kv+2SrnlmaTJX3tBl+dPUoI="
   [mod."google.golang.org/protobuf"]
     version = "v1.28.1"
     hash = "sha256-sTJYgvlv5is7vHNxcuigF2lNASp0QonhUgnrguhfHSU="

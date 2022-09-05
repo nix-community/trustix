@@ -4,27 +4,6 @@ schema = 3
   [mod."github.com/bufbuild/connect-go"]
     version = "v0.4.0"
     hash = "sha256-bF80DSFIIuSilehyYiOCE/718fQLzyEkUwE5dk/0jC0="
-  [mod."github.com/golang/protobuf"]
-    version = "v1.5.2"
-    hash = "sha256-IVwooaIo46iq7euSSVWTBAdKd+2DUaJ67MtBao1DpBI="
-  [mod."golang.org/x/net"]
-    version = "v0.0.0-20201021035429-f5854403a974"
-    hash = "sha256-QzW8gkznloAcMLjxEF3xj8KllpK8VTnflkOuEeLvKDw="
-  [mod."golang.org/x/sys"]
-    version = "v0.0.0-20210119212857-b64e53b001e4"
-    hash = "sha256-/rXdHlwhiyH6ptVffLgwv2HmKy1i4XJ2+RTOY0GH80U="
-  [mod."golang.org/x/text"]
-    version = "v0.3.3"
-    hash = "sha256-kiauoT7vd7Mh2AW7TnceQyoCDsARxWkDZu1OSD9dCZw="
-  [mod."google.golang.org/genproto"]
-    version = "v0.0.0-20200526211855-cb27e3aa2013"
-    hash = "sha256-wFVFmWkQLFRBBNTt3C0Dy3GChkYEYnaDLVbQhyq2K1g="
-  [mod."google.golang.org/grpc"]
-    version = "v1.49.0"
-    hash = "sha256-x4+/XjxI2HY8fZYMiEV7Kv+2SrnlmaTJX3tBl+dPUoI="
-  [mod."google.golang.org/grpc/cmd/protoc-gen-go-grpc"]
-    version = "v1.2.0"
-    hash = "sha256-TmqEJBuLUom7FgJkCwF5pyebbKpzzZ51AxhKm2o3TuA="
   [mod."google.golang.org/protobuf"]
     version = "v1.28.1"
     hash = "sha256-sTJYgvlv5is7vHNxcuigF2lNASp0QonhUgnrguhfHSU="
