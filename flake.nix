@@ -23,6 +23,26 @@
         in
         {
           packages = import ./default.nix { inherit pkgs; };
+
+          devShells.default = pkgs.mkShell {
+            packages = [
+              (
+                let
+                  errorMessage = ''
+                    Developing Trustix using Flakes is unsupported.
+
+                    We are using the stable nix-shell interface together with direnv to recursively
+                    load development shells for subpackages and relying on relative environment variables
+                    for state directories and such, something which is not supported using Flakes.
+
+                    For supported development methods see ./packages/trustix-doc/src/hacking.md.
+                  '';
+                in
+                pkgs.runCommand "flakes-nein-danke" { } "echo '${errorMessage}' && exit 1"
+              )
+            ];
+          };
+
         })
     );
 }
