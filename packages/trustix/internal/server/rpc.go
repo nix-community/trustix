@@ -129,7 +129,6 @@ func (l *RPCServer) Decide(ctx context.Context, req *connect.Request[rpc.DecideR
 		}
 	}
 
-	logIDs := []string{}
 	clients := make(map[string]*client.Client)
 	for logID := range sthMap {
 		client, err := l.clients.Get(logID)
@@ -138,7 +137,6 @@ func (l *RPCServer) Decide(ctx context.Context, req *connect.Request[rpc.DecideR
 			continue
 		}
 		clients[logID] = client
-		logIDs = append(logIDs, logID)
 	}
 
 	for _, logMeta := range logs {

@@ -26,10 +26,8 @@ var queryCommand = &cobra.Command{
 	Use:   "query",
 	Short: "Query values from the log",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		// Verify input params
 		{
-
 			if logID == "" {
 				return fmt.Errorf("Missing log ID")
 			}
@@ -80,7 +78,7 @@ var queryCommand = &cobra.Command{
 			log.Fatalf("Could not unmarshal value")
 		}
 
-		fmt.Println(fmt.Sprintf("Output digest: %s", hex.EncodeToString(mapEntry.Digest)))
+		fmt.Printf("Output digest: %s\n", hex.EncodeToString(mapEntry.Digest))
 
 		return nil
 	},

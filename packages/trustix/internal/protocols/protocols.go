@@ -13,7 +13,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"hash"
-	"sync"
 
 	"github.com/hashicorp/go-uuid"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
@@ -63,8 +62,6 @@ func (pd *ProtocolDescriptor) LogID(keyType string, publicKey []byte, mode api.L
 
 	return hex.EncodeToString(h.Sum(nil))
 }
-
-var once sync.Once
 
 var descriptors = []*ProtocolDescriptor{
 	// Internal test

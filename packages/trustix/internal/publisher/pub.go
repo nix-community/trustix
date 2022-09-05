@@ -17,9 +17,7 @@ import (
 	"fmt"
 	"sync"
 
-	proto "github.com/golang/protobuf/proto"
 	"github.com/lazyledger/smt"
-	log "github.com/sirupsen/logrus"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	rpc "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	schema "github.com/nix-community/trustix/packages/trustix-proto/schema"
@@ -28,6 +26,8 @@ import (
 	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	sthsig "github.com/nix-community/trustix/packages/trustix/internal/sth"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
+	log "github.com/sirupsen/logrus"
+	"google.golang.org/protobuf/proto"
 )
 
 func minUint64(x, y uint64) uint64 {
@@ -89,7 +89,7 @@ func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket,
 
 		logBucketTxn := qm.logBucket.Txn(txn)
 
-		sth, err := storage.GetLogHead(logBucketTxn)
+		_, err := storage.GetLogHead(logBucketTxn)
 		if err == nil {
 			return nil
 		}
@@ -110,7 +110,7 @@ func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket,
 		}
 
 		log.Debug("Signing STH for empty tree")
-		sth, err = sthsig.SignHead(vLog, smTree, vMapLog, signer, qm.pd)
+		sth, err := sthsig.SignHead(vLog, smTree, vMapLog, signer, qm.pd)
 		if err != nil {
 			return err
 		}
@@ -332,8 +332,10 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 			return err
 		}
 
-		smTree.Update(pair.Key, entry)
-
+		_, err = smTree.Update(pair.Key, entry)
+		if err != nil {
+			return err
+		}
 	}
 
 	if !wrote {

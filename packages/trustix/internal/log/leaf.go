@@ -9,8 +9,8 @@
 package log
 
 import (
-	proto "github.com/golang/protobuf/proto"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
+	"google.golang.org/protobuf/proto"
 )
 
 func NewLeaf(digest []byte, value []byte) (*schema.LogLeaf, error) {

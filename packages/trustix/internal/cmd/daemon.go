@@ -449,6 +449,7 @@ var daemonCmd = &cobra.Command{
 			log.Info("Received shutdown signal, closing down server gracefully")
 
 			for _, server := range servers {
+				server := server
 				wg.Add(1)
 				go func() {
 					defer wg.Done()
