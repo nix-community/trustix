@@ -15,7 +15,6 @@ import (
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/internal/pool"
 	pub "github.com/nix-community/trustix/packages/trustix/internal/publisher"
-	"github.com/nix-community/trustix/packages/trustix/internal/rpc/auth"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 
@@ -86,10 +85,7 @@ func (l *LogRPCServer) GetLogEntries(ctx context.Context, req *connect.Request[a
 func (l *LogRPCServer) Submit(ctx context.Context, req *connect.Request[rpc.SubmitRequest]) (*connect.Response[rpc.SubmitResponse], error) {
 	msg := req.Msg
 
-	err := auth.CanWrite(ctx)
-	if err != nil {
-		return nil, err
-	}
+	// TODO: Auth check
 
 	q, err := l.publishers.Get(*msg.LogID)
 	if err != nil {
@@ -107,10 +103,7 @@ func (l *LogRPCServer) Submit(ctx context.Context, req *connect.Request[rpc.Subm
 func (l *LogRPCServer) Flush(ctx context.Context, req *connect.Request[rpc.FlushRequest]) (*connect.Response[rpc.FlushResponse], error) {
 	msg := req.Msg
 
-	err := auth.CanWrite(ctx)
-	if err != nil {
-		return nil, err
-	}
+	// TODO: Auth check
 
 	q, err := l.publishers.Get(*msg.LogID)
 	if err != nil {
