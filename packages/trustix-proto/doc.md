@@ -239,6 +239,11 @@ Request a signed head for a given log
 
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Protocols | [string](#string) | repeated | Allow to filter logs response based on the protocol identifier |
+
+
 
 
 
