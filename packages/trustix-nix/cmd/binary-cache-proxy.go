@@ -13,10 +13,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/bakins/logrus-middleware"
@@ -62,7 +62,7 @@ func getCaches(c interfaces.RpcAPI) ([]string, error) {
 }
 
 func readKey(path string) (string, crypto.Signer, error) {
-	keyBytes, err := ioutil.ReadFile(path)
+	keyBytes, err := os.ReadFile(path)
 	if err != nil {
 		panic(err)
 	}
@@ -218,7 +218,7 @@ var binaryCacheCommand = &cobra.Command{
 								continue
 							}
 
-							narinfoBytes, err := ioutil.ReadAll(resp.Body)
+							narinfoBytes, err := io.ReadAll(resp.Body)
 							if err != nil {
 								panic(err)
 							}
