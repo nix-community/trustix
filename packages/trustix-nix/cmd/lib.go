@@ -9,7 +9,6 @@ import (
 	"encoding/base32"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -29,7 +28,7 @@ func createKVPair(storePath string) (*api.KeyValuePair, error) {
 		return nil, fmt.Errorf("Empty input store path")
 	}
 
-	tmpDir, err := ioutil.TempDir("", "nix-trustix")
+	tmpDir, err := os.MkdirTemp("", "nix-trustix")
 	if err != nil {
 		return nil, err
 	}
