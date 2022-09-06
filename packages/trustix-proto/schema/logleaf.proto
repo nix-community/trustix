@@ -1,3 +1,7 @@
+// Copyright © 2020-2022 The Trustix Authors
+//
+// SPDX-License-Identifier: MIT
+
 syntax = "proto2";
 
 option go_package = "github.com/nix-community/trustix/packages/trustix-proto/schema";
