@@ -3,30 +3,74 @@ Upstream-Name: trustix
 Upstream-Contact: adisbladis <adisbladis@gmail.com>
 Source: https://github.com/nix-community/trustix
 
-Files: packages/go-lib
-Copyright: 2022 adisbladis
+Files: .envrc Makefile Procfile default.nix examples/nixops-deployment.nix flake-fetch.nix flake.nix nixos/default.nix packages/go-lib/.envrc packages/go-lib/go.mod packages/go-lib/shell.nix packages/trustix-doc/default.nix packages/trustix-doc/doc_old/Makefile packages/trustix-doc/doc_old/shell.nix packages/trustix-nix-reprod/.envrc packages/trustix-nix-reprod/Procfile packages/trustix-nix-reprod/default.nix packages/trustix-nix-reprod/go.mod packages/trustix-nix-reprod/shell.nix packages/trustix-nix/.envrc packages/trustix-nix/Procfile packages/trustix-nix/default.nix packages/trustix-nix/go.mod packages/trustix-nix/nixos/binarycache.nix packages/trustix-nix/nixos/default.nix packages/trustix-nix/nixos/post-build-hook.nix packages/trustix-nix/shell.nix packages/trustix-proto/.envrc packages/trustix-proto/Makefile packages/trustix-proto/Procfile packages/trustix-proto/go.mod packages/trustix-proto/shell.nix packages/trustix/.envrc packages/trustix/Procfile packages/trustix/default.nix packages/trustix/go.mod packages/trustix/nixos/default.nix packages/trustix/nixos/test.nix packages/trustix/shell.nix packages/trustix/tests/default.nix packages/unixtransport/.envrc packages/unixtransport/go.mod packages/unixtransport/shell.nix pkgs.nix shell.nix
+Copyright: Copyright © 2020-2022 The Trustix Authors
 License: MIT
 
-Files: packages/trustix
-Copyright: 2021 Tweag IO / 2020-2022 adisbladis
+Files: .github/workflows/golangci-lint.yml .github/workflows/gomod2nix.yml .github/workflows/nix-build.yml .github/workflows/python.yml .github/workflows/treefmt.yml
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: .gitignore .reuse/dep5 packages/trustix-doc/.gitignore packages/trustix-doc/doc_old/.gitignore packages/trustix-nix-reprod/.gitignore packages/trustix-nix/.gitignore packages/trustix-proto/.gitignore packages/trustix/.gitignore packages/unixtransport/.gitignore
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: README.md packages/go-lib/README.md packages/trustix-doc/doc_old/comparison.md packages/trustix-doc/src/SUMMARY.md packages/trustix-doc/src/api.md packages/trustix-doc/src/binarycache.md packages/trustix-doc/src/hacking.md packages/trustix-doc/src/intro.md packages/trustix-doc/src/nixos.md packages/trustix-doc/src/publishing.md packages/trustix-doc/src/subscribing.md packages/trustix-proto/doc.md packages/unixtransport/README.md
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC-BY-SA-4.0
+
+Files: assets/NGI0_tag.png assets/nlnet-banner.png
+Copyright: Copyright © 2021 The NLNet Foundation
+License: LicenseRef-all-rights-reserved
+
+Files: assets/tweag.png
+Copyright: Copyright © 2021 The Tweag IO
+License: LicenseRef-all-rights-reserved
+
+Files: flake.lock packages/go-lib/go.sum packages/go-lib/gomod2nix.toml packages/trustix-nix-reprod/go.sum packages/trustix-nix-reprod/gomod2nix.toml packages/trustix-nix/go.sum packages/trustix-nix/gomod2nix.toml packages/trustix-proto/go.sum packages/trustix-proto/gomod2nix.toml packages/trustix/go.sum packages/trustix/gomod2nix.toml
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: packages/trustix-doc/book.toml packages/trustix-doc/doc_old/numeric.csl packages/trustix-doc/doc_old/references.bib packages/trustix-doc/doc_old/trustix-gossip.puml packages/trustix-doc/doc_old/trustix-submission.puml packages/trustix-doc/doc_old/trustix-substitution.puml
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC-BY-SA-4.0
+
+Files: packages/trustix-nix-reprod/sql/queries/derivations.sql packages/trustix-nix-reprod/sql/queries/logs.sql packages/trustix-nix-reprod/sql/schema/20220818142927_initial.sql packages/trustix-nix-reprod/sql/schema/20220904150640_logs.sql
+Copyright: Copyright © 2020-2022 The Trustix Authors
 License: GPL-3.0-only
 
-Files: packages/trustix-nix
-Copyright: 2021 Tweag IO / 2020-2022 adisbladis
-License: GPL-3.0-only
+Files: packages/trustix-nix-reprod/sqlc.yaml packages/trustix-nix/dev/cache-priv-key.pem packages/trustix-nix/dev/cache-pub-key.pem packages/trustix/config.toml treefmt.toml
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
 
-Files: packages/trustix-doc
-Copyright: 2021 Tweag IO / 2020-2022 adisbladis
-License: GPL-3.0-only
-
-Files: packages/trustix-nix-reprod
-Copyright: 2021 Tweag IO / 2020-2022 adisbladis
-License: GPL-3.0-only
-
-Files: packages/trustix-proto
-Copyright: 2021 Tweag IO / 2020-2022 adisbladis
+Files: packages/trustix-proto/api/apiconnect/api.connect.go packages/trustix-proto/rpc/rpcconnect/rpc.connect.go
+Copyright: Copyright © 2020-2022 The Trustix Authors
 License: MIT
 
-Files: packages/unixtransport
-Copyright: 2021 Peter Bourgon <peter@bourgon.org> / 2022 adisbladis
+Files: packages/trustix/dev/priv packages/trustix/dev/pub
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: packages/trustix/internal/config/fixtures/example.toml
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: packages/trustix/internal/signer/fixtures/priv packages/trustix/internal/signer/fixtures/pub
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: packages/trustix/tests/compare-fixtures/log-agg/config.toml packages/trustix/tests/compare-fixtures/log1/config.toml packages/trustix/tests/compare-fixtures/log2/config.toml packages/trustix/tests/compare-fixtures/log3/config.toml packages/trustix/tests/config-simple.toml
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: packages/trustix/tests/compare-fixtures/log-agg/priv packages/trustix/tests/compare-fixtures/log-agg/pub packages/trustix/tests/compare-fixtures/log1/priv packages/trustix/tests/compare-fixtures/log1/pub packages/trustix/tests/compare-fixtures/log2/priv packages/trustix/tests/compare-fixtures/log2/pub packages/trustix/tests/compare-fixtures/log3/priv packages/trustix/tests/compare-fixtures/log3/pub
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: packages/trustix/tests/fixtures/priv packages/trustix/tests/fixtures/pub
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: packages/unixtransport/.github/workflows/test.yaml packages/unixtransport/register.go packages/unixtransport/register_test.go
+Copyright: Copyright © 2020-2022 The Trustix Authors
 License: Apache-2.0

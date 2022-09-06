@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+# Copyright © 2020-2022 The Trustix Authors
+#
+# SPDX-License-Identifier: MIT
+
 set -euo pipefail
 
 file=$(echo "$1" | sed s/'unix:\/\/'/''/)

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+# Copyright © 2020-2022 The Trustix Authors
+#
+# SPDX-License-Identifier: MIT
+
 # Check if all gomod2nix.toml files are up to date
 set -euo pipefail
 
