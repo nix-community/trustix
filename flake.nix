@@ -24,25 +24,36 @@
         {
           packages = import ./default.nix { inherit pkgs; };
 
-          devShells.default = pkgs.mkShell {
-            packages = [
-              (
-                let
-                  errorMessage = ''
-                    Developing Trustix using Flakes is unsupported.
+          # Fake shell derivation that evaluates but doesn't build and producec an error message
+          # explaining the supported setup.
+          devShells.default =
+            let
+              errorMessage = ''
+                Developing Trustix using Flakes is unsupported.
 
-                    We are using the stable nix-shell interface together with direnv to recursively
-                    load development shells for subpackages and relying on relative environment variables
-                    for state directories and such, something which is not supported using Flakes.
+                We are using the stable nix-shell interface together with direnv to recursively
+                load development shells for subpackages and relying on relative environment variables
+                for state directories and such, something which is not supported using Flakes.
 
-                    For supported development methods see ./packages/trustix-doc/src/hacking.md.
-                  '';
-                in
-                pkgs.runCommand "flakes-nein-danke" { } "echo '${errorMessage}' && exit 1"
-              )
-            ];
-          };
-
-        })
+                For supported development methods see ./packages/trustix-doc/src/hacking.md.
+              '';
+            in
+            builtins.derivation {
+              name = "flakes-nein-danke-shell";
+              builder = "bash";
+              inherit system;
+              preferLocalBuild = true;
+              allowSubstitutes = false;
+              fail = builtins.derivation {
+                name = "flakes-nein-danke";
+                builder = "/bin/sh";
+                args = [ "-c" "echo '${errorMessage}' && exit 1" ];
+                preferLocalBuild = true;
+                allowSubstitutes = false;
+                inherit system;
+              };
+            };
+        }
+      )
     );
 }
