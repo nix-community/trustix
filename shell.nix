@@ -1,5 +1,6 @@
 let
   pkgs = import ./pkgs.nix { };
+  inherit (pkgs) lib;
 
   STATE_DIR = "${builtins.toString ./.}/state";
   TRUSTIX_RPC = "unix://${STATE_DIR}/trustix.sock";
@@ -11,6 +12,42 @@ let
     exec ${pkgs.treefmt}/bin/treefmt "$@"
   '';
 
+  python = pkgs.python3.override {
+    self = python;
+    packageOverrides = self: super: {
+
+      pretty-errors =
+        let
+          version = "1.2.25";
+        in
+        self.buildPythonPackage {
+          pname = "pretty-errors";
+          inherit version;
+
+          src = self.fetchPypi {
+            pname = "pretty_errors";
+            inherit version;
+            hash = "sha256-oWulx1LIfCY7+S+LS1hiTjseKScak5H1ZPErhuk8Z1U=";
+          };
+
+          # Work around interactive installer
+          postPatch = "rm ./pretty_errors/__main__.py";
+
+          propagatedBuildInputs = [
+            self.colorama
+          ];
+        };
+
+    };
+  };
+
+  # Some development tools (like the license file generator) is written in Python
+  pythonEnv = python.withPackages (ps: [
+    ps.mypy
+    ps.black
+    ps.pretty-errors
+  ]);
+
 in
 pkgs.mkShell {
 
@@ -18,6 +55,9 @@ pkgs.mkShell {
   CGO_ENABLED = "0";
 
   buildInputs = [
+    # Development scripts
+    pythonEnv
+
     # Meta code formatter
     treefmt
 
@@ -50,7 +90,7 @@ pkgs.mkShell {
     # Docs
     pkgs.mdbook
 
-    # License
+    # License management and compliance
     pkgs.reuse
   ];
 
