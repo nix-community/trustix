@@ -11,9 +11,9 @@ import (
 	"encoding/binary"
 
 	"github.com/lazyledger/smt"
+	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	vlog "github.com/nix-community/trustix/packages/trustix/internal/log"
-	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	"github.com/nix-community/trustix/packages/trustix/internal/signer"
 )
 

@@ -7,3 +7,6 @@ packages:
     engine: "sqlite"
     schema: "sql/schema"
     queries: "sql/queries"
+overrides:
+  - column: "log.tree_size"
+    go_type: "github.com/segmentio/ksuid.KSUID"

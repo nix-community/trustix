@@ -80,8 +80,8 @@ pkgs.mkShell {
     pkgs.protobuf
     pkgs.grpcurl # gRPC CLI
 
-    # Go linter
-    pkgs.golangci-lint
+    # Go linters
+    pkgs.golangci-lint # Multi purpose linter
 
     # File system watchers
     pkgs.reflex

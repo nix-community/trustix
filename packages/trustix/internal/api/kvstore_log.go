@@ -11,10 +11,10 @@ import (
 
 	"github.com/lazyledger/smt"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/interfaces"
 	"github.com/nix-community/trustix/packages/trustix/internal/constants"
-	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 )
 

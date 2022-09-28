@@ -25,8 +25,22 @@ type ProtocolDescriptor struct {
 	NewHash func() hash.Hash
 }
 
-func (pd *ProtocolDescriptor) Validate() error {
+var Descriptors = []*ProtocolDescriptor{
+	// Internal test
+	&ProtocolDescriptor{
+		ID:      "cddab738-75cf-4685-94e2-4df58a0f51e7",
+		Name:    "test",
+		NewHash: sha256.New,
+	},
+	// Nix protocol
+	&ProtocolDescriptor{
+		ID:      "5138a791-8d00-4182-96bc-f1f2688cdde2",
+		Name:    "nix",
+		NewHash: sha256.New,
+	},
+}
 
+func (pd *ProtocolDescriptor) Validate() error {
 	if _, err := uuid.ParseUUID(pd.ID); err != nil {
 		return err
 	}
@@ -60,23 +74,8 @@ func (pd *ProtocolDescriptor) LogID(keyType string, publicKey []byte, mode api.L
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-var descriptors = []*ProtocolDescriptor{
-	// Internal test
-	&ProtocolDescriptor{
-		ID:      "cddab738-75cf-4685-94e2-4df58a0f51e7",
-		Name:    "test",
-		NewHash: sha256.New,
-	},
-	// Nix protocol
-	&ProtocolDescriptor{
-		ID:      "5138a791-8d00-4182-96bc-f1f2688cdde2",
-		Name:    "nix",
-		NewHash: sha256.New,
-	},
-}
-
 func Get(id string) (*ProtocolDescriptor, error) {
-	for _, pd := range descriptors {
+	for _, pd := range Descriptors {
 		if pd.ID == id || pd.Name == id {
 			return pd, pd.Validate()
 		}

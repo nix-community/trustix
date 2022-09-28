@@ -10,7 +10,7 @@ import (
 	"fmt"
 
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
-	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
+	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 )
 
 type PublicKey struct {
