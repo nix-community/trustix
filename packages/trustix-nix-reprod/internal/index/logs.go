@@ -13,6 +13,7 @@ import (
 	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix/client"
+	logger "github.com/sirupsen/logrus"
 	"golang.org/x/exp/constraints"
 )
 
@@ -23,6 +24,26 @@ func max[T constraints.Ordered](x T, y T) T {
 		return x
 	}
 	return y
+}
+
+func indexLog(ctx context.Context, log *api.Log, dbLog idb.Log, client *client.Client) error {
+	// Get the log head
+	logHead, err := client.LogAPI.GetHead(ctx, &api.LogHeadRequest{
+		LogID: log.LogID,
+	})
+	if err != nil {
+		return fmt.Errorf("error getting log head: %w", err)
+	}
+
+	if uint64(dbLog.TreeSize) >= *logHead.TreeSize {
+		logger.WithFields(logger.Fields{
+			"logID":    *log.LogID,
+			"treeSize": *logHead.TreeSize,
+		}).Debug("old and new size the same, returning early")
+		return err
+	}
+
+	return nil
 }
 
 func IndexLogs(ctx context.Context, db *sql.DB, client *client.Client) error {
@@ -52,16 +73,21 @@ func IndexLogs(ctx context.Context, db *sql.DB, client *client.Client) error {
 
 	// create non existing logs
 	for _, log := range logsResp.Logs {
-		dbLog, err := qtx.CreateLog(ctx, *log.LogID)
+		logger.WithFields(logger.Fields{
+			"logID": *log.LogID,
+		}).Debug("trying to get log from database")
+
+		dbLog, err := qtx.GetLog(ctx, *log.LogID)
 		if err != nil && err != sql.ErrNoRows {
-			return fmt.Errorf("error creating log '%s' in db: %s", log.LogID, err)
-		}
+			return fmt.Errorf("error getting log '%s' in db: %s", log.LogID, err)
+		} else if err == sql.ErrNoRows {
+			logger.WithFields(logger.Fields{
+				"logID": *log.LogID,
+			}).Debug("log not found, creating database entry")
 
-		if err == sql.ErrNoRows {
-			dbLog, err = qtx.GetLog(ctx, *log.LogID)
-
+			dbLog, err = qtx.CreateLog(ctx, *log.LogID)
 			if err != nil {
-				return fmt.Errorf("error getting log '%s' in db: %s", log.LogID, err)
+				return fmt.Errorf("error creating log '%s' in db: %s", log.LogID, err)
 			}
 		}
 
@@ -70,18 +96,11 @@ func IndexLogs(ctx context.Context, db *sql.DB, client *client.Client) error {
 
 	// index any logs that has updates
 	for _, log := range logsResp.Logs {
-		// Get the log head
-		logHead, err := client.LogAPI.GetHead(ctx, &api.LogHeadRequest{
-			LogID: log.LogID,
-		})
-		if err != nil {
-			return fmt.Errorf("error getting logs list: %w", err)
-		}
-
 		dbLog := logMap[*log.LogID]
 
-		if uint64(dbLog.TreeSize) >= *logHead.TreeSize {
-			continue // return nil
+		err := indexLog(ctx, log, dbLog, client)
+		if err != nil {
+			return err
 		}
 	}
 
