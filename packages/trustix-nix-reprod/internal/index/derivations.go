@@ -36,7 +36,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 	commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
 	maxWorkers := 15
 
-	tx, err := db.Begin()
+	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("error creating db transaction: %w", err)
 	}

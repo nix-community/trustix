@@ -9,8 +9,30 @@ import (
 	"context"
 )
 
+const createDerivationOutputResult = `-- name: CreateDerivationOutputResult :one
+INSERT INTO derivationoutputresult (output_hash, store_path, log_id) VALUES (?, ?, ?) RETURNING id, output_hash, store_path, log_id
+`
+
+type CreateDerivationOutputResultParams struct {
+	OutputHash string
+	StorePath  string
+	LogID      int64
+}
+
+func (q *Queries) CreateDerivationOutputResult(ctx context.Context, arg CreateDerivationOutputResultParams) (Derivationoutputresult, error) {
+	row := q.db.QueryRowContext(ctx, createDerivationOutputResult, arg.OutputHash, arg.StorePath, arg.LogID)
+	var i Derivationoutputresult
+	err := row.Scan(
+		&i.ID,
+		&i.OutputHash,
+		&i.StorePath,
+		&i.LogID,
+	)
+	return i, err
+}
+
 const createLog = `-- name: CreateLog :one
-INSERT OR IGNORE INTO log (log_id, tree_size) VALUES (?, 0) RETURNING id, log_id, tree_size
+INSERT INTO log (log_id, tree_size) VALUES (?, 0) RETURNING id, log_id, tree_size
 `
 
 func (q *Queries) CreateLog(ctx context.Context, logID string) (Log, error) {
@@ -30,4 +52,18 @@ func (q *Queries) GetLog(ctx context.Context, logID string) (Log, error) {
 	var i Log
 	err := row.Scan(&i.ID, &i.LogID, &i.TreeSize)
 	return i, err
+}
+
+const setTreeSize = `-- name: SetTreeSize :exec
+UPDATE log SET tree_size = ? WHERE id = ?
+`
+
+type SetTreeSizeParams struct {
+	TreeSize int64
+	ID       int64
+}
+
+func (q *Queries) SetTreeSize(ctx context.Context, arg SetTreeSizeParams) error {
+	_, err := q.db.ExecContext(ctx, setTreeSize, arg.TreeSize, arg.ID)
+	return err
 }
