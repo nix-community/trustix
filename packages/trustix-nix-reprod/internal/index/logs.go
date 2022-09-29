@@ -34,7 +34,7 @@ var logProtocols = []string{
 
 // index a single chunk of a log
 func indexLogChunk(ctx context.Context, client *client.Client, log *api.Log, dbLog idb.Log, db *sql.DB, start uint64, finish uint64) error {
-	if start == finish {
+	if start >= finish {
 		return nil
 	}
 
@@ -69,10 +69,6 @@ func indexLogChunk(ctx context.Context, client *client.Client, log *api.Log, dbL
 
 	// create an entry for each leaf
 	for _, leaf := range resp.Leaves {
-		fmt.Println(leaf)
-
-		fmt.Println(string(leaf.Key), dbLog.ID)
-
 		_, err := qtx.CreateDerivationOutputResult(
 			ctx,
 			idb.CreateDerivationOutputResultParams{
@@ -89,7 +85,7 @@ func indexLogChunk(ctx context.Context, client *client.Client, log *api.Log, dbL
 
 	// set new tree size
 	{
-		treeSize := int64(finish)
+		treeSize := int64(finish) + 1
 
 		logger.WithFields(logger.Fields{
 			"logID":    *log.LogID,
@@ -112,10 +108,6 @@ func indexLogChunk(ctx context.Context, client *client.Client, log *api.Log, dbL
 
 // index full log
 func indexLog(ctx context.Context, log *api.Log, dbLog idb.Log, client *client.Client, db *sql.DB) error {
-	logger.WithFields(logger.Fields{
-		"logID": *log.LogID,
-	}).Debug("indexing log")
-
 	// Get the log head
 	logHead, err := client.LogAPI.GetHead(ctx, &api.LogHeadRequest{
 		LogID: log.LogID,
@@ -133,7 +125,7 @@ func indexLog(ctx context.Context, log *api.Log, dbLog idb.Log, client *client.C
 	if start >= finish {
 		logger.WithFields(logger.Fields{
 			"logID":  *log.LogID,
-			"start":  start,
+			"start":  start - 1,
 			"finish": finish,
 		}).Debug("log already up to date")
 
@@ -197,7 +189,7 @@ func createLogs(ctx context.Context, db *sql.DB, logsResp *api.LogsResponse) (ma
 
 		dbLog, err := qtx.GetLog(ctx, *log.LogID)
 		if err != nil && err != sql.ErrNoRows {
-			return nil, fmt.Errorf("error getting log '%s' in db: %s", log.LogID, err)
+			return nil, fmt.Errorf("error getting log '%s' in db: %s", *log.LogID, err)
 		} else if err == sql.ErrNoRows {
 			logger.WithFields(logger.Fields{
 				"logID": *log.LogID,
@@ -205,7 +197,7 @@ func createLogs(ctx context.Context, db *sql.DB, logsResp *api.LogsResponse) (ma
 
 			dbLog, err = qtx.CreateLog(ctx, *log.LogID)
 			if err != nil {
-				return nil, fmt.Errorf("error creating log '%s' in db: %s", log.LogID, err)
+				return nil, fmt.Errorf("error creating log '%s' in db: %s", *log.LogID, err)
 			}
 		}
 
@@ -229,18 +221,12 @@ func IndexLogs(ctx context.Context, db *sql.DB, client *client.Client) error {
 		return nil
 	}
 
-	fmt.Println("LLLLLLL")
-
 	// index any logs that has updates
 	for _, log := range logsResp.Logs {
-		fmt.Println(*log.LogID)
-
 		dbLog, ok := logMap[*log.LogID]
 		if !ok {
 			panic(fmt.Sprintf("expected to find log with id '%s'", *log.LogID))
 		}
-
-		fmt.Println(dbLog, ok)
 
 		err := indexLog(ctx, log, dbLog, client, db)
 		if err != nil {
