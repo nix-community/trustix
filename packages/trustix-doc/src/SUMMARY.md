@@ -1,5 +1,7 @@
 # Summary
 
+- [About](./about.md)
+
 - [Introduction](./intro.md)
 
 - [NixOS setup](./nixos.md)
