@@ -11,7 +11,7 @@ in
   #       so instead we copy over the overlays and config, but the pinned nixpkgs does not carry over here
   # nixpkgs.pkgs = import ../pkgs.nix {};
   nixpkgs = {
-    inherit (import ../pkgs.nix {}) overlays config;
+    inherit (import ../pkgs.nix { }) overlays config;
   };
 
   services.trustix = {
