@@ -3,3 +3,4 @@ result*
 /state
 *.sqlite3
 __pycache__
+nixos.qcow2
