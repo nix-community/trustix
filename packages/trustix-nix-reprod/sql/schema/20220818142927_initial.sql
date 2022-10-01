@@ -42,6 +42,12 @@ CREATE TABLE derivationoutput (
 CREATE INDEX idx_derivationoutput_output ON derivationoutput (output);
 CREATE INDEX idx_derivationoutput_store_path ON derivationoutput (store_path);
 
+CREATE TABLE derivationeval (
+    drv INTEGER NOT NULL REFERENCES derivation (id) ON DELETE CASCADE,
+    eval INTEGER NOT NULL REFERENCES evaluation (id) ON DELETE CASCADE
+);
+CREATE INDEX idx_derivationeval_drv ON derivationeval (drv);
+
 CREATE TABLE derivationattr (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     attr VARCHAR(255) NOT NULL,

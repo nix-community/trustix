@@ -39,6 +39,20 @@ func (q *Queries) CreateDerivationAttr(ctx context.Context, arg CreateDerivation
 	return err
 }
 
+const createDerivationEval = `-- name: CreateDerivationEval :exec
+INSERT OR IGNORE INTO derivationeval (drv, eval) VALUES (?, ?)
+`
+
+type CreateDerivationEvalParams struct {
+	Drv  int64
+	Eval int64
+}
+
+func (q *Queries) CreateDerivationEval(ctx context.Context, arg CreateDerivationEvalParams) error {
+	_, err := q.db.ExecContext(ctx, createDerivationEval, arg.Drv, arg.Eval)
+	return err
+}
+
 const createDerivationOutput = `-- name: CreateDerivationOutput :exec
 INSERT INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?)
 `

@@ -32,3 +32,6 @@ SELECT * FROM derivationattr WHERE derivation_id = ? AND attr = ? LIMIT 1;
 
 -- name: CreateDerivationAttr :exec
 INSERT OR IGNORE INTO derivationattr (attr, derivation_id) VALUES (?, ?);
+
+-- name: CreateDerivationEval :exec
+INSERT OR IGNORE INTO derivationeval (drv, eval) VALUES (?, ?);

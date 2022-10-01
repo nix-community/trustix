@@ -51,10 +51,10 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 	qtx := queries.WithTx(tx)
 
 	// Create the evaluation in the database
-	_, err = qtx.GetEval(ctx, commitSha)
+	dbEval, err := qtx.GetEval(ctx, commitSha)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			_, err = qtx.CreateEval(ctx, commitSha)
+			dbEval, err = qtx.CreateEval(ctx, commitSha)
 		}
 
 		if err != nil {
@@ -140,6 +140,15 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 			}
 
 			drvDBIDs.Set(drvPath, dbDrv.ID)
+
+			// Index that this derivation was a part of this evaluation
+			err = qtx.CreateDerivationEval(ctx, idb.CreateDerivationEvalParams{
+				Drv:  dbDrv.ID,
+				Eval: dbEval.ID,
+			})
+			if err != nil {
+				return errorID, fmt.Errorf("error creating derivationeval: %w", err)
+			}
 		}
 
 		// Direct dependencies

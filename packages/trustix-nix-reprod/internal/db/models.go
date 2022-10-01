@@ -20,6 +20,11 @@ type Derivationattr struct {
 	DerivationID int64
 }
 
+type Derivationeval struct {
+	Drv  int64
+	Eval int64
+}
+
 type Derivationoutput struct {
 	ID           int64
 	Output       string
