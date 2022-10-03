@@ -116,8 +116,9 @@ const getDerivationReproducibilityTimeSeriesByAttr = `-- name: GetDerivationRepr
 ;
 
 SELECT
-    eval.id
-    , eval.timestamp
+    eval.id AS eval_id
+    , eval.timestamp AS eval_timestamp
+    , drv.id == refs_recurse.referrer_id AS is_attr
     , drv.drv
     , drvoutput.output
     , drvoutput.store_path
@@ -140,8 +141,9 @@ type GetDerivationReproducibilityTimeSeriesByAttrParams struct {
 }
 
 type GetDerivationReproducibilityTimeSeriesByAttrRow struct {
-	ID            int64
-	Timestamp     time.Time
+	EvalID        int64
+	EvalTimestamp time.Time
+	IsAttr        bool
 	Drv           string
 	Output        string
 	StorePath     string
@@ -158,8 +160,9 @@ func (q *Queries) GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Conte
 	for rows.Next() {
 		var i GetDerivationReproducibilityTimeSeriesByAttrRow
 		if err := rows.Scan(
-			&i.ID,
-			&i.Timestamp,
+			&i.EvalID,
+			&i.EvalTimestamp,
+			&i.IsAttr,
 			&i.Drv,
 			&i.Output,
 			&i.StorePath,

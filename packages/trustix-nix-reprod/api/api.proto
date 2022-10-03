@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option go_package = "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/api";
+
+message DerivationReproducibilityRequest { string DrvPath = 1; }
+
+message DerivationReproducibilityResponse {
+  message DerivationOutputResult {
+    string OutputID = 1;
+    string OutputHash = 2;
+    string LogID = 3;
+  }
+
+  message DerivationOutputResultByOutput {
+    message DerivationOutputResultByOutputHash {
+      map<string, DerivationOutputResult> Results = 1;
+    }
+    map<string, DerivationOutputResultByOutputHash> Outputs = 1;
+  }
+
+  string DrvPath = 1;
+
+  DerivationOutputResultByOutput UnreproducedPaths = 2;
+  DerivationOutputResultByOutput ReproducedPaths = 3;
+  DerivationOutputResultByOutput UnknownPaths = 4;
+  DerivationOutputResultByOutput MissingPaths = 5;
+}
+
+message SuggestsAttributeRequest {}
+
+message SuggestAttributeResponse {}
+
+message DiffRequest {}
+
+message DiffResponse {}
+
+service ReproducibilityAPI {
+  rpc DerivationReproducibility(DerivationReproducibilityRequest)
+      returns (DerivationReproducibilityResponse) {}
+  rpc SuggestAttribute(SuggestsAttributeRequest)
+      returns (SuggestAttributeResponse) {}
+  rpc Diff(DiffRequest) returns (DiffResponse) {}
+}
