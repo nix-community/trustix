@@ -157,6 +157,9 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 			refsDirect.Add(inputDrv)
 		}
 
+		// insert a self-reference
+		refsDirect.Add(drvPath)
+
 		// All dependencies (recursive, flattened)
 		refsAll := refsDirect.Copy()
 
