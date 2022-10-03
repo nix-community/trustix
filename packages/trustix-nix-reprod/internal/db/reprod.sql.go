@@ -10,11 +10,12 @@ import (
 )
 
 const getDerivationOutputResultsRecursive = `-- name: GetDerivationOutputResultsRecursive :many
+;
+
 SELECT derivationoutputresult.id, derivationoutputresult.output_hash, derivationoutputresult.store_path, derivationoutputresult.log_id
     FROM derivationoutputresult
     JOIN derivationoutput drvoutput ON drvoutput.store_path = derivationoutputresult.store_path
-    JOIN derivation drv ON drv.id = drvoutput.derivation_id
-    JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drv.id
+    JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drvoutput.derivation_id
     JOIN derivation referrer_drv ON referrer_drv.id = refs_recurse.referrer_id
     WHERE referrer_drv.drv = ?
 `
@@ -33,6 +34,42 @@ func (q *Queries) GetDerivationOutputResultsRecursive(ctx context.Context, drv s
 			&i.OutputHash,
 			&i.StorePath,
 			&i.LogID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getDerivationOutputsRecursive = `-- name: GetDerivationOutputsRecursive :many
+SELECT derivationoutput.id, derivationoutput.output, derivationoutput.store_path, derivationoutput.derivation_id
+    FROM derivationoutput
+    JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = derivationoutput.derivation_id
+    JOIN derivation referrer_drv ON referrer_drv.id = refs_recurse.referrer_id
+    WHERE referrer_drv.drv = ?
+`
+
+func (q *Queries) GetDerivationOutputsRecursive(ctx context.Context, drv string) ([]Derivationoutput, error) {
+	rows, err := q.db.QueryContext(ctx, getDerivationOutputsRecursive, drv)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Derivationoutput
+	for rows.Next() {
+		var i Derivationoutput
+		if err := rows.Scan(
+			&i.ID,
+			&i.Output,
+			&i.StorePath,
+			&i.DerivationID,
 		); err != nil {
 			return nil, err
 		}
