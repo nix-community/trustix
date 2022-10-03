@@ -48,6 +48,12 @@ let
     ps.pretty-errors
   ]);
 
+  sqlFormatterWriter = pkgs.writeScriptBin "sql-formatter-writer" ''
+    #!${pkgs.runtimeShell}
+    set -euo pipefail
+    exec ${pkgs.nodePackages.sql-formatter}/bin/sql-formatter -l sqlite -o "$1" "$1"
+  '';
+
 in
 pkgs.mkShell {
 
@@ -69,6 +75,9 @@ pkgs.mkShell {
 
     # Format Nix expressions
     pkgs.nixpkgs-fmt
+
+    # Format SQL
+    sqlFormatterWriter
 
     # Procfile process runner
     pkgs.hivemind

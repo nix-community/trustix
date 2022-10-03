@@ -11,3 +11,7 @@ includes = ["*.go"]
 command = "clang-format"
 options = [ "-i" ]
 includes = [ "*.proto" ]
+
+[formatter.sql]
+command = "sql-formatter-writer"
+includes = [ "*.sql" ]
