@@ -52,7 +52,10 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 
 	// Create the evaluation in the database
 	dbEval, err := qtx.GetEval(ctx, commitSha)
-	if err != nil {
+	if err == nil {
+		fmt.Println(fmt.Sprintf("eval '%s' already indexed", commitSha))
+		return nil
+	} else {
 		if err == sql.ErrNoRows {
 			dbEval, err = qtx.CreateEval(ctx, commitSha)
 		}
