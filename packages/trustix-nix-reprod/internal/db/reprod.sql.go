@@ -130,7 +130,7 @@ SELECT
     JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drvoutput.derivation_id
     JOIN derivationattr drvattr ON drvattr.derivation_id = refs_recurse.referrer_id
     WHERE drvattr.attr = ? AND eval.timestamp >= ? AND eval.timestamp <= ?
-    GROUP BY drvoutput.id
+    GROUP BY eval.id, drvoutput.id
 `
 
 type GetDerivationReproducibilityTimeSeriesByAttrParams struct {

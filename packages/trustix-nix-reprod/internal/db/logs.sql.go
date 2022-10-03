@@ -10,7 +10,10 @@ import (
 )
 
 const createDerivationOutputResult = `-- name: CreateDerivationOutputResult :one
-INSERT INTO derivationoutputresult (output_hash, store_path, log_id) VALUES (?, ?, ?) RETURNING id, output_hash, store_path, log_id
+INSERT INTO
+  derivationoutputresult (output_hash, store_path, log_id)
+VALUES
+  (?, ?, ?) RETURNING id, output_hash, store_path, log_id
 `
 
 type CreateDerivationOutputResultParams struct {
@@ -32,7 +35,10 @@ func (q *Queries) CreateDerivationOutputResult(ctx context.Context, arg CreateDe
 }
 
 const createLog = `-- name: CreateLog :one
-INSERT INTO log (log_id, tree_size) VALUES (?, 0) RETURNING id, log_id, tree_size
+INSERT INTO
+  log(log_id, tree_size)
+VALUES
+  (?, 0) RETURNING id, log_id, tree_size
 `
 
 func (q *Queries) CreateLog(ctx context.Context, logID string) (Log, error) {
@@ -43,8 +49,14 @@ func (q *Queries) CreateLog(ctx context.Context, logID string) (Log, error) {
 }
 
 const getLog = `-- name: GetLog :one
-SELECT id, log_id, tree_size FROM log
-WHERE log_id = ? LIMIT 1
+SELECT
+  id, log_id, tree_size
+FROM
+  log
+WHERE
+  log_id = ?
+LIMIT
+  1
 `
 
 func (q *Queries) GetLog(ctx context.Context, logID string) (Log, error) {
@@ -55,7 +67,12 @@ func (q *Queries) GetLog(ctx context.Context, logID string) (Log, error) {
 }
 
 const setTreeSize = `-- name: SetTreeSize :exec
-UPDATE log SET tree_size = ? WHERE id = ?
+UPDATE
+  log
+SET
+  tree_size = ?
+WHERE
+  id = ?
 `
 
 type SetTreeSizeParams struct {

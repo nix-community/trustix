@@ -33,7 +33,8 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 	evalConfig.Expr = "./pkgs.nix"
 
 	// Indexing impl
-	commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
+	// commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
+	commitSha := "9c5efb63754024dd4026dceb6f3525934009fea9"
 	maxWorkers := 15
 
 	tx, err := db.BeginTx(ctx, nil)
