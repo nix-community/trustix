@@ -10,21 +10,81 @@ import (
 	"time"
 )
 
-const getDerivationReproducibilityByAttr = `-- name: GetDerivationReproducibilityByAttr :many
-;
-
+const getDerivationReproducibility = `-- name: GetDerivationReproducibility :many
 SELECT
-    drv.drv
-    , drvoutput.output
-    , drvoutput.store_path
-    , json_group_object(drvoutputresult.output_hash, drvoutputresult.log_id) AS output_results
-    FROM derivationoutput AS drvoutput
-    JOIN derivation drv ON drv.id = drvoutput.derivation_id
-    LEFT JOIN derivationoutputresult drvoutputresult ON drvoutputresult.store_path = drvoutput.store_path
-    JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drvoutput.derivation_id
-    JOIN derivation referrer_drv ON referrer_drv.id = refs_recurse.referrer_id
-    WHERE referrer_drv.drv = ?
-    GROUP BY drvoutput.id
+  drv.drv,
+  drvoutput.output,
+  drvoutput.store_path,
+  json_group_object(
+    drvoutputresult.log_id,
+    drvoutputresult.output_hash
+  ) AS output_results
+FROM
+  derivationoutput AS drvoutput
+  JOIN derivation drv ON drv.id = drvoutput.derivation_id
+  LEFT JOIN derivationoutputresult drvoutputresult ON drvoutputresult.store_path = drvoutput.store_path
+  JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drvoutput.derivation_id
+  JOIN derivation referrer_drv ON referrer_drv.id = refs_recurse.referrer_id
+WHERE
+  referrer_drv.drv = ?
+GROUP BY
+  drvoutput.id
+`
+
+type GetDerivationReproducibilityRow struct {
+	Drv           string
+	Output        string
+	StorePath     string
+	OutputResults interface{}
+}
+
+func (q *Queries) GetDerivationReproducibility(ctx context.Context, drv string) ([]GetDerivationReproducibilityRow, error) {
+	rows, err := q.db.QueryContext(ctx, getDerivationReproducibility, drv)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetDerivationReproducibilityRow
+	for rows.Next() {
+		var i GetDerivationReproducibilityRow
+		if err := rows.Scan(
+			&i.Drv,
+			&i.Output,
+			&i.StorePath,
+			&i.OutputResults,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getDerivationReproducibilityByAttr = `-- name: GetDerivationReproducibilityByAttr :many
+SELECT
+  drv.drv,
+  drvoutput.output,
+  drvoutput.store_path,
+  json_group_object(
+    drvoutputresult.log_id,
+    drvoutputresult.output_hash
+  ) AS output_results
+FROM
+  derivationoutput AS drvoutput
+  JOIN derivation drv ON drv.id = drvoutput.derivation_id
+  LEFT JOIN derivationoutputresult drvoutputresult ON drvoutputresult.store_path = drvoutput.store_path
+  JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drvoutput.derivation_id
+  JOIN derivation referrer_drv ON referrer_drv.id = refs_recurse.referrer_id
+WHERE
+  referrer_drv.drv = ?
+GROUP BY
+  drvoutput.id
 `
 
 type GetDerivationReproducibilityByAttrRow struct {
@@ -62,76 +122,33 @@ func (q *Queries) GetDerivationReproducibilityByAttr(ctx context.Context, drv st
 	return items, nil
 }
 
-const getDerivationReproducibilityRecursive = `-- name: GetDerivationReproducibilityRecursive :many
-SELECT
-    drv.drv
-    , drvoutput.output
-    , drvoutput.store_path
-    , json_group_object(drvoutputresult.output_hash, drvoutputresult.log_id) AS output_results
-    FROM derivationoutput AS drvoutput
-    JOIN derivation drv ON drv.id = drvoutput.derivation_id
-    LEFT JOIN derivationoutputresult drvoutputresult ON drvoutputresult.store_path = drvoutput.store_path
-    JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drvoutput.derivation_id
-    JOIN derivation referrer_drv ON referrer_drv.id = refs_recurse.referrer_id
-    WHERE referrer_drv.drv = ?
-    GROUP BY drvoutput.id
-`
-
-type GetDerivationReproducibilityRecursiveRow struct {
-	Drv           string
-	Output        string
-	StorePath     string
-	OutputResults interface{}
-}
-
-func (q *Queries) GetDerivationReproducibilityRecursive(ctx context.Context, drv string) ([]GetDerivationReproducibilityRecursiveRow, error) {
-	rows, err := q.db.QueryContext(ctx, getDerivationReproducibilityRecursive, drv)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetDerivationReproducibilityRecursiveRow
-	for rows.Next() {
-		var i GetDerivationReproducibilityRecursiveRow
-		if err := rows.Scan(
-			&i.Drv,
-			&i.Output,
-			&i.StorePath,
-			&i.OutputResults,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getDerivationReproducibilityTimeSeriesByAttr = `-- name: GetDerivationReproducibilityTimeSeriesByAttr :many
-;
-
 SELECT
-    eval.id AS eval_id
-    , eval.timestamp AS eval_timestamp
-    , drv.id == refs_recurse.referrer_id AS is_attr
-    , drv.drv
-    , drvoutput.output
-    , drvoutput.store_path
-    , json_group_object(drvoutputresult.output_hash, drvoutputresult.log_id) AS output_results
-    FROM derivationoutput AS drvoutput
-    JOIN evaluation eval ON eval.id = drveval.eval
-    JOIN derivationeval drveval ON drveval.drv = drvoutput.derivation_id
-    JOIN derivation drv ON drv.id = drvoutput.derivation_id
-    LEFT JOIN derivationoutputresult drvoutputresult ON drvoutputresult.store_path = drvoutput.store_path
-    JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drvoutput.derivation_id
-    JOIN derivationattr drvattr ON drvattr.derivation_id = refs_recurse.referrer_id
-    WHERE drvattr.attr = ? AND eval.timestamp >= ? AND eval.timestamp <= ?
-    GROUP BY eval.id, drvoutput.id
+  eval.id AS eval_id,
+  eval.timestamp AS eval_timestamp,
+  drv.id == refs_recurse.referrer_id AS is_attr,
+  drv.drv,
+  drvoutput.output,
+  drvoutput.store_path,
+  json_group_object(
+    drvoutputresult.log_id,
+    drvoutputresult.output_hash
+  ) output_results
+FROM
+  derivationoutput AS drvoutput
+  JOIN evaluation eval ON eval.id = drveval.eval
+  JOIN derivationeval drveval ON drveval.drv = drvoutput.derivation_id
+  JOIN derivation drv ON drv.id = drvoutput.derivation_id
+  LEFT JOIN derivationoutputresult drvoutputresult ON drvoutputresult.store_path = drvoutput.store_path
+  JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drvoutput.derivation_id
+  JOIN derivationattr drvattr ON drvattr.derivation_id = refs_recurse.referrer_id
+WHERE
+  drvattr.attr = ?
+  AND eval.timestamp >= ?
+  AND eval.timestamp <= ?
+GROUP BY
+  eval.id,
+  drvoutput.id
 `
 
 type GetDerivationReproducibilityTimeSeriesByAttrParams struct {
@@ -141,13 +158,13 @@ type GetDerivationReproducibilityTimeSeriesByAttrParams struct {
 }
 
 type GetDerivationReproducibilityTimeSeriesByAttrRow struct {
-	EvalID        int64
-	EvalTimestamp time.Time
-	IsAttr        bool
-	Drv           string
-	Output        string
-	StorePath     string
-	OutputResults interface{}
+	EvalID          int64
+	EvalTimestamp   time.Time
+	IsAttr          bool
+	Drv             string
+	Output          string
+	StorePath       string
+	JsonGroupObject interface{}
 }
 
 func (q *Queries) GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Context, arg GetDerivationReproducibilityTimeSeriesByAttrParams) ([]GetDerivationReproducibilityTimeSeriesByAttrRow, error) {
@@ -166,7 +183,7 @@ func (q *Queries) GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Conte
 			&i.Drv,
 			&i.Output,
 			&i.StorePath,
-			&i.OutputResults,
+			&i.JsonGroupObject,
 		); err != nil {
 			return nil, err
 		}

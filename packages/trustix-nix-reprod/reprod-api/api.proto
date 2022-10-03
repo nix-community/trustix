@@ -5,25 +5,28 @@ option go_package = "github.com/nix-community/trustix/packages/trustix-nix-repro
 message DerivationReproducibilityRequest { string DrvPath = 1; }
 
 message DerivationReproducibilityResponse {
-  message DerivationOutputResult {
-    string OutputID = 1;
-    string OutputHash = 2;
-    string LogID = 3;
+  message DerivationOutputHash {
+    repeated int64 LogIDs = 1;
   }
 
-  message DerivationOutputResultByOutput {
-    message DerivationOutputResultByOutputHash {
-      map<string, DerivationOutputResult> Results = 1;
-    }
-    map<string, DerivationOutputResultByOutputHash> Outputs = 1;
+  message DerivationOutput {
+    string Output = 1;
+    string StorePath = 2;
+
+    // Map output hash to log id
+    map<string, DerivationOutputHash> OutputHashes = 3;
   }
+
+  message Derivation {
+    map<string, DerivationOutput> Outputs = 2;
+  };
 
   string DrvPath = 1;
 
-  DerivationOutputResultByOutput UnreproducedPaths = 2;
-  DerivationOutputResultByOutput ReproducedPaths = 3;
-  DerivationOutputResultByOutput UnknownPaths = 4;
-  DerivationOutputResultByOutput MissingPaths = 5;
+  map<string, Derivation> UnreproducedPaths = 2;
+  map<string, Derivation> ReproducedPaths = 3;
+  map<string, Derivation> UnknownPaths = 4;
+  map<string, Derivation> MissingPaths = 5;
 }
 
 message SuggestsAttributeRequest {}
