@@ -48,9 +48,13 @@ message AttrReproducibilityTimeSeriesRequest {
   int64 Stop = 3;
 }
 
-message SuggestsAttributeRequest {}
+message SuggestsAttributeRequest {
+  string AttrPrefix = 1;
+}
 
-message SuggestAttributeResponse {}
+message SuggestAttributeResponse {
+  repeated string Attrs = 1;
+}
 
 message DiffRequest {}
 

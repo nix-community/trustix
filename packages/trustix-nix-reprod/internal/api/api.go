@@ -183,3 +183,38 @@ func GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Context, db *sql.D
 
 	return resp, nil
 }
+
+func SuggestAttribute(ctx context.Context, db *sql.DB, attrPrefix string) (*pb.SuggestAttributeResponse, error) {
+	if len(attrPrefix) < 3 {
+		return nil, fmt.Errorf("attribute prefix '%s' is too short (minimum 3)", attrPrefix)
+	}
+
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating db transaction: %w", err)
+	}
+	defer func() {
+		err := tx.Rollback()
+		if err != nil && err != sql.ErrTxDone {
+			panic(err)
+		}
+	}()
+
+	queries := idb.New(db)
+	qtx := queries.WithTx(tx)
+
+	suggestions, err := qtx.SuggestAttribute(ctx, attrPrefix+"%")
+	if err != nil {
+		return nil, fmt.Errorf("error retreiving suggested attributes: %w", err)
+	}
+
+	resp := &pb.SuggestAttributeResponse{
+		Attrs: make([]string, len(suggestions)),
+	}
+
+	for i, s := range suggestions {
+		resp.Attrs[i] = s
+	}
+
+	return resp, nil
+}
