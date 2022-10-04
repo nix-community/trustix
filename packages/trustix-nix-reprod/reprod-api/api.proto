@@ -1,3 +1,7 @@
+// Copyright © 2020-2022 The Trustix Authors
+//
+// SPDX-License-Identifier: GPL-3.0-only
+
 syntax = "proto3";
 
 option go_package = "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/api";
@@ -5,9 +9,7 @@ option go_package = "github.com/nix-community/trustix/packages/trustix-nix-repro
 message DerivationReproducibilityRequest { string DrvPath = 1; }
 
 message DerivationReproducibilityResponse {
-  message DerivationOutputHash {
-    repeated int64 LogIDs = 1;
-  }
+  message DerivationOutputHash { repeated int64 LogIDs = 1; }
 
   message DerivationOutput {
     string Output = 1;
@@ -17,9 +19,7 @@ message DerivationReproducibilityResponse {
     map<string, DerivationOutputHash> OutputHashes = 3;
   }
 
-  message Derivation {
-    map<string, DerivationOutput> Outputs = 2;
-  };
+  message Derivation { map<string, DerivationOutput> Outputs = 2; };
 
   string DrvPath = 1;
 

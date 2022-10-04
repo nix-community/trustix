@@ -183,6 +183,7 @@ RULES: List[Rule] = [
     Rule(
         suffixes=[
             ".go",
+            ".proto",
         ],
         ignore_suffixes=[
             ".connect.go",
@@ -251,6 +252,7 @@ RULES: List[Rule] = [
             ".nix",
             "Makefile",
             "Procfile",
+            "mk-proto",
         ],
         license="MIT",
     ),
