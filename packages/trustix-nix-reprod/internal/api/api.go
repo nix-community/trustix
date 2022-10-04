@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
 	pb "github.com/nix-community/trustix/packages/trustix-nix-reprod/reprod-api"
@@ -32,7 +33,6 @@ func toInt64(s []int) []int64 {
 	}
 
 	return x
-
 }
 
 func GetDerivationReproducibility(ctx context.Context, db *sql.DB, drvPath string) (*pb.DerivationReproducibilityResponse, error) {
@@ -112,8 +112,6 @@ func GetDerivationReproducibility(ctx context.Context, db *sql.DB, drvPath strin
 			}
 		}
 
-		// fmt.Println(row)
-
 		if len(outputHashes) < 1 {
 			appendOutput(resp.MissingPaths, row, outputHashes)
 		} else if len(outputHashes) == 1 && len(outputHashes[getFirstMapKey(outputHashes)]) > 1 {
@@ -130,10 +128,10 @@ func GetDerivationReproducibility(ctx context.Context, db *sql.DB, drvPath strin
 	return resp, nil
 }
 
-func GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Context, db *sql.DB) error {
+func GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Context, db *sql.DB, attr string, start time.Time, stop time.Time) (*pb.AttrReproducibilityTimeSeriesResponse, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		return fmt.Errorf("error creating db transaction: %w", err)
+		return nil, fmt.Errorf("error creating db transaction: %w", err)
 	}
 	defer func() {
 		err := tx.Rollback()
@@ -145,7 +143,39 @@ func GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Context, db *sql.D
 	queries := idb.New(db)
 	qtx := queries.WithTx(tx)
 
-	fmt.Println(qtx)
+	rows, err := qtx.GetDerivationReproducibilityTimeSeriesByAttr(ctx, idb.GetDerivationReproducibilityTimeSeriesByAttrParams{
+		Attr:        attr,
+		Timestamp:   start,
+		Timestamp_2: stop,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error retreiving time series rows: %w", err)
+	}
 
-	return nil
+	resp := &pb.AttrReproducibilityTimeSeriesResponse{
+		Points: make([]*pb.AttrReproducibilityTimeSeriesPoint, len(rows)),
+	}
+
+	for i, row := range rows {
+		// out of all built paths, how many were reproduced
+		pctReproduced := (100 / float32(row.OutputHashCount)) * float32(row.StorePathCount)
+
+		// out of the total amount of paths, how many were reproduced
+		pctReproducedCum := 100 / float32(row.OutputCount) * (pctReproduced / 100 * float32(row.StorePathCount))
+
+		resp.Points[i] = &pb.AttrReproducibilityTimeSeriesPoint{
+			EvalID:        row.EvalID,
+			EvalTimestamp: row.EvalTimestamp.Unix(),
+			DrvPath:       row.Drv,
+			PctReproduced: pctReproducedCum,
+		}
+
+		resp.PctReproduced += pctReproducedCum
+	}
+
+	if len(rows) > 0 {
+		resp.PctReproduced = resp.PctReproduced / float32(len(rows))
+	}
+
+	return resp, nil
 }

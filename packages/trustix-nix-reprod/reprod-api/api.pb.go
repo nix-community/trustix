@@ -146,6 +146,195 @@ func (x *DerivationReproducibilityResponse) GetMissingPaths() map[string]*Deriva
 	return nil
 }
 
+type AttrReproducibilityTimeSeriesPoint struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EvalID        int64   `protobuf:"varint,1,opt,name=EvalID,proto3" json:"EvalID,omitempty"`
+	EvalTimestamp int64   `protobuf:"varint,2,opt,name=EvalTimestamp,proto3" json:"EvalTimestamp,omitempty"`
+	DrvPath       string  `protobuf:"bytes,3,opt,name=DrvPath,proto3" json:"DrvPath,omitempty"`
+	PctReproduced float32 `protobuf:"fixed32,4,opt,name=PctReproduced,proto3" json:"PctReproduced,omitempty"`
+}
+
+func (x *AttrReproducibilityTimeSeriesPoint) Reset() {
+	*x = AttrReproducibilityTimeSeriesPoint{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_reprod_api_api_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AttrReproducibilityTimeSeriesPoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttrReproducibilityTimeSeriesPoint) ProtoMessage() {}
+
+func (x *AttrReproducibilityTimeSeriesPoint) ProtoReflect() protoreflect.Message {
+	mi := &file_reprod_api_api_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttrReproducibilityTimeSeriesPoint.ProtoReflect.Descriptor instead.
+func (*AttrReproducibilityTimeSeriesPoint) Descriptor() ([]byte, []int) {
+	return file_reprod_api_api_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AttrReproducibilityTimeSeriesPoint) GetEvalID() int64 {
+	if x != nil {
+		return x.EvalID
+	}
+	return 0
+}
+
+func (x *AttrReproducibilityTimeSeriesPoint) GetEvalTimestamp() int64 {
+	if x != nil {
+		return x.EvalTimestamp
+	}
+	return 0
+}
+
+func (x *AttrReproducibilityTimeSeriesPoint) GetDrvPath() string {
+	if x != nil {
+		return x.DrvPath
+	}
+	return ""
+}
+
+func (x *AttrReproducibilityTimeSeriesPoint) GetPctReproduced() float32 {
+	if x != nil {
+		return x.PctReproduced
+	}
+	return 0
+}
+
+type AttrReproducibilityTimeSeriesResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Points        []*AttrReproducibilityTimeSeriesPoint `protobuf:"bytes,1,rep,name=Points,proto3" json:"Points,omitempty"`
+	PctReproduced float32                               `protobuf:"fixed32,2,opt,name=PctReproduced,proto3" json:"PctReproduced,omitempty"`
+}
+
+func (x *AttrReproducibilityTimeSeriesResponse) Reset() {
+	*x = AttrReproducibilityTimeSeriesResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_reprod_api_api_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AttrReproducibilityTimeSeriesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttrReproducibilityTimeSeriesResponse) ProtoMessage() {}
+
+func (x *AttrReproducibilityTimeSeriesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_reprod_api_api_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttrReproducibilityTimeSeriesResponse.ProtoReflect.Descriptor instead.
+func (*AttrReproducibilityTimeSeriesResponse) Descriptor() ([]byte, []int) {
+	return file_reprod_api_api_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AttrReproducibilityTimeSeriesResponse) GetPoints() []*AttrReproducibilityTimeSeriesPoint {
+	if x != nil {
+		return x.Points
+	}
+	return nil
+}
+
+func (x *AttrReproducibilityTimeSeriesResponse) GetPctReproduced() float32 {
+	if x != nil {
+		return x.PctReproduced
+	}
+	return 0
+}
+
+type AttrReproducibilityTimeSeriesRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Attr  string `protobuf:"bytes,1,opt,name=Attr,proto3" json:"Attr,omitempty"`
+	Start int64  `protobuf:"varint,2,opt,name=Start,proto3" json:"Start,omitempty"`
+	Stop  int64  `protobuf:"varint,3,opt,name=Stop,proto3" json:"Stop,omitempty"`
+}
+
+func (x *AttrReproducibilityTimeSeriesRequest) Reset() {
+	*x = AttrReproducibilityTimeSeriesRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_reprod_api_api_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AttrReproducibilityTimeSeriesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttrReproducibilityTimeSeriesRequest) ProtoMessage() {}
+
+func (x *AttrReproducibilityTimeSeriesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_reprod_api_api_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttrReproducibilityTimeSeriesRequest.ProtoReflect.Descriptor instead.
+func (*AttrReproducibilityTimeSeriesRequest) Descriptor() ([]byte, []int) {
+	return file_reprod_api_api_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AttrReproducibilityTimeSeriesRequest) GetAttr() string {
+	if x != nil {
+		return x.Attr
+	}
+	return ""
+}
+
+func (x *AttrReproducibilityTimeSeriesRequest) GetStart() int64 {
+	if x != nil {
+		return x.Start
+	}
+	return 0
+}
+
+func (x *AttrReproducibilityTimeSeriesRequest) GetStop() int64 {
+	if x != nil {
+		return x.Stop
+	}
+	return 0
+}
+
 type SuggestsAttributeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -155,7 +344,7 @@ type SuggestsAttributeRequest struct {
 func (x *SuggestsAttributeRequest) Reset() {
 	*x = SuggestsAttributeRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_reprod_api_api_proto_msgTypes[2]
+		mi := &file_reprod_api_api_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -168,7 +357,7 @@ func (x *SuggestsAttributeRequest) String() string {
 func (*SuggestsAttributeRequest) ProtoMessage() {}
 
 func (x *SuggestsAttributeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_reprod_api_api_proto_msgTypes[2]
+	mi := &file_reprod_api_api_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -181,7 +370,7 @@ func (x *SuggestsAttributeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuggestsAttributeRequest.ProtoReflect.Descriptor instead.
 func (*SuggestsAttributeRequest) Descriptor() ([]byte, []int) {
-	return file_reprod_api_api_proto_rawDescGZIP(), []int{2}
+	return file_reprod_api_api_proto_rawDescGZIP(), []int{5}
 }
 
 type SuggestAttributeResponse struct {
@@ -193,7 +382,7 @@ type SuggestAttributeResponse struct {
 func (x *SuggestAttributeResponse) Reset() {
 	*x = SuggestAttributeResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_reprod_api_api_proto_msgTypes[3]
+		mi := &file_reprod_api_api_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -206,7 +395,7 @@ func (x *SuggestAttributeResponse) String() string {
 func (*SuggestAttributeResponse) ProtoMessage() {}
 
 func (x *SuggestAttributeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_reprod_api_api_proto_msgTypes[3]
+	mi := &file_reprod_api_api_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -219,7 +408,7 @@ func (x *SuggestAttributeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuggestAttributeResponse.ProtoReflect.Descriptor instead.
 func (*SuggestAttributeResponse) Descriptor() ([]byte, []int) {
-	return file_reprod_api_api_proto_rawDescGZIP(), []int{3}
+	return file_reprod_api_api_proto_rawDescGZIP(), []int{6}
 }
 
 type DiffRequest struct {
@@ -231,7 +420,7 @@ type DiffRequest struct {
 func (x *DiffRequest) Reset() {
 	*x = DiffRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_reprod_api_api_proto_msgTypes[4]
+		mi := &file_reprod_api_api_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -244,7 +433,7 @@ func (x *DiffRequest) String() string {
 func (*DiffRequest) ProtoMessage() {}
 
 func (x *DiffRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_reprod_api_api_proto_msgTypes[4]
+	mi := &file_reprod_api_api_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -257,7 +446,7 @@ func (x *DiffRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiffRequest.ProtoReflect.Descriptor instead.
 func (*DiffRequest) Descriptor() ([]byte, []int) {
-	return file_reprod_api_api_proto_rawDescGZIP(), []int{4}
+	return file_reprod_api_api_proto_rawDescGZIP(), []int{7}
 }
 
 type DiffResponse struct {
@@ -269,7 +458,7 @@ type DiffResponse struct {
 func (x *DiffResponse) Reset() {
 	*x = DiffResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_reprod_api_api_proto_msgTypes[5]
+		mi := &file_reprod_api_api_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -282,7 +471,7 @@ func (x *DiffResponse) String() string {
 func (*DiffResponse) ProtoMessage() {}
 
 func (x *DiffResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_reprod_api_api_proto_msgTypes[5]
+	mi := &file_reprod_api_api_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -295,7 +484,7 @@ func (x *DiffResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiffResponse.ProtoReflect.Descriptor instead.
 func (*DiffResponse) Descriptor() ([]byte, []int) {
-	return file_reprod_api_api_proto_rawDescGZIP(), []int{5}
+	return file_reprod_api_api_proto_rawDescGZIP(), []int{8}
 }
 
 type DerivationReproducibilityResponse_DerivationOutputHash struct {
@@ -309,7 +498,7 @@ type DerivationReproducibilityResponse_DerivationOutputHash struct {
 func (x *DerivationReproducibilityResponse_DerivationOutputHash) Reset() {
 	*x = DerivationReproducibilityResponse_DerivationOutputHash{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_reprod_api_api_proto_msgTypes[6]
+		mi := &file_reprod_api_api_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -322,7 +511,7 @@ func (x *DerivationReproducibilityResponse_DerivationOutputHash) String() string
 func (*DerivationReproducibilityResponse_DerivationOutputHash) ProtoMessage() {}
 
 func (x *DerivationReproducibilityResponse_DerivationOutputHash) ProtoReflect() protoreflect.Message {
-	mi := &file_reprod_api_api_proto_msgTypes[6]
+	mi := &file_reprod_api_api_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -359,7 +548,7 @@ type DerivationReproducibilityResponse_DerivationOutput struct {
 func (x *DerivationReproducibilityResponse_DerivationOutput) Reset() {
 	*x = DerivationReproducibilityResponse_DerivationOutput{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_reprod_api_api_proto_msgTypes[7]
+		mi := &file_reprod_api_api_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -372,7 +561,7 @@ func (x *DerivationReproducibilityResponse_DerivationOutput) String() string {
 func (*DerivationReproducibilityResponse_DerivationOutput) ProtoMessage() {}
 
 func (x *DerivationReproducibilityResponse_DerivationOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_reprod_api_api_proto_msgTypes[7]
+	mi := &file_reprod_api_api_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -420,7 +609,7 @@ type DerivationReproducibilityResponse_Derivation struct {
 func (x *DerivationReproducibilityResponse_Derivation) Reset() {
 	*x = DerivationReproducibilityResponse_Derivation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_reprod_api_api_proto_msgTypes[8]
+		mi := &file_reprod_api_api_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -433,7 +622,7 @@ func (x *DerivationReproducibilityResponse_Derivation) String() string {
 func (*DerivationReproducibilityResponse_Derivation) ProtoMessage() {}
 
 func (x *DerivationReproducibilityResponse_Derivation) ProtoReflect() protoreflect.Message {
-	mi := &file_reprod_api_api_proto_msgTypes[8]
+	mi := &file_reprod_api_api_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -556,32 +745,65 @@ var file_reprod_api_api_proto_rawDesc = []byte{
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62, 0x69,
 	0x6c, 0x69, 0x74, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x2e, 0x44, 0x65, 0x72,
 	0x69, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02,
-	0x38, 0x01, 0x22, 0x1a, 0x0a, 0x18, 0x53, 0x75, 0x67, 0x67, 0x65, 0x73, 0x74, 0x73, 0x41, 0x74,
-	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x1a,
-	0x0a, 0x18, 0x53, 0x75, 0x67, 0x67, 0x65, 0x73, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x0d, 0x0a, 0x0b, 0x44, 0x69,
-	0x66, 0x66, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x0e, 0x0a, 0x0c, 0x44, 0x69, 0x66,
-	0x66, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xed, 0x01, 0x0a, 0x12, 0x52, 0x65,
-	0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x41, 0x50, 0x49,
-	0x12, 0x64, 0x0a, 0x19, 0x44, 0x65, 0x72, 0x69, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x12, 0x21, 0x2e,
-	0x44, 0x65, 0x72, 0x69, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64,
-	0x75, 0x63, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x22, 0x2e, 0x44, 0x65, 0x72, 0x69, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70,
-	0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x4a, 0x0a, 0x10, 0x53, 0x75, 0x67, 0x67, 0x65, 0x73,
-	0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x12, 0x19, 0x2e, 0x53, 0x75, 0x67,
-	0x67, 0x65, 0x73, 0x74, 0x73, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x53, 0x75, 0x67, 0x67, 0x65, 0x73, 0x74, 0x41,
-	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x00, 0x12, 0x25, 0x0a, 0x04, 0x44, 0x69, 0x66, 0x66, 0x12, 0x0c, 0x2e, 0x44, 0x69, 0x66,
-	0x66, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0d, 0x2e, 0x44, 0x69, 0x66, 0x66, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x4b, 0x5a, 0x49, 0x67, 0x69, 0x74,
-	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6e, 0x69, 0x78, 0x2d, 0x63, 0x6f, 0x6d, 0x6d,
-	0x75, 0x6e, 0x69, 0x74, 0x79, 0x2f, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2f, 0x70, 0x61,
-	0x63, 0x6b, 0x61, 0x67, 0x65, 0x73, 0x2f, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2d, 0x6e,
-	0x69, 0x78, 0x2d, 0x72, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e,
-	0x61, 0x6c, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x38, 0x01, 0x22, 0xa2, 0x01, 0x0a, 0x22, 0x41, 0x74, 0x74, 0x72, 0x52, 0x65, 0x70, 0x72, 0x6f,
+	0x64, 0x75, 0x63, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x53, 0x65,
+	0x72, 0x69, 0x65, 0x73, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x45, 0x76, 0x61,
+	0x6c, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x45, 0x76, 0x61, 0x6c, 0x49,
+	0x44, 0x12, 0x24, 0x0a, 0x0d, 0x45, 0x76, 0x61, 0x6c, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
+	0x6d, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0d, 0x45, 0x76, 0x61, 0x6c, 0x54, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x18, 0x0a, 0x07, 0x44, 0x72, 0x76, 0x50, 0x61,
+	0x74, 0x68, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x44, 0x72, 0x76, 0x50, 0x61, 0x74,
+	0x68, 0x12, 0x24, 0x0a, 0x0d, 0x50, 0x63, 0x74, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63,
+	0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0d, 0x50, 0x63, 0x74, 0x52, 0x65, 0x70,
+	0x72, 0x6f, 0x64, 0x75, 0x63, 0x65, 0x64, 0x22, 0x8a, 0x01, 0x0a, 0x25, 0x41, 0x74, 0x74, 0x72,
+	0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x54,
+	0x69, 0x6d, 0x65, 0x53, 0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x3b, 0x0a, 0x06, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x23, 0x2e, 0x41, 0x74, 0x74, 0x72, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63,
+	0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x53, 0x65, 0x72, 0x69, 0x65,
+	0x73, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x12, 0x24,
+	0x0a, 0x0d, 0x50, 0x63, 0x74, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x65, 0x64, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0d, 0x50, 0x63, 0x74, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64,
+	0x75, 0x63, 0x65, 0x64, 0x22, 0x64, 0x0a, 0x24, 0x41, 0x74, 0x74, 0x72, 0x52, 0x65, 0x70, 0x72,
+	0x6f, 0x64, 0x75, 0x63, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x53,
+	0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04,
+	0x41, 0x74, 0x74, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x41, 0x74, 0x74, 0x72,
+	0x12, 0x14, 0x0a, 0x05, 0x53, 0x74, 0x61, 0x72, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52,
+	0x05, 0x53, 0x74, 0x61, 0x72, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x53, 0x74, 0x6f, 0x70, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x53, 0x74, 0x6f, 0x70, 0x22, 0x1a, 0x0a, 0x18, 0x53, 0x75,
+	0x67, 0x67, 0x65, 0x73, 0x74, 0x73, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x1a, 0x0a, 0x18, 0x53, 0x75, 0x67, 0x67, 0x65, 0x73,
+	0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x0d, 0x0a, 0x0b, 0x44, 0x69, 0x66, 0x66, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x22, 0x0e, 0x0a, 0x0c, 0x44, 0x69, 0x66, 0x66, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x32, 0xdf, 0x02, 0x0a, 0x12, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62,
+	0x69, 0x6c, 0x69, 0x74, 0x79, 0x41, 0x50, 0x49, 0x12, 0x64, 0x0a, 0x19, 0x44, 0x65, 0x72, 0x69,
+	0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62,
+	0x69, 0x6c, 0x69, 0x74, 0x79, 0x12, 0x21, 0x2e, 0x44, 0x65, 0x72, 0x69, 0x76, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74,
+	0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x44, 0x65, 0x72, 0x69, 0x76,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62, 0x69,
+	0x6c, 0x69, 0x74, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x70,
+	0x0a, 0x1d, 0x41, 0x74, 0x74, 0x72, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62,
+	0x69, 0x6c, 0x69, 0x74, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x53, 0x65, 0x72, 0x69, 0x65, 0x73, 0x12,
+	0x25, 0x2e, 0x41, 0x74, 0x74, 0x72, 0x52, 0x65, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62,
+	0x69, 0x6c, 0x69, 0x74, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x53, 0x65, 0x72, 0x69, 0x65, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x41, 0x74, 0x74, 0x72, 0x52, 0x65, 0x70,
+	0x72, 0x6f, 0x64, 0x75, 0x63, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x54, 0x69, 0x6d, 0x65,
+	0x53, 0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
+	0x12, 0x4a, 0x0a, 0x10, 0x53, 0x75, 0x67, 0x67, 0x65, 0x73, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69,
+	0x62, 0x75, 0x74, 0x65, 0x12, 0x19, 0x2e, 0x53, 0x75, 0x67, 0x67, 0x65, 0x73, 0x74, 0x73, 0x41,
+	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x19, 0x2e, 0x53, 0x75, 0x67, 0x67, 0x65, 0x73, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
+	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x25, 0x0a, 0x04,
+	0x44, 0x69, 0x66, 0x66, 0x12, 0x0c, 0x2e, 0x44, 0x69, 0x66, 0x66, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x0d, 0x2e, 0x44, 0x69, 0x66, 0x66, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x00, 0x42, 0x4b, 0x5a, 0x49, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x6e, 0x69, 0x78, 0x2d, 0x63, 0x6f, 0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x2f,
+	0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2f, 0x70, 0x61, 0x63, 0x6b, 0x61, 0x67, 0x65, 0x73,
+	0x2f, 0x74, 0x72, 0x75, 0x73, 0x74, 0x69, 0x78, 0x2d, 0x6e, 0x69, 0x78, 0x2d, 0x72, 0x65, 0x70,
+	0x72, 0x6f, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x61, 0x70, 0x69,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -596,48 +818,54 @@ func file_reprod_api_api_proto_rawDescGZIP() []byte {
 	return file_reprod_api_api_proto_rawDescData
 }
 
-var file_reprod_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_reprod_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_reprod_api_api_proto_goTypes = []interface{}{
 	(*DerivationReproducibilityRequest)(nil),                       // 0: DerivationReproducibilityRequest
 	(*DerivationReproducibilityResponse)(nil),                      // 1: DerivationReproducibilityResponse
-	(*SuggestsAttributeRequest)(nil),                               // 2: SuggestsAttributeRequest
-	(*SuggestAttributeResponse)(nil),                               // 3: SuggestAttributeResponse
-	(*DiffRequest)(nil),                                            // 4: DiffRequest
-	(*DiffResponse)(nil),                                           // 5: DiffResponse
-	(*DerivationReproducibilityResponse_DerivationOutputHash)(nil), // 6: DerivationReproducibilityResponse.DerivationOutputHash
-	(*DerivationReproducibilityResponse_DerivationOutput)(nil),     // 7: DerivationReproducibilityResponse.DerivationOutput
-	(*DerivationReproducibilityResponse_Derivation)(nil),           // 8: DerivationReproducibilityResponse.Derivation
-	nil, // 9: DerivationReproducibilityResponse.UnreproducedPathsEntry
-	nil, // 10: DerivationReproducibilityResponse.ReproducedPathsEntry
-	nil, // 11: DerivationReproducibilityResponse.UnknownPathsEntry
-	nil, // 12: DerivationReproducibilityResponse.MissingPathsEntry
-	nil, // 13: DerivationReproducibilityResponse.DerivationOutput.OutputHashesEntry
-	nil, // 14: DerivationReproducibilityResponse.Derivation.OutputsEntry
+	(*AttrReproducibilityTimeSeriesPoint)(nil),                     // 2: AttrReproducibilityTimeSeriesPoint
+	(*AttrReproducibilityTimeSeriesResponse)(nil),                  // 3: AttrReproducibilityTimeSeriesResponse
+	(*AttrReproducibilityTimeSeriesRequest)(nil),                   // 4: AttrReproducibilityTimeSeriesRequest
+	(*SuggestsAttributeRequest)(nil),                               // 5: SuggestsAttributeRequest
+	(*SuggestAttributeResponse)(nil),                               // 6: SuggestAttributeResponse
+	(*DiffRequest)(nil),                                            // 7: DiffRequest
+	(*DiffResponse)(nil),                                           // 8: DiffResponse
+	(*DerivationReproducibilityResponse_DerivationOutputHash)(nil), // 9: DerivationReproducibilityResponse.DerivationOutputHash
+	(*DerivationReproducibilityResponse_DerivationOutput)(nil),     // 10: DerivationReproducibilityResponse.DerivationOutput
+	(*DerivationReproducibilityResponse_Derivation)(nil),           // 11: DerivationReproducibilityResponse.Derivation
+	nil, // 12: DerivationReproducibilityResponse.UnreproducedPathsEntry
+	nil, // 13: DerivationReproducibilityResponse.ReproducedPathsEntry
+	nil, // 14: DerivationReproducibilityResponse.UnknownPathsEntry
+	nil, // 15: DerivationReproducibilityResponse.MissingPathsEntry
+	nil, // 16: DerivationReproducibilityResponse.DerivationOutput.OutputHashesEntry
+	nil, // 17: DerivationReproducibilityResponse.Derivation.OutputsEntry
 }
 var file_reprod_api_api_proto_depIdxs = []int32{
-	9,  // 0: DerivationReproducibilityResponse.UnreproducedPaths:type_name -> DerivationReproducibilityResponse.UnreproducedPathsEntry
-	10, // 1: DerivationReproducibilityResponse.ReproducedPaths:type_name -> DerivationReproducibilityResponse.ReproducedPathsEntry
-	11, // 2: DerivationReproducibilityResponse.UnknownPaths:type_name -> DerivationReproducibilityResponse.UnknownPathsEntry
-	12, // 3: DerivationReproducibilityResponse.MissingPaths:type_name -> DerivationReproducibilityResponse.MissingPathsEntry
-	13, // 4: DerivationReproducibilityResponse.DerivationOutput.OutputHashes:type_name -> DerivationReproducibilityResponse.DerivationOutput.OutputHashesEntry
-	14, // 5: DerivationReproducibilityResponse.Derivation.Outputs:type_name -> DerivationReproducibilityResponse.Derivation.OutputsEntry
-	8,  // 6: DerivationReproducibilityResponse.UnreproducedPathsEntry.value:type_name -> DerivationReproducibilityResponse.Derivation
-	8,  // 7: DerivationReproducibilityResponse.ReproducedPathsEntry.value:type_name -> DerivationReproducibilityResponse.Derivation
-	8,  // 8: DerivationReproducibilityResponse.UnknownPathsEntry.value:type_name -> DerivationReproducibilityResponse.Derivation
-	8,  // 9: DerivationReproducibilityResponse.MissingPathsEntry.value:type_name -> DerivationReproducibilityResponse.Derivation
-	6,  // 10: DerivationReproducibilityResponse.DerivationOutput.OutputHashesEntry.value:type_name -> DerivationReproducibilityResponse.DerivationOutputHash
-	7,  // 11: DerivationReproducibilityResponse.Derivation.OutputsEntry.value:type_name -> DerivationReproducibilityResponse.DerivationOutput
-	0,  // 12: ReproducibilityAPI.DerivationReproducibility:input_type -> DerivationReproducibilityRequest
-	2,  // 13: ReproducibilityAPI.SuggestAttribute:input_type -> SuggestsAttributeRequest
-	4,  // 14: ReproducibilityAPI.Diff:input_type -> DiffRequest
-	1,  // 15: ReproducibilityAPI.DerivationReproducibility:output_type -> DerivationReproducibilityResponse
-	3,  // 16: ReproducibilityAPI.SuggestAttribute:output_type -> SuggestAttributeResponse
-	5,  // 17: ReproducibilityAPI.Diff:output_type -> DiffResponse
-	15, // [15:18] is the sub-list for method output_type
-	12, // [12:15] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	12, // 0: DerivationReproducibilityResponse.UnreproducedPaths:type_name -> DerivationReproducibilityResponse.UnreproducedPathsEntry
+	13, // 1: DerivationReproducibilityResponse.ReproducedPaths:type_name -> DerivationReproducibilityResponse.ReproducedPathsEntry
+	14, // 2: DerivationReproducibilityResponse.UnknownPaths:type_name -> DerivationReproducibilityResponse.UnknownPathsEntry
+	15, // 3: DerivationReproducibilityResponse.MissingPaths:type_name -> DerivationReproducibilityResponse.MissingPathsEntry
+	2,  // 4: AttrReproducibilityTimeSeriesResponse.Points:type_name -> AttrReproducibilityTimeSeriesPoint
+	16, // 5: DerivationReproducibilityResponse.DerivationOutput.OutputHashes:type_name -> DerivationReproducibilityResponse.DerivationOutput.OutputHashesEntry
+	17, // 6: DerivationReproducibilityResponse.Derivation.Outputs:type_name -> DerivationReproducibilityResponse.Derivation.OutputsEntry
+	11, // 7: DerivationReproducibilityResponse.UnreproducedPathsEntry.value:type_name -> DerivationReproducibilityResponse.Derivation
+	11, // 8: DerivationReproducibilityResponse.ReproducedPathsEntry.value:type_name -> DerivationReproducibilityResponse.Derivation
+	11, // 9: DerivationReproducibilityResponse.UnknownPathsEntry.value:type_name -> DerivationReproducibilityResponse.Derivation
+	11, // 10: DerivationReproducibilityResponse.MissingPathsEntry.value:type_name -> DerivationReproducibilityResponse.Derivation
+	9,  // 11: DerivationReproducibilityResponse.DerivationOutput.OutputHashesEntry.value:type_name -> DerivationReproducibilityResponse.DerivationOutputHash
+	10, // 12: DerivationReproducibilityResponse.Derivation.OutputsEntry.value:type_name -> DerivationReproducibilityResponse.DerivationOutput
+	0,  // 13: ReproducibilityAPI.DerivationReproducibility:input_type -> DerivationReproducibilityRequest
+	4,  // 14: ReproducibilityAPI.AttrReproducibilityTimeSeries:input_type -> AttrReproducibilityTimeSeriesRequest
+	5,  // 15: ReproducibilityAPI.SuggestAttribute:input_type -> SuggestsAttributeRequest
+	7,  // 16: ReproducibilityAPI.Diff:input_type -> DiffRequest
+	1,  // 17: ReproducibilityAPI.DerivationReproducibility:output_type -> DerivationReproducibilityResponse
+	3,  // 18: ReproducibilityAPI.AttrReproducibilityTimeSeries:output_type -> AttrReproducibilityTimeSeriesResponse
+	6,  // 19: ReproducibilityAPI.SuggestAttribute:output_type -> SuggestAttributeResponse
+	8,  // 20: ReproducibilityAPI.Diff:output_type -> DiffResponse
+	17, // [17:21] is the sub-list for method output_type
+	13, // [13:17] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_reprod_api_api_proto_init() }
@@ -671,7 +899,7 @@ func file_reprod_api_api_proto_init() {
 			}
 		}
 		file_reprod_api_api_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SuggestsAttributeRequest); i {
+			switch v := v.(*AttrReproducibilityTimeSeriesPoint); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -683,7 +911,7 @@ func file_reprod_api_api_proto_init() {
 			}
 		}
 		file_reprod_api_api_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SuggestAttributeResponse); i {
+			switch v := v.(*AttrReproducibilityTimeSeriesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -695,7 +923,7 @@ func file_reprod_api_api_proto_init() {
 			}
 		}
 		file_reprod_api_api_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DiffRequest); i {
+			switch v := v.(*AttrReproducibilityTimeSeriesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -707,7 +935,7 @@ func file_reprod_api_api_proto_init() {
 			}
 		}
 		file_reprod_api_api_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DiffResponse); i {
+			switch v := v.(*SuggestsAttributeRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -719,7 +947,7 @@ func file_reprod_api_api_proto_init() {
 			}
 		}
 		file_reprod_api_api_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DerivationReproducibilityResponse_DerivationOutputHash); i {
+			switch v := v.(*SuggestAttributeResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -731,7 +959,7 @@ func file_reprod_api_api_proto_init() {
 			}
 		}
 		file_reprod_api_api_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DerivationReproducibilityResponse_DerivationOutput); i {
+			switch v := v.(*DiffRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -743,6 +971,42 @@ func file_reprod_api_api_proto_init() {
 			}
 		}
 		file_reprod_api_api_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DiffResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_reprod_api_api_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DerivationReproducibilityResponse_DerivationOutputHash); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_reprod_api_api_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DerivationReproducibilityResponse_DerivationOutput); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_reprod_api_api_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DerivationReproducibilityResponse_Derivation); i {
 			case 0:
 				return &v.state
@@ -761,7 +1025,7 @@ func file_reprod_api_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_reprod_api_api_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

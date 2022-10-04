@@ -29,6 +29,25 @@ message DerivationReproducibilityResponse {
   map<string, Derivation> MissingPaths = 5;
 }
 
+message AttrReproducibilityTimeSeriesPoint {
+  int64 EvalID = 1;
+  int64 EvalTimestamp = 2;
+  string DrvPath = 3;
+
+  float PctReproduced = 4;
+}
+
+message AttrReproducibilityTimeSeriesResponse {
+  repeated AttrReproducibilityTimeSeriesPoint Points = 1;
+  float PctReproduced = 2;
+}
+
+message AttrReproducibilityTimeSeriesRequest {
+  string Attr = 1;
+  int64 Start = 2;
+  int64 Stop = 3;
+}
+
 message SuggestsAttributeRequest {}
 
 message SuggestAttributeResponse {}
@@ -40,6 +59,8 @@ message DiffResponse {}
 service ReproducibilityAPI {
   rpc DerivationReproducibility(DerivationReproducibilityRequest)
       returns (DerivationReproducibilityResponse) {}
+  rpc AttrReproducibilityTimeSeries(AttrReproducibilityTimeSeriesRequest)
+      returns (AttrReproducibilityTimeSeriesResponse) {}
   rpc SuggestAttribute(SuggestsAttributeRequest)
       returns (SuggestAttributeResponse) {}
   rpc Diff(DiffRequest) returns (DiffResponse) {}
