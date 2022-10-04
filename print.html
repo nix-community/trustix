@@ -4,49 +4,28 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Trustix Doc</title>
-        
         <meta name="robots" content="noindex" />
-        
-        
-
-
         <!-- Custom HTML head -->
-        
-
-
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        
         <link rel="icon" href="favicon.svg">
-        
-        
         <link rel="shortcut icon" href="favicon.png">
-        
         <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
-        
         <link rel="stylesheet" href="css/print.css" media="print">
-        
-
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        
         <link rel="stylesheet" href="fonts/fonts.css">
-        
-
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
-
-        
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -97,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="nixos.html"><strong aria-hidden="true">2.</strong> NixOS setup</a></li><li class="chapter-item expanded "><a href="publishing.html"><strong aria-hidden="true">3.</strong> Publishing a build log</a></li><li class="chapter-item expanded "><a href="subscribing.html"><strong aria-hidden="true">4.</strong> Subscribing to a build log</a></li><li class="chapter-item expanded "><a href="binarycache.html"><strong aria-hidden="true">5.</strong> Usage as a binary cache</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">6.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">7.</strong> API docs</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="about.html"><strong aria-hidden="true">1.</strong> About</a></li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">2.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="nixos.html"><strong aria-hidden="true">3.</strong> NixOS setup</a></li><li class="chapter-item expanded "><a href="publishing.html"><strong aria-hidden="true">4.</strong> Publishing a build log</a></li><li class="chapter-item expanded "><a href="subscribing.html"><strong aria-hidden="true">5.</strong> Subscribing to a build log</a></li><li class="chapter-item expanded "><a href="binarycache.html"><strong aria-hidden="true">6.</strong> Usage as a binary cache</a></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">7.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">8.</strong> API docs</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -105,7 +84,6 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
                 <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
@@ -122,29 +100,23 @@
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
-                        
                     </div>
 
                     <h1 class="menu-title">Trustix Doc</h1>
 
                     <div class="right-buttons">
-                        
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        
-                        
                     </div>
                 </div>
 
-                
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -152,8 +124,6 @@
                         </ul>
                     </div>
                 </div>
-                
-
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
@@ -165,7 +135,24 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="trustix---a-new-model-for-nix-binary-substitutions"><a class="header" href="#trustix---a-new-model-for-nix-binary-substitutions">Trustix - A new model for Nix binary substitutions</a></h1>
+                        <h1 id="about"><a class="header" href="#about">About</a></h1>
+<h2 id="trustix---build-transparency-reference-implementation"><a class="header" href="#trustix---build-transparency-reference-implementation"><a href="https://github.com/nix-community/trustix">Trustix</a> - build transparency reference implementation</a></h2>
+<p><a href="https://asciinema.org/a/384552"><img src="https://asciinema.org/a/384552.png" alt="asciicast" /></a></p>
+<h2 id="agree-on-inputs-agree-on-outputs"><a class="header" href="#agree-on-inputs-agree-on-outputs">Agree on inputs; agree on outputs</a></h2>
+<p>Trustix works by associating a hash of the inputs to a build with a hash of the resulting output. Reproducibility means that if multiple builders started with the same inputs, they should produce the same output. By comparing across builders, we can detect problems such as non-reproducibility and trojan viruses. By tracking the history of a build, we can ascertain security compromises, track build quality, and help build trust over time for a given system and provider.</p>
+<h2 id="binary-planting-protection"><a class="header" href="#binary-planting-protection">Binary planting protection</a></h2>
+<p>When we download a program, we typically trust that the binaries correspond to the program that we want. But how can we be sure that what we get is actually what we want, and not something malicious?</p>
+<p>The trust we have in what we download is generally a proxy for the trust we have in the provider we download it from. This provider can put in place various measures to protect against attacks such as <a href="https://en.wikipedia.org/w/index.php?title=Man-in-the-middle_attack">man-in-the-middle attacks</a>, usually by using cryptographic hashes or digital signatures. These would protect against tampering in transit, but would not protect us if the binary was already compromised.</p>
+<p>For example, the build infrastructure of the provider might be compromised, such that even if good source code goes in, bad binaries come out. This turns the provider into a single point of failure for trust.</p>
+<p>Trustix makes it easy to distribute this responsibility among a number of non-authoritative peers. By comparing the build results between various providers, we can ascertain whether one or more might have been compromised.</p>
+<h2 id="tamper-evident-history"><a class="header" href="#tamper-evident-history">Tamper-evident history</a></h2>
+<p>Even if a provider's private key is compromised and an attacker gains unrestricted access, Trustix's immutable build log ensures that any modification to old entries can be detected and flagged. Any entries known to be from before the attack can still be trusted.</p>
+<p>Since the build log provided by trustix is additive, we can ascertain when exactly a provider might have been compromised. Any binaries from before this point can still be trusted. Any modification of the log history is easily detected by peers, making history tampering impossible.</p>
+<h2 id="decide-your-level-of-trust"><a class="header" href="#decide-your-level-of-trust">Decide your level of trust</a></h2>
+<p>There is no universal notion of &quot;verified&quot;; you decide which providers to trust and how much. Your personal security needs may be low, in which case you can trust any binary cache on your list. In your high-security environment, however, you may require every provider to agree on the same output in order to trust any of them.</p>
+<h2 id="analyze-package-reproducibility"><a class="header" href="#analyze-package-reproducibility">Analyze package reproducibility</a></h2>
+<p>In the real world, builds are often non-reproducible without being maliciously modified. The build output might contain the time or date, or a reference to a local folder used during the build process. While most of these cases are benign, we can't really tell. The answer is to measure and track reproducibility. By comparing what different providers build on different machines and in different circumstances, we can track which packages are reproducible, and thus more trustworthy.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="trustix---a-new-model-for-nix-binary-substitutions"><a class="header" href="#trustix---a-new-model-for-nix-binary-substitutions">Trustix - A new model for Nix binary substitutions</a></h1>
 <p>Trustix is a tool that compares build outputs for a given build input across a group of independent providers to establish trust in software binaries.</p>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
 <p>We often use pre-built software binaries and trust that they correspond to the program we want.
@@ -210,7 +197,7 @@ builders.</li>
 <li>automatically identify and exclude misbehaving builders such as <code>Chuck</code> in
 above's example.</li>
 </ul>
-<h1 id="trustix---usage-via-nix"><a class="header" href="#trustix---usage-via-nix">Trustix - Usage via Nix</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="trustix---usage-via-nix"><a class="header" href="#trustix---usage-via-nix">Trustix - Usage via Nix</a></h1>
 <p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
 <p>This document will guide you through the very basic NixOS setup required both by log clients and log publishers.</p>
 <p>How to actually publish/subscribe are laid out in other documents.</p>
@@ -233,7 +220,7 @@ above's example.</li>
 }
 </code></pre>
 <p>This will add all relevant services to your system (but not enable them) and adds packages to the pkgs set via an overlay.</p>
-<h1 id="trustix---publishing-with-nix"><a class="header" href="#trustix---publishing-with-nix">Trustix - Publishing with Nix</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="trustix---publishing-with-nix"><a class="header" href="#trustix---publishing-with-nix">Trustix - Publishing with Nix</a></h1>
 <p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
 <p>This document walks you through creating key pairs and publishing a log.</p>
 <h2 id="requisites-1"><a class="header" href="#requisites-1">Requisites</a></h2>
@@ -251,7 +238,7 @@ above's example.</li>
 </li>
 <li>
 <p>Generate an ed25519 keypair
-<code>$ ./result/bin/trustix generate-key --privkey ./trustix-priv --pubkey ./trustix-pub</code></p>
+<code>$ ./result/bin/trustix generate-key --privkey ./priv --pubkey ./pub</code></p>
 </li>
 </ul>
 <p>This will create two files, <code>pub</code> and <code>priv</code>.</p>
@@ -260,7 +247,7 @@ above's example.</li>
 Of course having keys around readable by anyone on the system is not a good idea, so we will move these somewhere safe.
 In this tutorial we are using <code>/var/trustix/keys</code> but you are free to use whatever you wish.</li>
 </ul>
-<p><code>$ mv trustix-priv /var/trustix/keys/trustix-priv</code></p>
+<p><code>$ mv priv /var/trustix/keys/</code></p>
 <h2 id="configuring"><a class="header" href="#configuring">Configuring</a></h2>
 <ul>
 <li>Add log to your <code>configuration.nix</code></li>
@@ -274,7 +261,7 @@ In this tutorial we are using <code>/var/trustix/keys</code> but you are free to
     signers.snakeoil = {
       type = &quot;ed25519&quot;;
       ed25519 = {
-        private-key-path = &quot;/var/trustix/keys/trustix-priv&quot;;
+        private-key-path = &quot;/var/trustix/keys/priv&quot;;
       };
     };
 
@@ -293,12 +280,15 @@ In this tutorial we are using <code>/var/trustix/keys</code> but you are free to
   };
 
   # Push local builds via the post-build hook
-  services.trustix-nix-build-hook.enable = true;
+  services.trustix-nix-build-hook.enable = {
+    enable = true;
+    publisher = builtins.head config.services.trustix.publishers;
+  };
 
 }
 </code></pre>
 <p>You can now use Nix as normal and it will publish the locally performed builds to your log!</p>
-<h1 id="trustix---using-with-nix"><a class="header" href="#trustix---using-with-nix">Trustix - Using with Nix</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="trustix---using-with-nix"><a class="header" href="#trustix---using-with-nix">Trustix - Using with Nix</a></h1>
 <p>The easiest way to use Trustix is via the NixOS modules.</p>
 <p>This document walks you through how to subscribe to an already published binary cache.</p>
 <h2 id="configuring-1"><a class="header" href="#configuring-1">Configuring</a></h2>
@@ -331,7 +321,7 @@ In this tutorial we are using <code>/var/trustix/keys</code> but you are free to
 
 }
 </code></pre>
-<h1 id="trustix---binary-cache-setup"><a class="header" href="#trustix---binary-cache-setup">Trustix - Binary cache setup</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="trustix---binary-cache-setup"><a class="header" href="#trustix---binary-cache-setup">Trustix - Binary cache setup</a></h1>
 <p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
 <p>This document walks you through how to configure your local system as a binary cache.</p>
 <h2 id="requisites-2"><a class="header" href="#requisites-2">Requisites</a></h2>
@@ -389,7 +379,7 @@ In this tutorial we are using <code>/var/trustix/keys</code> but you are free to
 }
 </code></pre>
 <p>You are now all set up to use Trustix as a substitution method!</p>
-<h2 id="project-structure"><a class="header" href="#project-structure">Project structure</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="project-structure"><a class="header" href="#project-structure">Project structure</a></h2>
 <p>Trustix is structured as a monorepo consisting of many subpackages:</p>
 <ul>
 <li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix">trustix</a></li>
@@ -413,16 +403,6 @@ It contains a <a href="https://www.tweag.io/blog/2019-11-21-untrusted-ci/">post-
 <li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix-proto">trustix-proto</a></li>
 </ul>
 <p>Trustix-proto contains all shared protobuf definitions shared by various components, as well as generated Go libraries to interact with Trustix over it's RPC mechanism (gRPC).</p>
-<ul>
-<li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix-python">trustix-python</a></li>
-</ul>
-<p>Trustix-python contains generated code from trustix-proto for Python.
-If you want to interact with Trustix over it's RPC interface from Python this is what you want to use.</p>
-<ul>
-<li><a href="https://github.com/nix-community/trustix/blob/master/packages/pynix">pynix</a></li>
-</ul>
-<p>A number of generic small utility functions to work with Nix files.
-At the time of writing this document it has an implementation of the Nix base32 encoding and a derivation file parser.</p>
 <h2 id="globally-installed-tooling"><a class="header" href="#globally-installed-tooling">Globally installed tooling</a></h2>
 <p>Trustix doesn't depend on much in the way of globally installed tools.</p>
 <p>We do make two assumptions in regards to tooling managed outside of the repository though:</p>
@@ -482,380 +462,413 @@ This is mostly outputing markdown files in the relevant location for the <code>t
 </code></pre>
 <h2 id="notes"><a class="header" href="#notes">Notes</a></h2>
 <p>Cryptographic keys for development is checked in to the repository for ease of use and a very quick getting started experience.</p>
-<h1 id="protocol-documentation"><a class="header" href="#protocol-documentation">Protocol Documentation</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="protocol-documentation"><a class="header" href="#protocol-documentation">Protocol Documentation</a></h1>
 <p><a name="top"></a></p>
 <h2 id="table-of-contents"><a class="header" href="#table-of-contents">Table of Contents</a></h2>
 <ul>
 <li>
-<p><a href="api.html#api/api.proto">api/api.proto</a></p>
+<p><a href="api.html#api_api-proto">api/api.proto</a></p>
 <ul>
 <li>
-<p><a href="api.html#trustix.GetLogAuditProofRequest">GetLogAuditProofRequest</a></p>
+<p><a href="api.html#trustix-GetLogAuditProofRequest">GetLogAuditProofRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></p>
+<p><a href="api.html#trustix-GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.GetLogEntriesRequest">GetLogEntriesRequest</a></p>
+<p><a href="api.html#trustix-GetLogEntriesRequest">GetLogEntriesRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.GetMapValueRequest">GetMapValueRequest</a></p>
+<p><a href="api.html#trustix-GetMapValueRequest">GetMapValueRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.KeyValuePair">KeyValuePair</a></p>
+<p><a href="api.html#trustix-KeyValuePair">KeyValuePair</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.Log">Log</a></p>
+<p><a href="api.html#trustix-Log">Log</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.Log.MetaEntry">Log.MetaEntry</a></p>
+<p><a href="api.html#trustix-Log-MetaEntry">Log.MetaEntry</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogEntriesResponse">LogEntriesResponse</a></p>
+<p><a href="api.html#trustix-LogEntriesResponse">LogEntriesResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogHeadRequest">LogHeadRequest</a></p>
+<p><a href="api.html#trustix-LogHeadRequest">LogHeadRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogSigner">LogSigner</a></p>
+<p><a href="api.html#trustix-LogSigner">LogSigner</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogsRequest">LogsRequest</a></p>
+<p><a href="api.html#trustix-LogsRequest">LogsRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogsResponse">LogsResponse</a></p>
+<p><a href="api.html#trustix-LogsResponse">LogsResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.MapValueResponse">MapValueResponse</a></p>
+<p><a href="api.html#trustix-MapValueResponse">MapValueResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.ProofResponse">ProofResponse</a></p>
+<p><a href="api.html#trustix-ProofResponse">ProofResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.SparseCompactMerkleProof">SparseCompactMerkleProof</a></p>
+<p><a href="api.html#trustix-SparseCompactMerkleProof">SparseCompactMerkleProof</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.ValueRequest">ValueRequest</a></p>
+<p><a href="api.html#trustix-ValueRequest">ValueRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.ValueResponse">ValueResponse</a></p>
+<p><a href="api.html#trustix-ValueResponse">ValueResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.Log.LogModes">Log.LogModes</a></p>
+<p><a href="api.html#trustix-Log-LogModes">Log.LogModes</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogSigner.KeyTypes">LogSigner.KeyTypes</a></p>
+<p><a href="api.html#trustix-LogSigner-KeyTypes">LogSigner.KeyTypes</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogAPI">LogAPI</a></p>
+<p><a href="api.html#trustix-LogAPI">LogAPI</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.NodeAPI">NodeAPI</a></p>
+<p><a href="api.html#trustix-NodeAPI">NodeAPI</a></p>
 </li>
 </ul>
 </li>
 <li>
-<p><a href="api.html#rpc/rpc.proto">rpc/rpc.proto</a></p>
+<p><a href="api.html#rpc_rpc-proto">rpc/rpc.proto</a></p>
 <ul>
 <li>
-<p><a href="api.html#trustix.DecideRequest">DecideRequest</a></p>
+<p><a href="api.html#trustix-DecideRequest">DecideRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.DecisionResponse">DecisionResponse</a></p>
+<p><a href="api.html#trustix-DecisionResponse">DecisionResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.EntriesResponse">EntriesResponse</a></p>
+<p><a href="api.html#trustix-EntriesResponse">EntriesResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.EntriesResponse.EntriesEntry">EntriesResponse.EntriesEntry</a></p>
+<p><a href="api.html#trustix-EntriesResponse-EntriesEntry">EntriesResponse.EntriesEntry</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.FlushRequest">FlushRequest</a></p>
+<p><a href="api.html#trustix-FlushRequest">FlushRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.FlushResponse">FlushResponse</a></p>
+<p><a href="api.html#trustix-FlushResponse">FlushResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogValueDecision">LogValueDecision</a></p>
+<p><a href="api.html#trustix-LogValueDecision">LogValueDecision</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogValueResponse">LogValueResponse</a></p>
+<p><a href="api.html#trustix-LogValueResponse">LogValueResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.SubmitRequest">SubmitRequest</a></p>
+<p><a href="api.html#trustix-SubmitRequest">SubmitRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.SubmitResponse">SubmitResponse</a></p>
+<p><a href="api.html#trustix-SubmitResponse">SubmitResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.SubmitResponse.Status">SubmitResponse.Status</a></p>
+<p><a href="api.html#trustix-SubmitResponse-Status">SubmitResponse.Status</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.LogRPC">LogRPC</a></p>
+<p><a href="api.html#trustix-LogRPC">LogRPC</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix.RPCApi">RPCApi</a></p>
+<p><a href="api.html#trustix-RPCApi">RPCApi</a></p>
 </li>
 </ul>
 </li>
 <li>
-<p><a href="api.html#schema/loghead.proto">schema/loghead.proto</a></p>
+<p><a href="api.html#schema_loghead-proto">schema/loghead.proto</a></p>
 <ul>
-<li><a href="api.html#.LogHead">LogHead</a></li>
+<li><a href="api.html#-LogHead">LogHead</a></li>
 </ul>
 </li>
 <li>
-<p><a href="api.html#schema/logleaf.proto">schema/logleaf.proto</a></p>
+<p><a href="api.html#schema_logleaf-proto">schema/logleaf.proto</a></p>
 <ul>
-<li><a href="api.html#.LogLeaf">LogLeaf</a></li>
+<li><a href="api.html#-LogLeaf">LogLeaf</a></li>
 </ul>
 </li>
 <li>
-<p><a href="api.html#schema/mapentry.proto">schema/mapentry.proto</a></p>
+<p><a href="api.html#schema_mapentry-proto">schema/mapentry.proto</a></p>
 <ul>
-<li><a href="api.html#.MapEntry">MapEntry</a></li>
+<li><a href="api.html#-MapEntry">MapEntry</a></li>
 </ul>
 </li>
 <li>
-<p><a href="api.html#schema/queue.proto">schema/queue.proto</a></p>
+<p><a href="api.html#schema_queue-proto">schema/queue.proto</a></p>
 <ul>
-<li><a href="api.html#.SubmitQueue">SubmitQueue</a></li>
+<li><a href="api.html#-SubmitQueue">SubmitQueue</a></li>
 </ul>
 </li>
 <li>
 <p><a href="api.html#scalar-value-types">Scalar Value Types</a></p>
 </li>
 </ul>
-<p><a name="api/api.proto"></a></p>
+<p><a name="api_api-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="apiapiproto"><a class="header" href="#apiapiproto">api/api.proto</a></h2>
-<p><a name="trustix.GetLogAuditProofRequest"></a></p>
+<p><a name="trustix-GetLogAuditProofRequest"></a></p>
 <h3 id="getlogauditproofrequest"><a class="header" href="#getlogauditproofrequest">GetLogAuditProofRequest</a></h3>
 <p>Get log audit proof for a given tree</p>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td>Log identifier</td></tr>
 <tr><td>Index</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>Tree node index</td></tr>
 <tr><td>TreeSize</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>Tree size (proof reference)</td></tr>
 </tbody></table>
-<p><a name="trustix.GetLogConsistencyProofRequest"></a></p>
+</div>
+<p><a name="trustix-GetLogConsistencyProofRequest"></a></p>
 <h3 id="getlogconsistencyproofrequest"><a class="header" href="#getlogconsistencyproofrequest">GetLogConsistencyProofRequest</a></h3>
 <p>Get a consistency proof between two given log sizes</p>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td>Log identifier</td></tr>
 <tr><td>FirstSize</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>From tree size</td></tr>
 <tr><td>SecondSize</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>To tree size</td></tr>
 </tbody></table>
-<p><a name="trustix.GetLogEntriesRequest"></a></p>
+</div>
+<p><a name="trustix-GetLogEntriesRequest"></a></p>
 <h3 id="getlogentriesrequest"><a class="header" href="#getlogentriesrequest">GetLogEntriesRequest</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td>Log identifier</td></tr>
 <tr><td>Start</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>Get entries from</td></tr>
 <tr><td>Finish</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>Get entries to</td></tr>
 </tbody></table>
-<p><a name="trustix.GetMapValueRequest"></a></p>
+</div>
+<p><a name="trustix-GetMapValueRequest"></a></p>
 <h3 id="getmapvaluerequest"><a class="header" href="#getmapvaluerequest">GetMapValueRequest</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td>Log identifier</td></tr>
 <tr><td>Key</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Map key</td></tr>
 <tr><td>MapRoot</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Map root hash to derive proof from</td></tr>
 </tbody></table>
-<p><a name="trustix.KeyValuePair"></a></p>
+</div>
+<p><a name="trustix-KeyValuePair"></a></p>
 <h3 id="keyvaluepair"><a class="header" href="#keyvaluepair">KeyValuePair</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Key</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Map key</td></tr>
 <tr><td>Value</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Map value</td></tr>
 </tbody></table>
-<p><a name="trustix.Log"></a></p>
+</div>
+<p><a name="trustix-Log"></a></p>
 <h3 id="log"><a class="header" href="#log">Log</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
-<tr><td>Mode</td><td><a href="api.html#trustix.Log.LogModes">Log.LogModes</a></td><td>required</td><td></td></tr>
+<tr><td>Mode</td><td><a href="api.html#trustix-Log-LogModes">Log.LogModes</a></td><td>required</td><td></td></tr>
 <tr><td>Protocol</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
-<tr><td>Signer</td><td><a href="api.html#trustix.LogSigner">LogSigner</a></td><td>required</td><td></td></tr>
-<tr><td>Meta</td><td><a href="api.html#trustix.Log.MetaEntry">Log.MetaEntry</a></td><td>repeated</td><td></td></tr>
+<tr><td>Signer</td><td><a href="api.html#trustix-LogSigner">LogSigner</a></td><td>required</td><td></td></tr>
+<tr><td>Meta</td><td><a href="api.html#trustix-Log-MetaEntry">Log.MetaEntry</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.Log.MetaEntry"></a></p>
+</div>
+<p><a name="trustix-Log-MetaEntry"></a></p>
 <h3 id="logmetaentry"><a class="header" href="#logmetaentry">Log.MetaEntry</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>key</td><td><a href="api.html#string">string</a></td><td>optional</td><td></td></tr>
 <tr><td>value</td><td><a href="api.html#string">string</a></td><td>optional</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.LogEntriesResponse"></a></p>
+</div>
+<p><a name="trustix-LogEntriesResponse"></a></p>
 <h3 id="logentriesresponse"><a class="header" href="#logentriesresponse">LogEntriesResponse</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Leaves</td><td><a href="api.html#LogLeaf">LogLeaf</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.LogHeadRequest"></a></p>
+</div>
+<p><a name="trustix-LogHeadRequest"></a></p>
 <h3 id="logheadrequest"><a class="header" href="#logheadrequest">LogHeadRequest</a></h3>
 <p>Request a signed head for a given log</p>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td>Log identifier</td></tr>
 </tbody></table>
-<p><a name="trustix.LogSigner"></a></p>
+</div>
+<p><a name="trustix-LogSigner"></a></p>
 <h3 id="logsigner"><a class="header" href="#logsigner">LogSigner</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>KeyType</td><td><a href="api.html#trustix.LogSigner.KeyTypes">LogSigner.KeyTypes</a></td><td>required</td><td></td></tr>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<tr><td>KeyType</td><td><a href="api.html#trustix-LogSigner-KeyTypes">LogSigner.KeyTypes</a></td><td>required</td><td></td></tr>
 <tr><td>Public</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.LogsRequest"></a></p>
+</div>
+<p><a name="trustix-LogsRequest"></a></p>
 <h3 id="logsrequest"><a class="header" href="#logsrequest">LogsRequest</a></h3>
-<p><a name="trustix.LogsResponse"></a></p>
+<p><a name="trustix-LogsResponse"></a></p>
 <h3 id="logsresponse"><a class="header" href="#logsresponse">LogsResponse</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>Logs</td><td><a href="api.html#trustix.Log">Log</a></td><td>repeated</td><td></td></tr>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<tr><td>Logs</td><td><a href="api.html#trustix-Log">Log</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.MapValueResponse"></a></p>
+</div>
+<p><a name="trustix-MapValueResponse"></a></p>
 <h3 id="mapvalueresponse"><a class="header" href="#mapvalueresponse">MapValueResponse</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Value</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Note that the Value field is actually a MapEntry but we need to return the marshaled version as that's what the proof is created from</td></tr>
-<tr><td>Proof</td><td><a href="api.html#trustix.SparseCompactMerkleProof">SparseCompactMerkleProof</a></td><td>required</td><td></td></tr>
+<tr><td>Proof</td><td><a href="api.html#trustix-SparseCompactMerkleProof">SparseCompactMerkleProof</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.ProofResponse"></a></p>
+</div>
+<p><a name="trustix-ProofResponse"></a></p>
 <h3 id="proofresponse"><a class="header" href="#proofresponse">ProofResponse</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Proof</td><td><a href="api.html#bytes">bytes</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.SparseCompactMerkleProof"></a></p>
+</div>
+<p><a name="trustix-SparseCompactMerkleProof"></a></p>
 <h3 id="sparsecompactmerkleproof"><a class="header" href="#sparsecompactmerkleproof">SparseCompactMerkleProof</a></h3>
 <p>Sparse merkle tree proof</p>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>SideNodes</td><td><a href="api.html#bytes">bytes</a></td><td>repeated</td><td></td></tr>
 <tr><td>NonMembershipLeafData</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 <tr><td>BitMask</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 <tr><td>NumSideNodes</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.ValueRequest"></a></p>
+</div>
+<p><a name="trustix-ValueRequest"></a></p>
 <h3 id="valuerequest"><a class="header" href="#valuerequest">ValueRequest</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Digest</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.ValueResponse"></a></p>
+</div>
+<p><a name="trustix-ValueResponse"></a></p>
 <h3 id="valueresponse"><a class="header" href="#valueresponse">ValueResponse</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Value</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.Log.LogModes"></a></p>
+</div>
+<p><a name="trustix-Log-LogModes"></a></p>
 <h3 id="loglogmodes"><a class="header" href="#loglogmodes">Log.LogModes</a></h3>
-<table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
 <tr><td>Log</td><td>0</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.LogSigner.KeyTypes"></a></p>
+</div>
+<p><a name="trustix-LogSigner-KeyTypes"></a></p>
 <h3 id="logsignerkeytypes"><a class="header" href="#logsignerkeytypes">LogSigner.KeyTypes</a></h3>
-<table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
 <tr><td>ed25519</td><td>0</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.LogAPI"></a></p>
+</div>
+<p><a name="trustix-LogAPI"></a></p>
 <h3 id="logapi"><a class="header" href="#logapi">LogAPI</a></h3>
-<p>LogAPI is a logical grouping for RPC methods that are specific to a given log.</p>
-<table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
-<tr><td>GetHead</td><td><a href="api.html#trustix.LogHeadRequest">LogHeadRequest</a></td><td><a href="api.html#LogHead">.LogHead</a></td><td>Get signed head</td></tr>
-<tr><td>GetLogConsistencyProof</td><td><a href="api.html#trustix.GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></td><td><a href="api.html#trustix.ProofResponse">ProofResponse</a></td><td></td></tr>
-<tr><td>GetLogAuditProof</td><td><a href="api.html#trustix.GetLogAuditProofRequest">GetLogAuditProofRequest</a></td><td><a href="api.html#trustix.ProofResponse">ProofResponse</a></td><td></td></tr>
-<tr><td>GetLogEntries</td><td><a href="api.html#trustix.GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix.LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
-<tr><td>GetMapValue</td><td><a href="api.html#trustix.GetMapValueRequest">GetMapValueRequest</a></td><td><a href="api.html#trustix.MapValueResponse">MapValueResponse</a></td><td></td></tr>
-<tr><td>GetMHLogConsistencyProof</td><td><a href="api.html#trustix.GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></td><td><a href="api.html#trustix.ProofResponse">ProofResponse</a></td><td></td></tr>
-<tr><td>GetMHLogAuditProof</td><td><a href="api.html#trustix.GetLogAuditProofRequest">GetLogAuditProofRequest</a></td><td><a href="api.html#trustix.ProofResponse">ProofResponse</a></td><td></td></tr>
-<tr><td>GetMHLogEntries</td><td><a href="api.html#trustix.GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix.LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
+<p>LogAPI is a logical grouping for RPC methods that are specific to a given
+log.</p>
+<div class="table-wrapper"><table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>GetHead</td><td><a href="api.html#trustix-LogHeadRequest">LogHeadRequest</a></td><td><a href="api.html#LogHead">.LogHead</a></td><td>Get signed head</td></tr>
+<tr><td>GetLogConsistencyProof</td><td><a href="api.html#trustix-GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></td><td><a href="api.html#trustix-ProofResponse">ProofResponse</a></td><td></td></tr>
+<tr><td>GetLogAuditProof</td><td><a href="api.html#trustix-GetLogAuditProofRequest">GetLogAuditProofRequest</a></td><td><a href="api.html#trustix-ProofResponse">ProofResponse</a></td><td></td></tr>
+<tr><td>GetLogEntries</td><td><a href="api.html#trustix-GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix-LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
+<tr><td>GetMapValue</td><td><a href="api.html#trustix-GetMapValueRequest">GetMapValueRequest</a></td><td><a href="api.html#trustix-MapValueResponse">MapValueResponse</a></td><td></td></tr>
+<tr><td>GetMHLogConsistencyProof</td><td><a href="api.html#trustix-GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></td><td><a href="api.html#trustix-ProofResponse">ProofResponse</a></td><td></td></tr>
+<tr><td>GetMHLogAuditProof</td><td><a href="api.html#trustix-GetLogAuditProofRequest">GetLogAuditProofRequest</a></td><td><a href="api.html#trustix-ProofResponse">ProofResponse</a></td><td></td></tr>
+<tr><td>GetMHLogEntries</td><td><a href="api.html#trustix-GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix-LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.NodeAPI"></a></p>
+</div>
+<p><a name="trustix-NodeAPI"></a></p>
 <h3 id="nodeapi"><a class="header" href="#nodeapi">NodeAPI</a></h3>
 <p>NodeAPI is a logical grouping for RPC methods that are for the entire node
 rather than individual logs.</p>
-<table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
-<tr><td>Logs</td><td><a href="api.html#trustix.LogsRequest">LogsRequest</a></td><td><a href="api.html#trustix.LogsResponse">LogsResponse</a></td><td>Get a list of all logs published by this node</td></tr>
-<tr><td>GetValue</td><td><a href="api.html#trustix.ValueRequest">ValueRequest</a></td><td><a href="api.html#trustix.ValueResponse">ValueResponse</a></td><td>Get values by their content-address</td></tr>
+<div class="table-wrapper"><table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>Logs</td><td><a href="api.html#trustix-LogsRequest">LogsRequest</a></td><td><a href="api.html#trustix-LogsResponse">LogsResponse</a></td><td>Get a list of all logs published by this node</td></tr>
+<tr><td>GetValue</td><td><a href="api.html#trustix-ValueRequest">ValueRequest</a></td><td><a href="api.html#trustix-ValueResponse">ValueResponse</a></td><td>Get values by their content-address</td></tr>
 </tbody></table>
-<p><a name="rpc/rpc.proto"></a></p>
+</div>
+<p><a name="rpc_rpc-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="rpcrpcproto"><a class="header" href="#rpcrpcproto">rpc/rpc.proto</a></h2>
-<p><a name="trustix.DecideRequest"></a></p>
+<p><a name="trustix-DecideRequest"></a></p>
 <h3 id="deciderequest"><a class="header" href="#deciderequest">DecideRequest</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Key</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 <tr><td>Protocol</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.DecisionResponse"></a></p>
+</div>
+<p><a name="trustix-DecisionResponse"></a></p>
 <h3 id="decisionresponse"><a class="header" href="#decisionresponse">DecisionResponse</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>Decision</td><td><a href="api.html#trustix.LogValueDecision">LogValueDecision</a></td><td>required</td><td></td></tr>
-<tr><td>Mismatches</td><td><a href="api.html#trustix.LogValueResponse">LogValueResponse</a></td><td>repeated</td><td>Non-matches (hash mismatch)</td></tr>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<tr><td>Decision</td><td><a href="api.html#trustix-LogValueDecision">LogValueDecision</a></td><td>required</td><td></td></tr>
+<tr><td>Mismatches</td><td><a href="api.html#trustix-LogValueResponse">LogValueResponse</a></td><td>repeated</td><td>Non-matches (hash mismatch)</td></tr>
 <tr><td>Misses</td><td><a href="api.html#string">string</a></td><td>repeated</td><td>Full misses (log ids missing log entry entirely)</td></tr>
 </tbody></table>
-<p><a name="trustix.EntriesResponse"></a></p>
+</div>
+<p><a name="trustix-EntriesResponse"></a></p>
 <h3 id="entriesresponse"><a class="header" href="#entriesresponse">EntriesResponse</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Key</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
-<tr><td>Entries</td><td><a href="api.html#trustix.EntriesResponse.EntriesEntry">EntriesResponse.EntriesEntry</a></td><td>repeated</td><td></td></tr>
+<tr><td>Entries</td><td><a href="api.html#trustix-EntriesResponse-EntriesEntry">EntriesResponse.EntriesEntry</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.EntriesResponse.EntriesEntry"></a></p>
+</div>
+<p><a name="trustix-EntriesResponse-EntriesEntry"></a></p>
 <h3 id="entriesresponseentriesentry"><a class="header" href="#entriesresponseentriesentry">EntriesResponse.EntriesEntry</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>key</td><td><a href="api.html#string">string</a></td><td>optional</td><td></td></tr>
 <tr><td>value</td><td><a href="api.html#MapEntry">MapEntry</a></td><td>optional</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.FlushRequest"></a></p>
+</div>
+<p><a name="trustix-FlushRequest"></a></p>
 <h3 id="flushrequest"><a class="header" href="#flushrequest">FlushRequest</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.FlushResponse"></a></p>
+</div>
+<p><a name="trustix-FlushResponse"></a></p>
 <h3 id="flushresponse"><a class="header" href="#flushresponse">FlushResponse</a></h3>
-<p><a name="trustix.LogValueDecision"></a></p>
+<p><a name="trustix-LogValueDecision"></a></p>
 <h3 id="logvaluedecision"><a class="header" href="#logvaluedecision">LogValueDecision</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogIDs</td><td><a href="api.html#string">string</a></td><td>repeated</td><td></td></tr>
 <tr><td>Digest</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 <tr><td>Confidence</td><td><a href="api.html#int32">int32</a></td><td>required</td><td></td></tr>
 <tr><td>Value</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.LogValueResponse"></a></p>
+</div>
+<p><a name="trustix-LogValueResponse"></a></p>
 <h3 id="logvalueresponse"><a class="header" href="#logvalueresponse">LogValueResponse</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
 <tr><td>Digest</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.SubmitRequest"></a></p>
+</div>
+<p><a name="trustix-SubmitRequest"></a></p>
 <h3 id="submitrequest"><a class="header" href="#submitrequest">SubmitRequest</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
-<tr><td>Items</td><td><a href="api.html#trustix.KeyValuePair">KeyValuePair</a></td><td>repeated</td><td></td></tr>
+<tr><td>Items</td><td><a href="api.html#trustix-KeyValuePair">KeyValuePair</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.SubmitResponse"></a></p>
+</div>
+<p><a name="trustix-SubmitResponse"></a></p>
 <h3 id="submitresponse"><a class="header" href="#submitresponse">SubmitResponse</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>status</td><td><a href="api.html#trustix.SubmitResponse.Status">SubmitResponse.Status</a></td><td>required</td><td></td></tr>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td><a href="api.html#trustix-SubmitResponse-Status">SubmitResponse.Status</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.SubmitResponse.Status"></a></p>
+</div>
+<p><a name="trustix-SubmitResponse-Status"></a></p>
 <h3 id="submitresponsestatus"><a class="header" href="#submitresponsestatus">SubmitResponse.Status</a></h3>
-<table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
 <tr><td>OK</td><td>0</td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.LogRPC"></a></p>
+</div>
+<p><a name="trustix-LogRPC"></a></p>
 <h3 id="logrpc"><a class="header" href="#logrpc">LogRPC</a></h3>
 <p>RPCApi are &quot;private&quot; rpc methods for an instance related to a specific log.
 This should only be available to trusted parties.</p>
-<table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
-<tr><td>GetHead</td><td><a href="api.html#trustix.LogHeadRequest">LogHeadRequest</a></td><td><a href="api.html#LogHead">.LogHead</a></td><td></td></tr>
-<tr><td>GetLogEntries</td><td><a href="api.html#trustix.GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix.LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
-<tr><td>Submit</td><td><a href="api.html#trustix.SubmitRequest">SubmitRequest</a></td><td><a href="api.html#trustix.SubmitResponse">SubmitResponse</a></td><td></td></tr>
-<tr><td>Flush</td><td><a href="api.html#trustix.FlushRequest">FlushRequest</a></td><td><a href="api.html#trustix.FlushResponse">FlushResponse</a></td><td></td></tr>
+<div class="table-wrapper"><table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>GetHead</td><td><a href="api.html#trustix-LogHeadRequest">LogHeadRequest</a></td><td><a href="api.html#LogHead">.LogHead</a></td><td></td></tr>
+<tr><td>GetLogEntries</td><td><a href="api.html#trustix-GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix-LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
+<tr><td>Submit</td><td><a href="api.html#trustix-SubmitRequest">SubmitRequest</a></td><td><a href="api.html#trustix-SubmitResponse">SubmitResponse</a></td><td></td></tr>
+<tr><td>Flush</td><td><a href="api.html#trustix-FlushRequest">FlushRequest</a></td><td><a href="api.html#trustix-FlushResponse">FlushResponse</a></td><td></td></tr>
 </tbody></table>
-<p><a name="trustix.RPCApi"></a></p>
+</div>
+<p><a name="trustix-RPCApi"></a></p>
 <h3 id="rpcapi"><a class="header" href="#rpcapi">RPCApi</a></h3>
 <p>RPCApi are &quot;private&quot; rpc methods for an instance.
 This should only be available to trusted parties.</p>
-<table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
-<tr><td>Logs</td><td><a href="api.html#trustix.LogsRequest">LogsRequest</a></td><td><a href="api.html#trustix.LogsResponse">LogsResponse</a></td><td>Get a list of all logs published/subscribed by this node</td></tr>
-<tr><td>Decide</td><td><a href="api.html#trustix.DecideRequest">DecideRequest</a></td><td><a href="api.html#trustix.DecisionResponse">DecisionResponse</a></td><td>Decide on an output for key based on the configured decision method</td></tr>
-<tr><td>GetValue</td><td><a href="api.html#trustix.ValueRequest">ValueRequest</a></td><td><a href="api.html#trustix.ValueResponse">ValueResponse</a></td><td>Get values by their content-address</td></tr>
+<div class="table-wrapper"><table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>Logs</td><td><a href="api.html#trustix-LogsRequest">LogsRequest</a></td><td><a href="api.html#trustix-LogsResponse">LogsResponse</a></td><td>Get a list of all logs published/subscribed by this node</td></tr>
+<tr><td>Decide</td><td><a href="api.html#trustix-DecideRequest">DecideRequest</a></td><td><a href="api.html#trustix-DecisionResponse">DecisionResponse</a></td><td>Decide on an output for key based on the configured decision method</td></tr>
+<tr><td>GetValue</td><td><a href="api.html#trustix-ValueRequest">ValueRequest</a></td><td><a href="api.html#trustix-ValueResponse">ValueResponse</a></td><td>Get values by their content-address</td></tr>
 </tbody></table>
-<p><a name="schema/loghead.proto"></a></p>
+</div>
+<p><a name="schema_loghead-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="schemalogheadproto"><a class="header" href="#schemalogheadproto">schema/loghead.proto</a></h2>
-<p><a name=".LogHead"></a></p>
+<p><a name="-LogHead"></a></p>
 <h3 id="loghead"><a class="header" href="#loghead">LogHead</a></h3>
 <p>Log</p>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogRoot</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 <tr><td>TreeSize</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td></td></tr>
 <tr><td>MapRoot</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
@@ -863,112 +876,88 @@ This should only be available to trusted parties.</p>
 <tr><td>MHTreeSize</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td></td></tr>
 <tr><td>Signature</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Aggregate signature</td></tr>
 </tbody></table>
-<p><a name="schema/logleaf.proto"></a></p>
+</div>
+<p><a name="schema_logleaf-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="schemalogleafproto"><a class="header" href="#schemalogleafproto">schema/logleaf.proto</a></h2>
-<p><a name=".LogLeaf"></a></p>
+<p><a name="-LogLeaf"></a></p>
 <h3 id="logleaf"><a class="header" href="#logleaf">LogLeaf</a></h3>
 <p>Leaf value of a merkle tree</p>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Key</td><td><a href="api.html#bytes">bytes</a></td><td>optional</td><td></td></tr>
 <tr><td>ValueDigest</td><td><a href="api.html#bytes">bytes</a></td><td>optional</td><td></td></tr>
 <tr><td>LeafDigest</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
-<p><a name="schema/mapentry.proto"></a></p>
+</div>
+<p><a name="schema_mapentry-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="schemamapentryproto"><a class="header" href="#schemamapentryproto">schema/mapentry.proto</a></h2>
-<p><a name=".MapEntry"></a></p>
+<p><a name="-MapEntry"></a></p>
 <h3 id="mapentry"><a class="header" href="#mapentry">MapEntry</a></h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Digest</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Value digest of tree node</td></tr>
 <tr><td>Index</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>Index of value in log</td></tr>
 </tbody></table>
-<p><a name="schema/queue.proto"></a></p>
+</div>
+<p><a name="schema_queue-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="schemaqueueproto"><a class="header" href="#schemaqueueproto">schema/queue.proto</a></h2>
-<p><a name=".SubmitQueue"></a></p>
+<p><a name="-SubmitQueue"></a></p>
 <h3 id="submitqueue"><a class="header" href="#submitqueue">SubmitQueue</a></h3>
 <p>This type is internal only and not guaranteed stable</p>
-<table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Min</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>Min is the <em>current</em> (last popped) ID</td></tr>
 <tr><td>Max</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>Max is the last written item</td></tr>
 </tbody></table>
+</div>
 <h2 id="scalar-value-types"><a class="header" href="#scalar-value-types">Scalar Value Types</a></h2>
-<table><thead><tr><th>.proto Type</th><th>Notes</th><th>C++ Type</th><th>Java Type</th><th>Python Type</th></tr></thead><tbody>
-<tr><td><a name="double" /> double</td><td></td><td>double</td><td>double</td><td>float</td></tr>
-<tr><td><a name="float" /> float</td><td></td><td>float</td><td>float</td><td>float</td></tr>
-<tr><td><a name="int32" /> int32</td><td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</td><td>int32</td><td>int</td><td>int</td></tr>
-<tr><td><a name="int64" /> int64</td><td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</td><td>int64</td><td>long</td><td>int/long</td></tr>
-<tr><td><a name="uint32" /> uint32</td><td>Uses variable-length encoding.</td><td>uint32</td><td>int</td><td>int/long</td></tr>
-<tr><td><a name="uint64" /> uint64</td><td>Uses variable-length encoding.</td><td>uint64</td><td>long</td><td>int/long</td></tr>
-<tr><td><a name="sint32" /> sint32</td><td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</td><td>int32</td><td>int</td><td>int</td></tr>
-<tr><td><a name="sint64" /> sint64</td><td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</td><td>int64</td><td>long</td><td>int/long</td></tr>
-<tr><td><a name="fixed32" /> fixed32</td><td>Always four bytes. More efficient than uint32 if values are often greater than 2^28.</td><td>uint32</td><td>int</td><td>int</td></tr>
-<tr><td><a name="fixed64" /> fixed64</td><td>Always eight bytes. More efficient than uint64 if values are often greater than 2^56.</td><td>uint64</td><td>long</td><td>int/long</td></tr>
-<tr><td><a name="sfixed32" /> sfixed32</td><td>Always four bytes.</td><td>int32</td><td>int</td><td>int</td></tr>
-<tr><td><a name="sfixed64" /> sfixed64</td><td>Always eight bytes.</td><td>int64</td><td>long</td><td>int/long</td></tr>
-<tr><td><a name="bool" /> bool</td><td></td><td>bool</td><td>boolean</td><td>boolean</td></tr>
-<tr><td><a name="string" /> string</td><td>A string must always contain UTF-8 encoded or 7-bit ASCII text.</td><td>string</td><td>String</td><td>str/unicode</td></tr>
-<tr><td><a name="bytes" /> bytes</td><td>May contain any arbitrary sequence of bytes.</td><td>string</td><td>ByteString</td><td>str</td></tr>
+<div class="table-wrapper"><table><thead><tr><th>.proto Type</th><th>Notes</th><th>C++</th><th>Java</th><th>Python</th><th>Go</th><th>C#</th><th>PHP</th><th>Ruby</th></tr></thead><tbody>
+<tr><td><a name="double" /> double</td><td></td><td>double</td><td>double</td><td>float</td><td>float64</td><td>double</td><td>float</td><td>Float</td></tr>
+<tr><td><a name="float" /> float</td><td></td><td>float</td><td>float</td><td>float</td><td>float32</td><td>float</td><td>float</td><td>Float</td></tr>
+<tr><td><a name="int32" /> int32</td><td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</td><td>int32</td><td>int</td><td>int</td><td>int32</td><td>int</td><td>integer</td><td>Bignum or Fixnum (as required)</td></tr>
+<tr><td><a name="int64" /> int64</td><td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</td><td>int64</td><td>long</td><td>int/long</td><td>int64</td><td>long</td><td>integer/string</td><td>Bignum</td></tr>
+<tr><td><a name="uint32" /> uint32</td><td>Uses variable-length encoding.</td><td>uint32</td><td>int</td><td>int/long</td><td>uint32</td><td>uint</td><td>integer</td><td>Bignum or Fixnum (as required)</td></tr>
+<tr><td><a name="uint64" /> uint64</td><td>Uses variable-length encoding.</td><td>uint64</td><td>long</td><td>int/long</td><td>uint64</td><td>ulong</td><td>integer/string</td><td>Bignum or Fixnum (as required)</td></tr>
+<tr><td><a name="sint32" /> sint32</td><td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</td><td>int32</td><td>int</td><td>int</td><td>int32</td><td>int</td><td>integer</td><td>Bignum or Fixnum (as required)</td></tr>
+<tr><td><a name="sint64" /> sint64</td><td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</td><td>int64</td><td>long</td><td>int/long</td><td>int64</td><td>long</td><td>integer/string</td><td>Bignum</td></tr>
+<tr><td><a name="fixed32" /> fixed32</td><td>Always four bytes. More efficient than uint32 if values are often greater than 2^28.</td><td>uint32</td><td>int</td><td>int</td><td>uint32</td><td>uint</td><td>integer</td><td>Bignum or Fixnum (as required)</td></tr>
+<tr><td><a name="fixed64" /> fixed64</td><td>Always eight bytes. More efficient than uint64 if values are often greater than 2^56.</td><td>uint64</td><td>long</td><td>int/long</td><td>uint64</td><td>ulong</td><td>integer/string</td><td>Bignum</td></tr>
+<tr><td><a name="sfixed32" /> sfixed32</td><td>Always four bytes.</td><td>int32</td><td>int</td><td>int</td><td>int32</td><td>int</td><td>integer</td><td>Bignum or Fixnum (as required)</td></tr>
+<tr><td><a name="sfixed64" /> sfixed64</td><td>Always eight bytes.</td><td>int64</td><td>long</td><td>int/long</td><td>int64</td><td>long</td><td>integer/string</td><td>Bignum</td></tr>
+<tr><td><a name="bool" /> bool</td><td></td><td>bool</td><td>boolean</td><td>boolean</td><td>bool</td><td>bool</td><td>boolean</td><td>TrueClass/FalseClass</td></tr>
+<tr><td><a name="string" /> string</td><td>A string must always contain UTF-8 encoded or 7-bit ASCII text.</td><td>string</td><td>String</td><td>str/unicode</td><td>string</td><td>string</td><td>string</td><td>String (UTF-8)</td></tr>
+<tr><td><a name="bytes" /> bytes</td><td>May contain any arbitrary sequence of bytes.</td><td>string</td><td>ByteString</td><td>str</td><td>[]byte</td><td>ByteString</td><td>string</td><td>String (ASCII-8BIT)</td></tr>
 </tbody></table>
-
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
-
-                        
-
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
-
-                
             </nav>
 
         </div>
 
-        
-
-        
-
-        
-
-        
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
-        
-
-        
-
-        
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
-        
-
         <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
-        
-
-        
-        
         <script type="text/javascript">
         window.addEventListener('load', function() {
             window.setTimeout(window.print, 100);
         });
         </script>
-        
-        
-
     </body>
 </html>
