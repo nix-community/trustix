@@ -58,7 +58,9 @@ message SuggestAttributeResponse {
 
 message DiffRequest {}
 
-message DiffResponse {}
+message DiffResponse {
+  string HTMLDiff = 1;
+}
 
 service ReproducibilityAPI {
   rpc DerivationReproducibility(DerivationReproducibilityRequest)

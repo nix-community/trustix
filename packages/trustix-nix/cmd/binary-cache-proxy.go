@@ -21,6 +21,7 @@ import (
 
 	"github.com/bakins/logrus-middleware"
 	"github.com/coreos/go-systemd/activation"
+	"github.com/nix-community/go-nix/pkg/nixbase32"
 	"github.com/nix-community/trustix/packages/trustix-nix/nar"
 	"github.com/nix-community/trustix/packages/trustix-nix/schema"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
@@ -84,6 +85,51 @@ func readKey(path string) (string, crypto.Signer, error) {
 	priv := ed25519.NewKeyFromSeed(buf[:32])
 
 	return string(components[0]), priv, nil
+}
+
+func normaliseHash(hash string) (string, []byte, error) {
+	scheme := hash[:6]
+	if scheme != "sha256" {
+		return "", nil, fmt.Errorf("unknown scheme: %s", scheme)
+	}
+
+	var decodedHash []byte
+	var err error
+
+	switch hash[6] {
+	case ':': // nix base32
+		decodedHash, err = nixbase32.DecodeString(hash[7:len(hash)])
+
+	case '-': // base64
+		decodedHash, err = base64.StdEncoding.DecodeString(hash[7:len(hash)])
+
+	default:
+		return "", nil, fmt.Errorf("unknown hash separator: %v", hash[7])
+	}
+
+	if err != nil {
+		return "", nil, fmt.Errorf("error decoding hash: %w", err)
+	}
+
+	return scheme, decodedHash, nil
+}
+
+func compareHashesNormalised(hash1 string, hash2 string) (bool, error) {
+	scheme1, hash1Bytes, err := normaliseHash(hash1)
+	if err != nil {
+		return false, err
+	}
+
+	scheme2, hash2Bytes, err := normaliseHash(hash2)
+	if err != nil {
+		return false, err
+	}
+
+	if scheme1 != scheme2 {
+		return false, nil
+	}
+
+	return bytes.Equal(hash1Bytes, hash2Bytes), nil
 }
 
 var binaryCacheCommand = &cobra.Command{
@@ -197,6 +243,11 @@ var binaryCacheCommand = &cobra.Command{
 
 						storePrefix = tokens[2]
 						narHash = tokens[3]
+
+						narHash, err = url.QueryUnescape(narHash)
+						if err != nil {
+							panic(err)
+						}
 					}
 
 					for _, cache := range caches {
@@ -229,7 +280,12 @@ var binaryCacheCommand = &cobra.Command{
 							}
 						}
 
-						if strings.Split(narinfo.NarHash, ":")[1] == narHash {
+						hashesEqual, err := compareHashesNormalised(narinfo.NarHash, narHash)
+						if err != nil {
+							panic(err)
+						}
+
+						if hashesEqual {
 
 							URL, err := url.Parse(cache)
 							if err != nil {

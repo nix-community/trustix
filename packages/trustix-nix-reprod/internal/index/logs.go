@@ -10,7 +10,9 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"fmt"
+	"strings"
 
+	"github.com/nix-community/go-nix/pkg/nixpath"
 	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
@@ -69,10 +71,16 @@ func indexLogChunk(ctx context.Context, client *client.Client, log *api.Log, dbL
 
 	// create an entry for each leaf
 	for _, leaf := range resp.Leaves {
+		storePath := string(leaf.Key)
+
+		if !strings.HasPrefix(storePath, nixpath.StoreDir) {
+			continue
+		}
+
 		_, err := qtx.CreateDerivationOutputResult(
 			ctx,
 			idb.CreateDerivationOutputResultParams{
-				OutputHash: base64.StdEncoding.EncodeToString(leaf.ValueDigest),
+				OutputHash: base64.URLEncoding.EncodeToString(leaf.ValueDigest),
 				StorePath:  string(leaf.Key),
 				LogID:      dbLog.ID,
 			},

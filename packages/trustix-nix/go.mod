@@ -20,6 +20,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/nix-community/go-nix v0.0.0-20220906172053-6b0185c1190b // indirect
 	github.com/nix-community/trustix/packages/unixtransport v0.0.0-00010101000000-000000000000 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
