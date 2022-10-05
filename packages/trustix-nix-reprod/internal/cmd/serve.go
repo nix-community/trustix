@@ -28,6 +28,16 @@ var serveCommand = &cobra.Command{
 	Use:   "serve",
 	Short: "Run server",
 	Run: func(cmd *cobra.Command, args []string) {
+		err := os.MkdirAll(stateDirectory, 0755)
+		if err != nil {
+			panic(err)
+		}
+
+		_, err = setupDB(stateDirectory)
+		if err != nil {
+			panic(err)
+		}
+
 		errChan := make(chan error)
 
 		createServer := func(lis net.Listener) *http.Server {

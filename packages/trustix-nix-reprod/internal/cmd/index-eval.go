@@ -14,8 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const sqlDialect = "sqlite"
-
 var indexEvalCommand = &cobra.Command{
 	Use:   "index-eval",
 	Short: "Index evaluation",
