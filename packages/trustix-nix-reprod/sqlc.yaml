@@ -1,12 +1,10 @@
-version: "1"
-project:
-    id: ""
-packages:
-  - name: "db"
-    path: "internal/db"
-    engine: "sqlite"
-    schema: "sql/schema"
-    queries: "sql/queries"
-overrides:
-  - column: "log.tree_size"
-    go_type: "github.com/segmentio/ksuid.KSUID"
+version: "2"
+
+sql:
+- schema: "sql/schema"
+  queries: "sql/queries"
+  engine: "sqlite"
+  gen:
+    go:
+      package: "db"
+      out: "internal/db"
