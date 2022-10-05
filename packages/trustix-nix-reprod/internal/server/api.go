@@ -29,17 +29,19 @@ type respDerivationOutputHash = pb.DerivationReproducibilityResponse_DerivationO
 type APIServer struct {
 	apiconnect.UnimplementedReproducibilityAPIHandler
 
-	client *client.Client
-	db     *sql.DB
+	client  *client.Client
+	db      *sql.DB
+	cacheDB *sql.DB
 
 	diffExecutor     *future.KeyedFutures[*pb.DiffResponse]
 	downloadExecutor *future.KeyedFutures[*refcount.RefCountedValue[*narDownload]]
 }
 
-func NewAPIServer(db *sql.DB, client *client.Client) *APIServer {
+func NewAPIServer(db *sql.DB, cacheDB *sql.DB, client *client.Client) *APIServer {
 	return &APIServer{
 		db:               db,
 		client:           client,
+		cacheDB:          cacheDB,
 		diffExecutor:     future.NewKeyedFutures[*pb.DiffResponse](),
 		downloadExecutor: future.NewKeyedFutures[*refcount.RefCountedValue[*narDownload]](),
 	}

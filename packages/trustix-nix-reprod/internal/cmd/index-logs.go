@@ -26,7 +26,7 @@ var indexLogsCommand = &cobra.Command{
 			return fmt.Errorf("error opening database: %w", err)
 		}
 
-		err = migrate(db, sqlDialect)
+		err = migrateDB(db, sqlDialect)
 		if err != nil {
 			panic(err)
 		}

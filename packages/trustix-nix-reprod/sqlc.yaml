@@ -8,3 +8,11 @@ sql:
     go:
       package: "db"
       out: "internal/db"
+
+- schema: "sql-cache/schema"
+  queries: "sql-cache/queries"
+  engine: "sqlite"
+  gen:
+    go:
+      package: "dbcache"
+      out: "internal/dbcache"

@@ -10,6 +10,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -25,6 +26,7 @@ import (
 	"github.com/nix-community/go-nix/pkg/nar"
 	"github.com/nix-community/go-nix/pkg/nixpath"
 	"github.com/nix-community/trustix/packages/go-lib/executor"
+	dbcache "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/dbcache"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/future"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/refcount"
 	pb "github.com/nix-community/trustix/packages/trustix-nix-reprod/reprod-api"
@@ -327,8 +329,48 @@ func (s *APIServer) Diff(ctx context.Context, req *connect.Request[pb.DiffReques
 		requestKey = outputHash2 + "." + outputHash1
 	}
 
+	tx, err := s.cacheDB.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating db transaction: %w", err)
+	}
+	defer func() {
+		err := tx.Rollback()
+		if err != nil && err != sql.ErrTxDone {
+			panic(err)
+		}
+	}()
+
+	queries := dbcache.New(s.cacheDB)
+	qtx := queries.WithTx(tx)
+
+	// attempt to get from cache
+	html, err := qtx.GetDiffoscopeHTML(ctx, requestKey)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return nil, fmt.Errorf("error retrieving diffoscope HTML from cache: %w", err)
+	} else if err == nil {
+		return connect.NewResponse(&pb.DiffResponse{
+			HTMLDiff: string(html),
+		}), nil
+	}
+
+	// if no cache entry was found, download and compare
+	// this groups download by their key
 	resp, err := s.diffExecutor.Run(requestKey, func() (*pb.DiffResponse, error) {
-		return diff(s.downloadExecutor, s.db, s.client, outputHash1, outputHash2)
+		resp, err := diff(s.downloadExecutor, s.db, s.client, outputHash1, outputHash2)
+		if err != nil {
+			return nil, err
+		}
+
+		// add an entry to the cache
+		_, err = qtx.CreateDiffoscope(context.Background(), dbcache.CreateDiffoscopeParams{
+			Key:  requestKey,
+			Html: []byte(resp.HTMLDiff),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error adding entry to cache: %w", err)
+		}
+
+		return resp, tx.Commit()
 	}).Result()
 	if err != nil {
 		return nil, err

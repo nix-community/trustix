@@ -48,6 +48,11 @@ var serveCommand = &cobra.Command{
 			panic(err)
 		}
 
+		cacheDB, err := setupCacheDB(stateDirectory)
+		if err != nil {
+			panic(err)
+		}
+
 		client, err := tclient.CreateClient(dialAddress)
 		if err != nil {
 			panic(err)
@@ -64,7 +69,7 @@ var serveCommand = &cobra.Command{
 		})
 		defer logIndexCron.Stop()
 
-		apiServer := server.NewAPIServer(db, client)
+		apiServer := server.NewAPIServer(db, cacheDB, client)
 
 		errChan := make(chan error)
 
