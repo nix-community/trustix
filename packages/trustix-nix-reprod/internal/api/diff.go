@@ -17,6 +17,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"sort"
 	"strings"
 	"time"
 
@@ -235,14 +236,16 @@ func downloadAndUnpackStorePath(client *client.Client, outputHash string, tmpDir
 	return unpackDir, nil
 }
 
-func Diff(ctx context.Context, db *sql.DB, client *client.Client, outputHash1 string, outputHash2 string) (*pb.DiffResponse, error) {
+func diff(db *sql.DB, client *client.Client, outputHash1 string, outputHash2 string) (*pb.DiffResponse, error) {
+	outputHashes := []string{outputHash1, outputHash2}
+	sort.Strings(outputHashes) // canonicalise output (same output no matter argument ordering)
+
 	tmpDir, err := os.MkdirTemp("", "trustix-nix-reprod-diff")
 	if err != nil {
 		return nil, fmt.Errorf("error creating temporary store dir: %w", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	outputHashes := []string{outputHash1, outputHash2}
 	comparePaths := make([]string, len(outputHashes))
 
 	// Download/unpack NARs
@@ -311,4 +314,19 @@ func Diff(ctx context.Context, db *sql.DB, client *client.Client, outputHash1 st
 	}
 
 	return resp, nil
+}
+
+func Diff(ctx context.Context, db *sql.DB, client *client.Client, outputHash1 string, outputHash2 string) (*pb.DiffResponse, error) {
+	diffExecutor := future.NewKeyedFutures[*pb.DiffResponse]()
+
+	requestKey := outputHash1 + "." + outputHash2
+	if outputHash2 > outputHash1 {
+		requestKey = outputHash2 + "." + outputHash1
+	}
+
+	fut := diffExecutor.Run(requestKey, func() (*pb.DiffResponse, error) {
+		return diff(db, client, outputHash1, outputHash2)
+	})
+
+	return fut.Result()
 }

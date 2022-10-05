@@ -56,7 +56,10 @@ message SuggestAttributeResponse {
   repeated string Attrs = 1;
 }
 
-message DiffRequest {}
+message DiffRequest {
+  string OutputHash1 = 1;
+  string OutputHash2 = 2;
+}
 
 message DiffResponse {
   string HTMLDiff = 1;
