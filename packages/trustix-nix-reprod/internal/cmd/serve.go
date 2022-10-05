@@ -6,6 +6,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/http"
@@ -14,8 +15,11 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/coreos/go-systemd/activation"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/cron"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/index"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/server"
 	apiconnect "github.com/nix-community/trustix/packages/trustix-nix-reprod/reprod-api/reprod_apiconnect"
 	tclient "github.com/nix-community/trustix/packages/trustix/client"
@@ -24,13 +28,16 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
-
+p
 var serveListenAddresses []string
 
 var serveCommand = &cobra.Command{
 	Use:   "serve",
 	Short: "Run server",
 	Run: func(cmd *cobra.Command, args []string) {
+		// config options
+		logIndexCronInterval := time.Minute * 10
+
 		err := os.MkdirAll(stateDirectory, 0755)
 		if err != nil {
 			panic(err)
@@ -45,6 +52,17 @@ var serveCommand = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
+
+		// Start indexing logs
+		logIndexCron := cron.NewCronJob(logIndexCronInterval, func() {
+			ctx := context.Background()
+
+			err = index.IndexLogs(ctx, db, client)
+			if err != nil {
+				panic(err)
+			}
+		})
+		defer logIndexCron.Stop()
 
 		apiServer := server.NewAPIServer(db, client)
 

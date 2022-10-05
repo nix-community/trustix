@@ -189,6 +189,8 @@ func createLogs(ctx context.Context, db *sql.DB, logsResp *api.LogsResponse) (ma
 	// Map stringly logID to a Log instance
 	logMap := make(map[string]idb.Log)
 
+	logger.Info("indexing logs")
+
 	// create non existing logs
 	for _, log := range logsResp.Logs {
 		logger.WithFields(logger.Fields{
@@ -211,6 +213,8 @@ func createLogs(ctx context.Context, db *sql.DB, logsResp *api.LogsResponse) (ma
 
 		logMap[*log.LogID] = dbLog
 	}
+
+	logger.Info("finished indexing logs")
 
 	return logMap, tx.Commit()
 }
