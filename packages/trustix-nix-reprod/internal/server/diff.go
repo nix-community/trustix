@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-package api
+package server
 
 import (
 	"bytes"
@@ -21,6 +21,7 @@ import (
 	"strings"
 	"time"
 
+	connect "github.com/bufbuild/connect-go"
 	"github.com/nix-community/go-nix/pkg/nar"
 	"github.com/nix-community/go-nix/pkg/nixpath"
 	"github.com/nix-community/trustix/packages/go-lib/executor"
@@ -195,8 +196,7 @@ func unpackNar(narpath string, unpackDir string) error {
 	return nil
 }
 
-func downloadAndUnpackStorePath(client *client.Client, outputHash string, tmpDir string, unpackDirSuffix string) (string, error) {
-	downloadExecutor := future.NewKeyedFutures[*refcount.RefCountedValue[*narDownload]]()
+func downloadAndUnpackStorePath(downloadExecutor *future.KeyedFutures[*refcount.RefCountedValue[*narDownload]], client *client.Client, outputHash string, tmpDir string, unpackDirSuffix string) (string, error) {
 
 	fut := downloadExecutor.Run(outputHash, func() (*refcount.RefCountedValue[*narDownload], error) {
 		return downloadNAR(context.Background(), client, outputHash)
@@ -236,7 +236,7 @@ func downloadAndUnpackStorePath(client *client.Client, outputHash string, tmpDir
 	return unpackDir, nil
 }
 
-func diff(db *sql.DB, client *client.Client, outputHash1 string, outputHash2 string) (*pb.DiffResponse, error) {
+func diff(downloadExecutor *future.KeyedFutures[*refcount.RefCountedValue[*narDownload]], db *sql.DB, client *client.Client, outputHash1 string, outputHash2 string) (*pb.DiffResponse, error) {
 	outputHashes := []string{outputHash1, outputHash2}
 	sort.Strings(outputHashes) // canonicalise output (same output no matter argument ordering)
 
@@ -267,7 +267,7 @@ func diff(db *sql.DB, client *client.Client, outputHash1 string, outputHash2 str
 			}
 
 			e.Add(func() error {
-				unpackedDir, err := downloadAndUnpackStorePath(client, outputHash, tmpDir, unpackDirSuffix)
+				unpackedDir, err := downloadAndUnpackStorePath(downloadExecutor, client, outputHash, tmpDir, unpackDirSuffix)
 				if err != nil {
 					return err
 				}
@@ -316,17 +316,23 @@ func diff(db *sql.DB, client *client.Client, outputHash1 string, outputHash2 str
 	return resp, nil
 }
 
-func Diff(ctx context.Context, db *sql.DB, client *client.Client, outputHash1 string, outputHash2 string) (*pb.DiffResponse, error) {
-	diffExecutor := future.NewKeyedFutures[*pb.DiffResponse]()
+func (s *APIServer) Diff(ctx context.Context, req *connect.Request[pb.DiffRequest]) (*connect.Response[pb.DiffResponse], error) {
+	msg := req.Msg
+
+	outputHash1 := msg.OutputHash1
+	outputHash2 := msg.OutputHash2
 
 	requestKey := outputHash1 + "." + outputHash2
 	if outputHash2 > outputHash1 {
 		requestKey = outputHash2 + "." + outputHash1
 	}
 
-	fut := diffExecutor.Run(requestKey, func() (*pb.DiffResponse, error) {
-		return diff(db, client, outputHash1, outputHash2)
-	})
+	resp, err := s.diffExecutor.Run(requestKey, func() (*pb.DiffResponse, error) {
+		return diff(s.downloadExecutor, s.db, s.client, outputHash1, outputHash2)
+	}).Result()
+	if err != nil {
+		return nil, err
+	}
 
-	return fut.Result()
+	return connect.NewResponse(resp), nil
 }

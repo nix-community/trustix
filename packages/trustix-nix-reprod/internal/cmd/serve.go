@@ -16,6 +16,9 @@ import (
 	"syscall"
 
 	"github.com/coreos/go-systemd/activation"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/server"
+	apiconnect "github.com/nix-community/trustix/packages/trustix-nix-reprod/reprod-api/reprod_apiconnect"
+	tclient "github.com/nix-community/trustix/packages/trustix/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/http2"
@@ -33,17 +36,24 @@ var serveCommand = &cobra.Command{
 			panic(err)
 		}
 
-		_, err = setupDB(stateDirectory)
+		db, err := setupDB(stateDirectory)
 		if err != nil {
 			panic(err)
 		}
+
+		client, err := tclient.CreateClient(dialAddress)
+		if err != nil {
+			panic(err)
+		}
+
+		apiServer := server.NewAPIServer(db, client)
 
 		errChan := make(chan error)
 
 		createServer := func(lis net.Listener) *http.Server {
 			mux := http.NewServeMux()
 
-			// mux.Handle(apiconnect.NewLogAPIHandler(logAPIServer))
+			mux.Handle(apiconnect.NewReproducibilityAPIHandler(apiServer))
 
 			server := &http.Server{Handler: h2c.NewHandler(mux, &http2.Server{})}
 

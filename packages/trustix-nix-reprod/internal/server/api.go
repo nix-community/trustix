@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-package api
+package server
 
 import (
 	"context"
@@ -11,8 +11,13 @@ import (
 	"fmt"
 	"time"
 
+	connect "github.com/bufbuild/connect-go"
 	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/future"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/refcount"
 	pb "github.com/nix-community/trustix/packages/trustix-nix-reprod/reprod-api"
+	apiconnect "github.com/nix-community/trustix/packages/trustix-nix-reprod/reprod-api/reprod_apiconnect"
+	"github.com/nix-community/trustix/packages/trustix/client"
 )
 
 const nullJSONGroupObjectString = "{:null}"
@@ -20,6 +25,25 @@ const nullJSONGroupObjectString = "{:null}"
 type respDerivation = pb.DerivationReproducibilityResponse_Derivation
 type respDerivationOutput = pb.DerivationReproducibilityResponse_DerivationOutput
 type respDerivationOutputHash = pb.DerivationReproducibilityResponse_DerivationOutputHash
+
+type APIServer struct {
+	apiconnect.UnimplementedReproducibilityAPIHandler
+
+	client *client.Client
+	db     *sql.DB
+
+	diffExecutor     *future.KeyedFutures[*pb.DiffResponse]
+	downloadExecutor *future.KeyedFutures[*refcount.RefCountedValue[*narDownload]]
+}
+
+func NewAPIServer(db *sql.DB, client *client.Client) *APIServer {
+	return &APIServer{
+		db:               db,
+		client:           client,
+		diffExecutor:     future.NewKeyedFutures[*pb.DiffResponse](),
+		downloadExecutor: future.NewKeyedFutures[*refcount.RefCountedValue[*narDownload]](),
+	}
+}
 
 func getFirstMapKey(m map[string][]int) string {
 	for k := range m {
@@ -39,8 +63,11 @@ func toInt64(s []int) []int64 {
 	return x
 }
 
-func GetDerivationReproducibility(ctx context.Context, db *sql.DB, drvPath string) (*pb.DerivationReproducibilityResponse, error) {
-	tx, err := db.BeginTx(ctx, nil)
+func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.Request[pb.DerivationReproducibilityRequest]) (*connect.Response[pb.DerivationReproducibilityResponse], error) {
+	msg := req.Msg
+	drvPath := msg.DrvPath
+
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating db transaction: %w", err)
 	}
@@ -51,7 +78,7 @@ func GetDerivationReproducibility(ctx context.Context, db *sql.DB, drvPath strin
 		}
 	}()
 
-	queries := idb.New(db)
+	queries := idb.New(s.db)
 	qtx := queries.WithTx(tx)
 
 	rows, err := qtx.GetDerivationReproducibility(ctx, drvPath)
@@ -129,11 +156,17 @@ func GetDerivationReproducibility(ctx context.Context, db *sql.DB, drvPath strin
 		}
 	}
 
-	return resp, nil
+	return connect.NewResponse(resp), nil
 }
 
-func GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Context, db *sql.DB, attr string, start time.Time, stop time.Time) (*pb.AttrReproducibilityTimeSeriesResponse, error) {
-	tx, err := db.BeginTx(ctx, nil)
+func (s *APIServer) AttrReproducibilityTimeSeries(ctx context.Context, req *connect.Request[pb.AttrReproducibilityTimeSeriesRequest]) (*connect.Response[pb.AttrReproducibilityTimeSeriesResponse], error) {
+	msg := req.Msg
+
+	attr := msg.Attr
+	start := time.Unix(msg.Start, 0)
+	stop := time.Unix(msg.Stop, 0)
+
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating db transaction: %w", err)
 	}
@@ -144,7 +177,7 @@ func GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Context, db *sql.D
 		}
 	}()
 
-	queries := idb.New(db)
+	queries := idb.New(s.db)
 	qtx := queries.WithTx(tx)
 
 	rows, err := qtx.GetDerivationReproducibilityTimeSeriesByAttr(ctx, idb.GetDerivationReproducibilityTimeSeriesByAttrParams{
@@ -181,15 +214,18 @@ func GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Context, db *sql.D
 		resp.PctReproduced = resp.PctReproduced / float32(len(rows))
 	}
 
-	return resp, nil
+	return connect.NewResponse(resp), nil
 }
 
-func SuggestAttribute(ctx context.Context, db *sql.DB, attrPrefix string) (*pb.SuggestAttributeResponse, error) {
+func (s *APIServer) SuggestAttribute(ctx context.Context, req *connect.Request[pb.SuggestsAttributeRequest]) (*connect.Response[pb.SuggestAttributeResponse], error) {
+	msg := req.Msg
+	attrPrefix := msg.AttrPrefix
+
 	if len(attrPrefix) < 3 {
 		return nil, fmt.Errorf("attribute prefix '%s' is too short (minimum 3)", attrPrefix)
 	}
 
-	tx, err := db.BeginTx(ctx, nil)
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating db transaction: %w", err)
 	}
@@ -200,7 +236,7 @@ func SuggestAttribute(ctx context.Context, db *sql.DB, attrPrefix string) (*pb.S
 		}
 	}()
 
-	queries := idb.New(db)
+	queries := idb.New(s.db)
 	qtx := queries.WithTx(tx)
 
 	suggestions, err := qtx.SuggestAttribute(ctx, attrPrefix+"%")
@@ -216,5 +252,5 @@ func SuggestAttribute(ctx context.Context, db *sql.DB, attrPrefix string) (*pb.S
 		resp.Attrs[i] = s
 	}
 
-	return resp, nil
+	return connect.NewResponse(resp), nil
 }
