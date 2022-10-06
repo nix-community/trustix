@@ -105,9 +105,9 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 			drvs[row.Drv] = drv
 		}
 
-		drvOutput, ok := drv.Outputs[row.Drv]
+		_, ok = drv.Outputs[row.Drv]
 		if !ok {
-			drvOutput = &respDerivationOutput{
+			drvOutput := &respDerivationOutput{
 				Output:       row.Output,
 				StorePath:    row.StorePath,
 				OutputHashes: make(map[string]*respDerivationOutputHash, len(outputHashes)),
@@ -251,9 +251,7 @@ func (s *APIServer) SuggestAttribute(ctx context.Context, req *connect.Request[p
 		Attrs: make([]string, len(suggestions)),
 	}
 
-	for i, s := range suggestions {
-		resp.Attrs[i] = s
-	}
+	copy(resp.Attrs, suggestions)
 
 	return connect.NewResponse(resp), nil
 }

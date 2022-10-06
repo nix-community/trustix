@@ -304,7 +304,7 @@ func diff(downloadExecutor *future.KeyedFutures[*refcount.RefCountedValue[*narDo
 
 		// Diffoscope returns non-zero on paths that have a diff
 		// Instead use stderr as a heurestic if the call went well or not
-		cmd.Run() // Ignore error
+		cmd.Run() // nolint:errcheck
 
 		if stderr.Len() > 0 {
 			if err != nil {

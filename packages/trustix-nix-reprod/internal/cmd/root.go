@@ -56,7 +56,6 @@ func initCommands() {
 	rootCmd.AddCommand(indexEvalCommand)
 	rootCmd.AddCommand(indexLogsCommand)
 	rootCmd.AddCommand(serveCommand)
-	rootCmd.AddCommand(queryLogsCommand)
 
 	initServe()
 }

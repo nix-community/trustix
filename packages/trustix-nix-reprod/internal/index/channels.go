@@ -68,7 +68,7 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 						break idloop
 					}
 
-					evals = append(evals)
+					evals = append(evals, eval)
 				}
 			}
 		}

@@ -135,7 +135,7 @@ var serveCommand = &cobra.Command{
 			mux.Handle(apiconnect.NewReproducibilityAPIHandler(apiServer))
 
 			l := logrusmiddleware.Middleware{
-				Name:   "trustix-binary-cache-proxy",
+				Name:   "trustix-nix-reprod",
 				Logger: log.New(),
 			}
 

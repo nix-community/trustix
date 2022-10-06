@@ -62,6 +62,7 @@ func IndexEval[T EvalMetaDataTypes](ctx context.Context, db *sql.DB, nixPath str
 
 	var dbEval idb.Evaluation
 	{
+		// nolint
 		createEvalMetaByIngestFunc := func(dbEval idb.Evaluation) error {
 			return nil
 		}
