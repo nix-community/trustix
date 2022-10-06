@@ -11,6 +11,9 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type JobsetEvalInput struct {
@@ -135,6 +138,14 @@ func getEvaluations(baseURL string, project string, jobset string, urlParamsQuer
 
 	client := &http.Client{}
 
+	urlString := u.String()
+
+	l := log.WithFields(log.Fields{
+		"url": urlString,
+	})
+
+	l.Info("Requesting hydra evaluations")
+
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("could not create request: %w", err)
@@ -142,10 +153,16 @@ func getEvaluations(baseURL string, project string, jobset string, urlParamsQuer
 
 	req.Header.Set("accept", "application/json")
 
+	start := time.Now().UTC()
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("could not perform request: %w", err)
 	}
+
+	l.WithFields(log.Fields{
+		"duration": time.Since(start),
+	}).Info("finished request")
 
 	var r *HydraEvalResponse
 

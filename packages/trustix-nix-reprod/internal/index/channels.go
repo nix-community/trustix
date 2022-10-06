@@ -52,6 +52,7 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 		if isNew {
 			evals = append(evals, evalResp.Evals[0])
 		} else {
+		idloop:
 			for {
 				evalResp, err = evalResp.NextPage()
 				if err != nil {
@@ -64,7 +65,7 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 
 				for _, eval := range evalResp.Evals {
 					if latestEval.HydraEvalID >= eval.ID {
-						break
+						break idloop
 					}
 
 					evals = append(evals)
@@ -90,8 +91,6 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 				return fmt.Errorf("error indexing evaluation as a part of channel '%s': %w", channel, err)
 			}
 		}
-
-		fmt.Println(evals)
 
 	default:
 		return fmt.Errorf("unhandled channel type: %s", channelConfig.Type)

@@ -19,7 +19,7 @@ FROM
 WHERE
   eval.channel = ?
 ORDER BY
-  hydraeval.hydra_eval_id
+  hydraeval.hydra_eval_id DESC
 LIMIT
   1;
 

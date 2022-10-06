@@ -11,6 +11,7 @@ replace (
 )
 
 require (
+	github.com/BurntSushi/toml v1.2.0
 	github.com/adrg/xdg v0.4.0
 	github.com/bakins/logrus-middleware v0.0.0-20180426214643-ce4c6f8deb07
 	github.com/bufbuild/connect-go v0.5.0

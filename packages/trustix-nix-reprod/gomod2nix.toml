@@ -1,6 +1,9 @@
 schema = 3
 
 [mod]
+  [mod."github.com/BurntSushi/toml"]
+    version = "v1.2.0"
+    hash = "sha256-yxBUbKQ3v4Na9IHDf4PLePrILAX4kmk2Zc+kqWazlIY="
   [mod."github.com/ClickHouse/clickhouse-go"]
     version = "v1.5.4"
     hash = "sha256-De5oreE/B/y5fjlFzxDafjr7wGjnAPPooqOFTGtuSoA="

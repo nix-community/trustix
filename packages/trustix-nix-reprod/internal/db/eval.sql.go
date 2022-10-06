@@ -84,11 +84,11 @@ SELECT
   hydraeval.id, hydraeval.evaluation, hydraeval.hydra_eval_id, hydraeval.revision
 FROM
   hydraevaluation AS hydraeval
-  JOIN evaluation eval ON eval.id = drveval.eval
+  JOIN evaluation eval ON eval.id = hydraeval.evaluation
 WHERE
   eval.channel = ?
 ORDER BY
-  hydraeval.hydra_eval_id
+  hydraeval.hydra_eval_id DESC
 LIMIT
   1
 `

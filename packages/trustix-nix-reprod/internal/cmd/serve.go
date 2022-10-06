@@ -37,20 +37,16 @@ var serveCommand = &cobra.Command{
 	Use:   "serve",
 	Short: "Run server",
 	Run: func(cmd *cobra.Command, args []string) {
-		// config options
-		logIndexCronInterval := time.Minute * 10
-		evalIndexCronInterval := time.Minute * 1510
-		channels := make(map[string]*config.Channel)
-		channels["nixos-unstable"] = &config.Channel{
-			Type: "hydra",
-			Hydra: &config.HydraChannel{
-				BaseURL: "https://hydra.nixos.org",
-				Project: "nixos",
-				Jobset:  "trunk-combined",
-			},
+		conf, err := config.NewConfigFromFile("./config.json")
+		if err != nil {
+			panic(err)
 		}
 
-		err := os.MkdirAll(stateDirectory, 0755)
+		// config options
+		logIndexCronInterval := time.Second * time.Duration(conf.LogIndexCronInterval)
+		evalIndexCronInterval := time.Second * time.Duration(conf.EvalIndexCronInterval)
+
+		err = os.MkdirAll(stateDirectory, 0755)
 		if err != nil {
 			panic(err)
 		}
@@ -87,6 +83,8 @@ var serveCommand = &cobra.Command{
 				if err != nil {
 					panic(err)
 				}
+
+				log.Info("Done executing log index cron job")
 			})
 			defer logIndexCron.Stop()
 		}
@@ -102,7 +100,7 @@ var serveCommand = &cobra.Command{
 
 				log.Info("Triggering evaluation index cron job")
 
-				for channel, channelConfig := range channels {
+				for channel, channelConfig := range conf.Channels {
 					l := log.WithFields(log.Fields{
 						"channel": channel,
 					})
@@ -116,6 +114,8 @@ var serveCommand = &cobra.Command{
 						}).Error("error indexing channel")
 					}
 				}
+
+				log.Info("Done executing evaluation index cron job")
 			})
 			defer evalIndexCron.Stop()
 		}
