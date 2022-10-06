@@ -3,7 +3,7 @@
 }:
 
 let
-  inherit (flakeInputs) nixpkgs gomod2nix npmlock2nix;
+  inherit (flakeInputs) nixpkgs gomod2nix npmlock2nix gitignore nix-eval-jobs;
 in
 
 import nixpkgs {
@@ -11,6 +11,8 @@ import nixpkgs {
   config.allowAliases = false;
   overlays = [
     (import "${gomod2nix}/overlay.nix")
+
+    (final: prev: (import "${gitignore}" { inherit (final) lib; }))
 
     (final: prev: {
       # Prevent the entirety of hydra to be in $PATH/runtime closure
@@ -23,6 +25,10 @@ import nixpkgs {
 
     (final: prev: {
       npmlock2nix = import npmlock2nix { pkgs = final; };
+    })
+
+    (final: prev: {
+      nix-eval-jobs = final.callPackage nix-eval-jobs { };
     })
 
     (final: prev:

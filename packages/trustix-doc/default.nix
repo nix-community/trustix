@@ -1,12 +1,16 @@
 { pkgs ? import ../../pkgs.nix { }
 , lib ? pkgs.lib
+, gitignoreSource ? pkgs.gitignoreSource
 }:
 
 pkgs.stdenv.mkDerivation {
   pname = "trustix-doc";
   version = "dev";
 
-  src = lib.cleanSource ./.;
+  src = lib.cleanSourceWith {
+    filter = name: type: ! lib.hasSuffix "tests" name;
+    src = gitignoreSource ./.;
+  };
 
   nativeBuildInputs = [
     pkgs.mdbook

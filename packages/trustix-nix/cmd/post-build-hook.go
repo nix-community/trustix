@@ -6,7 +6,6 @@
 package cmd
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -39,7 +38,7 @@ var nixHookCommand = &cobra.Command{
 		wg := new(sync.WaitGroup)
 		mux := new(sync.Mutex)
 
-		tmpDir, err := ioutil.TempDir("", "nix-trustix")
+		tmpDir, err := os.MkdirTemp("", "nix-trustix")
 		if err != nil {
 			return err
 		}

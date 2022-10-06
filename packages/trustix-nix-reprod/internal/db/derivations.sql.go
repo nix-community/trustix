@@ -14,7 +14,10 @@ import (
 )
 
 const createDerivation = `-- name: CreateDerivation :one
-INSERT INTO derivation (drv, system) VALUES (?, ?) RETURNING id, drv, system
+INSERT INTO
+  derivation (drv, system)
+VALUES
+  (?, ?) RETURNING id, drv, system
 `
 
 type CreateDerivationParams struct {
@@ -30,7 +33,10 @@ func (q *Queries) CreateDerivation(ctx context.Context, arg CreateDerivationPara
 }
 
 const createDerivationAttr = `-- name: CreateDerivationAttr :exec
-INSERT OR IGNORE INTO derivationattr (attr, derivation_id) VALUES (?, ?)
+INSERT OR IGNORE INTO
+  derivationattr (attr, derivation_id)
+VALUES
+  (?, ?)
 `
 
 type CreateDerivationAttrParams struct {
@@ -43,8 +49,28 @@ func (q *Queries) CreateDerivationAttr(ctx context.Context, arg CreateDerivation
 	return err
 }
 
+const createDerivationEval = `-- name: CreateDerivationEval :exec
+INSERT OR IGNORE INTO
+  derivationeval (drv, eval)
+VALUES
+  (?, ?)
+`
+
+type CreateDerivationEvalParams struct {
+	Drv  int64
+	Eval int64
+}
+
+func (q *Queries) CreateDerivationEval(ctx context.Context, arg CreateDerivationEvalParams) error {
+	_, err := q.db.ExecContext(ctx, createDerivationEval, arg.Drv, arg.Eval)
+	return err
+}
+
 const createDerivationOutput = `-- name: CreateDerivationOutput :exec
-INSERT INTO derivationoutput (output, store_path, derivation_id) VALUES (?, ?, ?)
+INSERT INTO
+  derivationoutput (output, store_path, derivation_id)
+VALUES
+  (?, ?, ?)
 `
 
 type CreateDerivationOutputParams struct {
@@ -59,7 +85,10 @@ func (q *Queries) CreateDerivationOutput(ctx context.Context, arg CreateDerivati
 }
 
 const createDerivationRefDirect = `-- name: CreateDerivationRefDirect :exec
-INSERT OR IGNORE INTO derivationrefdirect (drv_id, referrer_id) VALUES (?, ?)
+INSERT OR IGNORE INTO
+  derivationrefdirect (drv_id, referrer_id)
+VALUES
+  (?, ?)
 `
 
 type CreateDerivationRefDirectParams struct {
@@ -73,7 +102,10 @@ func (q *Queries) CreateDerivationRefDirect(ctx context.Context, arg CreateDeriv
 }
 
 const createDerivationRefRecursive = `-- name: CreateDerivationRefRecursive :exec
-INSERT OR IGNORE INTO derivationrefrecursive (drv_id, referrer_id) VALUES (?, ?)
+INSERT OR IGNORE INTO
+  derivationrefrecursive (drv_id, referrer_id)
+VALUES
+  (?, ?)
 `
 
 type CreateDerivationRefRecursiveParams struct {
@@ -86,20 +118,15 @@ func (q *Queries) CreateDerivationRefRecursive(ctx context.Context, arg CreateDe
 	return err
 }
 
-const createEval = `-- name: CreateEval :one
-INSERT INTO evaluation (commit_sha) VALUES (?) RETURNING id, commit_sha, timestamp
-`
-
-func (q *Queries) CreateEval(ctx context.Context, commitSha string) (Evaluation, error) {
-	row := q.db.QueryRowContext(ctx, createEval, commitSha)
-	var i Evaluation
-	err := row.Scan(&i.ID, &i.CommitSha, &i.Timestamp)
-	return i, err
-}
-
 const getDerivation = `-- name: GetDerivation :one
-SELECT id, drv, system FROM derivation
-WHERE drv = ? LIMIT 1
+SELECT
+  id, drv, system
+FROM
+  derivation
+WHERE
+  drv = ?
+LIMIT
+  1
 `
 
 func (q *Queries) GetDerivation(ctx context.Context, drv string) (Derivation, error) {
@@ -110,7 +137,15 @@ func (q *Queries) GetDerivation(ctx context.Context, drv string) (Derivation, er
 }
 
 const getDerivationAttr = `-- name: GetDerivationAttr :one
-SELECT id, attr, derivation_id FROM derivationattr WHERE derivation_id = ? AND attr = ? LIMIT 1
+SELECT
+  id, attr, derivation_id
+FROM
+  derivationattr
+WHERE
+  derivation_id = ?
+  AND attr = ?
+LIMIT
+  1
 `
 
 type GetDerivationAttrParams struct {
@@ -126,7 +161,12 @@ func (q *Queries) GetDerivationAttr(ctx context.Context, arg GetDerivationAttrPa
 }
 
 const getDerivationOutputs = `-- name: GetDerivationOutputs :many
-SELECT id, output, store_path, derivation_id FROM derivationoutput WHERE store_path = ?
+SELECT
+  id, output, store_path, derivation_id
+FROM
+  derivationoutput
+WHERE
+  store_path = ?
 `
 
 func (q *Queries) GetDerivationOutputs(ctx context.Context, storePath string) ([]Derivationoutput, error) {
@@ -158,7 +198,12 @@ func (q *Queries) GetDerivationOutputs(ctx context.Context, storePath string) ([
 }
 
 const getDerivationOutputsByDerivationID = `-- name: GetDerivationOutputsByDerivationID :many
-SELECT id, output, store_path, derivation_id FROM derivationoutput WHERE derivation_id = ?
+SELECT
+  id, output, store_path, derivation_id
+FROM
+  derivationoutput
+WHERE
+  derivation_id = ?
 `
 
 func (q *Queries) GetDerivationOutputsByDerivationID(ctx context.Context, derivationID int64) ([]Derivationoutput, error) {
@@ -187,16 +232,4 @@ func (q *Queries) GetDerivationOutputsByDerivationID(ctx context.Context, deriva
 		return nil, err
 	}
 	return items, nil
-}
-
-const getEval = `-- name: GetEval :one
-SELECT id, commit_sha, timestamp FROM evaluation
-WHERE commit_sha = ? LIMIT 1
-`
-
-func (q *Queries) GetEval(ctx context.Context, commitSha string) (Evaluation, error) {
-	row := q.db.QueryRowContext(ctx, getEval, commitSha)
-	var i Evaluation
-	err := row.Scan(&i.ID, &i.CommitSha, &i.Timestamp)
-	return i, err
 }

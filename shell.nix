@@ -48,11 +48,14 @@ let
     ps.pretty-errors
   ]);
 
+  sqlFormatterWriter = pkgs.writeScriptBin "sql-formatter-writer" ''
+    #!${pkgs.runtimeShell}
+    set -euo pipefail
+    exec ${pkgs.nodePackages.sql-formatter}/bin/sql-formatter -l sqlite "$1" | ${pkgs.moreutils}/bin/sponge "$1"
+  '';
+
 in
 pkgs.mkShell {
-
-  # Speed up compilation, guarantee static linking
-  CGO_ENABLED = "0";
 
   buildInputs = [
     # Development scripts
@@ -70,6 +73,9 @@ pkgs.mkShell {
     # Format Nix expressions
     pkgs.nixpkgs-fmt
 
+    # Format SQL
+    sqlFormatterWriter
+
     # Procfile process runner
     pkgs.hivemind
 
@@ -80,8 +86,8 @@ pkgs.mkShell {
     pkgs.protobuf
     pkgs.grpcurl # gRPC CLI
 
-    # Go linter
-    pkgs.golangci-lint
+    # Go linters
+    pkgs.golangci-lint # Multi purpose linter
 
     # File system watchers
     pkgs.reflex

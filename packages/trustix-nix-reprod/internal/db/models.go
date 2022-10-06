@@ -24,6 +24,11 @@ type Derivationattr struct {
 	DerivationID int64
 }
 
+type Derivationeval struct {
+	Drv  int64
+	Eval int64
+}
+
 type Derivationoutput struct {
 	ID           int64
 	Output       string
@@ -52,8 +57,15 @@ type Derivationrefrecursive struct {
 
 type Evaluation struct {
 	ID        int64
-	CommitSha string
+	Channel   string
 	Timestamp time.Time
+}
+
+type Hydraevaluation struct {
+	ID          int64
+	Evaluation  int64
+	HydraEvalID int64
+	Revision    string
 }
 
 type Log struct {

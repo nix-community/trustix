@@ -101,7 +101,10 @@ message ValueRequest { required bytes Digest = 1; }
 
 message ValueResponse { required bytes Value = 1; }
 
-message LogsRequest {}
+message LogsRequest {
+  // Allow to filter logs response based on the protocol identifier
+  repeated string Protocols = 1;
+}
 
 message LogSigner {
   enum KeyTypes { ed25519 = 0; }

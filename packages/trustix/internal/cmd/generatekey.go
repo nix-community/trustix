@@ -9,8 +9,8 @@ import (
 	"crypto/ed25519"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -42,12 +42,12 @@ var generateKeyCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		err = ioutil.WriteFile(generatePublicKeyOutput, []byte(base64.StdEncoding.EncodeToString(pub)), 0644)
+		err = os.WriteFile(generatePublicKeyOutput, []byte(base64.StdEncoding.EncodeToString(pub)), 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		err = ioutil.WriteFile(generatePrivateKeyOutput, []byte(base64.StdEncoding.EncodeToString(priv)), 0644)
+		err = os.WriteFile(generatePrivateKeyOutput, []byte(base64.StdEncoding.EncodeToString(priv)), 0644)
 		if err != nil {
 			log.Fatal(err)
 		}

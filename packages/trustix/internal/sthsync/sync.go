@@ -14,11 +14,11 @@ import (
 	"time"
 
 	apipb "github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/internal/constants"
 	vlog "github.com/nix-community/trustix/packages/trustix/internal/log"
 	"github.com/nix-community/trustix/packages/trustix/internal/pool"
-	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	"github.com/nix-community/trustix/packages/trustix/internal/signer"
 	sthlib "github.com/nix-community/trustix/packages/trustix/internal/sth"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"

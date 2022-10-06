@@ -10,8 +10,8 @@ import (
 	"log"
 
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 	conf "github.com/nix-community/trustix/packages/trustix/internal/config"
-	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	"github.com/spf13/cobra"
 )
 

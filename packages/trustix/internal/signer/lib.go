@@ -7,11 +7,11 @@ package signer
 
 import (
 	"encoding/base64"
-	"io/ioutil"
+	"os"
 )
 
 func readKey(path string) ([]byte, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

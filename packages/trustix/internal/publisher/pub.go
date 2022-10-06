@@ -17,11 +17,11 @@ import (
 
 	"github.com/lazyledger/smt"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 	rpc "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	schema "github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/internal/constants"
 	vlog "github.com/nix-community/trustix/packages/trustix/internal/log"
-	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	sthsig "github.com/nix-community/trustix/packages/trustix/internal/sth"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 	log "github.com/sirupsen/logrus"

@@ -14,14 +14,15 @@ import (
 
 	connect "github.com/bufbuild/connect-go"
 	"github.com/lazyledger/smt"
+	"github.com/nix-community/trustix/packages/go-lib/set"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
+	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 	"github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"github.com/nix-community/trustix/packages/trustix-proto/rpc/rpcconnect"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
 	"github.com/nix-community/trustix/packages/trustix/client"
 	"github.com/nix-community/trustix/packages/trustix/internal/decider"
 	"github.com/nix-community/trustix/packages/trustix/internal/pool"
-	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	pub "github.com/nix-community/trustix/packages/trustix/internal/publisher"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
 	log "github.com/sirupsen/logrus"
@@ -304,9 +305,28 @@ func (l *RPCServer) GetValue(ctx context.Context, req *connect.Request[api.Value
 }
 
 func (l *RPCServer) Logs(ctx context.Context, req *connect.Request[api.LogsRequest]) (*connect.Response[api.LogsResponse], error) {
-	resp := &api.LogsResponse{
-		Logs: l.logs,
+	in := req.Msg
+
+	// Default to returning all logs
+	logs := l.logs
+
+	// If any protocols are passed filter out other protocols
+	if in.Protocols != nil && len(in.Protocols) > 0 {
+		logs = []*api.Log{}
+
+		protocolSet := set.NewSet[string]()
+		for _, p := range in.Protocols {
+			protocolSet.Add(p)
+		}
+
+		for _, log := range l.logs {
+			if protocolSet.Has(*log.Protocol) {
+				logs = append(logs, log)
+			}
+		}
 	}
 
-	return connect.NewResponse(resp), nil
+	return connect.NewResponse(&api.LogsResponse{
+		Logs: logs,
+	}), nil
 }

@@ -11,6 +11,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 
+	"github.com/nix-community/trustix/packages/go-lib/set"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix/interfaces"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
@@ -59,7 +60,26 @@ func (kv *kvStoreNodeApi) GetValue(ctx context.Context, in *api.ValueRequest) (*
 }
 
 func (kv *kvStoreNodeApi) Logs(ctx context.Context, in *api.LogsRequest) (*api.LogsResponse, error) {
+	// Default to returning all logs
+	logs := kv.logMeta
+
+	// If any protocols are passed filter out other protocols
+	if in.Protocols != nil && len(in.Protocols) > 0 {
+		logs = []*api.Log{}
+
+		protocolSet := set.NewSet[string]()
+		for _, p := range in.Protocols {
+			protocolSet.Add(p)
+		}
+
+		for _, log := range kv.logMeta {
+			if protocolSet.Has(*log.Protocol) {
+				logs = append(logs, log)
+			}
+		}
+	}
+
 	return &api.LogsResponse{
-		Logs: kv.logMeta,
+		Logs: logs,
 	}, nil
 }

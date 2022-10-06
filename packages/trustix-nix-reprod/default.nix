@@ -1,4 +1,4 @@
-{ buildGoApplication, lib }:
+{ buildGoApplication, lib, gitignoreSource }:
 
 buildGoApplication {
   pname = "trustix-nix-reprod";
@@ -6,7 +6,7 @@ buildGoApplication {
   pwd = ./.;
   src = lib.cleanSourceWith {
     filter = name: type: ! lib.hasSuffix "tests" name;
-    src = lib.cleanSource ./.;
+    src = gitignoreSource ./.;
   };
   modules = ./gomod2nix.toml;
 }

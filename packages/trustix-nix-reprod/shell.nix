@@ -11,6 +11,7 @@ pkgs.mkShell {
     pkgs.nix-eval-jobs
     goEnv
     pkgs.sqlite
+    pkgs.diffoscope
   ];
 
   shellHook = ''

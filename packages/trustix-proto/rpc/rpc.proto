@@ -15,7 +15,6 @@ package trustix;
 // RPCApi are "private" rpc methods for an instance.
 // This should only be available to trusted parties.
 service RPCApi {
-
   // Get a list of all logs published/subscribed by this node
   rpc Logs(LogsRequest) returns (LogsResponse) {}
 

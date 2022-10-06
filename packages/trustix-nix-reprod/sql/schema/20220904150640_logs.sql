@@ -7,7 +7,8 @@
 CREATE TABLE log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     log_id VARCHAR(255) NOT NULL,
-    tree_size INT NOT NULL
+    tree_size INT NOT NULL,
+    UNIQUE(log_id)
 );
 CREATE INDEX idx_log_name ON log (log_id);
 

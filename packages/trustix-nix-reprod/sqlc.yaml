@@ -1,9 +1,18 @@
-version: "1"
-project:
-    id: ""
-packages:
-  - name: "db"
-    path: "internal/db"
-    engine: "sqlite"
-    schema: "sql/schema"
-    queries: "sql/queries"
+version: "2"
+
+sql:
+- schema: "sql/schema"
+  queries: "sql/queries"
+  engine: "sqlite"
+  gen:
+    go:
+      package: "db"
+      out: "internal/db"
+
+- schema: "sql-cache/schema"
+  queries: "sql-cache/queries"
+  engine: "sqlite"
+  gen:
+    go:
+      package: "dbcache"
+      out: "internal/dbcache"

@@ -1,0 +1,71 @@
+// Copyright © 2020-2022 The Trustix Authors
+//
+// SPDX-License-Identifier: GPL-3.0-only
+
+syntax = "proto3";
+
+option go_package = "github.com/nix-community/trustix/packages/trustix-nix-reprod/reprod-api";
+
+message DerivationReproducibilityRequest { string DrvPath = 1; }
+
+message DerivationReproducibilityResponse {
+  message DerivationOutputHash { repeated int64 LogIDs = 1; }
+
+  message DerivationOutput {
+    string Output = 1;
+    string StorePath = 2;
+
+    // Map output hash to log id
+    map<string, DerivationOutputHash> OutputHashes = 3;
+  }
+
+  message Derivation { map<string, DerivationOutput> Outputs = 2; };
+
+  string DrvPath = 1;
+
+  map<string, Derivation> UnreproducedPaths = 2;
+  map<string, Derivation> ReproducedPaths = 3;
+  map<string, Derivation> UnknownPaths = 4;
+  map<string, Derivation> MissingPaths = 5;
+}
+
+message AttrReproducibilityTimeSeriesPoint {
+  int64 EvalID = 1;
+  int64 EvalTimestamp = 2;
+  string DrvPath = 3;
+
+  float PctReproduced = 4;
+}
+
+message AttrReproducibilityTimeSeriesResponse {
+  repeated AttrReproducibilityTimeSeriesPoint Points = 1;
+  float PctReproduced = 2;
+}
+
+message AttrReproducibilityTimeSeriesRequest {
+  string Attr = 1;
+  int64 Start = 2;
+  int64 Stop = 3;
+  string Channel = 4;
+}
+
+message SuggestsAttributeRequest { string AttrPrefix = 1; }
+
+message SuggestAttributeResponse { repeated string Attrs = 1; }
+
+message DiffRequest {
+  string OutputHash1 = 1;
+  string OutputHash2 = 2;
+}
+
+message DiffResponse { string HTMLDiff = 1; }
+
+service ReproducibilityAPI {
+  rpc DerivationReproducibility(DerivationReproducibilityRequest)
+      returns (DerivationReproducibilityResponse) {}
+  rpc AttrReproducibilityTimeSeries(AttrReproducibilityTimeSeriesRequest)
+      returns (AttrReproducibilityTimeSeriesResponse) {}
+  rpc SuggestAttribute(SuggestsAttributeRequest)
+      returns (SuggestAttributeResponse) {}
+  rpc Diff(DiffRequest) returns (DiffResponse) {}
+}

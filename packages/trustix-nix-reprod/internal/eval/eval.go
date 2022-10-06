@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"sync"
 	"syscall"
@@ -39,21 +40,27 @@ var jsonPaths = [][]string{
 }
 
 func Eval(ctx context.Context, config *EvalConfig) (chan *lib.Result[*EvalResult], error) {
-
 	args, err := config.toArgs()
 	if err != nil {
 		return nil, err
 	}
 
 	cmd := exec.CommandContext(ctx, "nix-eval-jobs", args...)
+	if config.NixPath != "" {
+		cmd.Env = os.Environ()
+		cmd.Env = append(cmd.Env, "NIX_PATH="+config.NixPath)
+	}
+
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return nil, err
 	}
+
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		return nil, err
 	}
+
 	err = cmd.Start()
 	if err != nil {
 		return nil, err

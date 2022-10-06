@@ -9,12 +9,9 @@ import (
 	"encoding/base32"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"sort"
-	"strings"
 
 	"github.com/nix-community/trustix/packages/trustix-nix/schema"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
@@ -23,31 +20,20 @@ import (
 
 var NixB32Encoding = base32.NewEncoding("0123456789abcdfghijklmnpqrsvwxyz")
 
+// Create a key/value pair from a store path for submission to a log
 func createKVPair(storePath string) (*api.KeyValuePair, error) {
 
 	if storePath == "" {
 		return nil, fmt.Errorf("Empty input store path")
 	}
 
-	tmpDir, err := ioutil.TempDir("", "nix-trustix")
+	tmpDir, err := os.MkdirTemp("", "nix-trustix")
 	if err != nil {
 		return nil, err
 	}
 	err = os.RemoveAll(tmpDir)
 	if err != nil {
 		return nil, err
-	}
-
-	var storeHash []byte
-	{
-		storeHashStr := strings.Split(filepath.Base(storePath), "-")[0]
-		storeHash, err = NixB32Encoding.DecodeString(storeHashStr)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if len(storeHash) == 0 {
-			log.Fatal("Empty decoded store path hash")
-		}
 	}
 
 	var narinfo *schema.NarInfo
@@ -86,7 +72,7 @@ func createKVPair(storePath string) (*api.KeyValuePair, error) {
 	}
 
 	return &api.KeyValuePair{
-		Key:   storeHash,
+		Key:   []byte(storePath),
 		Value: narinfoBytes,
 	}, nil
 }
