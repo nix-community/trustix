@@ -7,11 +7,11 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	conf "github.com/nix-community/trustix/packages/trustix/internal/config"
 	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
-	"log"
-
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +22,7 @@ var printLogIdPublicKeyType string
 var printLogIdPublicKey string
 var printLogIdMode string
 
-var modeDefault = api.Log_LogModes_name[api.Log_LogModes(0)]
+var modeDefault = api.Log_LogModes_name[0]
 
 var printLogIdCmd = &cobra.Command{
 	Use:   "print-log-id",
@@ -35,7 +35,7 @@ var printLogIdCmd = &cobra.Command{
 			log.Fatalf("Unhandled key type: %s", printLogIdPublicKeyType)
 		}
 
-		var mode, ok = api.Log_LogModes_value[printLogIdMode]
+		mode, ok := api.Log_LogModes_value[printLogIdMode]
 		if !ok {
 			log.Fatalf("Unrecognized mode: %s", printLogIdMode)
 		}
@@ -46,7 +46,7 @@ var printLogIdCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 
-			var found = false
+			found := false
 
 			for _, publisherConfig := range config.Publishers {
 				if printLogIdPublicKeyType == publisherConfig.PublicKey.Type &&
@@ -82,7 +82,7 @@ var printLogIdCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		logID = protocol.LogID(printLogIdPublicKeyType, pubBytes, mode)
+		logID := protocol.LogID(printLogIdPublicKeyType, pubBytes, api.Log_LogModes(mode))
 
 		fmt.Println(logID)
 
