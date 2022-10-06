@@ -1,23 +1,28 @@
 package hydra
 
 import (
+	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"os/exec"
 	"path"
 	"strings"
 )
 
 type JobsetEvalInput struct {
 	Revision string `json:"revision"`
+	URI      string `json:"uri"`
+	Type     string `json:"type"`
 }
 
 type HydraEval struct {
 	ID         int64                       `json:"id"`
 	Timestamp  int64                       `json:"timestamp"`
-	EvalInputs map[string]*JobsetEvalInput `json:"evalinputs"`
+	EvalInputs map[string]*JobsetEvalInput `json:"jobsetevalinputs"`
 }
 
 type HydraEvalResponse struct {
@@ -28,6 +33,80 @@ type HydraEvalResponse struct {
 	baseURL string
 	project string
 	jobset  string
+}
+
+// Get NIX_PATH from a Hydra evaluation
+func (e *HydraEval) NixPath() (string, error) {
+
+	// We need resolved local paths, and the only reasonable way to download them is to feed them to a nix expression
+	var expr string
+	{
+		var b strings.Builder
+
+		b.WriteString("builtins.toJSON {")
+
+		for k, v := range e.EvalInputs {
+			switch v.Type {
+			case "boolean":
+				continue
+			case "git":
+			default:
+				return "", fmt.Errorf("unsupported hydra input type: %s", v.Type)
+			}
+
+			// Sanity check URI to prevent command injections
+			_, err := url.Parse(v.URI)
+			if err != nil {
+				return "", fmt.Errorf("error parsing URL: %w", err)
+			}
+
+			// Sanity check rev to prevent command injections
+			_, err = hex.DecodeString(v.Revision)
+			if err != nil {
+				return "", fmt.Errorf("error parsing revision: %w", err)
+			}
+
+			b.WriteString(fmt.Sprintf("  %s = builtins.fetchGit { url = \"%s\"; rev = \"%s\"; allRefs = true; };", fmt.Sprintf("%q", k), v.URI, v.Revision))
+		}
+
+		b.WriteRune('}')
+
+		expr = b.String()
+	}
+
+	var nixpath map[string]string
+	{
+		var stdout bytes.Buffer
+
+		cmd := exec.Command("nix-instantiate", "--eval", "--expr", expr)
+		cmd.Stdout = &stdout
+
+		err := cmd.Run()
+		if err != nil {
+			return "", fmt.Errorf("error downloading path: %w", err)
+		}
+
+		s := ""
+		err = json.Unmarshal(stdout.Bytes(), &s)
+		if err != nil {
+			return "", fmt.Errorf("error decoding wrapping string for nixpath map: %w", err)
+		}
+
+		err = json.Unmarshal([]byte(s), &nixpath)
+		if err != nil {
+			return "", fmt.Errorf("error decoding nixpath map: %w", err)
+		}
+	}
+
+	var b strings.Builder
+
+	for k, v := range nixpath {
+		b.WriteString(k)
+		b.WriteRune('=')
+		b.WriteString(v)
+	}
+
+	return b.String(), nil
 }
 
 func (h *HydraEvalResponse) NextPage() (*HydraEvalResponse, error) {

@@ -10,17 +10,16 @@ INSERT INTO
 VALUES
   (?, ?, ?) RETURNING *;
 
--- name: GetLatesteval :one
+-- name: GetLatestHydraEval :one
 SELECT
-  *
+  hydraeval.*
 FROM
   hydraevaluation AS hydraeval
-  JOIN evaluation eval ON eval.id = drveval.eval
+  JOIN evaluation eval ON eval.id = hydraeval.evaluation
 WHERE
   eval.channel = ?
-  AND hydraeval.hydra_eval_id = ?
 ORDER BY
-  timestamp
+  hydraeval.hydra_eval_id
 LIMIT
   1;
 

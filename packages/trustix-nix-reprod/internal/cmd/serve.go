@@ -19,6 +19,7 @@ import (
 
 	"github.com/bakins/logrus-middleware"
 	"github.com/coreos/go-systemd/activation"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/config"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/cron"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/index"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/server"
@@ -32,24 +33,21 @@ import (
 
 var serveListenAddresses []string
 
-type EvalSource struct {
-}
-
 var serveCommand = &cobra.Command{
 	Use:   "serve",
 	Short: "Run server",
 	Run: func(cmd *cobra.Command, args []string) {
 		// config options
 		logIndexCronInterval := time.Minute * 10
-		evalIndexCronInterval := time.Minute * 15
-		evalSource := &struct {
-			BaseURL string
-			Project string
-			Jobset  string
-		}{
-			BaseURL: "https://hydra.nixos.org",
-			Project: "nixos",
-			Jobset:  "trunk-combined",
+		evalIndexCronInterval := time.Minute * 1510
+		channels := make(map[string]*config.Channel)
+		channels["nixos-unstable"] = &config.Channel{
+			Type: "hydra",
+			Hydra: &config.HydraChannel{
+				BaseURL: "https://hydra.nixos.org",
+				Project: "nixos",
+				Jobset:  "trunk-combined",
+			},
 		}
 
 		err := os.MkdirAll(stateDirectory, 0755)
@@ -71,6 +69,8 @@ var serveCommand = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
+
+		os.Unsetenv("NIX_PATH") // Prevents eval from inheriting NIX_PATH
 
 		// Start indexing logs
 		{
@@ -98,10 +98,24 @@ var serveCommand = &cobra.Command{
 			}).Info("Starting evaluation index cron")
 
 			evalIndexCron := cron.NewSingletonCronJob(evalIndexCronInterval, func() {
+				ctx := context.Background()
+
 				log.Info("Triggering evaluation index cron job")
 
-				fmt.Println(evalSource)
-				// get latest evaluation
+				for channel, channelConfig := range channels {
+					l := log.WithFields(log.Fields{
+						"channel": channel,
+					})
+
+					l.Info("indexing channel")
+
+					err := index.IndexChannel(ctx, db, channel, channelConfig)
+					if err != nil {
+						l.WithFields(log.Fields{
+							"error": err,
+						}).Error("error indexing channel")
+					}
+				}
 			})
 			defer evalIndexCron.Stop()
 		}

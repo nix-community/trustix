@@ -34,14 +34,14 @@ type EvalMetaDataTypes interface {
 	*hydra.HydraEval
 }
 
-func IndexEval[T EvalMetaDataTypes](ctx context.Context, db *sql.DB, nixpkgs string, channel string, timestamp time.Time, evalMeta T) error {
+func IndexEval[T EvalMetaDataTypes](ctx context.Context, db *sql.DB, nixPath string, channel string, timestamp time.Time, evalMeta T) error {
 	evalConfig := eval.NewConfig()
 	evalConfig.Expr = "import <nixpkgs> { }"
-	evalConfig.NixPath = "nixpkgs=" + nixpkgs
+	evalConfig.NixPath = nixPath
 
 	l := log.WithFields(log.Fields{
 		"channel": channel,
-		"nixpkgs": nixpkgs,
+		"nixPath": nixPath,
 	})
 
 	l.Info("importing evaluation")
@@ -83,6 +83,10 @@ func IndexEval[T EvalMetaDataTypes](ctx context.Context, db *sql.DB, nixpkgs str
 
 				var revision string
 				for _, input := range hydraEvalMeta.EvalInputs {
+					if input.Type != "git" {
+						continue
+					}
+
 					if input.Revision != "" {
 						revision = input.Revision
 						break
