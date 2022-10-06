@@ -17,6 +17,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/bakins/logrus-middleware"
 	"github.com/coreos/go-systemd/activation"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/cron"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/index"
@@ -31,12 +32,19 @@ import (
 
 var serveListenAddresses []string
 
+type EvalSource struct {
+	BaseURL string
+	Project string
+	Jobset  string
+}
+
 var serveCommand = &cobra.Command{
 	Use:   "serve",
 	Short: "Run server",
 	Run: func(cmd *cobra.Command, args []string) {
 		// config options
 		logIndexCronInterval := time.Minute * 10
+		evalIndexCronInterval := time.Minute * 15
 
 		err := os.MkdirAll(stateDirectory, 0755)
 		if err != nil {
@@ -69,6 +77,17 @@ var serveCommand = &cobra.Command{
 		})
 		defer logIndexCron.Stop()
 
+		// Start indexing logs
+		evalIndexCron := cron.NewSingletonCronJob(evalIndexCronInterval, func() {
+			ctx := context.Background()
+
+			err = index.IndexLogs(ctx, db, client)
+			if err != nil {
+				panic(err)
+			}
+		})
+		defer evalIndexCron.Stop()
+
 		apiServer := server.NewAPIServer(db, cacheDB, client)
 
 		errChan := make(chan error)
@@ -78,7 +97,14 @@ var serveCommand = &cobra.Command{
 
 			mux.Handle(apiconnect.NewReproducibilityAPIHandler(apiServer))
 
-			server := &http.Server{Handler: h2c.NewHandler(mux, &http2.Server{})}
+			l := logrusmiddleware.Middleware{
+				Name:   "trustix-binary-cache-proxy",
+				Logger: log.New(),
+			}
+
+			loggedHandler := l.Handler(h2c.NewHandler(mux, &http2.Server{}), "/")
+
+			server := &http.Server{Handler: loggedHandler}
 
 			go func() {
 				err := server.Serve(lis)

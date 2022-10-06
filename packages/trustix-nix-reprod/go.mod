@@ -12,6 +12,7 @@ replace (
 
 require (
 	github.com/adrg/xdg v0.4.0
+	github.com/bakins/logrus-middleware v0.0.0-20180426214643-ce4c6f8deb07
 	github.com/bufbuild/connect-go v0.5.0
 	github.com/buger/jsonparser v1.1.1
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
