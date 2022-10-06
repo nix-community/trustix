@@ -38,6 +38,7 @@ WHERE
   drvattr.attr = ?
   AND eval.timestamp >= ?
   AND eval.timestamp <= ?
+  AND eval.channel = ?
 GROUP BY
   eval.id,
   drvattr.derivation_id

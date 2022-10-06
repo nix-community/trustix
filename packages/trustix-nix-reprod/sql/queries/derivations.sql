@@ -1,19 +1,3 @@
--- name: GetEval :one
-SELECT
-  *
-FROM
-  evaluation
-WHERE
-  revision = ? AND channel = ?
-LIMIT
-  1;
-
--- name: CreateEval :one
-INSERT INTO
-  evaluation (channel, revision, timestamp)
-VALUES
-  (?, ?, ?) RETURNING *;
-
 -- name: GetDerivation :one
 SELECT
   *

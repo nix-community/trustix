@@ -186,6 +186,7 @@ func (s *APIServer) AttrReproducibilityTimeSeries(ctx context.Context, req *conn
 		Attr:        attr,
 		Timestamp:   start,
 		Timestamp_2: stop,
+		Channel:     msg.Channel,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error retreiving time series rows: %w", err)

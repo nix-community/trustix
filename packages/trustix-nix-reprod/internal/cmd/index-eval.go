@@ -12,6 +12,7 @@ import (
 	"path"
 	"time"
 
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/hydra"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/index"
 	"github.com/spf13/cobra"
 )
@@ -28,7 +29,7 @@ var indexEvalCommand = &cobra.Command{
 		}
 
 		timestamp := time.Now().UTC()
-		revision := "9c5efb63754024dd4026dceb6f3525934009fea9"
+		revision := "cabcec1477db472a0272a909fd88588ec3afc2d3"
 		channel := "nixos-unstable"
 
 		var nixpkgs string
@@ -46,7 +47,17 @@ var indexEvalCommand = &cobra.Command{
 			nixpkgs = u.String()
 		}
 
-		err = index.IndexEval(ctx, db, nixpkgs, channel, revision, timestamp)
+		evalMeta := &hydra.HydraEval{
+			ID:        1234,
+			Timestamp: 1234,
+			EvalInputs: map[string]*hydra.JobsetEvalInput{
+				"nixpkgs": &hydra.JobsetEvalInput{
+					Revision: revision,
+				},
+			},
+		}
+
+		err = index.IndexEval(ctx, db, nixpkgs, channel, timestamp, evalMeta)
 		if err != nil {
 			panic(err)
 		}

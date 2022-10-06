@@ -54,8 +54,14 @@ type Derivationrefrecursive struct {
 type Evaluation struct {
 	ID        int64
 	Channel   string
-	Revision  string
 	Timestamp time.Time
+}
+
+type Hydraevaluation struct {
+	ID          int64
+	Evaluation  int64
+	HydraEvalID int64
+	Revision    string
 }
 
 type Log struct {

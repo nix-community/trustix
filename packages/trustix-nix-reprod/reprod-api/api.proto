@@ -46,24 +46,19 @@ message AttrReproducibilityTimeSeriesRequest {
   string Attr = 1;
   int64 Start = 2;
   int64 Stop = 3;
+  string Channel = 4;
 }
 
-message SuggestsAttributeRequest {
-  string AttrPrefix = 1;
-}
+message SuggestsAttributeRequest { string AttrPrefix = 1; }
 
-message SuggestAttributeResponse {
-  repeated string Attrs = 1;
-}
+message SuggestAttributeResponse { repeated string Attrs = 1; }
 
 message DiffRequest {
   string OutputHash1 = 1;
   string OutputHash2 = 2;
 }
 
-message DiffResponse {
-  string HTMLDiff = 1;
-}
+message DiffResponse { string HTMLDiff = 1; }
 
 service ReproducibilityAPI {
   rpc DerivationReproducibility(DerivationReproducibilityRequest)

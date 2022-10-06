@@ -18,6 +18,7 @@ import (
 	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
 	drvparse "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/derivation"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/eval"
+	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/hydra"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -29,14 +30,21 @@ const (
 	errorID = -1
 )
 
-func IndexEval(ctx context.Context, db *sql.DB, nixpkgs string, channel string, revision string, timestamp time.Time) error {
+type EvalMetaDataTypes interface {
+	*hydra.HydraEval
+}
+
+func IndexEval[T EvalMetaDataTypes](ctx context.Context, db *sql.DB, nixpkgs string, channel string, timestamp time.Time, evalMeta T) error {
 	evalConfig := eval.NewConfig()
 	evalConfig.Expr = "import <nixpkgs> { }"
 	evalConfig.NixPath = "nixpkgs=" + nixpkgs
 
 	l := log.WithFields(log.Fields{
-		"revision": revision,
+		"channel": channel,
+		"nixpkgs": nixpkgs,
 	})
+
+	l.Info("importing evaluation")
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
@@ -52,25 +60,70 @@ func IndexEval(ctx context.Context, db *sql.DB, nixpkgs string, channel string, 
 	queries := idb.New(db)
 	qtx := queries.WithTx(tx)
 
-	// Create the evaluation in the database
-	dbEval, err := qtx.GetEval(ctx, idb.GetEvalParams{
-		Channel:  channel,
-		Revision: revision,
-	})
-	if err == nil {
-		fmt.Println(fmt.Sprintf("eval '%s' already indexed", revision))
-		return nil
-	} else {
-		if err == sql.ErrNoRows {
-			dbEval, err = qtx.CreateEval(ctx, idb.CreateEvalParams{
-				Channel:   channel,
-				Revision:  revision,
-				Timestamp: timestamp,
-			})
+	var dbEval idb.Evaluation
+	{
+		createEvalMetaByIngestFunc := func(dbEval idb.Evaluation) error {
+			return nil
 		}
 
-		if err != nil {
-			return fmt.Errorf("error retreiving eval: %w", err)
+		if evalMeta == nil {
+			return fmt.Errorf("evaluation metadata was nil")
+		}
+
+		// Get the evaluation differently depending on the ingest method
+		switch any(evalMeta).(type) {
+
+		case *hydra.HydraEval:
+			dbEval, err = qtx.GetEvalByHydraID(ctx, idb.GetEvalByHydraIDParams{
+				Channel: channel,
+			})
+
+			createEvalMetaByIngestFunc = func(dbEval idb.Evaluation) error {
+				hydraEvalMeta := any(evalMeta).(*hydra.HydraEval)
+
+				var revision string
+				for _, input := range hydraEvalMeta.EvalInputs {
+					if input.Revision != "" {
+						revision = input.Revision
+						break
+					}
+				}
+
+				if revision == "" {
+					return fmt.Errorf("No revision could be extracted from hydra inputs")
+				}
+
+				_, err = qtx.CreateHydraEval(ctx, idb.CreateHydraEvalParams{
+					Evaluation:  dbEval.ID,
+					HydraEvalID: hydraEvalMeta.ID,
+					Revision:    revision,
+				})
+
+				return err
+			}
+
+		default:
+			return fmt.Errorf("unhandled eval meta data type: %v", evalMeta)
+		}
+
+		if err == nil {
+			l.Info("eval already indexed")
+			return nil
+		} else if err == sql.ErrNoRows {
+			dbEval, err = qtx.CreateEval(ctx, idb.CreateEvalParams{
+				Channel:   channel,
+				Timestamp: timestamp,
+			})
+			if err != nil {
+				return fmt.Errorf("error creating evaluation: %w", err)
+			}
+
+			err = createEvalMetaByIngestFunc(dbEval)
+			if err != nil {
+				return fmt.Errorf("error creating evaluation metadata: %w", err)
+			}
+		} else {
+			return fmt.Errorf("error retrieving eval from db: %w", err)
 		}
 	}
 

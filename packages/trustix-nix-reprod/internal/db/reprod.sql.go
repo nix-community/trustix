@@ -86,6 +86,7 @@ WHERE
   drvattr.attr = ?
   AND eval.timestamp >= ?
   AND eval.timestamp <= ?
+  AND eval.channel = ?
 GROUP BY
   eval.id,
   drvattr.derivation_id
@@ -97,6 +98,7 @@ type GetDerivationReproducibilityTimeSeriesByAttrParams struct {
 	Attr        string
 	Timestamp   time.Time
 	Timestamp_2 time.Time
+	Channel     string
 }
 
 type GetDerivationReproducibilityTimeSeriesByAttrRow struct {
@@ -109,7 +111,12 @@ type GetDerivationReproducibilityTimeSeriesByAttrRow struct {
 }
 
 func (q *Queries) GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Context, arg GetDerivationReproducibilityTimeSeriesByAttrParams) ([]GetDerivationReproducibilityTimeSeriesByAttrRow, error) {
-	rows, err := q.db.QueryContext(ctx, getDerivationReproducibilityTimeSeriesByAttr, arg.Attr, arg.Timestamp, arg.Timestamp_2)
+	rows, err := q.db.QueryContext(ctx, getDerivationReproducibilityTimeSeriesByAttr,
+		arg.Attr,
+		arg.Timestamp,
+		arg.Timestamp_2,
+		arg.Channel,
+	)
 	if err != nil {
 		return nil, err
 	}

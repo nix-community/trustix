@@ -3,10 +3,19 @@
 CREATE TABLE evaluation (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     channel VARCHAR(40) NOT NULL,
-    revision VARCHAR(40) NOT NULL,
-    timestamp TIMESTAMP NOT NULL  DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(channel, revision)
+    timestamp TIMESTAMP NOT NULL  DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX idx_evaluation_timestamp ON evaluation (timestamp);
+
+CREATE TABLE hydraevaluation (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    evaluation INTEGER NOT NULL REFERENCES evaluation (id) ON DELETE CASCADE,
+    hydra_eval_id INTEGER NOT NULL,
+    revision VARCHAR(40) NOT NULL,
+    UNIQUE(evaluation)
+);
+CREATE INDEX idx_hydraevaluation_hydra_eval_id ON hydraevaluation (hydra_eval_id);
+CREATE INDEX idx_hydraevaluation_evaluation ON hydraevaluation (evaluation);
 
 CREATE TABLE derivation (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"time"
 )
 
 const createDerivation = `-- name: CreateDerivation :one
@@ -113,31 +112,6 @@ type CreateDerivationRefRecursiveParams struct {
 func (q *Queries) CreateDerivationRefRecursive(ctx context.Context, arg CreateDerivationRefRecursiveParams) error {
 	_, err := q.db.ExecContext(ctx, createDerivationRefRecursive, arg.DrvID, arg.ReferrerID)
 	return err
-}
-
-const createEval = `-- name: CreateEval :one
-INSERT INTO
-  evaluation (channel, revision, timestamp)
-VALUES
-  (?, ?, ?) RETURNING id, channel, revision, timestamp
-`
-
-type CreateEvalParams struct {
-	Channel   string
-	Revision  string
-	Timestamp time.Time
-}
-
-func (q *Queries) CreateEval(ctx context.Context, arg CreateEvalParams) (Evaluation, error) {
-	row := q.db.QueryRowContext(ctx, createEval, arg.Channel, arg.Revision, arg.Timestamp)
-	var i Evaluation
-	err := row.Scan(
-		&i.ID,
-		&i.Channel,
-		&i.Revision,
-		&i.Timestamp,
-	)
-	return i, err
 }
 
 const getDerivation = `-- name: GetDerivation :one
@@ -254,32 +228,4 @@ func (q *Queries) GetDerivationOutputsByDerivationID(ctx context.Context, deriva
 		return nil, err
 	}
 	return items, nil
-}
-
-const getEval = `-- name: GetEval :one
-SELECT
-  id, channel, revision, timestamp
-FROM
-  evaluation
-WHERE
-  revision = ? AND channel = ?
-LIMIT
-  1
-`
-
-type GetEvalParams struct {
-	Revision string
-	Channel  string
-}
-
-func (q *Queries) GetEval(ctx context.Context, arg GetEvalParams) (Evaluation, error) {
-	row := q.db.QueryRowContext(ctx, getEval, arg.Revision, arg.Channel)
-	var i Evaluation
-	err := row.Scan(
-		&i.ID,
-		&i.Channel,
-		&i.Revision,
-		&i.Timestamp,
-	)
-	return i, err
 }
