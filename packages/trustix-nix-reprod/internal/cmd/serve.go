@@ -33,9 +33,6 @@ import (
 var serveListenAddresses []string
 
 type EvalSource struct {
-	BaseURL string
-	Project string
-	Jobset  string
 }
 
 var serveCommand = &cobra.Command{
@@ -45,6 +42,15 @@ var serveCommand = &cobra.Command{
 		// config options
 		logIndexCronInterval := time.Minute * 10
 		evalIndexCronInterval := time.Minute * 15
+		evalSource := &struct {
+			BaseURL string
+			Project string
+			Jobset  string
+		}{
+			BaseURL: "https://hydra.nixos.org",
+			Project: "nixos",
+			Jobset:  "trunk-combined",
+		}
 
 		err := os.MkdirAll(stateDirectory, 0755)
 		if err != nil {
@@ -67,26 +73,38 @@ var serveCommand = &cobra.Command{
 		}
 
 		// Start indexing logs
-		logIndexCron := cron.NewSingletonCronJob(logIndexCronInterval, func() {
-			ctx := context.Background()
+		{
+			log.WithFields(log.Fields{
+				"interval": logIndexCronInterval,
+			}).Info("Starting log index cron")
 
-			err = index.IndexLogs(ctx, db, client)
-			if err != nil {
-				panic(err)
-			}
-		})
-		defer logIndexCron.Stop()
+			logIndexCron := cron.NewSingletonCronJob(logIndexCronInterval, func() {
+				log.Info("Triggering log index cron job")
+
+				ctx := context.Background()
+
+				err = index.IndexLogs(ctx, db, client)
+				if err != nil {
+					panic(err)
+				}
+			})
+			defer logIndexCron.Stop()
+		}
 
 		// Start indexing logs
-		evalIndexCron := cron.NewSingletonCronJob(evalIndexCronInterval, func() {
-			ctx := context.Background()
+		{
+			log.WithFields(log.Fields{
+				"interval": evalIndexCronInterval,
+			}).Info("Starting evaluation index cron")
 
-			err = index.IndexLogs(ctx, db, client)
-			if err != nil {
-				panic(err)
-			}
-		})
-		defer evalIndexCron.Stop()
+			evalIndexCron := cron.NewSingletonCronJob(evalIndexCronInterval, func() {
+				log.Info("Triggering evaluation index cron job")
+
+				fmt.Println(evalSource)
+				// get latest evaluation
+			})
+			defer evalIndexCron.Stop()
+		}
 
 		apiServer := server.NewAPIServer(db, cacheDB, client)
 

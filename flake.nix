@@ -15,13 +15,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-eval-jobs = {
+      url = "github:nix-community/nix-eval-jobs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     npmlock2nix = {
       url = "github:nix-community/npmlock2nix/master";
       flake = false;
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, gomod2nix, npmlock2nix }@flakeInputs:
+  outputs = { self, nixpkgs, flake-utils, gomod2nix, npmlock2nix, nix-eval-jobs }@flakeInputs:
     (flake-utils.lib.eachDefaultSystem
       (system:
         let

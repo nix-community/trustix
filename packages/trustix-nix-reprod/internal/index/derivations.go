@@ -18,6 +18,7 @@ import (
 	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
 	drvparse "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/derivation"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/eval"
+	log "github.com/sirupsen/logrus"
 )
 
 // Arbitrary large number of derivations to cache
@@ -30,12 +31,14 @@ const (
 
 func IndexEval(ctx context.Context, db *sql.DB) error {
 	evalConfig := eval.NewConfig()
-	evalConfig.Expr = "./pkgs.nix"
+	evalConfig.Expr = "import <nixpkgs> { }"
 
-	// Indexing impl
-	// commitSha := "c4c79f09a599717dfd57134cdd3c6e387a764f63"
-	commitSha := "9c5efb63754024dd4026dceb6f3525934009fea9"
+	revision := "9c5efb63754024dd4026dceb6f3525934009fea9"
 	maxWorkers := 15
+
+	l := log.WithFields(log.Fields{
+		"revision": revision,
+	})
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
@@ -52,13 +55,13 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 	qtx := queries.WithTx(tx)
 
 	// Create the evaluation in the database
-	dbEval, err := qtx.GetEval(ctx, commitSha)
+	dbEval, err := qtx.GetEval(ctx, revision)
 	if err == nil {
-		fmt.Println(fmt.Sprintf("eval '%s' already indexed", commitSha))
+		fmt.Println(fmt.Sprintf("eval '%s' already indexed", revision))
 		return nil
 	} else {
 		if err == sql.ErrNoRows {
-			dbEval, err = qtx.CreateEval(ctx, commitSha)
+			dbEval, err = qtx.CreateEval(ctx, revision)
 		}
 
 		if err != nil {
@@ -274,7 +277,11 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 				}
 			}
 
-			fmt.Println(result.Attr, drvID)
+			l.WithFields(log.Fields{
+				"attr":    result.Attr,
+				"drvPath": result.DrvPath,
+				"drvID":   drvID,
+			}).Info("indexed attribute")
 
 			return nil
 		})

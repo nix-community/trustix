@@ -86,7 +86,7 @@ func (c *EvalConfig) toArgs() ([]string, error) {
 	if c.Expr == "" {
 		return nil, fmt.Errorf("Missing expression to evaluate")
 	}
-	args = append(args, c.Expr)
+	args = append(args, "--expr", c.Expr)
 
 	return args, nil
 }

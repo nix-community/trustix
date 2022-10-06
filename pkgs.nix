@@ -3,7 +3,7 @@
 }:
 
 let
-  inherit (flakeInputs) nixpkgs gomod2nix npmlock2nix gitignore;
+  inherit (flakeInputs) nixpkgs gomod2nix npmlock2nix gitignore nix-eval-jobs;
 in
 
 import nixpkgs {
@@ -25,6 +25,10 @@ import nixpkgs {
 
     (final: prev: {
       npmlock2nix = import npmlock2nix { pkgs = final; };
+    })
+
+    (final: prev: {
+      nix-eval-jobs = final.callPackage nix-eval-jobs { };
     })
 
     (final: prev:
