@@ -86,10 +86,10 @@ const (
 
 // Enum value maps for Log_LogModes.
 var (
-	Log_LogModes_name = map[Log_LogModes]string{
+	Log_LogModes_name = map[int32]string{
 		0: "Log",
 	}
-	Log_LogModes_value = map[string]Log_LogModes{
+	Log_LogModes_value = map[string]int32{
 		"Log": 0,
 	}
 )
