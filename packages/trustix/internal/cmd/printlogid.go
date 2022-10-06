@@ -7,10 +7,10 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	conf "github.com/nix-community/trustix/packages/trustix/internal/config"
+	"github.com/nix-community/trustix/packages/trustix/internal/protocols"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -40,26 +40,26 @@ var printLogIdCmd = &cobra.Command{
 			log.Fatalf("Unrecognized mode: %s", printLogIdMode)
 		}
 
-    if printLogIdConfigPath != "" {
-      config, err := conf.NewConfigFromFile(printLogIdConfigPath)
-      if err != nil {
-        log.Fatal(err)
-      }
+		if printLogIdConfigPath != "" {
+			config, err := conf.NewConfigFromFile(printLogIdConfigPath)
+			if err != nil {
+				log.Fatal(err)
+			}
 
 			var found = false
 
 			for _, publisherConfig := range config.Publishers {
 				if printLogIdPublicKeyType == publisherConfig.PublicKey.Type &&
 					(printLogIdPublicKey == "" || printLogIdPublicKey == publisherConfig.PublicKey.Pub) &&
-					(printLogIdSigner == ""    || printLogIdSigner    == publisherConfig.Signer) &&
-					(printLogIdProtocol == ""  || printLogIdProtocol  == publisherConfig.Protocol) {
+					(printLogIdSigner == "" || printLogIdSigner == publisherConfig.Signer) &&
+					(printLogIdProtocol == "" || printLogIdProtocol == publisherConfig.Protocol) {
 					if found {
 						log.Fatal("More than one publisher matches the criteria given.")
 					} else {
 						found = true
 						printLogIdPublicKey = publisherConfig.PublicKey.Pub
-						printLogIdSigner    = publisherConfig.Signer
-						printLogIdProtocol  = publisherConfig.Protocol
+						printLogIdSigner = publisherConfig.Signer
+						printLogIdProtocol = publisherConfig.Protocol
 					}
 				}
 			}
@@ -71,17 +71,16 @@ var printLogIdCmd = &cobra.Command{
 			log.Fatal("You must either specify a config path, or specify all necessary log settings via command line flags.")
 		}
 
-    protocol, err := protocols.Get(printLogIdProtocol)
+		protocol, err := protocols.Get(printLogIdProtocol)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-
-    pubKey := conf.PublicKey{Type: printLogIdPublicKeyType, Pub: printLogIdPublicKey}
-    pubBytes, err := pubKey.Decode()
-    if err != nil {
-      log.Fatal(err)
-    }
+		pubKey := conf.PublicKey{Type: printLogIdPublicKeyType, Pub: printLogIdPublicKey}
+		pubBytes, err := pubKey.Decode()
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		logID = protocol.LogID(printLogIdPublicKeyType, pubBytes, mode)
 

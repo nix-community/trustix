@@ -1,12 +1,13 @@
 let
   pubKey = "fG7JEPzIsr2mlSx5Xeh02BbJ4uzGpm5IE3aSGhS1UKo=";
-in { config, pkgs, ... }: {
+in
+{ config, pkgs, ... }: {
   imports = [
     ../packages/trustix/nixos
     ../packages/trustix-nix/nixos
   ];
 
-  nixpkgs.pkgs = import ../pkgs.nix {};
+  nixpkgs.pkgs = import ../pkgs.nix { };
 
   services.trustix = {
     enable = true;
