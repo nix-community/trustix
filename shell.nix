@@ -51,7 +51,7 @@ let
   sqlFormatterWriter = pkgs.writeScriptBin "sql-formatter-writer" ''
     #!${pkgs.runtimeShell}
     set -euo pipefail
-    exec ${pkgs.nodePackages.sql-formatter}/bin/sql-formatter -l sqlite -o "$1" "$1"
+    exec ${pkgs.nodePackages.sql-formatter}/bin/sql-formatter -l sqlite "$1" | ${pkgs.moreutils}/bin/sponge "$1"
   '';
 
 in
