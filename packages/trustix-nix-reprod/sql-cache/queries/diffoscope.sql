@@ -5,13 +5,11 @@ FROM
   diffoscope
 WHERE
   key = ?
-ORDER BY
-  timestamp
 LIMIT
   1;
 
 -- name: CreateDiffoscope :one
-INSERT INTO
+INSERT OR REPLACE INTO
   diffoscope(key, html)
 VALUES
   (?, ?) RETURNING *;

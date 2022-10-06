@@ -15,7 +15,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const sqlDialect = "sqlite"
+const sqlDialect = "sqlite3"
+const dbConnectionString = "?cache=shared&mode=rwc&_journal_mode=WAL"
 
 func migrateDB(db *sql.DB, dialect string) error {
 	goose.SetBaseFS(schema.SchemaFS)
@@ -46,7 +47,7 @@ func migrateCacheDB(db *sql.DB, dialect string) error {
 }
 
 func setupDB(stateDirectory string) (*sql.DB, error) {
-	dbPath := filepath.Join(stateDirectory, "db.sqlite3?_journal_mode=WAL")
+	dbPath := "file:" + filepath.Join(stateDirectory, "db.sqlite3"+dbConnectionString)
 
 	l := log.WithFields(log.Fields{
 		"path": dbPath,
@@ -58,6 +59,8 @@ func setupDB(stateDirectory string) (*sql.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error opening database: %w", err)
 	}
+
+	db.SetMaxOpenConns(1)
 
 	l.Info("Migrating database")
 
@@ -70,7 +73,7 @@ func setupDB(stateDirectory string) (*sql.DB, error) {
 }
 
 func setupCacheDB(stateDirectory string) (*sql.DB, error) {
-	dbPath := filepath.Join(stateDirectory, "cachedb.sqlite3?_journal_mode=WAL")
+	dbPath := "file:" + filepath.Join(stateDirectory, "cachedb.sqlite3"+dbConnectionString)
 
 	l := log.WithFields(log.Fields{
 		"path": dbPath,
@@ -82,6 +85,8 @@ func setupCacheDB(stateDirectory string) (*sql.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error opening database: %w", err)
 	}
+
+	db.SetMaxOpenConns(1)
 
 	l.Info("Migrating database")
 

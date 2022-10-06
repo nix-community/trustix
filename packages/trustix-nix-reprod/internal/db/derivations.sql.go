@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const createDerivation = `-- name: CreateDerivation :one
@@ -116,15 +117,54 @@ func (q *Queries) CreateDerivationRefRecursive(ctx context.Context, arg CreateDe
 
 const createEval = `-- name: CreateEval :one
 INSERT INTO
-  evaluation (commit_sha)
+  evaluation (revision)
 VALUES
-  (?) RETURNING id, commit_sha, timestamp
+  (?) RETURNING id, revision, timestamp
 `
 
-func (q *Queries) CreateEval(ctx context.Context, commitSha string) (Evaluation, error) {
-	row := q.db.QueryRowContext(ctx, createEval, commitSha)
+func (q *Queries) CreateEval(ctx context.Context, revision string) (Evaluation, error) {
+	row := q.db.QueryRowContext(ctx, createEval, revision)
 	var i Evaluation
-	err := row.Scan(&i.ID, &i.CommitSha, &i.Timestamp)
+	err := row.Scan(&i.ID, &i.Revision, &i.Timestamp)
+	return i, err
+}
+
+const createEvalWithID = `-- name: CreateEvalWithID :one
+INSERT INTO
+  evaluation (id, revision)
+VALUES
+  (?, ?) RETURNING id, revision, timestamp
+`
+
+type CreateEvalWithIDParams struct {
+	ID       int64
+	Revision string
+}
+
+func (q *Queries) CreateEvalWithID(ctx context.Context, arg CreateEvalWithIDParams) (Evaluation, error) {
+	row := q.db.QueryRowContext(ctx, createEvalWithID, arg.ID, arg.Revision)
+	var i Evaluation
+	err := row.Scan(&i.ID, &i.Revision, &i.Timestamp)
+	return i, err
+}
+
+const createEvalWithIDAndTimestamp = `-- name: CreateEvalWithIDAndTimestamp :one
+INSERT INTO
+  evaluation (id, revision, timestamp)
+VALUES
+  (?, ?, ?) RETURNING id, revision, timestamp
+`
+
+type CreateEvalWithIDAndTimestampParams struct {
+	ID        int64
+	Revision  string
+	Timestamp time.Time
+}
+
+func (q *Queries) CreateEvalWithIDAndTimestamp(ctx context.Context, arg CreateEvalWithIDAndTimestampParams) (Evaluation, error) {
+	row := q.db.QueryRowContext(ctx, createEvalWithIDAndTimestamp, arg.ID, arg.Revision, arg.Timestamp)
+	var i Evaluation
+	err := row.Scan(&i.ID, &i.Revision, &i.Timestamp)
 	return i, err
 }
 
@@ -246,18 +286,18 @@ func (q *Queries) GetDerivationOutputsByDerivationID(ctx context.Context, deriva
 
 const getEval = `-- name: GetEval :one
 SELECT
-  id, commit_sha, timestamp
+  id, revision, timestamp
 FROM
   evaluation
 WHERE
-  commit_sha = ?
+  revision = ?
 LIMIT
   1
 `
 
-func (q *Queries) GetEval(ctx context.Context, commitSha string) (Evaluation, error) {
-	row := q.db.QueryRowContext(ctx, getEval, commitSha)
+func (q *Queries) GetEval(ctx context.Context, revision string) (Evaluation, error) {
+	row := q.db.QueryRowContext(ctx, getEval, revision)
 	var i Evaluation
-	err := row.Scan(&i.ID, &i.CommitSha, &i.Timestamp)
+	err := row.Scan(&i.ID, &i.Revision, &i.Timestamp)
 	return i, err
 }

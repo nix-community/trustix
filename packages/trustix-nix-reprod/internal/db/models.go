@@ -53,7 +53,7 @@ type Derivationrefrecursive struct {
 
 type Evaluation struct {
 	ID        int64
-	CommitSha string
+	Revision  string
 	Timestamp time.Time
 }
 

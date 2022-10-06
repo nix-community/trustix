@@ -57,9 +57,6 @@ let
 in
 pkgs.mkShell {
 
-  # Speed up compilation, guarantee static linking
-  CGO_ENABLED = "0";
-
   buildInputs = [
     # Development scripts
     pythonEnv

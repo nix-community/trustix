@@ -6,8 +6,8 @@
 package main // import "github.com/nix-community/trustix/packages/trustix-nix-reprod"
 
 import (
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/cmd"
-	_ "modernc.org/sqlite"
 )
 
 func main() {

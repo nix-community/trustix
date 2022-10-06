@@ -59,7 +59,7 @@ var serveCommand = &cobra.Command{
 		}
 
 		// Start indexing logs
-		logIndexCron := cron.NewCronJob(logIndexCronInterval, func() {
+		logIndexCron := cron.NewSingletonCronJob(logIndexCronInterval, func() {
 			ctx := context.Background()
 
 			err = index.IndexLogs(ctx, db, client)

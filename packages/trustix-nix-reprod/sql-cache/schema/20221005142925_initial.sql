@@ -1,10 +1,9 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE diffoscope (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    key VARCHAR(255) NOT NULL,
-    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    html BLOB NOT NULL
+    key VARCHAR(255) PRIMARY KEY,
+    html BLOB NOT NULL,
+    UNIQUE(key)
 );
 CREATE INDEX idx_diffoscope_key ON diffoscope (key);
 -- +goose StatementEnd

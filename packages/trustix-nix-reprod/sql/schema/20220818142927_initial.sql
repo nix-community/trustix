@@ -2,9 +2,9 @@
 -- +goose StatementBegin
 CREATE TABLE evaluation (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    commit_sha VARCHAR(40) NOT NULL,
+    revision VARCHAR(40) NOT NULL,
     timestamp TIMESTAMP NOT NULL  DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(commit_sha)
+    UNIQUE(revision)
 );
 
 CREATE TABLE derivation (

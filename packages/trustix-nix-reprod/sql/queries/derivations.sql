@@ -4,15 +4,27 @@ SELECT
 FROM
   evaluation
 WHERE
-  commit_sha = ?
+  revision = ?
 LIMIT
   1;
 
 -- name: CreateEval :one
 INSERT INTO
-  evaluation (commit_sha)
+  evaluation (revision)
 VALUES
   (?) RETURNING *;
+
+-- name: CreateEvalWithID :one
+INSERT INTO
+  evaluation (id, revision)
+VALUES
+  (?, ?) RETURNING *;
+
+-- name: CreateEvalWithIDAndTimestamp :one
+INSERT INTO
+  evaluation (id, revision, timestamp)
+VALUES
+  (?, ?, ?) RETURNING *;
 
 -- name: GetDerivation :one
 SELECT
