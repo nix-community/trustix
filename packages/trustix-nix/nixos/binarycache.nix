@@ -3,7 +3,7 @@
 let
   cfg = config.services.trustix-nix-cache;
 
-  inherit (lib) mkOption mkIf types optional;
+  inherit (lib) mkOption mkIf types optional literalExpression;
 
 in
 {
@@ -15,7 +15,7 @@ in
     package = mkOption {
       type = types.package;
       default = pkgs.trustix-nix;
-      defaultText = "pkgs.trustix-nix";
+      defaultText = literalExpression "pkgs.trustix-nix";
       description = "Which Trustix-Nix derivation to use.";
     };
 

@@ -19,7 +19,7 @@ $ cd trustix
 `$ nix-build ./. -A packages.trustix`
 
 - Generate an ed25519 keypair
-`$ ./result/bin/trustix generate-key --privkey ./trustix-priv --pubkey ./trustix-pub`
+`$ ./result/bin/trustix generate-key --privkey ./priv --pubkey ./pub`
 
 This will create two files, `pub` and `priv`.
 
@@ -27,7 +27,7 @@ This will create two files, `pub` and `priv`.
 Of course having keys around readable by anyone on the system is not a good idea, so we will move these somewhere safe.
 In this tutorial we are using `/var/trustix/keys` but you are free to use whatever you wish.
 
-`$ mv trustix-priv /var/trustix/keys/trustix-priv`
+`$ mv priv /var/trustix/keys/`
 
 ## Configuring
 
@@ -42,7 +42,7 @@ In this tutorial we are using `/var/trustix/keys` but you are free to use whatev
     signers.snakeoil = {
       type = "ed25519";
       ed25519 = {
-        private-key-path = "/var/trustix/keys/trustix-priv";
+        private-key-path = "/var/trustix/keys/priv";
       };
     };
 
@@ -61,7 +61,10 @@ In this tutorial we are using `/var/trustix/keys` but you are free to use whatev
   };
 
   # Push local builds via the post-build hook
-  services.trustix-nix-build-hook.enable = true;
+  services.trustix-nix-build-hook.enable = {
+    enable = true;
+    publisher = builtins.head config.services.trustix.publishers;
+  };
 
 }
 ```

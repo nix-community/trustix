@@ -51,6 +51,9 @@ func initCommands() {
 	rootCmd.AddCommand(generateKeyCmd)
 	initGenerate()
 
+	rootCmd.AddCommand(printLogIdCmd)
+	initPrintLogId()
+
 	rootCmd.AddCommand(submitCommand)
 	initSubmit()
 
