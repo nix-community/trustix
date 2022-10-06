@@ -20,7 +20,7 @@ var socketSuffixes = []string{".sock", ".socket"}
 // requests to Unix domain sockets via the "unix" or "https+unix" schemes.
 // Request URLs should have the following form:
 //
-//    https+unix:///path/to/socket:/request/path?query=val&...
+//	https+unix:///path/to/socket:/request/path?query=val&...
 //
 // The registered transport is based on a clone of the provided transport, and
 // so uses the same configuration: timeouts, TLS settings, and so on. Connection
@@ -30,8 +30,8 @@ var socketSuffixes = []string{".sock", ".socket"}
 func Register(t *http.Transport) {
 	copy := t.Clone()
 
-	copy.Dial = nil // nolint <= deprecated function
-	copy.DialTLS = nil
+	copy.Dial = nil    // nolint <= deprecated function
+	copy.DialTLS = nil // nolint <= deprecated function
 
 	switch {
 	case copy.DialContext == nil && copy.DialTLSContext == nil:
