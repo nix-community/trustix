@@ -11,20 +11,23 @@ schema = 3
     version = "v0.4.0"
     hash = "sha256-zGjkdUQmrVqD6rMO9oDY+TeJCpuqnHyvkPCaXDlac/U="
   [mod."github.com/antlr/antlr4/runtime/Go/antlr"]
-    version = "v0.0.0-20220626175859-9abda183db8e"
+    version = "v1.4.10"
     hash = "sha256-QZn1eltqxkZYvf7g/GQv6HftH+OuKJTVjIjyyHZw9jI="
   [mod."github.com/bakins/logrus-middleware"]
     version = "v0.0.0-20180426214643-ce4c6f8deb07"
     hash = "sha256-8BaMIVqeDOfbM+PN6IyHHsu3pOUO/hqrGT/+HaECZjo="
+  [mod."github.com/benbjohnson/clock"]
+    version = "v1.3.0"
+    hash = "sha256-8ukpOZJpT682sQKQMfFEBumEwi6KBzC17cLC0N9bWuA="
   [mod."github.com/bufbuild/connect-go"]
-    version = "v0.5.0"
-    hash = "sha256-ZqhGTTClckSAqvzNwy/lrQ/MGr6DZghOzSnoKDOuJw8="
+    version = "v1.0.0"
+    hash = "sha256-SCTNgBOa8NnU+1OYEUXTHCCcDXVkzVj6wKkbBy+N9TI="
   [mod."github.com/buger/jsonparser"]
     version = "v1.1.1"
     hash = "sha256-T6dXT6Vzpm8gvQYi+c2LZkV+8ZOp0ZXBX7+e1mlliZE="
   [mod."github.com/bytecodealliance/wasmtime-go"]
-    version = "v0.39.0"
-    hash = "sha256-RtWZpY0vulO5VcQDlsXvCsKFdA18+l0erExbWf3Y+9A="
+    version = "v1.0.0"
+    hash = "sha256-Pd7O58M+NdANd4nOyaGM7gqC4KO45SZpxmjM2/MB9dU="
   [mod."github.com/cloudflare/golz4"]
     version = "v0.0.0-20150217214814-ef862a3cdc58"
     hash = "sha256-we6f7JwDfq9PQ+w9ey8yBwELnBhtmzht0yAApcblcTI="
@@ -71,8 +74,8 @@ schema = 3
     version = "v1.15.0"
     hash = "sha256-MzeNP+G9g507G9s0wTZfQLVHGYKilMoBXClANEP+oH0="
   [mod."github.com/lib/pq"]
-    version = "v1.10.6"
-    hash = "sha256-8EhFwY/9YH5L/fd6l2beOnC3VvpegRAmCCsnDVJBqBM="
+    version = "v1.10.7"
+    hash = "sha256-YPUv1VBZNFVUjFxQKdYd0Djje6KYYE99Hz6FnTfrmMw="
   [mod."github.com/mattn/go-sqlite3"]
     version = "v1.14.15"
     hash = "sha256-fSrs2sdBKFTAiffBHNnAkN8kDTqiXgm4HNqzJAOF1RM="
@@ -101,11 +104,11 @@ schema = 3
     version = "v0.11.5-0.20210425183316-da1aaba5fb63"
     hash = "sha256-DMCuYkR93VHzoR7UC4WhUGp4XGaEub4O0jAf+hAvljQ="
   [mod."github.com/pingcap/log"]
-    version = "v0.0.0-20210906054005-afc726e70354"
-    hash = "sha256-c+flCLgEnpgpNIhJbnrJ2QG64JT3Z/PopnKI+7VwevU="
+    version = "v1.1.0"
+    hash = "sha256-JT33CJMknTXha1ERt4s6vV9fyx99J+Ot8rFrNKXTsTc="
   [mod."github.com/pingcap/tidb/parser"]
-    version = "v0.0.0-20220725134311-c80026e61f00"
-    hash = "sha256-va2hIG/5s7IlMBeK9GlgDCep23soGcRtRlvSI87eDsY="
+    version = "v0.0.0-20221002033547-51a6684fb767"
+    hash = "sha256-irbWWJr6edZiMZG/HAVCGzm2R8M6l4STGwruS9CEsoc="
   [mod."github.com/pkg/errors"]
     version = "v0.9.1"
     hash = "sha256-mNfQtcrQmu3sNg/7IwiieKWOgFQOVVe2yXgKBpe/wZw="
@@ -140,20 +143,20 @@ schema = 3
     version = "v1.8.0"
     hash = "sha256-WHWgw6hLI4tPKEqJt+WC38yt64OGCXfkUJDem6mM+Mw="
   [mod."go.uber.org/zap"]
-    version = "v1.19.1"
-    hash = "sha256-n4fccCHVtdrDpZSo98wQVrPl+vB/O1/hFC4htiV/Knk="
+    version = "v1.23.0"
+    hash = "sha256-A/Wf2F9yc+OTyX86QjTtzemUOaFSd7ptoNFaqr2smig="
   [mod."golang.org/x/crypto"]
-    version = "v0.0.0-20220926161630-eccd6366d1be"
-    hash = "sha256-1a4f0LfmXChzVIrpRZaqIByorILGSjzEZZoL15Jn82Y="
+    version = "v0.0.0-20221005025214-4161e89ecf1b"
+    hash = "sha256-oU/a2iYUHp/bV1weLjkrjrfutQ5poN6PYHZIdHOm6cI="
   [mod."golang.org/x/exp"]
-    version = "v0.0.0-20220927162542-c76eaa363f9d"
-    hash = "sha256-qhNke47Mvnu3uIfLrfKqZ6Lqr7bt6dUXIruk8KkzdjE="
+    version = "v0.0.0-20221004215720-b9f4876ce741"
+    hash = "sha256-j4A3FnOJBkybLjkkeXg5ptBLzWCepOojr/MV96u/MaI="
   [mod."golang.org/x/net"]
-    version = "v0.0.0-20220826154423-83b083e8dc8b"
-    hash = "sha256-50A1EeE7HxKbnLBy1vdxtrbH+7d6/mnZA0cOwHJr5XA="
+    version = "v0.0.0-20221004154528-8021a29435af"
+    hash = "sha256-KYvRtL8Ich2Jo4Jji9rj8WL4XrjsoddIwggcMd2e1EE="
   [mod."golang.org/x/sys"]
-    version = "v0.0.0-20220927170352-d9d178bc13c6"
-    hash = "sha256-akJSo7biBpfJgZ83+ZLDp2E4vSXRQ0LTqtvtrId5YJk="
+    version = "v0.0.0-20220928140112-f11e5e49a4ec"
+    hash = "sha256-Xu81/C0U3hGOIG2Z0AK/1ahyrQgTbP6oagMIrN25zXU="
   [mod."golang.org/x/text"]
     version = "v0.3.7"
     hash = "sha256-XH2pUzzQx95O0rak00grQvfACfL+EmZiV7ZzJBkX+XY="

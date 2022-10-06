@@ -8,8 +8,8 @@ schema = 3
     version = "v0.0.0-20141028124846-af83df64dc31"
     hash = "sha256-tEvbLGrqaJIczZQOoERYDNOLM9T+9Q74vTp3o7rUjUM="
   [mod."github.com/bufbuild/connect-go"]
-    version = "v0.4.0"
-    hash = "sha256-bF80DSFIIuSilehyYiOCE/718fQLzyEkUwE5dk/0jC0="
+    version = "v1.0.0"
+    hash = "sha256-SCTNgBOa8NnU+1OYEUXTHCCcDXVkzVj6wKkbBy+N9TI="
   [mod."github.com/coreos/go-systemd"]
     version = "v0.0.0-20191104093116-d3cd4ed1dbcf"
     hash = "sha256-HEnyJ9uxZdlZb2lG8YwxYuuYTCW8PpxUhADqEwNlN5U="
@@ -25,6 +25,9 @@ schema = 3
   [mod."github.com/kr/text"]
     version = "v0.2.0"
     hash = "sha256-fadcWxZOORv44oak3jTxm6YcITcFxdGt4bpn869HxUE="
+  [mod."github.com/nix-community/go-nix"]
+    version = "v0.0.0-20220906172053-6b0185c1190b"
+    hash = "sha256-ZzDh2KYGKBUc89kt41q8TqjWtGzikdb7bVto3So85FY="
   [mod."github.com/pmezard/go-difflib"]
     version = "v1.0.0"
     hash = "sha256-/FtmHnaGjdvEIKAJtrUfEhV7EVo5A/eYrtdnUkuxLDA="
@@ -44,8 +47,8 @@ schema = 3
     version = "v0.5.10"
     hash = "sha256-bogOwQNmQVS7W+C7wci7XEUeYm9TB7PnxnyBIXKYbm0="
   [mod."golang.org/x/sys"]
-    version = "v0.0.0-20220829200755-d48e67d00261"
-    hash = "sha256-59QemXKVd6kAYAL5fWHfJJHKc1Hi+uzZlzumigha9jE="
+    version = "v0.0.0-20220928140112-f11e5e49a4ec"
+    hash = "sha256-Xu81/C0U3hGOIG2Z0AK/1ahyrQgTbP6oagMIrN25zXU="
   [mod."google.golang.org/protobuf"]
     version = "v1.28.1"
     hash = "sha256-sTJYgvlv5is7vHNxcuigF2lNASp0QonhUgnrguhfHSU="
