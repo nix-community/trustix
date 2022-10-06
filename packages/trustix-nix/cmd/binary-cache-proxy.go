@@ -98,10 +98,10 @@ func normaliseHash(hash string) (string, []byte, error) {
 
 	switch hash[6] {
 	case ':': // nix base32
-		decodedHash, err = nixbase32.DecodeString(hash[7:len(hash)])
+		decodedHash, err = nixbase32.DecodeString(hash[7:])
 
 	case '-': // base64
-		decodedHash, err = base64.StdEncoding.DecodeString(hash[7:len(hash)])
+		decodedHash, err = base64.StdEncoding.DecodeString(hash[7:])
 
 	default:
 		return "", nil, fmt.Errorf("unknown hash separator: %v", hash[7])
