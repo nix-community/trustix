@@ -32,12 +32,17 @@ import (
 )
 
 var serveListenAddresses []string
+var serveConfig string
 
 var serveCommand = &cobra.Command{
 	Use:   "serve",
 	Short: "Run server",
 	Run: func(cmd *cobra.Command, args []string) {
-		conf, err := config.NewConfigFromFile("./config.json")
+		if serveConfig == "" {
+			panic("Missing config path parameter")
+		}
+
+		conf, err := config.NewConfigFromFile(serveConfig)
 		if err != nil {
 			panic(err)
 		}
@@ -232,4 +237,5 @@ var serveCommand = &cobra.Command{
 
 func initServe() {
 	serveCommand.Flags().StringSliceVar(&serveListenAddresses, "listen", []string{}, "Listen to address")
+	serveCommand.Flags().StringVar(&serveConfig, "config", "", "Path to config.toml/json")
 }
