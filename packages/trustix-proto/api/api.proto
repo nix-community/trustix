@@ -7,9 +7,9 @@ syntax = "proto2";
 import "schema/loghead.proto";
 import "schema/logleaf.proto";
 
-option go_package = "github.com/nix-community/trustix/packages/trustix-proto/api";
+package trustix_api.v1;
 
-package trustix;
+option go_package = "github.com/nix-community/trustix/packages/trustix-proto/api";
 
 // Request a signed head for a given log
 message LogHeadRequest {
@@ -86,7 +86,7 @@ message MapValueResponse {
   required SparseCompactMerkleProof Proof = 2;
 }
 
-message LogEntriesResponse { repeated LogLeaf Leaves = 1; }
+message LogEntriesResponse { repeated trustix_schema.v1.LogLeaf Leaves = 1; }
 
 message KeyValuePair {
 
@@ -142,7 +142,7 @@ service NodeAPI {
 service LogAPI {
 
   // Get signed head
-  rpc GetHead(LogHeadRequest) returns (LogHead) {}
+  rpc GetHead(LogHeadRequest) returns (trustix_schema.v1.LogHead) {}
 
   // Log
 

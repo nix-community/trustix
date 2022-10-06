@@ -4,6 +4,8 @@
 
 syntax = "proto3";
 
+package reprod_api.v1;
+
 option go_package = "github.com/nix-community/trustix/packages/trustix-nix-reprod/reprod-api";
 
 message DerivationReproducibilityRequest { string DrvPath = 1; }

@@ -22,10 +22,10 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
 	// ReproducibilityAPIName is the fully-qualified name of the ReproducibilityAPI service.
-	ReproducibilityAPIName = "ReproducibilityAPI"
+	ReproducibilityAPIName = "reprod_api.v1.ReproducibilityAPI"
 )
 
-// ReproducibilityAPIClient is a client for the ReproducibilityAPI service.
+// ReproducibilityAPIClient is a client for the reprod_api.v1.ReproducibilityAPI service.
 type ReproducibilityAPIClient interface {
 	DerivationReproducibility(context.Context, *connect_go.Request[reprod_api.DerivationReproducibilityRequest]) (*connect_go.Response[reprod_api.DerivationReproducibilityResponse], error)
 	AttrReproducibilityTimeSeries(context.Context, *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesResponse], error)
@@ -33,10 +33,10 @@ type ReproducibilityAPIClient interface {
 	Diff(context.Context, *connect_go.Request[reprod_api.DiffRequest]) (*connect_go.Response[reprod_api.DiffResponse], error)
 }
 
-// NewReproducibilityAPIClient constructs a client for the ReproducibilityAPI service. By default,
-// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
-// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
-// or connect.WithGRPCWeb() options.
+// NewReproducibilityAPIClient constructs a client for the reprod_api.v1.ReproducibilityAPI service.
+// By default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped
+// responses, and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -45,22 +45,22 @@ func NewReproducibilityAPIClient(httpClient connect_go.HTTPClient, baseURL strin
 	return &reproducibilityAPIClient{
 		derivationReproducibility: connect_go.NewClient[reprod_api.DerivationReproducibilityRequest, reprod_api.DerivationReproducibilityResponse](
 			httpClient,
-			baseURL+"/.ReproducibilityAPI/DerivationReproducibility",
+			baseURL+"/reprod_api.v1.ReproducibilityAPI/DerivationReproducibility",
 			opts...,
 		),
 		attrReproducibilityTimeSeries: connect_go.NewClient[reprod_api.AttrReproducibilityTimeSeriesRequest, reprod_api.AttrReproducibilityTimeSeriesResponse](
 			httpClient,
-			baseURL+"/.ReproducibilityAPI/AttrReproducibilityTimeSeries",
+			baseURL+"/reprod_api.v1.ReproducibilityAPI/AttrReproducibilityTimeSeries",
 			opts...,
 		),
 		suggestAttribute: connect_go.NewClient[reprod_api.SuggestsAttributeRequest, reprod_api.SuggestAttributeResponse](
 			httpClient,
-			baseURL+"/.ReproducibilityAPI/SuggestAttribute",
+			baseURL+"/reprod_api.v1.ReproducibilityAPI/SuggestAttribute",
 			opts...,
 		),
 		diff: connect_go.NewClient[reprod_api.DiffRequest, reprod_api.DiffResponse](
 			httpClient,
-			baseURL+"/.ReproducibilityAPI/Diff",
+			baseURL+"/reprod_api.v1.ReproducibilityAPI/Diff",
 			opts...,
 		),
 	}
@@ -74,27 +74,28 @@ type reproducibilityAPIClient struct {
 	diff                          *connect_go.Client[reprod_api.DiffRequest, reprod_api.DiffResponse]
 }
 
-// DerivationReproducibility calls ReproducibilityAPI.DerivationReproducibility.
+// DerivationReproducibility calls reprod_api.v1.ReproducibilityAPI.DerivationReproducibility.
 func (c *reproducibilityAPIClient) DerivationReproducibility(ctx context.Context, req *connect_go.Request[reprod_api.DerivationReproducibilityRequest]) (*connect_go.Response[reprod_api.DerivationReproducibilityResponse], error) {
 	return c.derivationReproducibility.CallUnary(ctx, req)
 }
 
-// AttrReproducibilityTimeSeries calls ReproducibilityAPI.AttrReproducibilityTimeSeries.
+// AttrReproducibilityTimeSeries calls
+// reprod_api.v1.ReproducibilityAPI.AttrReproducibilityTimeSeries.
 func (c *reproducibilityAPIClient) AttrReproducibilityTimeSeries(ctx context.Context, req *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesResponse], error) {
 	return c.attrReproducibilityTimeSeries.CallUnary(ctx, req)
 }
 
-// SuggestAttribute calls ReproducibilityAPI.SuggestAttribute.
+// SuggestAttribute calls reprod_api.v1.ReproducibilityAPI.SuggestAttribute.
 func (c *reproducibilityAPIClient) SuggestAttribute(ctx context.Context, req *connect_go.Request[reprod_api.SuggestsAttributeRequest]) (*connect_go.Response[reprod_api.SuggestAttributeResponse], error) {
 	return c.suggestAttribute.CallUnary(ctx, req)
 }
 
-// Diff calls ReproducibilityAPI.Diff.
+// Diff calls reprod_api.v1.ReproducibilityAPI.Diff.
 func (c *reproducibilityAPIClient) Diff(ctx context.Context, req *connect_go.Request[reprod_api.DiffRequest]) (*connect_go.Response[reprod_api.DiffResponse], error) {
 	return c.diff.CallUnary(ctx, req)
 }
 
-// ReproducibilityAPIHandler is an implementation of the ReproducibilityAPI service.
+// ReproducibilityAPIHandler is an implementation of the reprod_api.v1.ReproducibilityAPI service.
 type ReproducibilityAPIHandler interface {
 	DerivationReproducibility(context.Context, *connect_go.Request[reprod_api.DerivationReproducibilityRequest]) (*connect_go.Response[reprod_api.DerivationReproducibilityResponse], error)
 	AttrReproducibilityTimeSeries(context.Context, *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesResponse], error)
@@ -109,44 +110,44 @@ type ReproducibilityAPIHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewReproducibilityAPIHandler(svc ReproducibilityAPIHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/.ReproducibilityAPI/DerivationReproducibility", connect_go.NewUnaryHandler(
-		"/.ReproducibilityAPI/DerivationReproducibility",
+	mux.Handle("/reprod_api.v1.ReproducibilityAPI/DerivationReproducibility", connect_go.NewUnaryHandler(
+		"/reprod_api.v1.ReproducibilityAPI/DerivationReproducibility",
 		svc.DerivationReproducibility,
 		opts...,
 	))
-	mux.Handle("/.ReproducibilityAPI/AttrReproducibilityTimeSeries", connect_go.NewUnaryHandler(
-		"/.ReproducibilityAPI/AttrReproducibilityTimeSeries",
+	mux.Handle("/reprod_api.v1.ReproducibilityAPI/AttrReproducibilityTimeSeries", connect_go.NewUnaryHandler(
+		"/reprod_api.v1.ReproducibilityAPI/AttrReproducibilityTimeSeries",
 		svc.AttrReproducibilityTimeSeries,
 		opts...,
 	))
-	mux.Handle("/.ReproducibilityAPI/SuggestAttribute", connect_go.NewUnaryHandler(
-		"/.ReproducibilityAPI/SuggestAttribute",
+	mux.Handle("/reprod_api.v1.ReproducibilityAPI/SuggestAttribute", connect_go.NewUnaryHandler(
+		"/reprod_api.v1.ReproducibilityAPI/SuggestAttribute",
 		svc.SuggestAttribute,
 		opts...,
 	))
-	mux.Handle("/.ReproducibilityAPI/Diff", connect_go.NewUnaryHandler(
-		"/.ReproducibilityAPI/Diff",
+	mux.Handle("/reprod_api.v1.ReproducibilityAPI/Diff", connect_go.NewUnaryHandler(
+		"/reprod_api.v1.ReproducibilityAPI/Diff",
 		svc.Diff,
 		opts...,
 	))
-	return "/.ReproducibilityAPI/", mux
+	return "/reprod_api.v1.ReproducibilityAPI/", mux
 }
 
 // UnimplementedReproducibilityAPIHandler returns CodeUnimplemented from all methods.
 type UnimplementedReproducibilityAPIHandler struct{}
 
 func (UnimplementedReproducibilityAPIHandler) DerivationReproducibility(context.Context, *connect_go.Request[reprod_api.DerivationReproducibilityRequest]) (*connect_go.Response[reprod_api.DerivationReproducibilityResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("ReproducibilityAPI.DerivationReproducibility is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("reprod_api.v1.ReproducibilityAPI.DerivationReproducibility is not implemented"))
 }
 
 func (UnimplementedReproducibilityAPIHandler) AttrReproducibilityTimeSeries(context.Context, *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("ReproducibilityAPI.AttrReproducibilityTimeSeries is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("reprod_api.v1.ReproducibilityAPI.AttrReproducibilityTimeSeries is not implemented"))
 }
 
 func (UnimplementedReproducibilityAPIHandler) SuggestAttribute(context.Context, *connect_go.Request[reprod_api.SuggestsAttributeRequest]) (*connect_go.Response[reprod_api.SuggestAttributeResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("ReproducibilityAPI.SuggestAttribute is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("reprod_api.v1.ReproducibilityAPI.SuggestAttribute is not implemented"))
 }
 
 func (UnimplementedReproducibilityAPIHandler) Diff(context.Context, *connect_go.Request[reprod_api.DiffRequest]) (*connect_go.Response[reprod_api.DiffResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("ReproducibilityAPI.Diff is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("reprod_api.v1.ReproducibilityAPI.Diff is not implemented"))
 }

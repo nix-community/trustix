@@ -5,6 +5,7 @@
 syntax = "proto2";
 
 option go_package = "github.com/nix-community/trustix/packages/trustix-proto/schema";
+package trustix_schema.v1;
 
 message MapEntry {
   // Value digest of tree node

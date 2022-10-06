@@ -24,12 +24,12 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
 	// RPCApiName is the fully-qualified name of the RPCApi service.
-	RPCApiName = "trustix.RPCApi"
+	RPCApiName = "trustix_rpc.v1.RPCApi"
 	// LogRPCName is the fully-qualified name of the LogRPC service.
-	LogRPCName = "trustix.LogRPC"
+	LogRPCName = "trustix_rpc.v1.LogRPC"
 )
 
-// RPCApiClient is a client for the trustix.RPCApi service.
+// RPCApiClient is a client for the trustix_rpc.v1.RPCApi service.
 type RPCApiClient interface {
 	// Get a list of all logs published/subscribed by this node
 	Logs(context.Context, *connect_go.Request[api.LogsRequest]) (*connect_go.Response[api.LogsResponse], error)
@@ -39,8 +39,8 @@ type RPCApiClient interface {
 	GetValue(context.Context, *connect_go.Request[api.ValueRequest]) (*connect_go.Response[api.ValueResponse], error)
 }
 
-// NewRPCApiClient constructs a client for the trustix.RPCApi service. By default, it uses the
-// Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewRPCApiClient constructs a client for the trustix_rpc.v1.RPCApi service. By default, it uses
+// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -51,17 +51,17 @@ func NewRPCApiClient(httpClient connect_go.HTTPClient, baseURL string, opts ...c
 	return &rPCApiClient{
 		logs: connect_go.NewClient[api.LogsRequest, api.LogsResponse](
 			httpClient,
-			baseURL+"/trustix.RPCApi/Logs",
+			baseURL+"/trustix_rpc.v1.RPCApi/Logs",
 			opts...,
 		),
 		decide: connect_go.NewClient[rpc.DecideRequest, rpc.DecisionResponse](
 			httpClient,
-			baseURL+"/trustix.RPCApi/Decide",
+			baseURL+"/trustix_rpc.v1.RPCApi/Decide",
 			opts...,
 		),
 		getValue: connect_go.NewClient[api.ValueRequest, api.ValueResponse](
 			httpClient,
-			baseURL+"/trustix.RPCApi/GetValue",
+			baseURL+"/trustix_rpc.v1.RPCApi/GetValue",
 			opts...,
 		),
 	}
@@ -74,22 +74,22 @@ type rPCApiClient struct {
 	getValue *connect_go.Client[api.ValueRequest, api.ValueResponse]
 }
 
-// Logs calls trustix.RPCApi.Logs.
+// Logs calls trustix_rpc.v1.RPCApi.Logs.
 func (c *rPCApiClient) Logs(ctx context.Context, req *connect_go.Request[api.LogsRequest]) (*connect_go.Response[api.LogsResponse], error) {
 	return c.logs.CallUnary(ctx, req)
 }
 
-// Decide calls trustix.RPCApi.Decide.
+// Decide calls trustix_rpc.v1.RPCApi.Decide.
 func (c *rPCApiClient) Decide(ctx context.Context, req *connect_go.Request[rpc.DecideRequest]) (*connect_go.Response[rpc.DecisionResponse], error) {
 	return c.decide.CallUnary(ctx, req)
 }
 
-// GetValue calls trustix.RPCApi.GetValue.
+// GetValue calls trustix_rpc.v1.RPCApi.GetValue.
 func (c *rPCApiClient) GetValue(ctx context.Context, req *connect_go.Request[api.ValueRequest]) (*connect_go.Response[api.ValueResponse], error) {
 	return c.getValue.CallUnary(ctx, req)
 }
 
-// RPCApiHandler is an implementation of the trustix.RPCApi service.
+// RPCApiHandler is an implementation of the trustix_rpc.v1.RPCApi service.
 type RPCApiHandler interface {
 	// Get a list of all logs published/subscribed by this node
 	Logs(context.Context, *connect_go.Request[api.LogsRequest]) (*connect_go.Response[api.LogsResponse], error)
@@ -106,40 +106,40 @@ type RPCApiHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewRPCApiHandler(svc RPCApiHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/trustix.RPCApi/Logs", connect_go.NewUnaryHandler(
-		"/trustix.RPCApi/Logs",
+	mux.Handle("/trustix_rpc.v1.RPCApi/Logs", connect_go.NewUnaryHandler(
+		"/trustix_rpc.v1.RPCApi/Logs",
 		svc.Logs,
 		opts...,
 	))
-	mux.Handle("/trustix.RPCApi/Decide", connect_go.NewUnaryHandler(
-		"/trustix.RPCApi/Decide",
+	mux.Handle("/trustix_rpc.v1.RPCApi/Decide", connect_go.NewUnaryHandler(
+		"/trustix_rpc.v1.RPCApi/Decide",
 		svc.Decide,
 		opts...,
 	))
-	mux.Handle("/trustix.RPCApi/GetValue", connect_go.NewUnaryHandler(
-		"/trustix.RPCApi/GetValue",
+	mux.Handle("/trustix_rpc.v1.RPCApi/GetValue", connect_go.NewUnaryHandler(
+		"/trustix_rpc.v1.RPCApi/GetValue",
 		svc.GetValue,
 		opts...,
 	))
-	return "/trustix.RPCApi/", mux
+	return "/trustix_rpc.v1.RPCApi/", mux
 }
 
 // UnimplementedRPCApiHandler returns CodeUnimplemented from all methods.
 type UnimplementedRPCApiHandler struct{}
 
 func (UnimplementedRPCApiHandler) Logs(context.Context, *connect_go.Request[api.LogsRequest]) (*connect_go.Response[api.LogsResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.RPCApi.Logs is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_rpc.v1.RPCApi.Logs is not implemented"))
 }
 
 func (UnimplementedRPCApiHandler) Decide(context.Context, *connect_go.Request[rpc.DecideRequest]) (*connect_go.Response[rpc.DecisionResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.RPCApi.Decide is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_rpc.v1.RPCApi.Decide is not implemented"))
 }
 
 func (UnimplementedRPCApiHandler) GetValue(context.Context, *connect_go.Request[api.ValueRequest]) (*connect_go.Response[api.ValueResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.RPCApi.GetValue is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_rpc.v1.RPCApi.GetValue is not implemented"))
 }
 
-// LogRPCClient is a client for the trustix.LogRPC service.
+// LogRPCClient is a client for the trustix_rpc.v1.LogRPC service.
 type LogRPCClient interface {
 	GetHead(context.Context, *connect_go.Request[api.LogHeadRequest]) (*connect_go.Response[schema.LogHead], error)
 	GetLogEntries(context.Context, *connect_go.Request[api.GetLogEntriesRequest]) (*connect_go.Response[api.LogEntriesResponse], error)
@@ -147,8 +147,8 @@ type LogRPCClient interface {
 	Flush(context.Context, *connect_go.Request[rpc.FlushRequest]) (*connect_go.Response[rpc.FlushResponse], error)
 }
 
-// NewLogRPCClient constructs a client for the trustix.LogRPC service. By default, it uses the
-// Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewLogRPCClient constructs a client for the trustix_rpc.v1.LogRPC service. By default, it uses
+// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -159,22 +159,22 @@ func NewLogRPCClient(httpClient connect_go.HTTPClient, baseURL string, opts ...c
 	return &logRPCClient{
 		getHead: connect_go.NewClient[api.LogHeadRequest, schema.LogHead](
 			httpClient,
-			baseURL+"/trustix.LogRPC/GetHead",
+			baseURL+"/trustix_rpc.v1.LogRPC/GetHead",
 			opts...,
 		),
 		getLogEntries: connect_go.NewClient[api.GetLogEntriesRequest, api.LogEntriesResponse](
 			httpClient,
-			baseURL+"/trustix.LogRPC/GetLogEntries",
+			baseURL+"/trustix_rpc.v1.LogRPC/GetLogEntries",
 			opts...,
 		),
 		submit: connect_go.NewClient[rpc.SubmitRequest, rpc.SubmitResponse](
 			httpClient,
-			baseURL+"/trustix.LogRPC/Submit",
+			baseURL+"/trustix_rpc.v1.LogRPC/Submit",
 			opts...,
 		),
 		flush: connect_go.NewClient[rpc.FlushRequest, rpc.FlushResponse](
 			httpClient,
-			baseURL+"/trustix.LogRPC/Flush",
+			baseURL+"/trustix_rpc.v1.LogRPC/Flush",
 			opts...,
 		),
 	}
@@ -188,27 +188,27 @@ type logRPCClient struct {
 	flush         *connect_go.Client[rpc.FlushRequest, rpc.FlushResponse]
 }
 
-// GetHead calls trustix.LogRPC.GetHead.
+// GetHead calls trustix_rpc.v1.LogRPC.GetHead.
 func (c *logRPCClient) GetHead(ctx context.Context, req *connect_go.Request[api.LogHeadRequest]) (*connect_go.Response[schema.LogHead], error) {
 	return c.getHead.CallUnary(ctx, req)
 }
 
-// GetLogEntries calls trustix.LogRPC.GetLogEntries.
+// GetLogEntries calls trustix_rpc.v1.LogRPC.GetLogEntries.
 func (c *logRPCClient) GetLogEntries(ctx context.Context, req *connect_go.Request[api.GetLogEntriesRequest]) (*connect_go.Response[api.LogEntriesResponse], error) {
 	return c.getLogEntries.CallUnary(ctx, req)
 }
 
-// Submit calls trustix.LogRPC.Submit.
+// Submit calls trustix_rpc.v1.LogRPC.Submit.
 func (c *logRPCClient) Submit(ctx context.Context, req *connect_go.Request[rpc.SubmitRequest]) (*connect_go.Response[rpc.SubmitResponse], error) {
 	return c.submit.CallUnary(ctx, req)
 }
 
-// Flush calls trustix.LogRPC.Flush.
+// Flush calls trustix_rpc.v1.LogRPC.Flush.
 func (c *logRPCClient) Flush(ctx context.Context, req *connect_go.Request[rpc.FlushRequest]) (*connect_go.Response[rpc.FlushResponse], error) {
 	return c.flush.CallUnary(ctx, req)
 }
 
-// LogRPCHandler is an implementation of the trustix.LogRPC service.
+// LogRPCHandler is an implementation of the trustix_rpc.v1.LogRPC service.
 type LogRPCHandler interface {
 	GetHead(context.Context, *connect_go.Request[api.LogHeadRequest]) (*connect_go.Response[schema.LogHead], error)
 	GetLogEntries(context.Context, *connect_go.Request[api.GetLogEntriesRequest]) (*connect_go.Response[api.LogEntriesResponse], error)
@@ -223,44 +223,44 @@ type LogRPCHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewLogRPCHandler(svc LogRPCHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/trustix.LogRPC/GetHead", connect_go.NewUnaryHandler(
-		"/trustix.LogRPC/GetHead",
+	mux.Handle("/trustix_rpc.v1.LogRPC/GetHead", connect_go.NewUnaryHandler(
+		"/trustix_rpc.v1.LogRPC/GetHead",
 		svc.GetHead,
 		opts...,
 	))
-	mux.Handle("/trustix.LogRPC/GetLogEntries", connect_go.NewUnaryHandler(
-		"/trustix.LogRPC/GetLogEntries",
+	mux.Handle("/trustix_rpc.v1.LogRPC/GetLogEntries", connect_go.NewUnaryHandler(
+		"/trustix_rpc.v1.LogRPC/GetLogEntries",
 		svc.GetLogEntries,
 		opts...,
 	))
-	mux.Handle("/trustix.LogRPC/Submit", connect_go.NewUnaryHandler(
-		"/trustix.LogRPC/Submit",
+	mux.Handle("/trustix_rpc.v1.LogRPC/Submit", connect_go.NewUnaryHandler(
+		"/trustix_rpc.v1.LogRPC/Submit",
 		svc.Submit,
 		opts...,
 	))
-	mux.Handle("/trustix.LogRPC/Flush", connect_go.NewUnaryHandler(
-		"/trustix.LogRPC/Flush",
+	mux.Handle("/trustix_rpc.v1.LogRPC/Flush", connect_go.NewUnaryHandler(
+		"/trustix_rpc.v1.LogRPC/Flush",
 		svc.Flush,
 		opts...,
 	))
-	return "/trustix.LogRPC/", mux
+	return "/trustix_rpc.v1.LogRPC/", mux
 }
 
 // UnimplementedLogRPCHandler returns CodeUnimplemented from all methods.
 type UnimplementedLogRPCHandler struct{}
 
 func (UnimplementedLogRPCHandler) GetHead(context.Context, *connect_go.Request[api.LogHeadRequest]) (*connect_go.Response[schema.LogHead], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogRPC.GetHead is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_rpc.v1.LogRPC.GetHead is not implemented"))
 }
 
 func (UnimplementedLogRPCHandler) GetLogEntries(context.Context, *connect_go.Request[api.GetLogEntriesRequest]) (*connect_go.Response[api.LogEntriesResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogRPC.GetLogEntries is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_rpc.v1.LogRPC.GetLogEntries is not implemented"))
 }
 
 func (UnimplementedLogRPCHandler) Submit(context.Context, *connect_go.Request[rpc.SubmitRequest]) (*connect_go.Response[rpc.SubmitResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogRPC.Submit is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_rpc.v1.LogRPC.Submit is not implemented"))
 }
 
 func (UnimplementedLogRPCHandler) Flush(context.Context, *connect_go.Request[rpc.FlushRequest]) (*connect_go.Response[rpc.FlushResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogRPC.Flush is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_rpc.v1.LogRPC.Flush is not implemented"))
 }
