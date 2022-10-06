@@ -4,25 +4,13 @@ SELECT
 FROM
   evaluation
 WHERE
-  revision = ?
+  revision = ? AND channel = ?
 LIMIT
   1;
 
 -- name: CreateEval :one
 INSERT INTO
-  evaluation (revision)
-VALUES
-  (?) RETURNING *;
-
--- name: CreateEvalWithID :one
-INSERT INTO
-  evaluation (id, revision)
-VALUES
-  (?, ?) RETURNING *;
-
--- name: CreateEvalWithIDAndTimestamp :one
-INSERT INTO
-  evaluation (id, revision, timestamp)
+  evaluation (channel, revision, timestamp)
 VALUES
   (?, ?, ?) RETURNING *;
 

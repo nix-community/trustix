@@ -8,6 +8,9 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"path"
+	"time"
 
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/index"
 	"github.com/spf13/cobra"
@@ -24,7 +27,26 @@ var indexEvalCommand = &cobra.Command{
 			return fmt.Errorf("error opening database: %w", err)
 		}
 
-		err = index.IndexEval(ctx, db)
+		timestamp := time.Now().UTC()
+		revision := "9c5efb63754024dd4026dceb6f3525934009fea9"
+		channel := "nixos-unstable"
+
+		var nixpkgs string
+		{
+			githubOrg := "NixOS"
+			githubRepo := "nixpkgs"
+
+			u, err := url.Parse("https://github.com")
+			if err != nil {
+				panic(err)
+			}
+
+			u.Path = path.Join(githubOrg, githubRepo, "archive", revision+".tar.gz")
+
+			nixpkgs = u.String()
+		}
+
+		err = index.IndexEval(ctx, db, nixpkgs, channel, revision, timestamp)
 		if err != nil {
 			panic(err)
 		}

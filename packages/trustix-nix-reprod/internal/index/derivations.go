@@ -29,12 +29,10 @@ const (
 	errorID = -1
 )
 
-func IndexEval(ctx context.Context, db *sql.DB) error {
+func IndexEval(ctx context.Context, db *sql.DB, nixpkgs string, channel string, revision string, timestamp time.Time) error {
 	evalConfig := eval.NewConfig()
 	evalConfig.Expr = "import <nixpkgs> { }"
-
-	revision := "9c5efb63754024dd4026dceb6f3525934009fea9"
-	maxWorkers := 15
+	evalConfig.NixPath = "nixpkgs=" + nixpkgs
 
 	l := log.WithFields(log.Fields{
 		"revision": revision,
@@ -55,13 +53,20 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 	qtx := queries.WithTx(tx)
 
 	// Create the evaluation in the database
-	dbEval, err := qtx.GetEval(ctx, revision)
+	dbEval, err := qtx.GetEval(ctx, idb.GetEvalParams{
+		Channel:  channel,
+		Revision: revision,
+	})
 	if err == nil {
 		fmt.Println(fmt.Sprintf("eval '%s' already indexed", revision))
 		return nil
 	} else {
 		if err == sql.ErrNoRows {
-			dbEval, err = qtx.CreateEval(ctx, revision)
+			dbEval, err = qtx.CreateEval(ctx, idb.CreateEvalParams{
+				Channel:   channel,
+				Revision:  revision,
+				Timestamp: timestamp,
+			})
 		}
 
 		if err != nil {
@@ -246,7 +251,7 @@ func IndexEval(ctx context.Context, db *sql.DB) error {
 		return dbDrv.ID, nil
 	}
 
-	e := executor.NewLimitedParallellExecutor(maxWorkers)
+	e := executor.NewLimitedParallellExecutor(15)
 
 	for wrappedResult := range results {
 		result, err := wrappedResult.Unwrap()

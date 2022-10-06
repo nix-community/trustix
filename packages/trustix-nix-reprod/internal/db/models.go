@@ -53,6 +53,7 @@ type Derivationrefrecursive struct {
 
 type Evaluation struct {
 	ID        int64
+	Channel   string
 	Revision  string
 	Timestamp time.Time
 }

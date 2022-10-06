@@ -2,9 +2,10 @@
 -- +goose StatementBegin
 CREATE TABLE evaluation (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    channel VARCHAR(40) NOT NULL,
     revision VARCHAR(40) NOT NULL,
     timestamp TIMESTAMP NOT NULL  DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(revision)
+    UNIQUE(channel, revision)
 );
 
 CREATE TABLE derivation (

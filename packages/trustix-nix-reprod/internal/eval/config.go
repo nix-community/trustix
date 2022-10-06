@@ -18,6 +18,8 @@ type EvalConfig struct {
 
 	Flake string
 
+	NixPath string
+
 	Workers       int
 	MaxMemorySize int
 
@@ -40,6 +42,7 @@ func NewConfig() *EvalConfig {
 	return &EvalConfig{
 		Arg:              make(map[string]string),
 		ArgStr:           make(map[string]string),
+		NixPath:          "",
 		Workers:          workers,
 		MaxMemorySize:    maxMemorySize,
 		ResultBufferSize: 1024,
