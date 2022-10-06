@@ -35,13 +35,13 @@ Files: packages/trustix-doc/book.toml packages/trustix-doc/doc_old/numeric.csl p
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC-BY-SA-4.0
 
-Files: packages/trustix-nix-reprod/reprod-api/api.pb.go packages/trustix-nix-reprod/reprod-api/apiconnect/api.connect.go packages/trustix-nix-reprod/sql/queries/derivations.sql packages/trustix-nix-reprod/sql/queries/logs.sql packages/trustix-nix-reprod/sql/queries/reprod.sql packages/trustix-nix-reprod/sql/schema/20220818142927_initial.sql packages/trustix-nix-reprod/sql/schema/20220904150640_logs.sql
-Copyright: Copyright © 2020-2022 The Trustix Authors
-License: GPL-3.0-only
-
-Files: packages/trustix-nix-reprod/sqlc.yaml packages/trustix-nix/dev/cache-priv-key.pem packages/trustix-nix/dev/cache-pub-key.pem packages/trustix/config.toml treefmt.toml
+Files: packages/trustix-nix-reprod/examples/config.toml packages/trustix-nix-reprod/sqlc.yaml packages/trustix-nix/dev/cache-priv-key.pem packages/trustix-nix/dev/cache-pub-key.pem packages/trustix/config.toml treefmt.toml
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC0-1.0
+
+Files: packages/trustix-nix-reprod/reprod-api/api.pb.go packages/trustix-nix-reprod/reprod-api/reprod_apiconnect/api.connect.go packages/trustix-nix-reprod/sql-cache/queries/diffoscope.sql packages/trustix-nix-reprod/sql-cache/schema/20221005142925_initial.sql packages/trustix-nix-reprod/sql/queries/derivations.sql packages/trustix-nix-reprod/sql/queries/eval.sql packages/trustix-nix-reprod/sql/queries/logs.sql packages/trustix-nix-reprod/sql/queries/reprod.sql packages/trustix-nix-reprod/sql/queries/suggest.sql packages/trustix-nix-reprod/sql/schema/20220818142927_initial.sql packages/trustix-nix-reprod/sql/schema/20220904150640_logs.sql
+Copyright: Copyright © 2020-2022 The Trustix Authors
+License: GPL-3.0-only
 
 Files: packages/trustix-proto/api/apiconnect/api.connect.go packages/trustix-proto/rpc/rpcconnect/rpc.connect.go
 Copyright: Copyright © 2020-2022 The Trustix Authors
