@@ -15,12 +15,24 @@ import (
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/config"
 	idb "github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/db"
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/hydra"
+	log "github.com/sirupsen/logrus"
 )
 
 func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig *config.Channel) (int, error) {
+
+	l := log.WithFields(log.Fields{
+		"channel": channel,
+	})
+
 	switch channelConfig.Type {
 
 	case "hydra":
+		l = l.WithFields(log.Fields{
+			"channelType": "hydra",
+		})
+
+		l.Info("getting latest evaluation from database")
+
 		latestEval, err := func() (idb.Hydraevaluation, error) {
 			tx, err := db.BeginTx(ctx, nil)
 			if err != nil {
@@ -45,6 +57,8 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 
 		// are we creating completely from scratch?
 		isNew := errors.Is(err, sql.ErrNoRows)
+
+		l.Info("getting evaluations from hydra API")
 
 		evalResp, err := hydra.GetEvaluations(channelConfig.Hydra.BaseURL, channelConfig.Hydra.Project, channelConfig.Hydra.Jobset)
 		if err != nil {
