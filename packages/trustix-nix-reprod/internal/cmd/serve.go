@@ -51,19 +51,9 @@ var serveCommand = &cobra.Command{
 		logIndexCronInterval := time.Second * time.Duration(conf.LogIndexCronInterval)
 		evalIndexCronInterval := time.Second * time.Duration(conf.EvalIndexCronInterval)
 
-		err = os.MkdirAll(stateDirectory, 0755)
+		dbs, err := setupDatabases(stateDirectory)
 		if err != nil {
-			panic(err)
-		}
-
-		db, err := setupDB(stateDirectory)
-		if err != nil {
-			panic(err)
-		}
-
-		cacheDB, err := setupCacheDB(stateDirectory)
-		if err != nil {
-			panic(err)
+			panic(fmt.Errorf("error opening database: %w", err))
 		}
 
 		client, err := tclient.CreateClient(dialAddress)
@@ -84,7 +74,7 @@ var serveCommand = &cobra.Command{
 
 				ctx := context.Background()
 
-				err = index.IndexLogs(ctx, db, client)
+				err = index.IndexLogs(ctx, dbs.dbRW, client)
 				if err != nil {
 					panic(err)
 				}
@@ -114,7 +104,7 @@ var serveCommand = &cobra.Command{
 
 					l.Info("indexing channel")
 
-					n, err := index.IndexChannel(ctx, db, channel, channelConfig)
+					n, err := index.IndexChannel(ctx, dbs.dbRW, channel, channelConfig)
 					if err != nil {
 						l.WithFields(log.Fields{
 							"erroro": err,
@@ -131,7 +121,7 @@ var serveCommand = &cobra.Command{
 			defer evalIndexCron.Stop()
 		}
 
-		apiServer := server.NewAPIServer(db, cacheDB, client)
+		apiServer := server.NewAPIServer(dbs.dbRO, dbs.cacheDbRW, dbs.cacheDbRO, client)
 
 		errChan := make(chan error)
 

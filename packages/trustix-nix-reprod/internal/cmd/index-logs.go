@@ -20,7 +20,7 @@ var indexLogsCommand = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 
-		db, err := setupDB(stateDirectory)
+		dbs, err := setupDatabases(stateDirectory)
 		if err != nil {
 			return fmt.Errorf("error opening database: %w", err)
 		}
@@ -31,7 +31,7 @@ var indexLogsCommand = &cobra.Command{
 				panic(err)
 			}
 
-			err = index.IndexLogs(ctx, db, client)
+			err = index.IndexLogs(ctx, dbs.dbRW, client)
 			if err != nil {
 				panic(err)
 			}

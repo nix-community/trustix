@@ -23,7 +23,7 @@ var indexEvalCommand = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 
-		db, err := setupDB(stateDirectory)
+		dbs, err := setupDatabases(stateDirectory)
 		if err != nil {
 			return fmt.Errorf("error opening database: %w", err)
 		}
@@ -57,7 +57,7 @@ var indexEvalCommand = &cobra.Command{
 			},
 		}
 
-		err = index.IndexEval(ctx, db, nixpkgs, channel, timestamp, evalMeta)
+		err = index.IndexEval(ctx, dbs.dbRW, nixpkgs, channel, timestamp, evalMeta)
 		if err != nil {
 			panic(err)
 		}

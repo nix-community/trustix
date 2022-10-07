@@ -214,8 +214,6 @@ func createLogs(ctx context.Context, db *sql.DB, logsResp *api.LogsResponse) (ma
 		logMap[*log.LogID] = dbLog
 	}
 
-	logger.Info("finished indexing logs")
-
 	return logMap, tx.Commit()
 }
 

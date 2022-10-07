@@ -329,28 +329,31 @@ func (s *APIServer) Diff(ctx context.Context, req *connect.Request[pb.DiffReques
 		requestKey = outputHash2 + "." + outputHash1
 	}
 
-	tx, err := s.cacheDB.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating db transaction: %w", err)
-	}
-	defer func() {
-		err := tx.Rollback()
-		if err != nil && err != sql.ErrTxDone {
-			panic(err)
+	// Read from cache
+	{
+		tx, err := s.cacheDbRo.BeginTx(ctx, nil)
+		if err != nil {
+			return nil, fmt.Errorf("error creating db transaction: %w", err)
 		}
-	}()
+		defer func() {
+			err := tx.Rollback()
+			if err != nil && err != sql.ErrTxDone {
+				panic(err)
+			}
+		}()
 
-	queries := dbcache.New(s.cacheDB)
-	qtx := queries.WithTx(tx)
+		queries := dbcache.New(s.cacheDbRo)
+		qtx := queries.WithTx(tx)
 
-	// attempt to get from cache
-	html, err := qtx.GetDiffoscopeHTML(ctx, requestKey)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return nil, fmt.Errorf("error retrieving diffoscope HTML from cache: %w", err)
-	} else if err == nil {
-		return connect.NewResponse(&pb.DiffResponse{
-			HTMLDiff: string(html),
-		}), nil
+		// attempt to get from cache
+		html, err := qtx.GetDiffoscopeHTML(ctx, requestKey)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("error retrieving diffoscope HTML from cache: %w", err)
+		} else if err == nil {
+			return connect.NewResponse(&pb.DiffResponse{
+				HTMLDiff: string(html),
+			}), nil
+		}
 	}
 
 	// if no cache entry was found, download and compare
@@ -360,6 +363,20 @@ func (s *APIServer) Diff(ctx context.Context, req *connect.Request[pb.DiffReques
 		if err != nil {
 			return nil, err
 		}
+
+		tx, err := s.cacheDbRw.BeginTx(ctx, nil)
+		if err != nil {
+			return nil, fmt.Errorf("error creating db transaction: %w", err)
+		}
+		defer func() {
+			err := tx.Rollback()
+			if err != nil && err != sql.ErrTxDone {
+				panic(err)
+			}
+		}()
+
+		queries := dbcache.New(s.cacheDbRw)
+		qtx := queries.WithTx(tx)
 
 		// add an entry to the cache
 		_, err = qtx.CreateDiffoscope(context.Background(), dbcache.CreateDiffoscopeParams{
