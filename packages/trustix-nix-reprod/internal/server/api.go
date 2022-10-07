@@ -201,7 +201,12 @@ func (s *APIServer) AttrReproducibilityTimeSeries(ctx context.Context, req *conn
 
 	for i, row := range rows {
 		// out of all built paths, how many were reproduced
-		pctReproduced := (100 / float32(row.OutputHashCount)) * float32(row.StorePathCount)
+		var pctReproduced float32
+		if row.OutputHashCount > 0 {
+			pctReproduced = (100 / float32(row.OutputHashCount)) * float32(row.StorePathCount)
+		} else {
+			pctReproduced = 0.0
+		}
 
 		// out of the total amount of paths, how many were reproduced
 		pctReproducedCum := 100 / float32(row.OutputCount) * (pctReproduced / 100 * float32(row.StorePathCount))
