@@ -105,6 +105,8 @@ var serveCommand = &cobra.Command{
 
 				log.Info("Triggering evaluation index cron job")
 
+				indexedEvals := 0
+
 				for channel, channelConfig := range conf.Channels {
 					l := log.WithFields(log.Fields{
 						"channel": channel,
@@ -112,15 +114,19 @@ var serveCommand = &cobra.Command{
 
 					l.Info("indexing channel")
 
-					err := index.IndexChannel(ctx, db, channel, channelConfig)
+					n, err := index.IndexChannel(ctx, db, channel, channelConfig)
 					if err != nil {
 						l.WithFields(log.Fields{
-							"error": err,
+							"erroro": err,
 						}).Error("error indexing channel")
 					}
+
+					indexedEvals += n
 				}
 
-				log.Info("Done executing evaluation index cron job")
+				log.WithFields(log.Fields{
+					"num_evals": indexedEvals,
+				}).Info("done executing evaluation index cron job")
 			})
 			defer evalIndexCron.Stop()
 		}

@@ -17,7 +17,7 @@ import (
 	"github.com/nix-community/trustix/packages/trustix-nix-reprod/internal/hydra"
 )
 
-func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig *config.Channel) error {
+func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig *config.Channel) (int, error) {
 	switch channelConfig.Type {
 
 	case "hydra":
@@ -40,7 +40,7 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 			return qtx.GetLatestHydraEval(ctx, channel)
 		}()
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("error retrieving latest hydra eval: %w", err)
+			return 0, fmt.Errorf("error retrieving latest hydra eval: %w", err)
 		}
 
 		// are we creating completely from scratch?
@@ -48,7 +48,7 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 
 		evalResp, err := hydra.GetEvaluations(channelConfig.Hydra.BaseURL, channelConfig.Hydra.Project, channelConfig.Hydra.Jobset)
 		if err != nil {
-			return fmt.Errorf("error getting response from Hydra at '%s': %w", channelConfig.Hydra.BaseURL, err)
+			return 0, fmt.Errorf("error getting response from Hydra at '%s': %w", channelConfig.Hydra.BaseURL, err)
 		}
 
 		// Create a list of evaluations to index
@@ -58,15 +58,6 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 		} else {
 		idloop:
 			for {
-				evalResp, err = evalResp.NextPage()
-				if err != nil {
-					if err == io.EOF {
-						break
-					}
-
-					return fmt.Errorf("error getting response from Hydra at '%s': %w", channelConfig.Hydra.BaseURL, err)
-				}
-
 				for _, eval := range evalResp.Evals {
 					if latestEval.HydraEvalID >= eval.ID {
 						break idloop
@@ -74,6 +65,16 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 
 					evals = append(evals, eval)
 				}
+
+				evalResp, err = evalResp.NextPage()
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+
+					return 0, fmt.Errorf("error getting response from Hydra at '%s': %w", channelConfig.Hydra.BaseURL, err)
+				}
+
 			}
 		}
 
@@ -87,18 +88,20 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 
 			nixPath, err := evalMeta.NixPath()
 			if err != nil {
-				return fmt.Errorf("error getting nix path: %w", err)
+				return 0, fmt.Errorf("error getting nix path: %w", err)
 			}
 
 			err = IndexEval(ctx, db, nixPath, channel, timestamp, evalMeta)
 			if err != nil {
-				return fmt.Errorf("error indexing evaluation as a part of channel '%s': %w", channel, err)
+				return 0, fmt.Errorf("error indexing evaluation as a part of channel '%s': %w", channel, err)
 			}
 		}
 
+		return len(evals), nil
+
 	default:
-		return fmt.Errorf("unhandled channel type: %s", channelConfig.Type)
+		return 0, fmt.Errorf("unhandled channel type: %s", channelConfig.Type)
 	}
 
-	return nil
+	return 0, nil
 }
