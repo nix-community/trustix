@@ -16,21 +16,15 @@ import (
 )
 
 type Config struct {
-	Channels              map[string]*Channel `toml:"channels" json:"channels"`
-	LogIndexCronInterval  int64               `toml:"log_index_cron_interval" json:"log_index_cron_interval"`
-	EvalIndexCronInterval int64               `toml:"eval_index_cron_interval" json:"eval_index_cron_interval"`
+	Channels map[string]*Channel `toml:"channels" json:"channels"`
+	Cron     *Cron               `toml:"cron" json:"cron"`
 }
 
 func (c *Config) init() {
-	// Every 5 minutes by default
-	if c.LogIndexCronInterval == 0 {
-		c.LogIndexCronInterval = 15 * 60
+	if c.Cron == nil {
+		c.Cron = &Cron{}
 	}
-
-	// Every hour by default
-	if c.EvalIndexCronInterval == 0 {
-		c.EvalIndexCronInterval = 60 * 60
-	}
+	c.Cron.init()
 }
 
 func (c *Config) Validate() error {

@@ -48,8 +48,8 @@ var serveCommand = &cobra.Command{
 		}
 
 		// config options
-		logIndexCronInterval := time.Second * time.Duration(conf.LogIndexCronInterval)
-		evalIndexCronInterval := time.Second * time.Duration(conf.EvalIndexCronInterval)
+		logIndexCronInterval := time.Second * time.Duration(conf.Cron.LogInterval)
+		evalIndexCronInterval := time.Second * time.Duration(conf.Cron.EvalInterval)
 
 		dbs, err := setupDatabases(stateDirectory)
 		if err != nil {
@@ -69,10 +69,8 @@ var serveCommand = &cobra.Command{
 				"interval": logIndexCronInterval,
 			}).Info("Starting log index cron")
 
-			logIndexCron := cron.NewSingletonCronJob(logIndexCronInterval, func() {
+			logIndexCron := cron.NewSingletonCronJob(logIndexCronInterval, func(ctx context.Context) {
 				log.Info("Triggering log index cron job")
-
-				ctx := context.Background()
 
 				err = index.IndexLogs(ctx, dbs.dbRW, client)
 				if err != nil {
@@ -81,18 +79,16 @@ var serveCommand = &cobra.Command{
 
 				log.Info("Done executing log index cron job")
 			})
-			defer logIndexCron.Stop()
+			defer logIndexCron.Close()
 		}
 
-		// Start indexing logs
+		// Start indexing evaluations
 		{
 			log.WithFields(log.Fields{
 				"interval": evalIndexCronInterval,
 			}).Info("Starting evaluation index cron")
 
-			evalIndexCron := cron.NewSingletonCronJob(evalIndexCronInterval, func() {
-				ctx := context.Background()
-
+			evalIndexCron := cron.NewSingletonCronJob(evalIndexCronInterval, func(ctx context.Context) {
 				log.Info("Triggering evaluation index cron job")
 
 				indexedEvals := 0
@@ -118,7 +114,7 @@ var serveCommand = &cobra.Command{
 					"num_evals": indexedEvals,
 				}).Info("done executing evaluation index cron job")
 			})
-			defer evalIndexCron.Stop()
+			defer evalIndexCron.Close()
 		}
 
 		apiServer := server.NewAPIServer(dbs.dbRO, dbs.cacheDbRW, dbs.cacheDbRO, client)

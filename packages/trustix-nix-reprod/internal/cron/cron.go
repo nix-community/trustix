@@ -5,69 +5,47 @@
 package cron
 
 import (
-	"sync/atomic"
+	"context"
+	"sync"
 	"time"
 )
 
 type CronJob struct {
 	stopChan chan struct{}
-	ticker   *time.Ticker
+	wg       sync.WaitGroup
 }
+
+type CronFunc = func(context.Context)
 
 // Run fn at an interval
-func NewCronJob(d time.Duration, fn func()) *CronJob {
+func NewCronJob(d time.Duration, fn CronFunc) *CronJob {
 	j := &CronJob{
-		ticker:   time.NewTicker(d),
 		stopChan: make(chan struct{}),
+		wg:       sync.WaitGroup{},
 	}
 
-	go func() {
-		go fn()
-
-		for {
-			select {
-			case <-j.stopChan:
-				break
-			case <-j.ticker.C:
-				go fn()
-			}
-		}
-	}()
-
-	return j
-}
-
-// A variant of a cronjob which only ever runs one instance of a function
-// if another instance is already running, the tick is dropped.
-func NewSingletonCronJob(d time.Duration, fn func()) *CronJob {
-	j := &CronJob{
-		ticker:   time.NewTicker(d),
-		stopChan: make(chan struct{}),
-	}
-
-	var running atomic.Bool
+	ctx, cancel := context.WithCancel(context.Background())
 
 	run := func() {
-		if running.Load() {
-			return
-		}
+		j.wg.Add(1)
+		defer j.wg.Done()
 
-		running.Store(true)
-		defer func() {
-			running.Store(false)
-		}()
-
-		fn()
+		fn(ctx)
 	}
 
+	j.wg.Add(1)
+
 	go func() {
+		defer j.wg.Done()
+
 		go run()
 
 		for {
 			select {
 			case <-j.stopChan:
+				cancel()
 				break
-			case <-j.ticker.C:
+			case <-time.After(d):
 				go run()
 			}
 		}
@@ -76,8 +54,39 @@ func NewSingletonCronJob(d time.Duration, fn func()) *CronJob {
 	return j
 }
 
-func (j *CronJob) Stop() {
+func NewSingletonCronJob(d time.Duration, fn CronFunc) *CronJob {
+	var mux sync.Mutex
+	running := false
+
+	return NewCronJob(d, func(ctx context.Context) {
+		// Return if already running
+		{
+			mux.Lock()
+
+			if running {
+				return
+			}
+
+			running = true
+
+			mux.Unlock()
+		}
+
+		// Unset running
+		defer func() {
+			mux.Lock()
+			running = false
+			mux.Unlock()
+		}()
+
+		fn(ctx)
+	})
+}
+
+func (j *CronJob) Close() error {
 	j.stopChan <- struct{}{}
 
-	j.ticker.Stop()
+	j.wg.Wait()
+
+	return nil
 }
