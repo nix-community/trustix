@@ -7,7 +7,12 @@ in
     ../packages/trustix-nix/nixos
   ];
 
-  nixpkgs.pkgs = import ../pkgs.nix { };
+  # TODO: for some reason setting nixpkgs.pkgs directly causes problems with nixos-shell
+  #       so instead we copy over the overlays and config, but the pinned nixpkgs does not carry over here
+  # nixpkgs.pkgs = import ../pkgs.nix {};
+  nixpkgs = {
+    inherit (import ../pkgs.nix { }) overlays config;
+  };
 
   services.trustix = {
     enable = true;
