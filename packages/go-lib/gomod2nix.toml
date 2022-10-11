@@ -11,8 +11,8 @@ schema = 3
     version = "v1.8.0"
     hash = "sha256-LDxBAebK+A06y4vbH7cd1sVBOameIY81Xm8/9OPZh7o="
   [mod."golang.org/x/exp"]
-    version = "v0.0.0-20221004215720-b9f4876ce741"
-    hash = "sha256-j4A3FnOJBkybLjkkeXg5ptBLzWCepOojr/MV96u/MaI="
+    version = "v0.0.0-20221010202428-3a778c567f61"
+    hash = "sha256-2aATMtazbT3i+X3m0Ju54GKOggcyeX9dAJFxO+H5IxQ="
   [mod."gopkg.in/yaml.v3"]
     version = "v3.0.1"
     hash = "sha256-FqL9TKYJ0XkNwJFnq9j0VvJ5ZUU1RvH/52h/f5bkYAU="

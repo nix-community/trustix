@@ -71,14 +71,14 @@ schema = 3
     version = "v1.8.0"
     hash = "sha256-WHWgw6hLI4tPKEqJt+WC38yt64OGCXfkUJDem6mM+Mw="
   [mod."golang.org/x/exp"]
-    version = "v0.0.0-20221004215720-b9f4876ce741"
-    hash = "sha256-j4A3FnOJBkybLjkkeXg5ptBLzWCepOojr/MV96u/MaI="
+    version = "v0.0.0-20221010202428-3a778c567f61"
+    hash = "sha256-2aATMtazbT3i+X3m0Ju54GKOggcyeX9dAJFxO+H5IxQ="
   [mod."golang.org/x/net"]
     version = "v0.0.0-20221004154528-8021a29435af"
     hash = "sha256-KYvRtL8Ich2Jo4Jji9rj8WL4XrjsoddIwggcMd2e1EE="
   [mod."golang.org/x/sys"]
-    version = "v0.0.0-20220928140112-f11e5e49a4ec"
-    hash = "sha256-Xu81/C0U3hGOIG2Z0AK/1ahyrQgTbP6oagMIrN25zXU="
+    version = "v0.0.0-20221010170243-090e33056c14"
+    hash = "sha256-0QvEbu4o68ESEiocyqD/kFbDjRdnGbJWGIazHdsaIYQ="
   [mod."golang.org/x/text"]
     version = "v0.3.7"
     hash = "sha256-XH2pUzzQx95O0rak00grQvfACfL+EmZiV7ZzJBkX+XY="

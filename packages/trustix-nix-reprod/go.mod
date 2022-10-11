@@ -21,10 +21,10 @@ require (
 	github.com/kyleconroy/sqlc v1.15.0
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/nix-community/go-nix v0.0.0-20220906172053-6b0185c1190b
-	github.com/nix-community/trustix/packages/go-lib v0.0.0-20221006094532-116e5118302b
-	github.com/nix-community/trustix/packages/trustix v0.0.0-20221006094532-116e5118302b
-	github.com/nix-community/trustix/packages/trustix-nix v0.0.0-20221006094532-116e5118302b
-	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20221006094532-116e5118302b
+	github.com/nix-community/trustix/packages/go-lib v0.0.0-20221010024647-1705ebe5aa6d
+	github.com/nix-community/trustix/packages/trustix v0.0.0-20221010024647-1705ebe5aa6d
+	github.com/nix-community/trustix/packages/trustix-nix v0.0.0-20221010024647-1705ebe5aa6d
+	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20221010024647-1705ebe5aa6d
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/pressly/goose v2.7.0+incompatible
 	github.com/pressly/goose/v3 v3.7.0
@@ -50,17 +50,17 @@ require (
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/klauspost/cpuid/v2 v2.1.1 // indirect
+	github.com/klauspost/cpuid/v2 v2.1.2 // indirect
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/multiformats/go-multihash v0.2.1 // indirect
 	github.com/multiformats/go-varint v0.0.6 // indirect
-	github.com/nix-community/trustix/packages/unixtransport v0.0.0-20221006094532-116e5118302b // indirect
+	github.com/nix-community/trustix/packages/unixtransport v0.0.0-20221010024647-1705ebe5aa6d // indirect
 	github.com/pganalyze/pg_query_go/v2 v2.1.2 // indirect
 	github.com/pingcap/errors v0.11.5-0.20210425183316-da1aaba5fb63 // indirect
 	github.com/pingcap/log v1.1.0 // indirect
-	github.com/pingcap/tidb/parser v0.0.0-20221002033547-51a6684fb767 // indirect
+	github.com/pingcap/tidb/parser v0.0.0-20221011024349-6c7a2365cedb // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20220927061507-ef77025ab5aa // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
@@ -69,9 +69,9 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.23.0 // indirect
-	golang.org/x/crypto v0.0.0-20221005025214-4161e89ecf1b // indirect
-	golang.org/x/exp v0.0.0-20221004215720-b9f4876ce741 // indirect
-	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
+	golang.org/x/crypto v0.0.0-20221010152910-d6f0a8c073c2 // indirect
+	golang.org/x/exp v0.0.0-20221010202428-3a778c567f61 // indirect
+	golang.org/x/sys v0.0.0-20221010170243-090e33056c14 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

@@ -68,8 +68,8 @@ schema = 3
     version = "v1.0.0"
     hash = "sha256-3h3pHib5MaCXKyKLIMyQnSptDJ16kPjCOQPoEBoQsZg="
   [mod."github.com/klauspost/cpuid/v2"]
-    version = "v2.1.1"
-    hash = "sha256-Ru6KSK9N08IxuwinJA1c+1zA04rTY8kcHBcKThMqZkE="
+    version = "v2.1.2"
+    hash = "sha256-Qm5gCgbGcM5Pp6Xy/T+uWqbJbZLnZqLszw1tjuj2aK4="
   [mod."github.com/kyleconroy/sqlc"]
     version = "v1.15.0"
     hash = "sha256-MzeNP+G9g507G9s0wTZfQLVHGYKilMoBXClANEP+oH0="
@@ -107,8 +107,8 @@ schema = 3
     version = "v1.1.0"
     hash = "sha256-JT33CJMknTXha1ERt4s6vV9fyx99J+Ot8rFrNKXTsTc="
   [mod."github.com/pingcap/tidb/parser"]
-    version = "v0.0.0-20221002033547-51a6684fb767"
-    hash = "sha256-irbWWJr6edZiMZG/HAVCGzm2R8M6l4STGwruS9CEsoc="
+    version = "v0.0.0-20221011024349-6c7a2365cedb"
+    hash = "sha256-bCIhc8REurAIuROdoAZP+T2/LldP5gR1DqXmFufHgGc="
   [mod."github.com/pkg/errors"]
     version = "v0.9.1"
     hash = "sha256-mNfQtcrQmu3sNg/7IwiieKWOgFQOVVe2yXgKBpe/wZw="
@@ -146,17 +146,17 @@ schema = 3
     version = "v1.23.0"
     hash = "sha256-A/Wf2F9yc+OTyX86QjTtzemUOaFSd7ptoNFaqr2smig="
   [mod."golang.org/x/crypto"]
-    version = "v0.0.0-20221005025214-4161e89ecf1b"
-    hash = "sha256-oU/a2iYUHp/bV1weLjkrjrfutQ5poN6PYHZIdHOm6cI="
+    version = "v0.0.0-20221010152910-d6f0a8c073c2"
+    hash = "sha256-jZZeMwr37uKVLfEEWvRqDlrfGy03rf5ghiZXoF/lh2E="
   [mod."golang.org/x/exp"]
-    version = "v0.0.0-20221004215720-b9f4876ce741"
-    hash = "sha256-j4A3FnOJBkybLjkkeXg5ptBLzWCepOojr/MV96u/MaI="
+    version = "v0.0.0-20221010202428-3a778c567f61"
+    hash = "sha256-2aATMtazbT3i+X3m0Ju54GKOggcyeX9dAJFxO+H5IxQ="
   [mod."golang.org/x/net"]
     version = "v0.0.0-20221004154528-8021a29435af"
     hash = "sha256-KYvRtL8Ich2Jo4Jji9rj8WL4XrjsoddIwggcMd2e1EE="
   [mod."golang.org/x/sys"]
-    version = "v0.0.0-20220928140112-f11e5e49a4ec"
-    hash = "sha256-Xu81/C0U3hGOIG2Z0AK/1ahyrQgTbP6oagMIrN25zXU="
+    version = "v0.0.0-20221010170243-090e33056c14"
+    hash = "sha256-0QvEbu4o68ESEiocyqD/kFbDjRdnGbJWGIazHdsaIYQ="
   [mod."golang.org/x/text"]
     version = "v0.3.7"
     hash = "sha256-XH2pUzzQx95O0rak00grQvfACfL+EmZiV7ZzJBkX+XY="
