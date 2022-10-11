@@ -192,7 +192,7 @@ RULES: List[Rule] = [
         dirs=[
             "packages/trustix",
             "packages/trustix-nix",
-            "packages/trustix-nix-reprod",
+            "packages/trustix-nix-r13y",
         ],
         license="GPL-3.0-only",
         add_header=True,
@@ -206,7 +206,7 @@ RULES: List[Rule] = [
         dirs=[
             "packages/trustix",
             "packages/trustix-nix",
-            "packages/trustix-nix-reprod",
+            "packages/trustix-nix-r13y",
         ],
         license="GPL-3.0-only",
         add_header=False,

@@ -3,7 +3,7 @@ Upstream-Name: trustix
 Upstream-Contact: adisbladis <adisbladis@gmail.com>
 Source: https://github.com/nix-community/trustix
 
-Files: .envrc Makefile Procfile default.nix examples/nixops-deployment.nix examples/nixos-shell.nix flake-fetch.nix flake.nix nixos/default.nix packages/go-lib/.envrc packages/go-lib/go.mod packages/go-lib/shell.nix packages/trustix-doc/Procfile packages/trustix-doc/default.nix packages/trustix-doc/doc_old/Makefile packages/trustix-doc/doc_old/shell.nix packages/trustix-nix-reprod/.envrc packages/trustix-nix-reprod/Procfile packages/trustix-nix-reprod/default.nix packages/trustix-nix-reprod/go.mod packages/trustix-nix-reprod/mk-proto packages/trustix-nix-reprod/shell.nix packages/trustix-nix/.envrc packages/trustix-nix/Procfile packages/trustix-nix/default.nix packages/trustix-nix/go.mod packages/trustix-nix/nixos/binarycache.nix packages/trustix-nix/nixos/default.nix packages/trustix-nix/nixos/post-build-hook.nix packages/trustix-nix/shell.nix packages/trustix-proto/.envrc packages/trustix-proto/Makefile packages/trustix-proto/Procfile packages/trustix-proto/go.mod packages/trustix-proto/shell.nix packages/trustix/.envrc packages/trustix/Procfile packages/trustix/default.nix packages/trustix/go.mod packages/trustix/nixos/default.nix packages/trustix/nixos/test.nix packages/trustix/shell.nix packages/trustix/tests/default.nix packages/unixtransport/.envrc packages/unixtransport/go.mod packages/unixtransport/shell.nix pkgs.nix shell.nix
+Files: .envrc Makefile Procfile default.nix examples/nixops-deployment.nix examples/nixos-shell.nix flake-fetch.nix flake.nix nixos/default.nix packages/go-lib/.envrc packages/go-lib/go.mod packages/go-lib/shell.nix packages/trustix-doc/Procfile packages/trustix-doc/default.nix packages/trustix-doc/doc_old/Makefile packages/trustix-doc/doc_old/shell.nix packages/trustix-nix-r13y/.envrc packages/trustix-nix-r13y/Procfile packages/trustix-nix-r13y/default.nix packages/trustix-nix-r13y/go.mod packages/trustix-nix-r13y/mk-proto packages/trustix-nix-r13y/shell.nix packages/trustix-nix/.envrc packages/trustix-nix/Procfile packages/trustix-nix/default.nix packages/trustix-nix/go.mod packages/trustix-nix/nixos/binarycache.nix packages/trustix-nix/nixos/default.nix packages/trustix-nix/nixos/post-build-hook.nix packages/trustix-nix/shell.nix packages/trustix-proto/.envrc packages/trustix-proto/Makefile packages/trustix-proto/Procfile packages/trustix-proto/go.mod packages/trustix-proto/shell.nix packages/trustix/.envrc packages/trustix/Procfile packages/trustix/default.nix packages/trustix/go.mod packages/trustix/nixos/default.nix packages/trustix/nixos/test.nix packages/trustix/shell.nix packages/trustix/tests/default.nix packages/unixtransport/.envrc packages/unixtransport/go.mod packages/unixtransport/shell.nix pkgs.nix shell.nix
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: MIT
 
@@ -11,7 +11,7 @@ Files: .github/workflows/doc.yml .github/workflows/golangci-lint.yml .github/wor
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC0-1.0
 
-Files: .gitignore .reuse/dep5 packages/trustix-doc/.gitignore packages/trustix-doc/doc_old/.gitignore packages/trustix-nix-reprod/.gitignore packages/trustix-nix/.gitignore packages/trustix-proto/.gitignore packages/trustix/.gitignore packages/unixtransport/.gitignore
+Files: .gitignore .reuse/dep5 packages/trustix-doc/.gitignore packages/trustix-doc/doc_old/.gitignore packages/trustix-nix-r13y/.gitignore packages/trustix-nix/.gitignore packages/trustix-proto/.gitignore packages/trustix/.gitignore packages/unixtransport/.gitignore
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC0-1.0
 
@@ -27,7 +27,7 @@ Files: assets/tweag.png
 Copyright: Copyright © 2021 The Tweag IO
 License: LicenseRef-all-rights-reserved
 
-Files: flake.lock packages/go-lib/go.sum packages/go-lib/gomod2nix.toml packages/trustix-nix-reprod/go.sum packages/trustix-nix-reprod/gomod2nix.toml packages/trustix-nix/go.sum packages/trustix-nix/gomod2nix.toml packages/trustix-proto/go.sum packages/trustix-proto/gomod2nix.toml packages/trustix/go.sum packages/trustix/gomod2nix.toml
+Files: flake.lock packages/go-lib/go.sum packages/go-lib/gomod2nix.toml packages/trustix-nix-r13y/go.sum packages/trustix-nix-r13y/gomod2nix.toml packages/trustix-nix/go.sum packages/trustix-nix/gomod2nix.toml packages/trustix-proto/go.sum packages/trustix-proto/gomod2nix.toml packages/trustix/go.sum packages/trustix/gomod2nix.toml
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC0-1.0
 
@@ -35,11 +35,11 @@ Files: packages/trustix-doc/book.toml packages/trustix-doc/doc_old/numeric.csl p
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC-BY-SA-4.0
 
-Files: packages/trustix-nix-reprod/examples/config.toml packages/trustix-nix-reprod/sqlc.yaml packages/trustix-nix/dev/cache-priv-key.pem packages/trustix-nix/dev/cache-pub-key.pem packages/trustix/config.toml treefmt.toml
+Files: packages/trustix-nix-r13y/examples/config.toml packages/trustix-nix-r13y/sqlc.yaml packages/trustix-nix/dev/cache-priv-key.pem packages/trustix-nix/dev/cache-pub-key.pem packages/trustix/config.toml treefmt.toml
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC0-1.0
 
-Files: packages/trustix-nix-reprod/reprod-api/api.pb.go packages/trustix-nix-reprod/reprod-api/reprod_apiconnect/api.connect.go packages/trustix-nix-reprod/sql-cache/queries/diffoscope.sql packages/trustix-nix-reprod/sql-cache/schema/20221005142925_initial.sql packages/trustix-nix-reprod/sql/queries/derivations.sql packages/trustix-nix-reprod/sql/queries/eval.sql packages/trustix-nix-reprod/sql/queries/logs.sql packages/trustix-nix-reprod/sql/queries/reprod.sql packages/trustix-nix-reprod/sql/queries/suggest.sql packages/trustix-nix-reprod/sql/schema/20220818142927_initial.sql packages/trustix-nix-reprod/sql/schema/20220904150640_logs.sql
+Files: packages/trustix-nix-r13y/reprod-api/api.pb.go packages/trustix-nix-r13y/reprod-api/reprod_apiconnect/api.connect.go packages/trustix-nix-r13y/sql-cache/queries/diffoscope.sql packages/trustix-nix-r13y/sql-cache/schema/20221005142925_initial.sql packages/trustix-nix-r13y/sql/queries/derivations.sql packages/trustix-nix-r13y/sql/queries/eval.sql packages/trustix-nix-r13y/sql/queries/logs.sql packages/trustix-nix-r13y/sql/queries/reprod.sql packages/trustix-nix-r13y/sql/queries/suggest.sql packages/trustix-nix-r13y/sql/schema/20220818142927_initial.sql packages/trustix-nix-r13y/sql/schema/20220904150640_logs.sql
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: GPL-3.0-only
 
