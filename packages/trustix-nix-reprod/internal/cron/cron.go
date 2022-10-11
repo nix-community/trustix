@@ -6,10 +6,11 @@ package cron
 
 import (
 	"context"
-	"encoding/binary"
 	"math/rand"
 	"sync"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type CronJob struct {
@@ -19,22 +20,26 @@ type CronJob struct {
 
 type CronFunc = func(context.Context)
 
-func randInt64(max int64) int64 {
-	return int64(rand.Intn(int(max)))
-}
-
 // Run fn at an interval
-func NewCronJob(d time.Duration, fn CronFunc) *CronJob {
+func NewCronJob(name string, d time.Duration, fn CronFunc) *CronJob {
 	j := &CronJob{
 		stopChan: make(chan struct{}),
 		wg:       sync.WaitGroup{},
 	}
+
+	l := log.WithFields(log.Fields{
+		"job":      "cron." + name,
+		"interval": d,
+	})
 
 	ctx, cancel := context.WithCancel(context.Background())
 
 	run := func() {
 		j.wg.Add(1)
 		defer j.wg.Done()
+
+		l.Info("starting job")
+		defer l.Info("job done")
 
 		fn(ctx)
 	}
@@ -43,16 +48,19 @@ func NewCronJob(d time.Duration, fn CronFunc) *CronJob {
 
 	// on the initial run of the cron job add a random sleep within the interval
 	// to prevent all concurrent jobs triggering at the same time
-	duration := time.Microsecond * time.Duration(randInt64(d.Microseconds()))
+	duration := time.Microsecond * time.Duration(rand.Int63n(d.Microseconds()))
+
+	l.WithFields(log.Fields{
+		"initial": duration,
+	}).Info("initialized job")
 
 	go func() {
 		defer j.wg.Done()
 
-		go run()
-
 		for {
 			select {
 			case <-j.stopChan:
+				l.Info("stopping")
 				cancel()
 				break
 			case <-time.After(duration):
@@ -68,11 +76,11 @@ func NewCronJob(d time.Duration, fn CronFunc) *CronJob {
 	return j
 }
 
-func NewSingletonCronJob(d time.Duration, fn CronFunc) *CronJob {
+func NewSingletonCronJob(name string, d time.Duration, fn CronFunc) *CronJob {
 	var mux sync.Mutex
 	running := false
 
-	return NewCronJob(d, func(ctx context.Context) {
+	return NewCronJob(name, d, func(ctx context.Context) {
 		// Return if already running
 		{
 			mux.Lock()

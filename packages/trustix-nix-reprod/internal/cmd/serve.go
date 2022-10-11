@@ -69,7 +69,7 @@ var serveCommand = &cobra.Command{
 				"interval": logIndexCronInterval,
 			}).Info("Starting log index cron")
 
-			logIndexCron := cron.NewSingletonCronJob(logIndexCronInterval, func(ctx context.Context) {
+			logIndexCron := cron.NewSingletonCronJob("log_index", logIndexCronInterval, func(ctx context.Context) {
 				log.Info("Triggering log index cron job")
 
 				err = index.IndexLogs(ctx, dbs.dbRW, client)
@@ -88,9 +88,7 @@ var serveCommand = &cobra.Command{
 				"interval": evalIndexCronInterval,
 			}).Info("Starting evaluation index cron")
 
-			evalIndexCron := cron.NewSingletonCronJob(evalIndexCronInterval, func(ctx context.Context) {
-				log.Info("Triggering evaluation index cron job")
-
+			evalIndexCron := cron.NewSingletonCronJob("eval_index", evalIndexCronInterval, func(ctx context.Context) {
 				indexedEvals := 0
 
 				for channel, channelConfig := range conf.Channels {
