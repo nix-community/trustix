@@ -6,6 +6,8 @@ package cron
 
 import (
 	"context"
+	"encoding/binary"
+	"math/rand"
 	"sync"
 	"time"
 )
@@ -16,6 +18,10 @@ type CronJob struct {
 }
 
 type CronFunc = func(context.Context)
+
+func randInt64(max int64) int64 {
+	return int64(rand.Intn(int(max)))
+}
 
 // Run fn at an interval
 func NewCronJob(d time.Duration, fn CronFunc) *CronJob {
@@ -35,6 +41,10 @@ func NewCronJob(d time.Duration, fn CronFunc) *CronJob {
 
 	j.wg.Add(1)
 
+	// on the initial run of the cron job add a random sleep within the interval
+	// to prevent all concurrent jobs triggering at the same time
+	duration := time.Microsecond * time.Duration(randInt64(d.Microseconds()))
+
 	go func() {
 		defer j.wg.Done()
 
@@ -45,9 +55,13 @@ func NewCronJob(d time.Duration, fn CronFunc) *CronJob {
 			case <-j.stopChan:
 				cancel()
 				break
-			case <-time.After(d):
+			case <-time.After(duration):
 				go run()
 			}
+		}
+
+		if duration != d {
+			duration = d
 		}
 	}()
 
