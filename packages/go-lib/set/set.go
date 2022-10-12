@@ -52,24 +52,39 @@ func (s *Set[T]) Values() []T {
 }
 
 // Check if a set has member of value.
+func (s *Set[T]) has(value T) bool {
+	_, ok := s.values[value]
+	return ok
+}
+
+// Check if a set has member of value.
 func (s *Set[T]) Has(value T) bool {
 	if s.mux != nil {
 		s.mux.RLock()
 		defer s.mux.RUnlock()
 	}
 
-	_, ok := s.values[value]
-	return ok
+	return s.has(value)
+}
+
+func (s *Set[T]) add(value T) {
+	s.values[value] = struct{}{}
 }
 
 // Add a member.
-func (s *Set[T]) Add(value T) {
+func (s *Set[T]) Add(value T) (added bool) {
 	if s.mux != nil {
 		s.mux.Lock()
 		defer s.mux.Unlock()
 	}
 
-	s.values[value] = struct{}{}
+	if s.has(value) {
+		return false
+	}
+
+	s.add(value)
+
+	return true
 }
 
 // Remove a member.
@@ -88,6 +103,10 @@ func (s *Set[T]) Union(set *Set[T]) *Set[T] {
 		s.mux.RLock()
 		defer s.mux.RUnlock()
 	}
+	if set.mux != nil {
+		set.mux.RLock()
+		defer set.mux.RUnlock()
+	}
 
 	us := &Set[T]{
 		// Note: Size is the minimum possible size of the new set
@@ -95,11 +114,11 @@ func (s *Set[T]) Union(set *Set[T]) *Set[T] {
 	}
 
 	for v := range s.values {
-		us.Add(v)
+		us.add(v)
 	}
 
 	for v := range set.values {
-		us.Add(v)
+		us.add(v)
 	}
 
 	return us
@@ -117,7 +136,7 @@ func (s *Set[T]) Copy() *Set[T] {
 	}
 
 	for v := range s.values {
-		copy.Add(v)
+		copy.add(v)
 	}
 
 	return copy
@@ -129,14 +148,18 @@ func (s *Set[T]) Diff(set *Set[T]) *Set[T] {
 		s.mux.RLock()
 		defer s.mux.RUnlock()
 	}
+	if set.mux != nil {
+		set.mux.RLock()
+		defer set.mux.RUnlock()
+	}
 
 	diff := &Set[T]{
 		values: make(map[T]struct{}),
 	}
 
 	for v := range s.values {
-		if !set.Has(v) {
-			diff.Add(v)
+		if !set.has(v) {
+			diff.add(v)
 		}
 	}
 
@@ -149,8 +172,12 @@ func (s *Set[T]) Update(set *Set[T]) {
 		s.mux.Lock()
 		defer s.mux.Unlock()
 	}
+	if set.mux != nil {
+		set.mux.RLock()
+		defer set.mux.RUnlock()
+	}
 
 	for v := range set.values {
-		s.Add(v)
+		s.add(v)
 	}
 }
