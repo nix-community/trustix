@@ -92,6 +92,7 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 	}
 
 	resp := &pb.DerivationReproducibilityResponse{
+		DrvPath: drvPath,
 		MissingPaths:      make(map[string]*respDerivation),
 		ReproducedPaths:   make(map[string]*respDerivation),
 		UnknownPaths:      make(map[string]*respDerivation),

@@ -172,16 +172,13 @@ func IndexEval[T EvalMetaDataTypes](ctx context.Context, db *sql.DB, nixPath str
 	// Index a derivation including it's dependencies
 	var indexDrv func(string) (int64, error)
 	indexDrv = func(drvPath string) (int64, error) {
-		// No-op if already indexed, populate map early to act as a lock per drvPath
-		if alreadyIndexed.Has(drvPath) {
+		if !alreadyIndexed.Add(drvPath) {
 			dbID, err := getDrvID(drvPath)
 			if err != nil {
 				return errorID, fmt.Errorf("error getting derivation id: %w", err)
 			}
 
 			return dbID, nil
-		} else {
-			alreadyIndexed.Add(drvPath)
 		}
 
 		drv, err := drvParser.ReadPath(drvPath)

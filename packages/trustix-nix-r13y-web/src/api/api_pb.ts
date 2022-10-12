@@ -539,4 +539,3 @@ export class DiffResponse extends Message<DiffResponse> {
     return proto3.util.equals(DiffResponse, a, b);
   }
 }
-

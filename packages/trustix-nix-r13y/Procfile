@@ -1,4 +1,4 @@
 build: reflex -r '\.go$' go build
 sqlc: reflex -r '\.sql$' sqlc generate
-serve: go build && ../../tools/wait_for_file trustix-nix-r13y && echo trustix-nix-r13y | entr -r ./trustix-nix-r13y serve
+serve: go build && ../../tools/wait_for_file trustix-nix-r13y && echo trustix-nix-r13y | entr -r ./trustix-nix-r13y --config examples/config.toml serve --listen http://localhost:8090
 proto: reflex -r '\.proto$' ./mk-proto
