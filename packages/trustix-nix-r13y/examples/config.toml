@@ -2,11 +2,7 @@
 eval_index = 3600
 log_index = 900
 
-[channels.nixos-unstable]
-expr = "import <nixpkgs> { }"
-type = "hydra"
-
-[channels.nixos-unstable.hydra]
+[channels.hydra.nixos-unstable]
 base_url = "https://hydra.nixos.org"
 jobset = "trunk-combined"
 project = "nixos"

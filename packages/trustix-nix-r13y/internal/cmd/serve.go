@@ -91,14 +91,14 @@ var serveCommand = &cobra.Command{
 			evalIndexCron := cron.NewSingletonCronJob("eval_index", evalIndexCronInterval, func(ctx context.Context) {
 				indexedEvals := 0
 
-				for channel, channelConfig := range conf.Channels {
+				for channel, channelConfig := range conf.Channels.Hydra {
 					l := log.WithFields(log.Fields{
 						"channel": channel,
 					})
 
 					l.Info("indexing channel")
 
-					n, err := index.IndexChannel(ctx, dbs.dbRW, channel, channelConfig)
+					n, err := index.IndexHydraJobset(ctx, dbs.dbRW, channel, channelConfig)
 					if err != nil {
 						l.WithFields(log.Fields{
 							"erroro": err,

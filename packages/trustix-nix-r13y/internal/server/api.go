@@ -92,7 +92,7 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 	}
 
 	resp := &pb.DerivationReproducibilityResponse{
-		DrvPath: drvPath,
+		DrvPath:           drvPath,
 		MissingPaths:      make(map[string]*respDerivation),
 		ReproducedPaths:   make(map[string]*respDerivation),
 		UnknownPaths:      make(map[string]*respDerivation),
@@ -109,7 +109,7 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 			drvs[row.Drv] = drv
 		}
 
-		_, ok = drv.Outputs[row.Drv]
+		_, ok = drv.Outputs[row.Output]
 		if !ok {
 			drvOutput := &respDerivationOutput{
 				Output:       row.Output,
@@ -125,7 +125,7 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 				drvOutput.OutputHashes[outputHash] = out
 			}
 
-			drv.Outputs[row.Drv] = drvOutput
+			drv.Outputs[row.Output] = drvOutput
 		}
 	}
 

@@ -18,15 +18,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig *config.Channel) (int, error) {
-
+func IndexHydraJobset(ctx context.Context, db *sql.DB, channel string, jobsetConfig *config.HydraJobset) (int, error) {
 	l := log.WithFields(log.Fields{
 		"channel": channel,
 	})
 
-	switch channelConfig.Type {
+	// Hydra
+	{
 
-	case "hydra":
 		l = l.WithFields(log.Fields{
 			"channelType": "hydra",
 		})
@@ -60,9 +59,9 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 
 		l.Info("getting evaluations from hydra API")
 
-		evalResp, err := hydra.GetEvaluations(channelConfig.Hydra.BaseURL, channelConfig.Hydra.Project, channelConfig.Hydra.Jobset)
+		evalResp, err := hydra.GetEvaluations(jobsetConfig.BaseURL, jobsetConfig.Project, jobsetConfig.Jobset)
 		if err != nil {
-			return 0, fmt.Errorf("error getting response from Hydra at '%s': %w", channelConfig.Hydra.BaseURL, err)
+			return 0, fmt.Errorf("error getting response from Hydra at '%s': %w", jobsetConfig.BaseURL, err)
 		}
 
 		// Create a list of evaluations to index
@@ -86,7 +85,7 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 						break
 					}
 
-					return 0, fmt.Errorf("error getting response from Hydra at '%s': %w", channelConfig.Hydra.BaseURL, err)
+					return 0, fmt.Errorf("error getting response from Hydra at '%s': %w", jobsetConfig.BaseURL, err)
 				}
 
 			}
@@ -112,9 +111,6 @@ func IndexChannel(ctx context.Context, db *sql.DB, channel string, channelConfig
 		}
 
 		return len(evals), nil
-
-	default:
-		return 0, fmt.Errorf("unhandled channel type: %s", channelConfig.Type)
 	}
 
 	return 0, nil

@@ -6,13 +6,13 @@ package config
 
 import "fmt"
 
-type HydraChannel struct {
+type HydraJobset struct {
 	BaseURL string `toml:"base_url" json:"base_url"`
 	Project string `toml:"project" json:"project"`
 	Jobset  string `toml:"jobset" json:"jobset"`
 }
 
-func (c *HydraChannel) Validate() error {
+func (c *HydraJobset) Validate() error {
 	if c.BaseURL == "" {
 		return fmt.Errorf("missing baseURL")
 	}
@@ -28,26 +28,22 @@ func (c *HydraChannel) Validate() error {
 	return nil
 }
 
-type Channel struct {
-	Type  string
-	Expr  string
-	Hydra *HydraChannel `toml:"hydra" json:"hydra"`
+type Channels struct {
+	Hydra map[string]*HydraJobset `toml:"hydra" json:"hydra"`
 }
 
-func (c *Channel) Validate() error {
-	switch c.Type {
-	case "hydra":
-		err := c.Hydra.Validate()
-		if err != nil {
-			return fmt.Errorf("error validating hydra channel config: %w", err)
-		}
-
-	default:
-		return fmt.Errorf("error validating channel config: invalid type '%s'", c.Type)
+func (c *Channels) init() {
+	if c.Hydra == nil {
+		c.Hydra = make(map[string]*HydraJobset)
 	}
+}
 
-	if c.Expr == "" {
-		return fmt.Errorf("missing expr")
+func (c *Channels) Validate() error {
+	for name, jobset := range c.Hydra {
+		err := jobset.Validate()
+		if err != nil {
+			return fmt.Errorf("error validating jobset '%s': %w", name, err)
+		}
 	}
 
 	return nil

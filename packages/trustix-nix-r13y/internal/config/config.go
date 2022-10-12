@@ -16,8 +16,8 @@ import (
 )
 
 type Config struct {
-	Channels map[string]*Channel `toml:"channels" json:"channels"`
-	Cron     *Cron               `toml:"cron" json:"cron"`
+	Channels *Channels `toml:"channels" json:"channels"`
+	Cron     *Cron     `toml:"cron" json:"cron"`
 }
 
 func (c *Config) init() {
@@ -25,14 +25,17 @@ func (c *Config) init() {
 		c.Cron = &Cron{}
 	}
 	c.Cron.init()
+
+	if c.Channels == nil {
+		c.Channels = &Channels{}
+	}
+	c.Channels.init()
 }
 
 func (c *Config) Validate() error {
-	for channel, channelConf := range c.Channels {
-		err := channelConf.Validate()
-		if err != nil {
-			return fmt.Errorf("error validating channel config for '%s': %w", channel, err)
-		}
+	err := c.Channels.Validate()
+	if err != nil {
+		return fmt.Errorf("error validating channels: %w", err)
 	}
 
 	return nil
