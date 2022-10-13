@@ -14,25 +14,25 @@ import (
 )
 
 type CronJob struct {
-	stopChan chan struct{}
-	wg       sync.WaitGroup
+	cancel context.CancelFunc
+	wg     sync.WaitGroup
 }
 
 type CronFunc = func(context.Context)
 
 // Run fn at an interval
 func NewCronJob(name string, d time.Duration, fn CronFunc) *CronJob {
+	ctx, cancel := context.WithCancel(context.Background())
+
 	j := &CronJob{
-		stopChan: make(chan struct{}),
-		wg:       sync.WaitGroup{},
+		wg:     sync.WaitGroup{},
+		cancel: cancel,
 	}
 
 	l := log.WithFields(log.Fields{
 		"job":      "cron." + name,
 		"interval": d,
 	})
-
-	ctx, cancel := context.WithCancel(context.Background())
 
 	run := func() {
 		j.wg.Add(1)
@@ -57,9 +57,11 @@ func NewCronJob(name string, d time.Duration, fn CronFunc) *CronJob {
 	go func() {
 		defer j.wg.Done()
 
+		stopChan := ctx.Done()
+
 		for {
 			select {
-			case <-j.stopChan:
+			case <-stopChan:
 				l.Info("stopping")
 				cancel()
 				break
@@ -106,8 +108,7 @@ func NewSingletonCronJob(name string, d time.Duration, fn CronFunc) *CronJob {
 }
 
 func (j *CronJob) Close() error {
-	j.stopChan <- struct{}{}
-
+	j.cancel()
 	j.wg.Wait()
 
 	return nil
