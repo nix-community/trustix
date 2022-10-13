@@ -52,44 +52,137 @@ const renderDerivationOutput = (
   storePath: string,
   outputHashes: NameValuePair<DerivationReproducibilityResponse_DerivationOutputHash>[]
 ): Component => {
+  // Keeps track of which checkboxes (ie active diffs) are checked
+  const checkedNarinfoHashes = new Set<string>();
+
+  const renderOutputHash = (
+    outputNarinfoHash: string,
+    logIDs: Array<Number>
+  ): Component => {
+    // Args passed to the input checkbox
+    const checkboxArgs = {};
+
+    // Hide the compare checkbox if there is one or less output hash,(nohing to compare)
+    if (logIDs.length < 2) {
+      checkboxArgs["disabled"] = "disabled";
+    }
+
+    const onChecked = (e) => {
+      if (e.target.checked) {
+        checkedNarinfoHashes.add(outputNarinfoHash);
+      } else {
+        checkedNarinfoHashes.delete(outputNarinfoHash);
+      }
+    }
+
+    return (
+      <>
+        <tr>
+          <th>
+            <label>
+              <input
+                onInput={onChecked}
+                type="checkbox"
+                className="checkbox"
+                {...checkboxArgs}
+              />
+            </label>
+          </th>
+          <td>
+            <div className="flex items-center space-x-3">
+              <div>
+                <div className="text-sm opacity-50">{outputNarinfoHash}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <For each={logIDs}>
+              {(logID) => (
+                <>
+                  <span className="badge badge-ghost badge-sm">{logID}</span>
+                  <br />
+                </>
+              )}
+            </For>
+          </td>
+        </tr>
+      </>
+    );
+  };
+
+  const onNarinfoClicked = (e) => {
+    const checked = checkedNarinfoHashes;
+
+    if (checked.size == 0) {
+      alert("No Narinfo hashes selected");
+      return;
+    } else if (checked.size == 1 || checked.size > 2) {
+      alert(
+        "Invalid number of Narinfo hashes selected, we can only compare 2 at a time"
+      );
+      return;
+    }
+
+    const [a, b] = checked;
+
+    alert("TODO: Redirect to diff view")
+  }
+
   return (
     <>
-      <div className="card bg-base-200 shadow-xl m-1">
+      <div className="card bg-base-200 shadow-xl m-3">
         <div className="card-body">
           <h2 className="card-title tooltip" data-tip="Output name">
             {output}
           </h2>
           <p className="font-bold">{storePath}</p>
+
+          {outputHashes.length > 0 && (
+            <>
+              <div className="overflow-x-auto w-full">
+                <table className="table w-full">
+                  <thead>
+                    <tr>
+                      <th>✓</th>
+                      <th>Narinfo hash</th>
+                      <th>Logs</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <For each={outputHashes}>
+                      {({ name, value }) =>
+                        renderOutputHash(name, value.LogIDs.map(Number))
+                      }
+                    </For>
+                  </tbody>
+                </table>
+
+                {/* show the compare button if there are more than one output hash for the same output */}
+                {outputHashes.length > 1 && (
+                  <button
+                    onClick={onNarinfoClicked}
+                    className="btn btn-info btn-sm"
+                  >
+                    Compare outputs
+                  </button>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
-
-      <ul class="list-disc list-inside">
-        <For each={outputHashes}>
-          {({ name, value }) => {
-            const outputNarinfoHash = name;
-            const logIDs: Array<Number> = value.LogIDs.map(Number);
-
-            return (
-              <li>
-                <p className="tooltip" data-tip="Narinfo hash">
-                  {outputNarinfoHash}: {logIDs}
-                </p>
-              </li>
-            );
-          }}
-        </For>
-      </ul>
     </>
   );
 };
 
 const renderDerivationOutputs = (
   drvPath: string,
-  drvOutputs: NameValuePair<DerivationReproducibilityResponse_DerivationOutput>
+  cardBackground: string,
+  drvOutputs: NameValuePair<DerivationReproducibilityResponse_DerivationOutput>[]
 ): Component => {
   return (
     <>
-      <div className="card drv-card bg-base-100 shadow-xl m-2">
+      <div className={`card drv-card shadow-xl m-2 ${cardBackground}`}>
         <div className="card-body">
           <A
             href={`/drv?storePath=${encodeURIComponent(
@@ -122,6 +215,7 @@ const renderDerivationOutputs = (
 
 const renderPaths = (
   title: string,
+  cardBackground: string,
   paths: DerivationReproducibilityPaths
 ): Component => {
   if (Object.keys(paths).length == 0) {
@@ -139,7 +233,11 @@ const renderPaths = (
 
         <For each={derivations}>
           {({ name, value }) =>
-            renderDerivationOutputs(name, NameValuePair.fromMap(value.Outputs))
+            renderDerivationOutputs(
+              name,
+              cardBackground,
+              NameValuePair.fromMap(value.Outputs)
+            )
           }
         </For>
       </div>
@@ -166,16 +264,25 @@ const Derivation: Component = () => {
 
         <Suspense fallback={loading}>
           <Show when={drvReprod()}>
-            {renderPaths("Unreproduced paths", drvReprod()?.UnreproducedPaths)}
+            {renderPaths(
+              "Unreproduced paths",
+              "bg-error",
+              drvReprod()?.UnreproducedPaths
+            )}
           </Show>
 
           <Show when={drvReprod()}>
-            {renderPaths("Reproduced paths", drvReprod()?.ReproducedPaths)}
+            {renderPaths(
+              "Reproduced paths",
+              "bg-success",
+              drvReprod()?.ReproducedPaths
+            )}
           </Show>
 
           <Show when={drvReprod()}>
             {renderPaths(
               "Unknown paths (only built by one log)",
+              "bg-warning",
               drvReprod()?.UnknownPaths
             )}
           </Show>
@@ -183,6 +290,7 @@ const Derivation: Component = () => {
           <Show when={drvReprod()}>
             {renderPaths(
               "Missing paths (not built by any known log)",
+              "bg-base-100",
               drvReprod()?.MissingPaths
             )}
           </Show>
