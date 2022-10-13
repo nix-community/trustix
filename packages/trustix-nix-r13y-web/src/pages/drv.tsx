@@ -19,6 +19,8 @@ import {
   DerivationReproducibilityRequest,
   DerivationReproducibilityResponse,
   DerivationReproducibilityResponse_Derivation,
+  DerivationReproducibilityResponse_DerivationOutput,
+  DerivationReproducibilityResponse_DerivationOutputHash,
 } from "../api/api_pb";
 import { NameValuePair } from "../lib";
 
@@ -45,6 +47,79 @@ const fetchDerivationReproducibility = async (
   return await client.derivationReproducibility(req);
 };
 
+const renderDerivationOutput = (
+  output: string,
+  storePath: string,
+  outputHashes: NameValuePair<DerivationReproducibilityResponse_DerivationOutputHash>[]
+): Component => {
+  return (
+    <>
+      <div className="card bg-base-200 shadow-xl m-1">
+        <div className="card-body">
+          <h2 className="card-title tooltip" data-tip="Output name">
+            {output}
+          </h2>
+          <p className="font-bold">{storePath}</p>
+        </div>
+      </div>
+
+      <ul class="list-disc list-inside">
+        <For each={outputHashes}>
+          {({ name, value }) => {
+            const outputNarinfoHash = name;
+            const logIDs: Array<Number> = value.LogIDs.map(Number);
+
+            return (
+              <li>
+                <p className="tooltip" data-tip="Narinfo hash">
+                  {outputNarinfoHash}: {logIDs}
+                </p>
+              </li>
+            );
+          }}
+        </For>
+      </ul>
+    </>
+  );
+};
+
+const renderDerivationOutputs = (
+  drvPath: string,
+  drvOutputs: NameValuePair<DerivationReproducibilityResponse_DerivationOutput>
+): Component => {
+  return (
+    <>
+      <div className="card drv-card bg-base-100 shadow-xl m-2">
+        <div className="card-body">
+          <A
+            href={`/drv?storePath=${encodeURIComponent(
+              encodeURIComponent(drvPath)
+            )}`}
+          >
+            <h2 className="card-title tooltip" data-tip="Derivation store path">
+              {drvPath}
+            </h2>
+          </A>
+
+          <div>
+            <For each={drvOutputs}>
+              {({ name, value }) =>
+                renderDerivationOutput(
+                  name,
+                  value.StorePath,
+                  NameValuePair.fromMap(value.OutputHashes).sort(
+                    (a, b) => a.value.LogIDs.length > b.value.LogIDs.length
+                  )
+                )
+              }
+            </For>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
 const renderPaths = (
   title: string,
   paths: DerivationReproducibilityPaths
@@ -62,93 +137,11 @@ const renderPaths = (
       <div className="grid place-items-center w-11/12">
         <h3 className="text-xl font-bold underline">{title}</h3>
 
-        <ul className="grid auto-cols-auto list-inside">
-          <For each={derivations}>
-            {({ name, value }) => {
-              const drvPath = name;
-              const drvOutputs = NameValuePair.fromMap(value.Outputs);
-
-              return (
-                <li>
-                  <div className="card drv-card bg-base-100 shadow-xl m-2">
-                    <div className="card-body">
-                      <A
-                        href={`/drv?storePath=${encodeURIComponent(
-                          encodeURIComponent(drvPath)
-                        )}`}
-                      >
-                        <h2
-                          className="card-title tooltip"
-                          data-tip="Derivation store path"
-                        >
-                          {drvPath}
-                        </h2>
-                      </A>
-
-                      <ul class="list-disc list-inside">
-                        <For each={drvOutputs}>
-                          {({ name, value }) => {
-                            const output = name;
-                            const storePath = value.StorePath;
-
-                            // Sort output hashes according to popularity
-                            const outputHashes = NameValuePair.fromMap(
-                              value.OutputHashes
-                            ).sort(
-                              (a, b) =>
-                                a.value.LogIDs.length > b.value.LogIDs.length
-                            );
-
-                            return (
-                              <li>
-                                <span>
-                                  <span
-                                    className="font-bold tooltip"
-                                    data-tip="Output name"
-                                  >
-                                    {output}
-                                  </span>
-                                  &nbsp;
-                                  <span
-                                    className="tooltip"
-                                    data-tip="Output store path"
-                                  >
-                                    ({storePath})
-                                  </span>
-                                </span>
-
-                                <ul class="list-disc list-inside">
-                                  <For each={outputHashes}>
-                                    {({ name, value }) => {
-                                      const outputNarinfoHash = name;
-                                      const logIDs: Array<Number> =
-                                        value.LogIDs.map(Number);
-
-                                      return (
-                                        <li>
-                                          <p
-                                            className="tooltip"
-                                            data-tip="Narinfo hash"
-                                          >
-                                            {outputNarinfoHash}: {logIDs}
-                                          </p>
-                                        </li>
-                                      );
-                                    }}
-                                  </For>
-                                </ul>
-                              </li>
-                            );
-                          }}
-                        </For>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-              );
-            }}
-          </For>
-        </ul>
+        <For each={derivations}>
+          {({ name, value }) =>
+            renderDerivationOutputs(name, NameValuePair.fromMap(value.Outputs))
+          }
+        </For>
       </div>
     </>
   );
