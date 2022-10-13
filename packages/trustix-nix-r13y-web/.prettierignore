@@ -1,0 +1,5 @@
+build
+coverage
+dist
+result
+src/api/*.ts
