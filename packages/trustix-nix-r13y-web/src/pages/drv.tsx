@@ -1,14 +1,12 @@
 import {
-  lazy,
   Component,
-  createSignal,
   createResource,
   For,
   Show,
   Suspense,
   createEffect,
 } from "solid-js";
-import { Routes, Route, useParams, useSearchParams, A } from "@solidjs/router";
+import { useSearchParams, A } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import {
@@ -30,6 +28,7 @@ type DerivationReproducibilityPaths = {
 };
 type Logs = { [key: string]: Log };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const objSize = (o: any): number => Object.keys(o).length;
 
 const fetchDerivationReproducibility = async (
@@ -108,7 +107,7 @@ const renderDerivationOutput = (
     );
   };
 
-  const onNarinfoClicked = (e) => {
+  const onNarinfoClicked = () => {
     const checked = checkedNarinfoHashes;
 
     if (checked.size == 0) {
@@ -123,7 +122,7 @@ const renderDerivationOutput = (
 
     const [a, b] = checked;
 
-    alert("TODO: Redirect to diff view");
+    alert("TODO: Redirect to diff view: ", a, b);
   };
 
   return (
@@ -364,7 +363,7 @@ const renderDerivationStatistics = (
 };
 
 const Derivation: Component = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [drvReprod] = createResource(
     () => searchParams.storePath,
     fetchDerivationReproducibility,

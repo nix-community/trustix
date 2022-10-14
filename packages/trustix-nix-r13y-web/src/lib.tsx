@@ -9,7 +9,7 @@ export class NameValuePair<T> {
 
   // Turn a map of objects into an array of name value pairs
   public static fromMap<T>(values: { [key: string]: T }): NameValuePair<T>[] {
-    let arr: Array<T> = [];
+    const arr: Array<T> = [];
 
     Object.keys(values).forEach((key) => {
       const value = values[key];

@@ -1,14 +1,10 @@
 import {
-  lazy,
   Component,
-  createSignal,
   createResource,
   For,
   Show,
   Suspense,
-  createEffect,
 } from "solid-js";
-import { Routes, Route, useParams, useSearchParams, A } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import {
@@ -43,10 +39,11 @@ const renderChannel = (
         .map(Number),
     ),
   ];
+  console.log(timestamps)
 
   type pointsT = AttrReproducibilityTimeSeriesPoint[];
 
-  const pointsByTimestamp: { [key: Number]: pointsT } = { }
+  const pointsByTimestamp: { [key: number]: pointsT } = { }
   attrKeys
     .forEach((attrKey) => {
       const points = attrs[attrKey].Points
@@ -138,7 +135,7 @@ const renderChannel = (
     },
   };
 
-  const [chart, setChart] = createStore(chartSettings);
+  const [chart] = createStore(chartSettings);
 
   return (
     <>
