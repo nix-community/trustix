@@ -11,6 +11,7 @@ export type SolidChartProps = {
 Chart.register(...registerables);
 
 const replaceChartProps = (props: { src: SolidChartProps; dest: Chart }) => {
+  /* eslint-disable solid/reactivity */
   const { src, dest } = props;
   for (const key in src) {
     if (key in dest) {
@@ -41,5 +42,7 @@ export function SolidChart(props: SolidChartProps) {
   function createChart(canvas: HTMLCanvasElement) {
     setTimeout(() => setCanvas(canvas));
   }
+
+  /* eslint-disable solid/reactivity */
   return <canvas {...props.canvasOptions} ref={createChart} />;
 }

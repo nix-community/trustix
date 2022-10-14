@@ -78,15 +78,15 @@ const renderDerivationOutput = (
               <input
                 onInput={onChecked}
                 type="checkbox"
-                className="checkbox"
+                class="checkbox"
                 {...checkboxArgs}
               />
             </label>
           </th>
           <td>
-            <div className="flex items-center space-x-3">
+            <div class="flex items-center space-x-3">
               <div>
-                <div className="text-sm opacity-50">{outputNarinfoHash}</div>
+                <div class="text-sm opacity-50">{outputNarinfoHash}</div>
               </div>
             </div>
           </td>
@@ -94,7 +94,7 @@ const renderDerivationOutput = (
             <For each={logIDs}>
               {(logID) => (
                 <>
-                  <span className="badge badge-ghost badge-sm">
+                  <span class="badge badge-ghost badge-sm">
                     {logs[logID].Name}
                   </span>
                   <br />
@@ -127,17 +127,17 @@ const renderDerivationOutput = (
 
   return (
     <>
-      <div className="card bg-base-200 shadow-xl m-3">
-        <div className="card-body">
-          <h2 className="card-title tooltip" data-tip="Output name">
+      <div class="card bg-base-200 shadow-xl m-3">
+        <div class="card-body">
+          <h2 class="card-title tooltip" data-tip="Output name">
             {output}
           </h2>
-          <p className="font-bold">{storePath}</p>
+          <p class="font-bold">{storePath}</p>
 
           {outputHashes.length > 0 && (
             <>
-              <div className="overflow-x-auto w-full">
-                <table className="table w-full">
+              <div class="overflow-x-auto w-full">
+                <table class="table w-full">
                   <thead>
                     <tr>
                       <th>✓</th>
@@ -158,7 +158,7 @@ const renderDerivationOutput = (
                 {outputHashes.length > 1 && (
                   <button
                     onClick={onNarinfoClicked}
-                    className="btn btn-info btn-sm"
+                    class="btn btn-info btn-sm"
                   >
                     Compare outputs
                   </button>
@@ -180,14 +180,14 @@ const renderDerivationOutputs = (
 ): Component => {
   return (
     <>
-      <div className={`card drv-card shadow-xl m-2 ${cardBackground}`}>
-        <div className="card-body">
+      <div class={`card drv-card shadow-xl m-2 ${cardBackground}`}>
+        <div class="card-body">
           <A
             href={`/drv?storePath=${encodeURIComponent(
               encodeURIComponent(drvPath),
             )}`}
           >
-            <h2 className="card-title tooltip" data-tip="Derivation store path">
+            <h2 class="card-title tooltip" data-tip="Derivation store path">
               {drvPath}
             </h2>
           </A>
@@ -218,18 +218,14 @@ const renderPaths = (
   paths: DerivationReproducibilityPaths,
   logs: Logs,
 ): Component => {
-  if (Object.keys(paths).length == 0) {
-    return <></>;
-  }
-
   const derivations = NameValuePair.fromMap(paths);
 
   return (
     <>
-      <div className="divider"></div>
+      <div class="divider" />
 
-      <div className="grid place-items-center w-11/12">
-        <h3 className="text-xl font-bold underline">{title}</h3>
+      <div class="grid place-items-center w-11/12">
+        <h3 class="text-xl font-bold underline">{title}</h3>
 
         <For each={derivations}>
           {({ name, value }) =>
@@ -298,6 +294,7 @@ const renderDerivationStatistics = (
     setChart("data", "datasets", datasets);
   });
 
+  /* eslint-disable solid/reactivity */
   const numOutputs = [
     drvReprod.UnreproducedPaths,
     drvReprod.ReproducedPaths,
@@ -308,40 +305,40 @@ const renderDerivationStatistics = (
   const numReproduced = objSize(drvReprod.ReproducedPaths);
 
   return (
-    <div className="flex justify-evenly">
-      <div className="card w-96 bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title">Statistics</h2>
+    <div class="flex justify-evenly">
+      <div class="card w-96 bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title">Statistics</h2>
 
-          <table className="table">
+          <table class="table">
             <tbody>
               <tr>
-                <td className="font-bold">Unreproduced paths</td>
+                <td class="font-bold">Unreproduced paths</td>
                 <td>{objSize(drvReprod.UnreproducedPaths)}</td>
               </tr>
 
               <tr>
-                <td className="font-bold">Reproduced paths</td>
+                <td class="font-bold">Reproduced paths</td>
                 <td>{numReproduced}</td>
               </tr>
 
               <tr>
-                <td className="font-bold">Unknown paths</td>
+                <td class="font-bold">Unknown paths</td>
                 <td>{objSize(drvReprod.UnknownPaths)}</td>
               </tr>
 
               <tr>
-                <td className="font-bold">Missing paths</td>
+                <td class="font-bold">Missing paths</td>
                 <td>{objSize(drvReprod.MissingPaths)}</td>
               </tr>
 
               <tr>
-                <td className="font-bold">Reproduced</td>
+                <td class="font-bold">Reproduced</td>
                 <td>{(numOutputs / 100) * numReproduced}%</td>
               </tr>
 
               <tr>
-                <td className="font-bold">Number of logs</td>
+                <td class="font-bold">Number of logs</td>
                 <td>{objSize(drvReprod.Logs)}</td>
               </tr>
             </tbody>
@@ -372,7 +369,7 @@ const Derivation: Component = () => {
   return (
     <>
       <div>
-        <h2 className="text-xl font-bold text-center mb-2">
+        <h2 class="text-xl font-bold text-center mb-2">
           {searchParams.storePath}
         </h2>
 

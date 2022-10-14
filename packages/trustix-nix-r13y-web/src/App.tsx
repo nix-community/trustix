@@ -23,22 +23,22 @@ const App: Component = () => {
 
   return (
     <>
-      <div className="bg-base-200 min-h-screen">
-        <nav id="main-nav" className="bg-primary p-2">
+      <div class="bg-base-200 min-h-screen">
+        <nav id="main-nav" class="bg-primary p-2">
           <For each={links}>
             {(l) => (
-              <A className="text-primary-content m-2" href={l.href}>
+              <A class="text-primary-content m-2" href={l.href}>
                 {l.title}
               </A>
             )}
           </For>
 
           <button
-            className="float-right"
+            class="float-right"
             data-toggle-theme="dark,light"
             data-act-class="ACTIVECLASS"
           >
-            <span className="" data-tip="toggle dark mode">
+            <span class="" data-tip="toggle dark mode">
               💡
             </span>
           </button>

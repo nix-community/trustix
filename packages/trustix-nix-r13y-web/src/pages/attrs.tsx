@@ -81,13 +81,17 @@ const renderChannel = (
   }
 
   const datasets = attrKeys.map((attrKey) => {
-    const points = timestamps.map((ts) => pointsByTimestamp[ts][attrKey])
+    const points = timestamps.map((ts) => pointsByTimestamp[ts][attrKey]);
 
     return {
       label: attrKey,
-      data: points.map(point => point == undefined ? point : point.PctReproduced),
-      "x-r13y-drv": points.map(point => point == undefined ? point : point.DrvPath),
-      backgroundColor: palette('tol', points.length).map(hex => `#${hex}`),
+      data: points.map((point) =>
+        point == undefined ? point : point.PctReproduced,
+      ),
+      "x-r13y-drv": points.map((point) =>
+        point == undefined ? point : point.DrvPath,
+      ),
+      backgroundColor: palette("tol", points.length).map((hex) => `#${hex}`),
       spanGaps: true,
     };
   });
@@ -153,7 +157,7 @@ const renderChannel = (
 
   return (
     <>
-      <h2 className="text-xl font-bold text-center mb-2">{channel}</h2>
+      <h2 class="text-xl font-bold text-center mb-2">{channel}</h2>
 
       <Show when={redirStorePath()}>
         <Navigate
@@ -169,12 +173,13 @@ const renderChannel = (
         }}
       />
 
-      <div className="divider"></div>
+      <div class="divider" />
     </>
   );
 };
 
 const renderChannels = (resp: DerivationReproducibilityResponse): Component => {
+  /* eslint-disable solid/reactivity */
   const channels = NameValuePair.fromMap(resp.Channels);
 
   return (
