@@ -6,8 +6,10 @@ import {
   For,
   Show,
   Suspense,
+  createEffect,
 } from "solid-js";
 import { Routes, Route, useParams, useSearchParams, A } from "@solidjs/router";
+import { createStore } from "solid-js/store";
 
 import {
   createConnectTransport,
@@ -23,6 +25,11 @@ import {
   DerivationReproducibilityResponse_DerivationOutputHash,
 } from "../api/api_pb";
 import { NameValuePair } from "../lib";
+
+import {
+  SolidChart,
+  SolidChartProps,
+} from "../chart/SolidChart";
 
 type DerivationReproducibilityPaths = {
   [key: string]: DerivationReproducibilityResponse_Derivation;
@@ -260,6 +267,60 @@ const Derivation: Component = () => {
     fetchDerivationReproducibility,
   );
 
+  // Show a doughnut chart with the different groups
+  const chartSettings: SolidChartProps = {
+    type: 'doughnut',
+    data: {
+      labels: [
+        "Unreproduced paths",
+        "Reproduced paths",
+        "Unknown paths",
+        "Missing paths",
+      ],
+
+    },
+    options: {
+      responsive: false,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Chart.js Doughnut Chart'
+        }
+      }
+    },
+  }
+
+  const [chart, setChart] = createStore(chartSettings);
+
+  createEffect(() => {
+    const resp = drvReprod()
+    if (resp == undefined) {
+      return
+    }
+
+    const datasets = [
+      {
+        data: [
+          resp.UnreproducedPaths,
+          resp.ReproducedPaths,
+          resp.UnknownPaths,
+          resp.MissingPaths,
+        ].map(paths => Object.keys(paths).length),
+        backgroundColor: [
+          "#f87272",  // bg-error
+          "#36d399",  // bg-success
+          "#fbbd23",  // bg-warning
+          "#ffffff", // bg-base-100
+        ]
+      }
+    ]
+
+    setChart("data", "datasets", datasets)
+  });
+
   return (
     <>
       <div>
@@ -271,6 +332,17 @@ const Derivation: Component = () => {
         </h2>
 
         <Suspense fallback={loading}>
+
+          <Show when={drvReprod()}>
+            <SolidChart
+              {...chart}
+              canvasOptions={{
+                width: 300,
+                height: 300,
+              }}
+            />
+          </Show>
+
           <Show when={drvReprod()}>
             {renderPaths(
               "Unreproduced paths",
