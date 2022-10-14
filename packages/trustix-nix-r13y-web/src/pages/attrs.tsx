@@ -18,6 +18,8 @@ import { NameValuePair } from "../lib";
 
 import { loading } from "../widgets";
 
+import palette from "google-palette";
+
 import { SolidChart, SolidChartProps } from "../chart/SolidChart";
 
 import client from "../client";
@@ -79,24 +81,13 @@ const renderChannel = (
   }
 
   const datasets = attrKeys.map((attrKey) => {
+    const points = timestamps.map((ts) => pointsByTimestamp[ts][attrKey])
+
     return {
       label: attrKey,
-      data: timestamps.map((ts) => {
-        const point = pointsByTimestamp[ts][attrKey];
-        if (point == undefined) {
-          return null;
-        }
-
-        return point.PctReproduced;
-      }),
-      "x-r13y-drv": timestamps.map((ts) => {
-        const point = pointsByTimestamp[ts][attrKey];
-        if (point == undefined) {
-          return null;
-        }
-
-        return point.DrvPath;
-      }),
+      data: points.map(point => point == undefined ? point : point.PctReproduced),
+      "x-r13y-drv": points.map(point => point == undefined ? point : point.DrvPath),
+      backgroundColor: palette('tol', points.length).map(hex => `#${hex}`),
       spanGaps: true,
     };
   });
