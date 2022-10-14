@@ -12,12 +12,6 @@ import { Routes, Route, useParams, useSearchParams, A } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import {
-  createConnectTransport,
-  createPromiseClient,
-} from "@bufbuild/connect-web";
-
-import { ReproducibilityAPI } from "../api/api_connectweb";
-import {
   DerivationReproducibilityRequest,
   DerivationReproducibilityResponse,
   DerivationReproducibilityResponse_Derivation,
@@ -25,6 +19,9 @@ import {
   DerivationReproducibilityResponse_DerivationOutputHash,
 } from "../api/api_pb";
 import { NameValuePair } from "../lib";
+import client from "../client";
+
+import { loading } from "../widgets";
 
 import { SolidChart, SolidChartProps } from "../chart/SolidChart";
 
@@ -33,20 +30,11 @@ type DerivationReproducibilityPaths = {
 };
 type Logs = { [key: string]: Log };
 
-const loading = <h1>Loading...</h1>;
-
 const objSize = (o: any): number => Object.keys(o).length;
 
 const fetchDerivationReproducibility = async (
   drvPath,
 ): DerivationReproducibilityResponse => {
-  const client = createPromiseClient(
-    ReproducibilityAPI,
-    createConnectTransport({
-      baseUrl: "/api",
-    }),
-  );
-
   const req = new DerivationReproducibilityRequest({
     DrvPath: drvPath,
   });
