@@ -4,8 +4,10 @@ import {
   For,
   Show,
   Suspense,
+  createSignal,
 } from "solid-js";
 import { createStore } from "solid-js/store";
+import { Navigate } from "@solidjs/router";
 
 import {
   AttrReproducibilityTimeSeriesGroupedbyChannelRequest,
@@ -39,76 +41,97 @@ const renderChannel = (
         .map(Number),
     ),
   ];
-  console.log(timestamps)
 
-  type pointsT = AttrReproducibilityTimeSeriesPoint[];
+  type pointT = AttrReproducibilityTimeSeriesPoint;
 
-  const pointsByTimestamp: { [key: number]: pointsT } = { }
-  attrKeys
-    .forEach((attrKey) => {
-      const points = attrs[attrKey].Points
+  const pointsByTimestamp: {
+    [key: number]: { [key: string]: AttrReproducibilityTimeSeriesPoint };
+  } = {};
+  attrKeys.forEach((attrKey) => {
+    const points = attrs[attrKey].Points;
 
-      points.forEach((point) => {
-        const ts = Number(point.EvalTimestamp)
+    points.forEach((point) => {
+      const ts = Number(point.EvalTimestamp);
 
-        let groupedPoints: pointsT
-        if (!(ts in pointsByTimestamp)) {
-          groupedPoints = [ ]
-          pointsByTimestamp[ts] = groupedPoints
-        } else {
-          groupedPoints = pointsByTimestamp[ts]
+      let byAttr: { [key: string]: pointT };
+      if (ts in pointsByTimestamp) {
+        byAttr = pointsByTimestamp[ts];
+      } else {
+        byAttr = {};
+        pointsByTimestamp[ts] = byAttr;
+      }
+
+      if (!(attrKey in byAttr)) {
+        byAttr[attrKey] = point;
+      }
+    });
+  });
+
+  /* const labels =  */
+  const labels = timestamps
+    .map((ts) => ts * 1000)
+    .map((ts) => new Date(ts).toISOString());
+
+  // If there is only one label make it both the first and the last time in chart
+  // so it looks less empty
+  if (labels.length == 1) {
+    labels.push(labels[0]);
+  }
+
+  const datasets = attrKeys.map((attrKey) => {
+    return {
+      label: attrKey,
+      data: timestamps.map((ts) => {
+        const point = pointsByTimestamp[ts][attrKey];
+        if (point == undefined) {
+          return null;
         }
 
-        groupedPoints.push(point)
-      })
-    })
-  console.log(pointsByTimestamp)
+        return point.PctReproduced;
+      }),
+      "x-r13y-drv": timestamps.map((ts) => {
+        const point = pointsByTimestamp[ts][attrKey];
+        if (point == undefined) {
+          return null;
+        }
 
-    /* .map((attr) => attr.Points.map((p) => p.EvalTimestamp))
-     * .map(Number), */
+        return point.DrvPath;
+      }),
+      spanGaps: true,
+    };
+  });
 
-  /* console.log(timestamps); */
+  const [redirStorePath, setRedirStorePath] = createSignal();
 
-    /*
-       attrKeys.map((attr) => {
-     *       const points = attrs[attr].Points;
+  const chartSettings: SolidChartProps = {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: datasets,
+    },
+    options: {
+      onClick: (event, elements) => {
+        const drvPaths = new Set<string>();
 
-     *       const pointsByTimestamp: {
-     *         [key: number]: AttrReproducibilityTimeSeriesPoint;
-     *       } = {};
-     *       points.forEach((p) => {
-     *         pointsByTimestamp[Number(p.EvalTimestamp)] = p;
-     *       });
+        for (const elem of elements) {
+          const i = elem.index;
+          const dsi = elem.datasetIndex;
 
-     *       return {
-     *         label: attr,
-     *         data: [6, 5],
-     *       };
-       }), */
-    const chartSettings: SolidChartProps = {
-          type: "line",
-          data: {
-            /* labels: timestamps
-             *   .map((ts) => ts * 1000)
-             *   .map((ts) => new Date(ts).toISOString()), */
-            labels: ["1", "2", "3", "4"],
-            datasets: [
-              {
-                label: "A",
-                data: [50, 75, 50, 10],
-              },
-              {
-                label: "B",
-                data: [20, 15, 80, 30],
-              },
-              {
-                label: "C",
-                data: [80, 30, 80, 19],
-                spanGaps: true,
-              }
-            ],
-          },
-          options: {
+          const drvPath = datasets[dsi]["x-r13y-drv"][i];
+          drvPaths.add(drvPath);
+        }
+
+        switch (drvPaths.size) {
+          case 0:
+            return;
+          case 1:
+            setRedirStorePath(Array.from(drvPaths)[0]);
+            return;
+          default:
+            alert("multiple derivations at selection point");
+            break;
+        }
+      },
       responsive: true,
       plugins: {
         legend: {
@@ -140,6 +163,12 @@ const renderChannel = (
   return (
     <>
       <h2 className="text-xl font-bold text-center mb-2">{channel}</h2>
+
+      <Show when={redirStorePath()}>
+        <Navigate
+          href={`/drv?storePath=${encodeURIComponent(redirStorePath())}`}
+        />
+      </Show>
 
       <SolidChart
         {...chart}

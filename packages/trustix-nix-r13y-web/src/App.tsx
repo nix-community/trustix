@@ -1,6 +1,6 @@
 import type { Component } from "solid-js";
 import { lazy, onMount, For } from "solid-js";
-import { Routes, Route, A } from "@solidjs/router";
+import { Routes, Route, A, Navigate } from "@solidjs/router";
 import { themeChange } from "theme-change";
 
 const Derivation = lazy(() => import("./pages/drv"));
@@ -46,6 +46,7 @@ const App: Component = () => {
 
         <div>
           <Routes>
+            <Route path="/" component={<Navigate href="/attrs" />} />
             <Route path="/attrs" component={Attrs} />
             <Route path="/drv" component={Derivation} />
           </Routes>
