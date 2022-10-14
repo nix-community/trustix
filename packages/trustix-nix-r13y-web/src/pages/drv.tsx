@@ -26,10 +26,7 @@ import {
 } from "../api/api_pb";
 import { NameValuePair } from "../lib";
 
-import {
-  SolidChart,
-  SolidChartProps,
-} from "../chart/SolidChart";
+import { SolidChart, SolidChartProps } from "../chart/SolidChart";
 
 type DerivationReproducibilityPaths = {
   [key: string]: DerivationReproducibilityResponse_Derivation;
@@ -37,6 +34,8 @@ type DerivationReproducibilityPaths = {
 type Logs = { [key: string]: Log };
 
 const loading = <h1>Loading...</h1>;
+
+const objSize = (o: any): number => Object.keys(o).length;
 
 const fetchDerivationReproducibility = async (
   drvPath,
@@ -260,16 +259,12 @@ const renderPaths = (
   );
 };
 
-const Derivation: Component = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [drvReprod] = createResource(
-    () => searchParams.storePath,
-    fetchDerivationReproducibility,
-  );
-
+const renderDerivationStatistics = (
+  drvReprod: DerivationReproducibilityResponse,
+): Component => {
   // Show a doughnut chart with the different groups
   const chartSettings: SolidChartProps = {
-    type: 'doughnut',
+    type: "doughnut",
     data: {
       labels: [
         "Unreproduced paths",
@@ -277,24 +272,23 @@ const Derivation: Component = () => {
         "Unknown paths",
         "Missing paths",
       ],
-
     },
     options: {
       responsive: false,
       plugins: {
         legend: {
-          position: 'top',
+          position: "top",
         },
-      }
+      },
     },
-  }
+  };
 
   const [chart, setChart] = createStore(chartSettings);
 
   createEffect(() => {
-    const resp = drvReprod()
+    const resp = drvReprod;
     if (resp == undefined) {
-      return
+      return;
     }
 
     const datasets = [
@@ -304,46 +298,100 @@ const Derivation: Component = () => {
           resp.ReproducedPaths,
           resp.UnknownPaths,
           resp.MissingPaths,
-        ].map(paths => Object.keys(paths).length),
+        ].map((paths) => Object.keys(paths).length),
         backgroundColor: [
-          "#f87272",  // bg-error
-          "#36d399",  // bg-success
-          "#fbbd23",  // bg-warning
+          "#f87272", // bg-error
+          "#36d399", // bg-success
+          "#fbbd23", // bg-warning
           "#ffffff", // bg-base-100
-        ]
-      }
-    ]
+        ],
+      },
+    ];
 
-    setChart("data", "datasets", datasets)
+    setChart("data", "datasets", datasets);
   });
+
+  const numOutputs = [
+    drvReprod.UnreproducedPaths,
+    drvReprod.ReproducedPaths,
+    drvReprod.UnknownPaths,
+    drvReprod.MissingPaths,
+  ].reduce((acc, v) => acc + objSize(v), 0);
+
+  const numReproduced = objSize(drvReprod.ReproducedPaths);
+
+  return (
+    <div className="flex justify-evenly">
+      <div className="card w-96 bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title">Statistics</h2>
+
+          <table className="table">
+            <tbody>
+              <tr>
+                <td className="font-bold">Unreproduced paths</td>
+                <td>{objSize(drvReprod.UnreproducedPaths)}</td>
+              </tr>
+
+              <tr>
+                <td className="font-bold">Reproduced paths</td>
+                <td>{numReproduced}</td>
+              </tr>
+
+              <tr>
+                <td className="font-bold">Unknown paths</td>
+                <td>{objSize(drvReprod.UnknownPaths)}</td>
+              </tr>
+
+              <tr>
+                <td className="font-bold">Missing paths</td>
+                <td>{objSize(drvReprod.MissingPaths)}</td>
+              </tr>
+
+              <tr>
+                <td className="font-bold">Reproduced</td>
+                <td>{(numOutputs / 100) * numReproduced}%</td>
+              </tr>
+
+              <tr>
+                <td className="font-bold">Number of logs</td>
+                <td>{objSize(drvReprod.Logs)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <SolidChart
+          {...chart}
+          canvasOptions={{
+            width: 300,
+            height: 300,
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+const Derivation: Component = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [drvReprod] = createResource(
+    () => searchParams.storePath,
+    fetchDerivationReproducibility,
+  );
 
   return (
     <>
       <div>
-        <h2
-          className="tooltip text-xl font-bold place-items-center"
-          data-tip="Derivation store path"
-        >
+        <h2 className="text-xl font-bold text-center mb-2">
           {searchParams.storePath}
         </h2>
 
         <Suspense fallback={loading}>
-
           <Show when={drvReprod()}>
-              <div className="flex justify-evenly">
-                <div className="">
-                  Foo
-                </div>
-                <div>
-                  <SolidChart
-                    {...chart}
-                    canvasOptions={{
-                      width: 300,
-                      height: 300,
-                    }}
-                  />
-                </div>
-              </div>
+            {renderDerivationStatistics(drvReprod())}
           </Show>
 
           <Show when={drvReprod()}>
