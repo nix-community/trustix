@@ -285,10 +285,6 @@ const Derivation: Component = () => {
         legend: {
           position: 'top',
         },
-        title: {
-          display: true,
-          text: 'Chart.js Doughnut Chart'
-        }
       }
     },
   }
@@ -325,7 +321,7 @@ const Derivation: Component = () => {
     <>
       <div>
         <h2
-          className="tooltip text-xl font-bold"
+          className="tooltip text-xl font-bold place-items-center"
           data-tip="Derivation store path"
         >
           {searchParams.storePath}
@@ -334,13 +330,20 @@ const Derivation: Component = () => {
         <Suspense fallback={loading}>
 
           <Show when={drvReprod()}>
-            <SolidChart
-              {...chart}
-              canvasOptions={{
-                width: 300,
-                height: 300,
-              }}
-            />
+              <div className="flex justify-evenly">
+                <div className="">
+                  Foo
+                </div>
+                <div>
+                  <SolidChart
+                    {...chart}
+                    canvasOptions={{
+                      width: 300,
+                      height: 300,
+                    }}
+                  />
+                </div>
+              </div>
           </Show>
 
           <Show when={drvReprod()}>
