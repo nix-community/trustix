@@ -115,7 +115,7 @@ var serveCommand = &cobra.Command{
 			defer evalIndexCron.Close()
 		}
 
-		apiServer := server.NewAPIServer(dbs.dbRO, dbs.cacheDbRW, dbs.cacheDbRO, client)
+		apiServer := server.NewAPIServer(dbs.dbRO, dbs.cacheDbRW, dbs.cacheDbRO, client, conf.Lognames)
 
 		errChan := make(chan error)
 

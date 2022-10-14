@@ -11,7 +11,7 @@ option go_package = "github.com/nix-community/trustix/packages/trustix-nix-r13y/
 message DerivationReproducibilityRequest { string DrvPath = 1; }
 
 message DerivationReproducibilityResponse {
-  message DerivationOutputHash { repeated int64 LogIDs = 1; }
+  message DerivationOutputHash { repeated string LogIDs = 1; }
 
   message DerivationOutput {
     string Output = 1;
@@ -29,6 +29,13 @@ message DerivationReproducibilityResponse {
   map<string, Derivation> ReproducedPaths = 3;
   map<string, Derivation> UnknownPaths = 4;
   map<string, Derivation> MissingPaths = 5;
+
+  map<string, Log> Logs = 6;
+}
+
+message Log {
+  string LogID = 1;
+  string Name = 2;
 }
 
 message AttrReproducibilityTimeSeriesPoint {

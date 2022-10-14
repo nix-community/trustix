@@ -12,6 +12,7 @@ import (
 	"time"
 
 	connect "github.com/bufbuild/connect-go"
+	"github.com/nix-community/trustix/packages/go-lib/set"
 	idb "github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/db"
 	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/future"
 	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/refcount"
@@ -35,37 +36,30 @@ type APIServer struct {
 	cacheDbRo *sql.DB
 	cacheDbRw *sql.DB
 
+	logNames map[string]string
+
 	diffExecutor     *future.KeyedFutures[*pb.DiffResponse]
 	downloadExecutor *future.KeyedFutures[*refcount.RefCountedValue[*narDownload]]
 }
 
-func NewAPIServer(db *sql.DB, cacheDB *sql.DB, cacheDBRO *sql.DB, client *client.Client) *APIServer {
+func NewAPIServer(db *sql.DB, cacheDB *sql.DB, cacheDBRO *sql.DB, client *client.Client, logNames map[string]string) *APIServer {
 	return &APIServer{
 		db:               db,
 		client:           client,
 		cacheDbRw:        cacheDB,
 		cacheDbRo:        cacheDBRO,
+		logNames:         logNames,
 		diffExecutor:     future.NewKeyedFutures[*pb.DiffResponse](),
 		downloadExecutor: future.NewKeyedFutures[*refcount.RefCountedValue[*narDownload]](),
 	}
 }
 
-func getFirstMapKey(m map[string][]int) string {
+func getFirstMapKey(m map[string][]string) string {
 	for k := range m {
 		return k
 	}
 
 	panic("No key found")
-}
-
-func toInt64(s []int) []int64 {
-	x := make([]int64, len(s))
-
-	for i, v := range s {
-		x[i] = int64(v)
-	}
-
-	return x
 }
 
 func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.Request[pb.DerivationReproducibilityRequest]) (*connect.Response[pb.DerivationReproducibilityResponse], error) {
@@ -97,9 +91,12 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 		ReproducedPaths:   make(map[string]*respDerivation),
 		UnknownPaths:      make(map[string]*respDerivation),
 		UnreproducedPaths: make(map[string]*respDerivation),
+		Logs:              make(map[string]*pb.Log),
 	}
 
-	appendOutput := func(drvs map[string]*respDerivation, row idb.GetDerivationReproducibilityRow, outputHashes map[string][]int) {
+	logIDSet := set.NewSet[string]()
+
+	appendOutput := func(drvs map[string]*respDerivation, row idb.GetDerivationReproducibilityRow, outputHashes map[string][]string) {
 		drv, ok := drvs[row.Drv]
 		if !ok {
 			drv = &respDerivation{
@@ -119,10 +116,15 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 
 			for outputHash, logIDs := range outputHashes {
 				out := &respDerivationOutputHash{
-					LogIDs: toInt64(logIDs),
+					LogIDs: logIDs,
 				}
 
 				drvOutput.OutputHashes[outputHash] = out
+
+				// Collect all log ids used in response so we can aggregate it on the response object later
+				for _, logID := range logIDs {
+					logIDSet.Add(logID)
+				}
 			}
 
 			drv.Outputs[row.Output] = drvOutput
@@ -131,12 +133,12 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 
 	for _, row := range rows {
 		// Decode output hashes from aggregate JSON object from SQLite
-		outputHashes := make(map[string][]int)
+		outputHashes := make(map[string][]string)
 		{
 			outputHashesString := row.OutputResults.(string)
 
 			if outputHashesString != nullJSONGroupObjectString {
-				outputHashesObj := make(map[int]string)
+				outputHashesObj := make(map[string]string)
 
 				err = json.Unmarshal([]byte(outputHashesString), &outputHashesObj)
 				if err != nil {
@@ -159,6 +161,20 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 			appendOutput(resp.UnreproducedPaths, row, outputHashes)
 		} else {
 			panic("logic error")
+		}
+	}
+
+	for _, logID := range logIDSet.Values() {
+		// Is there a human friendly name configured?
+		// If there is set that as the name otherwise fall back to the raw ID
+		name, ok := s.logNames[logID]
+		if !ok {
+			name = logID
+		}
+
+		resp.Logs[logID] = &pb.Log{
+			LogID: logID,
+			Name:  name,
 		}
 	}
 

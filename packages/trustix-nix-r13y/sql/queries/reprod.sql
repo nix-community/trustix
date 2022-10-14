@@ -4,13 +4,14 @@ SELECT
   drvoutput.output,
   drvoutput.store_path,
   json_group_object(
-    drvoutputresult.log_id,
+    log.log_id,
     drvoutputresult.output_hash
   ) AS output_results
 FROM
   derivationoutput AS drvoutput
   JOIN derivation drv ON drv.id = drvoutput.derivation_id
   LEFT JOIN derivationoutputresult drvoutputresult ON drvoutputresult.store_path = drvoutput.store_path
+  LEFT JOIN log log ON log.id = drvoutputresult.log_id
   JOIN derivationrefrecursive refs_recurse ON refs_recurse.drv_id = drvoutput.derivation_id
   JOIN derivation referrer_drv ON referrer_drv.id = refs_recurse.referrer_id
 WHERE

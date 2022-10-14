@@ -27,17 +27,18 @@ import { NameValuePair } from "../lib";
 type DerivationReproducibilityPaths = {
   [key: string]: DerivationReproducibilityResponse_Derivation;
 };
+type Logs = { [key: string]: Log };
 
 const loading = <h1>Loading...</h1>;
 
 const fetchDerivationReproducibility = async (
-  drvPath
+  drvPath,
 ): DerivationReproducibilityResponse => {
   const client = createPromiseClient(
     ReproducibilityAPI,
     createConnectTransport({
       baseUrl: "/api",
-    })
+    }),
   );
 
   const req = new DerivationReproducibilityRequest({
@@ -50,14 +51,15 @@ const fetchDerivationReproducibility = async (
 const renderDerivationOutput = (
   output: string,
   storePath: string,
-  outputHashes: NameValuePair<DerivationReproducibilityResponse_DerivationOutputHash>[]
+  outputHashes: NameValuePair<DerivationReproducibilityResponse_DerivationOutputHash>[],
+  logs: Logs,
 ): Component => {
   // Keeps track of which checkboxes (ie active diffs) are checked
   const checkedNarinfoHashes = new Set<string>();
 
   const renderOutputHash = (
     outputNarinfoHash: string,
-    logIDs: Array<Number>
+    logIDs: Array<string>,
   ): Component => {
     // Args passed to the input checkbox
     const checkboxArgs = {};
@@ -73,7 +75,7 @@ const renderDerivationOutput = (
       } else {
         checkedNarinfoHashes.delete(outputNarinfoHash);
       }
-    }
+    };
 
     return (
       <>
@@ -99,7 +101,9 @@ const renderDerivationOutput = (
             <For each={logIDs}>
               {(logID) => (
                 <>
-                  <span className="badge badge-ghost badge-sm">{logID}</span>
+                  <span className="badge badge-ghost badge-sm">
+                    {logs[logID].Name}
+                  </span>
                   <br />
                 </>
               )}
@@ -118,15 +122,15 @@ const renderDerivationOutput = (
       return;
     } else if (checked.size == 1 || checked.size > 2) {
       alert(
-        "Invalid number of Narinfo hashes selected, we can only compare 2 at a time"
+        "Invalid number of Narinfo hashes selected, we can only compare 2 at a time",
       );
       return;
     }
 
     const [a, b] = checked;
 
-    alert("TODO: Redirect to diff view")
-  }
+    alert("TODO: Redirect to diff view");
+  };
 
   return (
     <>
@@ -151,7 +155,7 @@ const renderDerivationOutput = (
                   <tbody>
                     <For each={outputHashes}>
                       {({ name, value }) =>
-                        renderOutputHash(name, value.LogIDs.map(Number))
+                        renderOutputHash(name, value.LogIDs)
                       }
                     </For>
                   </tbody>
@@ -178,7 +182,8 @@ const renderDerivationOutput = (
 const renderDerivationOutputs = (
   drvPath: string,
   cardBackground: string,
-  drvOutputs: NameValuePair<DerivationReproducibilityResponse_DerivationOutput>[]
+  drvOutputs: NameValuePair<DerivationReproducibilityResponse_DerivationOutput>[],
+  logs: Logs,
 ): Component => {
   return (
     <>
@@ -186,7 +191,7 @@ const renderDerivationOutputs = (
         <div className="card-body">
           <A
             href={`/drv?storePath=${encodeURIComponent(
-              encodeURIComponent(drvPath)
+              encodeURIComponent(drvPath),
             )}`}
           >
             <h2 className="card-title tooltip" data-tip="Derivation store path">
@@ -201,8 +206,9 @@ const renderDerivationOutputs = (
                   name,
                   value.StorePath,
                   NameValuePair.fromMap(value.OutputHashes).sort(
-                    (a, b) => a.value.LogIDs.length > b.value.LogIDs.length
-                  )
+                    (a, b) => a.value.LogIDs.length > b.value.LogIDs.length,
+                  ),
+                  logs,
                 )
               }
             </For>
@@ -216,7 +222,8 @@ const renderDerivationOutputs = (
 const renderPaths = (
   title: string,
   cardBackground: string,
-  paths: DerivationReproducibilityPaths
+  paths: DerivationReproducibilityPaths,
+  logs: Logs,
 ): Component => {
   if (Object.keys(paths).length == 0) {
     return <></>;
@@ -236,7 +243,8 @@ const renderPaths = (
             renderDerivationOutputs(
               name,
               cardBackground,
-              NameValuePair.fromMap(value.Outputs)
+              NameValuePair.fromMap(value.Outputs),
+              logs,
             )
           }
         </For>
@@ -249,7 +257,7 @@ const Derivation: Component = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [drvReprod] = createResource(
     () => searchParams.storePath,
-    fetchDerivationReproducibility
+    fetchDerivationReproducibility,
   );
 
   return (
@@ -267,7 +275,8 @@ const Derivation: Component = () => {
             {renderPaths(
               "Unreproduced paths",
               "bg-error",
-              drvReprod()?.UnreproducedPaths
+              drvReprod()?.UnreproducedPaths,
+              drvReprod()?.Logs,
             )}
           </Show>
 
@@ -275,7 +284,8 @@ const Derivation: Component = () => {
             {renderPaths(
               "Reproduced paths",
               "bg-success",
-              drvReprod()?.ReproducedPaths
+              drvReprod()?.ReproducedPaths,
+              drvReprod()?.Logs,
             )}
           </Show>
 
@@ -283,7 +293,8 @@ const Derivation: Component = () => {
             {renderPaths(
               "Unknown paths (only built by one log)",
               "bg-warning",
-              drvReprod()?.UnknownPaths
+              drvReprod()?.UnknownPaths,
+              drvReprod()?.Logs,
             )}
           </Show>
 
@@ -291,7 +302,8 @@ const Derivation: Component = () => {
             {renderPaths(
               "Missing paths (not built by any known log)",
               "bg-base-100",
-              drvReprod()?.MissingPaths
+              drvReprod()?.MissingPaths,
+              drvReprod()?.Logs,
             )}
           </Show>
         </Suspense>

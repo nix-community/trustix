@@ -76,6 +76,11 @@ export class DerivationReproducibilityResponse extends Message<DerivationReprodu
    */
   MissingPaths: { [key: string]: DerivationReproducibilityResponse_Derivation } = {};
 
+  /**
+   * @generated from field: map<string, reprod_api.v1.Log> Logs = 6;
+   */
+  Logs: { [key: string]: Log } = {};
+
   constructor(data?: PartialMessage<DerivationReproducibilityResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -89,6 +94,7 @@ export class DerivationReproducibilityResponse extends Message<DerivationReprodu
     { no: 3, name: "ReproducedPaths", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: DerivationReproducibilityResponse_Derivation} },
     { no: 4, name: "UnknownPaths", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: DerivationReproducibilityResponse_Derivation} },
     { no: 5, name: "MissingPaths", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: DerivationReproducibilityResponse_Derivation} },
+    { no: 6, name: "Logs", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: Log} },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DerivationReproducibilityResponse {
@@ -113,9 +119,9 @@ export class DerivationReproducibilityResponse extends Message<DerivationReprodu
  */
 export class DerivationReproducibilityResponse_DerivationOutputHash extends Message<DerivationReproducibilityResponse_DerivationOutputHash> {
   /**
-   * @generated from field: repeated int64 LogIDs = 1;
+   * @generated from field: repeated string LogIDs = 1;
    */
-  LogIDs: bigint[] = [];
+  LogIDs: string[] = [];
 
   constructor(data?: PartialMessage<DerivationReproducibilityResponse_DerivationOutputHash>) {
     super();
@@ -125,7 +131,7 @@ export class DerivationReproducibilityResponse_DerivationOutputHash extends Mess
   static readonly runtime = proto3;
   static readonly typeName = "reprod_api.v1.DerivationReproducibilityResponse.DerivationOutputHash";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "LogIDs", kind: "scalar", T: 3 /* ScalarType.INT64 */, repeated: true },
+    { no: 1, name: "LogIDs", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DerivationReproducibilityResponse_DerivationOutputHash {
@@ -230,6 +236,49 @@ export class DerivationReproducibilityResponse_Derivation extends Message<Deriva
 
   static equals(a: DerivationReproducibilityResponse_Derivation | PlainMessage<DerivationReproducibilityResponse_Derivation> | undefined, b: DerivationReproducibilityResponse_Derivation | PlainMessage<DerivationReproducibilityResponse_Derivation> | undefined): boolean {
     return proto3.util.equals(DerivationReproducibilityResponse_Derivation, a, b);
+  }
+}
+
+/**
+ * @generated from message reprod_api.v1.Log
+ */
+export class Log extends Message<Log> {
+  /**
+   * @generated from field: string LogID = 1;
+   */
+  LogID = "";
+
+  /**
+   * @generated from field: string Name = 2;
+   */
+  Name = "";
+
+  constructor(data?: PartialMessage<Log>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime = proto3;
+  static readonly typeName = "reprod_api.v1.Log";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "LogID", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "Name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Log {
+    return new Log().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Log {
+    return new Log().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Log {
+    return new Log().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Log | PlainMessage<Log> | undefined, b: Log | PlainMessage<Log> | undefined): boolean {
+    return proto3.util.equals(Log, a, b);
   }
 }
 
