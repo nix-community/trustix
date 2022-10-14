@@ -588,3 +588,109 @@ export class DiffResponse extends Message<DiffResponse> {
     return proto3.util.equals(DiffResponse, a, b);
   }
 }
+
+/**
+ * @generated from message reprod_api.v1.AttrReproducibilityTimeSeriesGroupedbyChannelRequest
+ */
+export class AttrReproducibilityTimeSeriesGroupedbyChannelRequest extends Message<AttrReproducibilityTimeSeriesGroupedbyChannelRequest> {
+  constructor(data?: PartialMessage<AttrReproducibilityTimeSeriesGroupedbyChannelRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime = proto3;
+  static readonly typeName = "reprod_api.v1.AttrReproducibilityTimeSeriesGroupedbyChannelRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AttrReproducibilityTimeSeriesGroupedbyChannelRequest {
+    return new AttrReproducibilityTimeSeriesGroupedbyChannelRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): AttrReproducibilityTimeSeriesGroupedbyChannelRequest {
+    return new AttrReproducibilityTimeSeriesGroupedbyChannelRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): AttrReproducibilityTimeSeriesGroupedbyChannelRequest {
+    return new AttrReproducibilityTimeSeriesGroupedbyChannelRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: AttrReproducibilityTimeSeriesGroupedbyChannelRequest | PlainMessage<AttrReproducibilityTimeSeriesGroupedbyChannelRequest> | undefined, b: AttrReproducibilityTimeSeriesGroupedbyChannelRequest | PlainMessage<AttrReproducibilityTimeSeriesGroupedbyChannelRequest> | undefined): boolean {
+    return proto3.util.equals(AttrReproducibilityTimeSeriesGroupedbyChannelRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message reprod_api.v1.AttrReproducibilityTimeSeriesGroupedbyChannelResponse
+ */
+export class AttrReproducibilityTimeSeriesGroupedbyChannelResponse extends Message<AttrReproducibilityTimeSeriesGroupedbyChannelResponse> {
+  /**
+   * @generated from field: map<string, reprod_api.v1.AttrReproducibilityTimeSeriesGroupedbyChannelResponse.Channel> Channels = 1;
+   */
+  Channels: { [key: string]: AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel } = {};
+
+  constructor(data?: PartialMessage<AttrReproducibilityTimeSeriesGroupedbyChannelResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime = proto3;
+  static readonly typeName = "reprod_api.v1.AttrReproducibilityTimeSeriesGroupedbyChannelResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "Channels", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel} },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AttrReproducibilityTimeSeriesGroupedbyChannelResponse {
+    return new AttrReproducibilityTimeSeriesGroupedbyChannelResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): AttrReproducibilityTimeSeriesGroupedbyChannelResponse {
+    return new AttrReproducibilityTimeSeriesGroupedbyChannelResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): AttrReproducibilityTimeSeriesGroupedbyChannelResponse {
+    return new AttrReproducibilityTimeSeriesGroupedbyChannelResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: AttrReproducibilityTimeSeriesGroupedbyChannelResponse | PlainMessage<AttrReproducibilityTimeSeriesGroupedbyChannelResponse> | undefined, b: AttrReproducibilityTimeSeriesGroupedbyChannelResponse | PlainMessage<AttrReproducibilityTimeSeriesGroupedbyChannelResponse> | undefined): boolean {
+    return proto3.util.equals(AttrReproducibilityTimeSeriesGroupedbyChannelResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message reprod_api.v1.AttrReproducibilityTimeSeriesGroupedbyChannelResponse.Channel
+ */
+export class AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel extends Message<AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel> {
+  /**
+   * @generated from field: map<string, reprod_api.v1.AttrReproducibilityTimeSeriesResponse> Attrs = 1;
+   */
+  Attrs: { [key: string]: AttrReproducibilityTimeSeriesResponse } = {};
+
+  constructor(data?: PartialMessage<AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime = proto3;
+  static readonly typeName = "reprod_api.v1.AttrReproducibilityTimeSeriesGroupedbyChannelResponse.Channel";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "Attrs", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: AttrReproducibilityTimeSeriesResponse} },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel {
+    return new AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel {
+    return new AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel {
+    return new AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel | PlainMessage<AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel> | undefined, b: AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel | PlainMessage<AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel> | undefined): boolean {
+    return proto3.util.equals(AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel, a, b);
+  }
+}
+

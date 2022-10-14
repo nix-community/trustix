@@ -29,6 +29,7 @@ const (
 type ReproducibilityAPIClient interface {
 	DerivationReproducibility(context.Context, *connect_go.Request[reprod_api.DerivationReproducibilityRequest]) (*connect_go.Response[reprod_api.DerivationReproducibilityResponse], error)
 	AttrReproducibilityTimeSeries(context.Context, *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesResponse], error)
+	AttrReproducibilityTimeSeriesGroupedbyChannel(context.Context, *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelResponse], error)
 	SuggestAttribute(context.Context, *connect_go.Request[reprod_api.SuggestsAttributeRequest]) (*connect_go.Response[reprod_api.SuggestAttributeResponse], error)
 	Diff(context.Context, *connect_go.Request[reprod_api.DiffRequest]) (*connect_go.Response[reprod_api.DiffResponse], error)
 }
@@ -53,6 +54,11 @@ func NewReproducibilityAPIClient(httpClient connect_go.HTTPClient, baseURL strin
 			baseURL+"/reprod_api.v1.ReproducibilityAPI/AttrReproducibilityTimeSeries",
 			opts...,
 		),
+		attrReproducibilityTimeSeriesGroupedbyChannel: connect_go.NewClient[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelRequest, reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelResponse](
+			httpClient,
+			baseURL+"/reprod_api.v1.ReproducibilityAPI/AttrReproducibilityTimeSeriesGroupedbyChannel",
+			opts...,
+		),
 		suggestAttribute: connect_go.NewClient[reprod_api.SuggestsAttributeRequest, reprod_api.SuggestAttributeResponse](
 			httpClient,
 			baseURL+"/reprod_api.v1.ReproducibilityAPI/SuggestAttribute",
@@ -68,10 +74,11 @@ func NewReproducibilityAPIClient(httpClient connect_go.HTTPClient, baseURL strin
 
 // reproducibilityAPIClient implements ReproducibilityAPIClient.
 type reproducibilityAPIClient struct {
-	derivationReproducibility     *connect_go.Client[reprod_api.DerivationReproducibilityRequest, reprod_api.DerivationReproducibilityResponse]
-	attrReproducibilityTimeSeries *connect_go.Client[reprod_api.AttrReproducibilityTimeSeriesRequest, reprod_api.AttrReproducibilityTimeSeriesResponse]
-	suggestAttribute              *connect_go.Client[reprod_api.SuggestsAttributeRequest, reprod_api.SuggestAttributeResponse]
-	diff                          *connect_go.Client[reprod_api.DiffRequest, reprod_api.DiffResponse]
+	derivationReproducibility                     *connect_go.Client[reprod_api.DerivationReproducibilityRequest, reprod_api.DerivationReproducibilityResponse]
+	attrReproducibilityTimeSeries                 *connect_go.Client[reprod_api.AttrReproducibilityTimeSeriesRequest, reprod_api.AttrReproducibilityTimeSeriesResponse]
+	attrReproducibilityTimeSeriesGroupedbyChannel *connect_go.Client[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelRequest, reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelResponse]
+	suggestAttribute                              *connect_go.Client[reprod_api.SuggestsAttributeRequest, reprod_api.SuggestAttributeResponse]
+	diff                                          *connect_go.Client[reprod_api.DiffRequest, reprod_api.DiffResponse]
 }
 
 // DerivationReproducibility calls reprod_api.v1.ReproducibilityAPI.DerivationReproducibility.
@@ -83,6 +90,12 @@ func (c *reproducibilityAPIClient) DerivationReproducibility(ctx context.Context
 // reprod_api.v1.ReproducibilityAPI.AttrReproducibilityTimeSeries.
 func (c *reproducibilityAPIClient) AttrReproducibilityTimeSeries(ctx context.Context, req *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesResponse], error) {
 	return c.attrReproducibilityTimeSeries.CallUnary(ctx, req)
+}
+
+// AttrReproducibilityTimeSeriesGroupedbyChannel calls
+// reprod_api.v1.ReproducibilityAPI.AttrReproducibilityTimeSeriesGroupedbyChannel.
+func (c *reproducibilityAPIClient) AttrReproducibilityTimeSeriesGroupedbyChannel(ctx context.Context, req *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelResponse], error) {
+	return c.attrReproducibilityTimeSeriesGroupedbyChannel.CallUnary(ctx, req)
 }
 
 // SuggestAttribute calls reprod_api.v1.ReproducibilityAPI.SuggestAttribute.
@@ -99,6 +112,7 @@ func (c *reproducibilityAPIClient) Diff(ctx context.Context, req *connect_go.Req
 type ReproducibilityAPIHandler interface {
 	DerivationReproducibility(context.Context, *connect_go.Request[reprod_api.DerivationReproducibilityRequest]) (*connect_go.Response[reprod_api.DerivationReproducibilityResponse], error)
 	AttrReproducibilityTimeSeries(context.Context, *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesResponse], error)
+	AttrReproducibilityTimeSeriesGroupedbyChannel(context.Context, *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelResponse], error)
 	SuggestAttribute(context.Context, *connect_go.Request[reprod_api.SuggestsAttributeRequest]) (*connect_go.Response[reprod_api.SuggestAttributeResponse], error)
 	Diff(context.Context, *connect_go.Request[reprod_api.DiffRequest]) (*connect_go.Response[reprod_api.DiffResponse], error)
 }
@@ -118,6 +132,11 @@ func NewReproducibilityAPIHandler(svc ReproducibilityAPIHandler, opts ...connect
 	mux.Handle("/reprod_api.v1.ReproducibilityAPI/AttrReproducibilityTimeSeries", connect_go.NewUnaryHandler(
 		"/reprod_api.v1.ReproducibilityAPI/AttrReproducibilityTimeSeries",
 		svc.AttrReproducibilityTimeSeries,
+		opts...,
+	))
+	mux.Handle("/reprod_api.v1.ReproducibilityAPI/AttrReproducibilityTimeSeriesGroupedbyChannel", connect_go.NewUnaryHandler(
+		"/reprod_api.v1.ReproducibilityAPI/AttrReproducibilityTimeSeriesGroupedbyChannel",
+		svc.AttrReproducibilityTimeSeriesGroupedbyChannel,
 		opts...,
 	))
 	mux.Handle("/reprod_api.v1.ReproducibilityAPI/SuggestAttribute", connect_go.NewUnaryHandler(
@@ -142,6 +161,10 @@ func (UnimplementedReproducibilityAPIHandler) DerivationReproducibility(context.
 
 func (UnimplementedReproducibilityAPIHandler) AttrReproducibilityTimeSeries(context.Context, *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("reprod_api.v1.ReproducibilityAPI.AttrReproducibilityTimeSeries is not implemented"))
+}
+
+func (UnimplementedReproducibilityAPIHandler) AttrReproducibilityTimeSeriesGroupedbyChannel(context.Context, *connect_go.Request[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelRequest]) (*connect_go.Response[reprod_api.AttrReproducibilityTimeSeriesGroupedbyChannelResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("reprod_api.v1.ReproducibilityAPI.AttrReproducibilityTimeSeriesGroupedbyChannel is not implemented"))
 }
 
 func (UnimplementedReproducibilityAPIHandler) SuggestAttribute(context.Context, *connect_go.Request[reprod_api.SuggestsAttributeRequest]) (*connect_go.Response[reprod_api.SuggestAttributeResponse], error) {

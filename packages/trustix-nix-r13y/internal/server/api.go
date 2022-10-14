@@ -9,9 +9,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"sync"
 	"time"
 
 	connect "github.com/bufbuild/connect-go"
+	"github.com/nix-community/trustix/packages/go-lib/executor"
 	"github.com/nix-community/trustix/packages/go-lib/set"
 	idb "github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/db"
 	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/future"
@@ -38,17 +40,20 @@ type APIServer struct {
 
 	logNames map[string]string
 
+	attrsByChannel map[string][]string
+
 	diffExecutor     *future.KeyedFutures[*pb.DiffResponse]
 	downloadExecutor *future.KeyedFutures[*refcount.RefCountedValue[*narDownload]]
 }
 
-func NewAPIServer(db *sql.DB, cacheDB *sql.DB, cacheDBRO *sql.DB, client *client.Client, logNames map[string]string) *APIServer {
+func NewAPIServer(db *sql.DB, cacheDB *sql.DB, cacheDBRO *sql.DB, client *client.Client, logNames map[string]string, attrsByChannel map[string][]string) *APIServer {
 	return &APIServer{
 		db:               db,
 		client:           client,
 		cacheDbRw:        cacheDB,
 		cacheDbRo:        cacheDBRO,
 		logNames:         logNames,
+		attrsByChannel:   attrsByChannel,
 		diffExecutor:     future.NewKeyedFutures[*pb.DiffResponse](),
 		downloadExecutor: future.NewKeyedFutures[*refcount.RefCountedValue[*narDownload]](),
 	}
@@ -182,12 +187,6 @@ func (s *APIServer) DerivationReproducibility(ctx context.Context, req *connect.
 }
 
 func (s *APIServer) AttrReproducibilityTimeSeries(ctx context.Context, req *connect.Request[pb.AttrReproducibilityTimeSeriesRequest]) (*connect.Response[pb.AttrReproducibilityTimeSeriesResponse], error) {
-	msg := req.Msg
-
-	attr := msg.Attr
-	start := time.Unix(msg.Start, 0)
-	stop := time.Unix(msg.Stop, 0)
-
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating db transaction: %w", err)
@@ -199,6 +198,90 @@ func (s *APIServer) AttrReproducibilityTimeSeries(ctx context.Context, req *conn
 		}
 	}()
 
+	resp, err := s.attrReproducibilityTimeSeries(ctx, tx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
+}
+
+func (s *APIServer) AttrReproducibilityTimeSeriesGroupedbyChannel(ctx context.Context, req *connect.Request[pb.AttrReproducibilityTimeSeriesGroupedbyChannelRequest]) (*connect.Response[pb.AttrReproducibilityTimeSeriesGroupedbyChannelResponse], error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating db transaction: %w", err)
+	}
+	defer func() {
+		err := tx.Rollback()
+		if err != nil && err != sql.ErrTxDone {
+			panic(err)
+		}
+	}()
+
+	var start, stop int64
+	{
+		now := time.Now().UTC()
+		stop = now.Unix()
+		start = now.Add(-time.Hour * 24 * 90).Unix()
+	}
+
+	resp := &pb.AttrReproducibilityTimeSeriesGroupedbyChannelResponse{
+		Channels: make(map[string]*pb.AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel),
+	}
+
+	e := executor.NewParallellExecutor()
+
+	for channel, attrs := range s.attrsByChannel {
+		channel := channel
+		attrs := attrs
+
+		c := &pb.AttrReproducibilityTimeSeriesGroupedbyChannelResponse_Channel{
+			Attrs: make(map[string]*pb.AttrReproducibilityTimeSeriesResponse),
+		}
+		resp.Channels[channel] = c
+
+		var mux sync.Mutex
+
+		for _, attr := range attrs {
+			attr := attr
+
+			err := e.Add(func() error {
+				r, err := s.attrReproducibilityTimeSeries(ctx, tx, &pb.AttrReproducibilityTimeSeriesRequest{
+					Attr:    attr,
+					Start:   start,
+					Stop:    stop,
+					Channel: channel,
+				})
+				if err != nil {
+					return fmt.Errorf("error getting reproducibility time series for attr '%s', channel '%s': %w", attr, channel, err)
+				}
+
+				mux.Lock()
+				c.Attrs[attr] = r
+				mux.Unlock()
+
+				return nil
+			})
+			if err != nil {
+				return nil, err
+			}
+
+		}
+	}
+
+	err = e.Wait()
+	if err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(resp), nil
+}
+
+func (s *APIServer) attrReproducibilityTimeSeries(ctx context.Context, tx *sql.Tx, msg *pb.AttrReproducibilityTimeSeriesRequest) (*pb.AttrReproducibilityTimeSeriesResponse, error) {
+	attr := msg.Attr
+	start := time.Unix(msg.Start, 0)
+	stop := time.Unix(msg.Stop, 0)
+
 	queries := idb.New(s.db)
 	qtx := queries.WithTx(tx)
 
@@ -209,7 +292,7 @@ func (s *APIServer) AttrReproducibilityTimeSeries(ctx context.Context, req *conn
 		Channel:     msg.Channel,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("error retreiving time series rows: %w", err)
+		return nil, fmt.Errorf("error retreiving time series rows for attr '%s': %w", attr, err)
 	}
 
 	resp := &pb.AttrReproducibilityTimeSeriesResponse{
@@ -242,7 +325,7 @@ func (s *APIServer) AttrReproducibilityTimeSeries(ctx context.Context, req *conn
 		resp.PctReproduced = resp.PctReproduced / float32(len(rows))
 	}
 
-	return connect.NewResponse(resp), nil
+	return resp, nil
 }
 
 func (s *APIServer) SuggestAttribute(ctx context.Context, req *connect.Request[pb.SuggestsAttributeRequest]) (*connect.Response[pb.SuggestAttributeResponse], error) {

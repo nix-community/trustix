@@ -16,9 +16,10 @@ import (
 )
 
 type Config struct {
-	Channels *Channels         `toml:"channels" json:"channels"`
-	Cron     *Cron             `toml:"cron" json:"cron"`
-	Lognames map[string]string `toml:"lognames" json:"lognames"`
+	Channels *Channels           `toml:"channels" json:"channels"`
+	Cron     *Cron               `toml:"cron" json:"cron"`
+	Lognames map[string]string   `toml:"lognames" json:"lognames"`
+	Attrs    map[string][]string `toml:"attrs" json:"attrs"`
 }
 
 func (c *Config) init() {
@@ -34,6 +35,10 @@ func (c *Config) init() {
 
 	if c.Lognames == nil {
 		c.Lognames = make(map[string]string)
+	}
+
+	if c.Attrs == nil {
+		c.Attrs = make(map[string][]string)
 	}
 }
 

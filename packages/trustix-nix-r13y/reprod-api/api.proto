@@ -69,12 +69,30 @@ message DiffRequest {
 
 message DiffResponse { string HTMLDiff = 1; }
 
+message AttrReproducibilityTimeSeriesGroupedbyChannelRequest {
+}
+
+
+message AttrReproducibilityTimeSeriesGroupedbyChannelResponse {
+  message Channel {
+    map<string, AttrReproducibilityTimeSeriesResponse> Attrs = 1;
+  }
+
+  map<string, Channel> Channels = 1;
+}
+
 service ReproducibilityAPI {
   rpc DerivationReproducibility(DerivationReproducibilityRequest)
       returns (DerivationReproducibilityResponse) {}
+
   rpc AttrReproducibilityTimeSeries(AttrReproducibilityTimeSeriesRequest)
       returns (AttrReproducibilityTimeSeriesResponse) {}
+
+  rpc AttrReproducibilityTimeSeriesGroupedbyChannel(AttrReproducibilityTimeSeriesGroupedbyChannelRequest)
+      returns (AttrReproducibilityTimeSeriesGroupedbyChannelResponse) {}
+
   rpc SuggestAttribute(SuggestsAttributeRequest)
       returns (SuggestAttributeResponse) {}
+
   rpc Diff(DiffRequest) returns (DiffResponse) {}
 }

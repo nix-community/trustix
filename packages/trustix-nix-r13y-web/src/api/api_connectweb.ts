@@ -7,7 +7,7 @@
 /* eslint-disable */
 /* @ts-nocheck */
 
-import {AttrReproducibilityTimeSeriesRequest, AttrReproducibilityTimeSeriesResponse, DerivationReproducibilityRequest, DerivationReproducibilityResponse, DiffRequest, DiffResponse, SuggestAttributeResponse, SuggestsAttributeRequest} from "./api_pb.js";
+import {AttrReproducibilityTimeSeriesGroupedbyChannelRequest, AttrReproducibilityTimeSeriesGroupedbyChannelResponse, AttrReproducibilityTimeSeriesRequest, AttrReproducibilityTimeSeriesResponse, DerivationReproducibilityRequest, DerivationReproducibilityResponse, DiffRequest, DiffResponse, SuggestAttributeResponse, SuggestsAttributeRequest} from "./api_pb.js";
 import {MethodKind} from "@bufbuild/protobuf";
 
 /**
@@ -32,6 +32,15 @@ export const ReproducibilityAPI = {
       name: "AttrReproducibilityTimeSeries",
       I: AttrReproducibilityTimeSeriesRequest,
       O: AttrReproducibilityTimeSeriesResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc reprod_api.v1.ReproducibilityAPI.AttrReproducibilityTimeSeriesGroupedbyChannel
+     */
+    attrReproducibilityTimeSeriesGroupedbyChannel: {
+      name: "AttrReproducibilityTimeSeriesGroupedbyChannel",
+      I: AttrReproducibilityTimeSeriesGroupedbyChannelRequest,
+      O: AttrReproducibilityTimeSeriesGroupedbyChannelResponse,
       kind: MethodKind.Unary,
     },
     /**
