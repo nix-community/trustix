@@ -72,8 +72,7 @@ SELECT
   eval.id AS eval_id,
   eval.timestamp AS eval_timestamp,
   drv.drv,
-  COUNT(drvoutput.id) AS output_count,
-  COUNT(drvoutputresult.store_path) AS store_path_count,
+  COUNT(drvoutputresult.id) AS result_count,
   COUNT(drvoutputresult.output_hash) AS output_hash_count
 FROM
   derivationoutput AS drvoutput
@@ -90,7 +89,8 @@ WHERE
   AND eval.channel = ?
 GROUP BY
   eval.id,
-  drvattr.derivation_id
+  drv.id,
+  drvoutput.id
 ORDER BY
   eval.timestamp
 `
@@ -106,8 +106,7 @@ type GetDerivationReproducibilityTimeSeriesByAttrRow struct {
 	EvalID          int64
 	EvalTimestamp   time.Time
 	Drv             string
-	OutputCount     int64
-	StorePathCount  int64
+	ResultCount     int64
 	OutputHashCount int64
 }
 
@@ -129,8 +128,7 @@ func (q *Queries) GetDerivationReproducibilityTimeSeriesByAttr(ctx context.Conte
 			&i.EvalID,
 			&i.EvalTimestamp,
 			&i.Drv,
-			&i.OutputCount,
-			&i.StorePathCount,
+			&i.ResultCount,
 			&i.OutputHashCount,
 		); err != nil {
 			return nil, err

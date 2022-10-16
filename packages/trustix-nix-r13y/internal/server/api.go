@@ -296,33 +296,42 @@ func (s *APIServer) attrReproducibilityTimeSeries(ctx context.Context, tx *sql.T
 	}
 
 	resp := &pb.AttrReproducibilityTimeSeriesResponse{
-		Points: make([]*pb.AttrReproducibilityTimeSeriesPoint, len(rows)),
+		Points: []*pb.AttrReproducibilityTimeSeriesPoint{},
 	}
 
+	numReproduced := 0
+	numDerivations := 0
+	points := 0
+
 	for i, row := range rows {
-		// out of all built paths, how many were reproduced
-		var pctReproduced float32
-		if row.OutputHashCount > 0 {
-			pctReproduced = (100 / float32(row.OutputHashCount)) * float32(row.StorePathCount)
-		} else {
-			pctReproduced = 0.0
+		numDerivations++
+
+		if row.OutputHashCount == 1 && row.ResultCount >= 2 {
+			numReproduced++
 		}
 
-		// out of the total amount of paths, how many were reproduced
-		pctReproducedCum := 100 / float32(row.OutputCount) * (pctReproduced / 100 * float32(row.StorePathCount))
+		// Return rows grouped by their derivation
+		if i+1 == len(rows) || rows[i+1].Drv != row.Drv {
+			pctReproduced := 100 / float32(numDerivations) * float32(numReproduced)
 
-		resp.Points[i] = &pb.AttrReproducibilityTimeSeriesPoint{
-			EvalID:        row.EvalID,
-			EvalTimestamp: row.EvalTimestamp.Unix(),
-			DrvPath:       row.Drv,
-			PctReproduced: pctReproducedCum,
+			resp.Points = append(resp.Points, &pb.AttrReproducibilityTimeSeriesPoint{
+				EvalID:        row.EvalID,
+				EvalTimestamp: row.EvalTimestamp.Unix(),
+				DrvPath:       row.Drv,
+				PctReproduced: pctReproduced,
+			})
+
+			numDerivations = 0
+			numReproduced = 0
+
+			points++
+
+			resp.PctReproduced += pctReproduced
 		}
-
-		resp.PctReproduced += pctReproducedCum
 	}
 
 	if len(rows) > 0 {
-		resp.PctReproduced = resp.PctReproduced / float32(len(rows))
+		resp.PctReproduced = resp.PctReproduced / float32(points)
 	}
 
 	return resp, nil
