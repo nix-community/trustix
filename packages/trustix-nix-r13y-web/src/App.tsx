@@ -44,7 +44,7 @@ const App: Component = () => {
           </button>
         </nav>
 
-        <div>
+        <div class="flex justify-evenly place-items-center">
           <Routes>
             <Route path="/" component={<Navigate href="/attrs" />} />
             <Route path="/attrs" component={Attrs} />

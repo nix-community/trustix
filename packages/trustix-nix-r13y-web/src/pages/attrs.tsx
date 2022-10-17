@@ -7,7 +7,7 @@ import {
   createSignal,
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import { Navigate } from "@solidjs/router";
+import { Navigate, A } from "@solidjs/router";
 
 import {
   AttrReproducibilityTimeSeriesGroupedbyChannelRequest,
@@ -29,6 +29,7 @@ const fetchAttrsByChannel = async (): DerivationReproducibilityResponse => {
   return await client.attrReproducibilityTimeSeriesGroupedbyChannel(req);
 };
 
+/* eslint-disable sonarjs/cognitive-complexity */
 const renderChannel = (
   channel: string,
   attrs: { [key: string]: AttrReproducibilityTimeSeriesResponse },
@@ -155,25 +156,92 @@ const renderChannel = (
 
   const [chart] = createStore(chartSettings);
 
+  const attrsList = NameValuePair.fromMap(attrs);
+  console.log(attrsList);
+
   return (
     <>
-      <h2 class="text-xl font-bold text-center mb-2">{channel}</h2>
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title">{channel}</h2>
 
-      <Show when={redirStorePath()}>
-        <Navigate
-          href={`/drv?storePath=${encodeURIComponent(redirStorePath())}`}
-        />
-      </Show>
+          <Show when={redirStorePath()}>
+            <Navigate
+              href={`/drv?storePath=${encodeURIComponent(redirStorePath())}`}
+            />
+          </Show>
 
-      <SolidChart
-        {...chart}
-        canvasOptions={{
-          width: 900,
-          height: 300,
-        }}
-      />
+          <SolidChart
+            {...chart}
+            canvasOptions={{
+              width: 900,
+              height: 300,
+            }}
+          />
 
-      <div class="divider" />
+          <div class="divider" />
+
+          <div class="overflow-x-auto">
+            <table class="table w-full">
+              <thead>
+                <tr>
+                  <th>Attribute</th>
+                  <th>Derivations</th>
+                </tr>
+              </thead>
+              <tbody>
+                <For each={attrsList}>
+                  {({ name, value }) => {
+                    const attrName = name;
+                    const points = value.Points;
+
+                    let derivationsText = "No derivations…";
+                    if (points.length > 0) {
+                      derivationsText = points[0].DrvPath + "…";
+                    }
+
+                    return (
+                      <>
+                        <tr>
+                          <td>{attrName}</td>
+                          <td>
+                            <div
+                              tabIndex={0}
+                              class="collapse collapse-arrow pl-0"
+                            >
+                              <div class="collapse-title pl-0">
+                                {derivationsText}
+                              </div>
+                              <div class="collapse-content">
+                                <For each={points}>
+                                  {(p) => {
+                                    return (
+                                      <>
+                                        <A
+                                          href={`/drv?storePath=${encodeURIComponent(
+                                            p.DrvPath,
+                                          )}`}
+                                        >
+                                          <p>{p.DrvPath}</p>
+                                        </A>
+                                        <p>ji</p>
+                                      </>
+                                    );
+                                  }}
+                                </For>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </>
+                    );
+                  }}
+                </For>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
