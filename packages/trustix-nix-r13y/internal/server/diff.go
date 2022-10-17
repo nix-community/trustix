@@ -268,7 +268,7 @@ func diff(downloadExecutor *future.KeyedFutures[*refcount.RefCountedValue[*narDo
 				panic(fmt.Errorf("unexpected index: %d", i))
 			}
 
-			e.Add(func() error {
+			e.Add(func() error { // nolint:errcheck
 				unpackedDir, err := downloadAndUnpackStorePath(downloadExecutor, client, outputHash, tmpDir, unpackDirSuffix)
 				if err != nil {
 					return err

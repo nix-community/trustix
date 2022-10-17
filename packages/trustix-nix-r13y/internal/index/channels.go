@@ -112,6 +112,4 @@ func IndexHydraJobset(ctx context.Context, db *sql.DB, channel string, jobsetCon
 
 		return len(evals), nil
 	}
-
-	return 0, nil
 }

@@ -68,10 +68,10 @@ func NewCronJob(name string, d time.Duration, fn CronFunc) *CronJob {
 			case <-time.After(duration):
 				go run()
 			}
-		}
 
-		if duration != d {
-			duration = d
+			if duration != d {
+				duration = d
+			}
 		}
 	}()
 
