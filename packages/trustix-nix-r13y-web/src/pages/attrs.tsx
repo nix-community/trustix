@@ -184,7 +184,7 @@ const renderChannel = (
 
   return (
     <>
-      <div class="card bg-base-100 shadow-xl">
+      <div class="card bg-base-100 shadow-xl m-5">
         <div class="card-body">
           <h2 class="card-title">{channel}</h2>
 
