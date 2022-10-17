@@ -9,8 +9,9 @@ import {
   Show,
   Suspense,
   createEffect,
+  createSignal,
 } from "solid-js";
-import { useSearchParams, A } from "@solidjs/router";
+import { useSearchParams, A, Navigate } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import {
@@ -111,6 +112,8 @@ const renderDerivationOutput = (
     );
   };
 
+  const [diffItems, setDiffItems] = createSignal();
+
   const onNarinfoClicked = () => {
     const checked = checkedNarinfoHashes;
 
@@ -126,12 +129,20 @@ const renderDerivationOutput = (
 
     const [a, b] = checked;
 
-    alert("TODO: Redirect to diff view: ", a, b);
+    setDiffItems({
+      "a": a,
+      "b": b,
+    })
   };
 
   return (
     <>
       <div class="card bg-base-200 shadow-xl m-3">
+
+        <Show when={diffItems()}>
+          <Navigate href={`/diff?a=${diffItems()?.a}&b=${diffItems()?.b}`} />
+        </Show>
+
         <div class="card-body">
           <h2 class="card-title tooltip" data-tip="Output name">
             {output}
