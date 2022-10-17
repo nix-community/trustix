@@ -1,8 +1,0 @@
-[channels.nixos-unstable]
-expr = "import <nixpkgs> { }"
-type = "hydra"
-
-[channels.nixos-unstable.hydra]
-base_url = "https://hydra.nixos.org"
-jobset = "trunk-combined"
-project = "nixos"

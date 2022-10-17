@@ -23,12 +23,12 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
 	// NodeAPIName is the fully-qualified name of the NodeAPI service.
-	NodeAPIName = "trustix.NodeAPI"
+	NodeAPIName = "trustix_api.v1.NodeAPI"
 	// LogAPIName is the fully-qualified name of the LogAPI service.
-	LogAPIName = "trustix.LogAPI"
+	LogAPIName = "trustix_api.v1.LogAPI"
 )
 
-// NodeAPIClient is a client for the trustix.NodeAPI service.
+// NodeAPIClient is a client for the trustix_api.v1.NodeAPI service.
 type NodeAPIClient interface {
 	// Get a list of all logs published by this node
 	Logs(context.Context, *connect_go.Request[api.LogsRequest]) (*connect_go.Response[api.LogsResponse], error)
@@ -36,8 +36,8 @@ type NodeAPIClient interface {
 	GetValue(context.Context, *connect_go.Request[api.ValueRequest]) (*connect_go.Response[api.ValueResponse], error)
 }
 
-// NewNodeAPIClient constructs a client for the trustix.NodeAPI service. By default, it uses the
-// Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewNodeAPIClient constructs a client for the trustix_api.v1.NodeAPI service. By default, it uses
+// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -48,12 +48,12 @@ func NewNodeAPIClient(httpClient connect_go.HTTPClient, baseURL string, opts ...
 	return &nodeAPIClient{
 		logs: connect_go.NewClient[api.LogsRequest, api.LogsResponse](
 			httpClient,
-			baseURL+"/trustix.NodeAPI/Logs",
+			baseURL+"/trustix_api.v1.NodeAPI/Logs",
 			opts...,
 		),
 		getValue: connect_go.NewClient[api.ValueRequest, api.ValueResponse](
 			httpClient,
-			baseURL+"/trustix.NodeAPI/GetValue",
+			baseURL+"/trustix_api.v1.NodeAPI/GetValue",
 			opts...,
 		),
 	}
@@ -65,17 +65,17 @@ type nodeAPIClient struct {
 	getValue *connect_go.Client[api.ValueRequest, api.ValueResponse]
 }
 
-// Logs calls trustix.NodeAPI.Logs.
+// Logs calls trustix_api.v1.NodeAPI.Logs.
 func (c *nodeAPIClient) Logs(ctx context.Context, req *connect_go.Request[api.LogsRequest]) (*connect_go.Response[api.LogsResponse], error) {
 	return c.logs.CallUnary(ctx, req)
 }
 
-// GetValue calls trustix.NodeAPI.GetValue.
+// GetValue calls trustix_api.v1.NodeAPI.GetValue.
 func (c *nodeAPIClient) GetValue(ctx context.Context, req *connect_go.Request[api.ValueRequest]) (*connect_go.Response[api.ValueResponse], error) {
 	return c.getValue.CallUnary(ctx, req)
 }
 
-// NodeAPIHandler is an implementation of the trustix.NodeAPI service.
+// NodeAPIHandler is an implementation of the trustix_api.v1.NodeAPI service.
 type NodeAPIHandler interface {
 	// Get a list of all logs published by this node
 	Logs(context.Context, *connect_go.Request[api.LogsRequest]) (*connect_go.Response[api.LogsResponse], error)
@@ -90,31 +90,31 @@ type NodeAPIHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewNodeAPIHandler(svc NodeAPIHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/trustix.NodeAPI/Logs", connect_go.NewUnaryHandler(
-		"/trustix.NodeAPI/Logs",
+	mux.Handle("/trustix_api.v1.NodeAPI/Logs", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.NodeAPI/Logs",
 		svc.Logs,
 		opts...,
 	))
-	mux.Handle("/trustix.NodeAPI/GetValue", connect_go.NewUnaryHandler(
-		"/trustix.NodeAPI/GetValue",
+	mux.Handle("/trustix_api.v1.NodeAPI/GetValue", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.NodeAPI/GetValue",
 		svc.GetValue,
 		opts...,
 	))
-	return "/trustix.NodeAPI/", mux
+	return "/trustix_api.v1.NodeAPI/", mux
 }
 
 // UnimplementedNodeAPIHandler returns CodeUnimplemented from all methods.
 type UnimplementedNodeAPIHandler struct{}
 
 func (UnimplementedNodeAPIHandler) Logs(context.Context, *connect_go.Request[api.LogsRequest]) (*connect_go.Response[api.LogsResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.NodeAPI.Logs is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.NodeAPI.Logs is not implemented"))
 }
 
 func (UnimplementedNodeAPIHandler) GetValue(context.Context, *connect_go.Request[api.ValueRequest]) (*connect_go.Response[api.ValueResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.NodeAPI.GetValue is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.NodeAPI.GetValue is not implemented"))
 }
 
-// LogAPIClient is a client for the trustix.LogAPI service.
+// LogAPIClient is a client for the trustix_api.v1.LogAPI service.
 type LogAPIClient interface {
 	// Get signed head
 	GetHead(context.Context, *connect_go.Request[api.LogHeadRequest]) (*connect_go.Response[schema.LogHead], error)
@@ -127,8 +127,8 @@ type LogAPIClient interface {
 	GetMHLogEntries(context.Context, *connect_go.Request[api.GetLogEntriesRequest]) (*connect_go.Response[api.LogEntriesResponse], error)
 }
 
-// NewLogAPIClient constructs a client for the trustix.LogAPI service. By default, it uses the
-// Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewLogAPIClient constructs a client for the trustix_api.v1.LogAPI service. By default, it uses
+// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -139,42 +139,42 @@ func NewLogAPIClient(httpClient connect_go.HTTPClient, baseURL string, opts ...c
 	return &logAPIClient{
 		getHead: connect_go.NewClient[api.LogHeadRequest, schema.LogHead](
 			httpClient,
-			baseURL+"/trustix.LogAPI/GetHead",
+			baseURL+"/trustix_api.v1.LogAPI/GetHead",
 			opts...,
 		),
 		getLogConsistencyProof: connect_go.NewClient[api.GetLogConsistencyProofRequest, api.ProofResponse](
 			httpClient,
-			baseURL+"/trustix.LogAPI/GetLogConsistencyProof",
+			baseURL+"/trustix_api.v1.LogAPI/GetLogConsistencyProof",
 			opts...,
 		),
 		getLogAuditProof: connect_go.NewClient[api.GetLogAuditProofRequest, api.ProofResponse](
 			httpClient,
-			baseURL+"/trustix.LogAPI/GetLogAuditProof",
+			baseURL+"/trustix_api.v1.LogAPI/GetLogAuditProof",
 			opts...,
 		),
 		getLogEntries: connect_go.NewClient[api.GetLogEntriesRequest, api.LogEntriesResponse](
 			httpClient,
-			baseURL+"/trustix.LogAPI/GetLogEntries",
+			baseURL+"/trustix_api.v1.LogAPI/GetLogEntries",
 			opts...,
 		),
 		getMapValue: connect_go.NewClient[api.GetMapValueRequest, api.MapValueResponse](
 			httpClient,
-			baseURL+"/trustix.LogAPI/GetMapValue",
+			baseURL+"/trustix_api.v1.LogAPI/GetMapValue",
 			opts...,
 		),
 		getMHLogConsistencyProof: connect_go.NewClient[api.GetLogConsistencyProofRequest, api.ProofResponse](
 			httpClient,
-			baseURL+"/trustix.LogAPI/GetMHLogConsistencyProof",
+			baseURL+"/trustix_api.v1.LogAPI/GetMHLogConsistencyProof",
 			opts...,
 		),
 		getMHLogAuditProof: connect_go.NewClient[api.GetLogAuditProofRequest, api.ProofResponse](
 			httpClient,
-			baseURL+"/trustix.LogAPI/GetMHLogAuditProof",
+			baseURL+"/trustix_api.v1.LogAPI/GetMHLogAuditProof",
 			opts...,
 		),
 		getMHLogEntries: connect_go.NewClient[api.GetLogEntriesRequest, api.LogEntriesResponse](
 			httpClient,
-			baseURL+"/trustix.LogAPI/GetMHLogEntries",
+			baseURL+"/trustix_api.v1.LogAPI/GetMHLogEntries",
 			opts...,
 		),
 	}
@@ -192,47 +192,47 @@ type logAPIClient struct {
 	getMHLogEntries          *connect_go.Client[api.GetLogEntriesRequest, api.LogEntriesResponse]
 }
 
-// GetHead calls trustix.LogAPI.GetHead.
+// GetHead calls trustix_api.v1.LogAPI.GetHead.
 func (c *logAPIClient) GetHead(ctx context.Context, req *connect_go.Request[api.LogHeadRequest]) (*connect_go.Response[schema.LogHead], error) {
 	return c.getHead.CallUnary(ctx, req)
 }
 
-// GetLogConsistencyProof calls trustix.LogAPI.GetLogConsistencyProof.
+// GetLogConsistencyProof calls trustix_api.v1.LogAPI.GetLogConsistencyProof.
 func (c *logAPIClient) GetLogConsistencyProof(ctx context.Context, req *connect_go.Request[api.GetLogConsistencyProofRequest]) (*connect_go.Response[api.ProofResponse], error) {
 	return c.getLogConsistencyProof.CallUnary(ctx, req)
 }
 
-// GetLogAuditProof calls trustix.LogAPI.GetLogAuditProof.
+// GetLogAuditProof calls trustix_api.v1.LogAPI.GetLogAuditProof.
 func (c *logAPIClient) GetLogAuditProof(ctx context.Context, req *connect_go.Request[api.GetLogAuditProofRequest]) (*connect_go.Response[api.ProofResponse], error) {
 	return c.getLogAuditProof.CallUnary(ctx, req)
 }
 
-// GetLogEntries calls trustix.LogAPI.GetLogEntries.
+// GetLogEntries calls trustix_api.v1.LogAPI.GetLogEntries.
 func (c *logAPIClient) GetLogEntries(ctx context.Context, req *connect_go.Request[api.GetLogEntriesRequest]) (*connect_go.Response[api.LogEntriesResponse], error) {
 	return c.getLogEntries.CallUnary(ctx, req)
 }
 
-// GetMapValue calls trustix.LogAPI.GetMapValue.
+// GetMapValue calls trustix_api.v1.LogAPI.GetMapValue.
 func (c *logAPIClient) GetMapValue(ctx context.Context, req *connect_go.Request[api.GetMapValueRequest]) (*connect_go.Response[api.MapValueResponse], error) {
 	return c.getMapValue.CallUnary(ctx, req)
 }
 
-// GetMHLogConsistencyProof calls trustix.LogAPI.GetMHLogConsistencyProof.
+// GetMHLogConsistencyProof calls trustix_api.v1.LogAPI.GetMHLogConsistencyProof.
 func (c *logAPIClient) GetMHLogConsistencyProof(ctx context.Context, req *connect_go.Request[api.GetLogConsistencyProofRequest]) (*connect_go.Response[api.ProofResponse], error) {
 	return c.getMHLogConsistencyProof.CallUnary(ctx, req)
 }
 
-// GetMHLogAuditProof calls trustix.LogAPI.GetMHLogAuditProof.
+// GetMHLogAuditProof calls trustix_api.v1.LogAPI.GetMHLogAuditProof.
 func (c *logAPIClient) GetMHLogAuditProof(ctx context.Context, req *connect_go.Request[api.GetLogAuditProofRequest]) (*connect_go.Response[api.ProofResponse], error) {
 	return c.getMHLogAuditProof.CallUnary(ctx, req)
 }
 
-// GetMHLogEntries calls trustix.LogAPI.GetMHLogEntries.
+// GetMHLogEntries calls trustix_api.v1.LogAPI.GetMHLogEntries.
 func (c *logAPIClient) GetMHLogEntries(ctx context.Context, req *connect_go.Request[api.GetLogEntriesRequest]) (*connect_go.Response[api.LogEntriesResponse], error) {
 	return c.getMHLogEntries.CallUnary(ctx, req)
 }
 
-// LogAPIHandler is an implementation of the trustix.LogAPI service.
+// LogAPIHandler is an implementation of the trustix_api.v1.LogAPI service.
 type LogAPIHandler interface {
 	// Get signed head
 	GetHead(context.Context, *connect_go.Request[api.LogHeadRequest]) (*connect_go.Response[schema.LogHead], error)
@@ -252,80 +252,80 @@ type LogAPIHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewLogAPIHandler(svc LogAPIHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/trustix.LogAPI/GetHead", connect_go.NewUnaryHandler(
-		"/trustix.LogAPI/GetHead",
+	mux.Handle("/trustix_api.v1.LogAPI/GetHead", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.LogAPI/GetHead",
 		svc.GetHead,
 		opts...,
 	))
-	mux.Handle("/trustix.LogAPI/GetLogConsistencyProof", connect_go.NewUnaryHandler(
-		"/trustix.LogAPI/GetLogConsistencyProof",
+	mux.Handle("/trustix_api.v1.LogAPI/GetLogConsistencyProof", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.LogAPI/GetLogConsistencyProof",
 		svc.GetLogConsistencyProof,
 		opts...,
 	))
-	mux.Handle("/trustix.LogAPI/GetLogAuditProof", connect_go.NewUnaryHandler(
-		"/trustix.LogAPI/GetLogAuditProof",
+	mux.Handle("/trustix_api.v1.LogAPI/GetLogAuditProof", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.LogAPI/GetLogAuditProof",
 		svc.GetLogAuditProof,
 		opts...,
 	))
-	mux.Handle("/trustix.LogAPI/GetLogEntries", connect_go.NewUnaryHandler(
-		"/trustix.LogAPI/GetLogEntries",
+	mux.Handle("/trustix_api.v1.LogAPI/GetLogEntries", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.LogAPI/GetLogEntries",
 		svc.GetLogEntries,
 		opts...,
 	))
-	mux.Handle("/trustix.LogAPI/GetMapValue", connect_go.NewUnaryHandler(
-		"/trustix.LogAPI/GetMapValue",
+	mux.Handle("/trustix_api.v1.LogAPI/GetMapValue", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.LogAPI/GetMapValue",
 		svc.GetMapValue,
 		opts...,
 	))
-	mux.Handle("/trustix.LogAPI/GetMHLogConsistencyProof", connect_go.NewUnaryHandler(
-		"/trustix.LogAPI/GetMHLogConsistencyProof",
+	mux.Handle("/trustix_api.v1.LogAPI/GetMHLogConsistencyProof", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.LogAPI/GetMHLogConsistencyProof",
 		svc.GetMHLogConsistencyProof,
 		opts...,
 	))
-	mux.Handle("/trustix.LogAPI/GetMHLogAuditProof", connect_go.NewUnaryHandler(
-		"/trustix.LogAPI/GetMHLogAuditProof",
+	mux.Handle("/trustix_api.v1.LogAPI/GetMHLogAuditProof", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.LogAPI/GetMHLogAuditProof",
 		svc.GetMHLogAuditProof,
 		opts...,
 	))
-	mux.Handle("/trustix.LogAPI/GetMHLogEntries", connect_go.NewUnaryHandler(
-		"/trustix.LogAPI/GetMHLogEntries",
+	mux.Handle("/trustix_api.v1.LogAPI/GetMHLogEntries", connect_go.NewUnaryHandler(
+		"/trustix_api.v1.LogAPI/GetMHLogEntries",
 		svc.GetMHLogEntries,
 		opts...,
 	))
-	return "/trustix.LogAPI/", mux
+	return "/trustix_api.v1.LogAPI/", mux
 }
 
 // UnimplementedLogAPIHandler returns CodeUnimplemented from all methods.
 type UnimplementedLogAPIHandler struct{}
 
 func (UnimplementedLogAPIHandler) GetHead(context.Context, *connect_go.Request[api.LogHeadRequest]) (*connect_go.Response[schema.LogHead], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogAPI.GetHead is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.LogAPI.GetHead is not implemented"))
 }
 
 func (UnimplementedLogAPIHandler) GetLogConsistencyProof(context.Context, *connect_go.Request[api.GetLogConsistencyProofRequest]) (*connect_go.Response[api.ProofResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogAPI.GetLogConsistencyProof is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.LogAPI.GetLogConsistencyProof is not implemented"))
 }
 
 func (UnimplementedLogAPIHandler) GetLogAuditProof(context.Context, *connect_go.Request[api.GetLogAuditProofRequest]) (*connect_go.Response[api.ProofResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogAPI.GetLogAuditProof is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.LogAPI.GetLogAuditProof is not implemented"))
 }
 
 func (UnimplementedLogAPIHandler) GetLogEntries(context.Context, *connect_go.Request[api.GetLogEntriesRequest]) (*connect_go.Response[api.LogEntriesResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogAPI.GetLogEntries is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.LogAPI.GetLogEntries is not implemented"))
 }
 
 func (UnimplementedLogAPIHandler) GetMapValue(context.Context, *connect_go.Request[api.GetMapValueRequest]) (*connect_go.Response[api.MapValueResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogAPI.GetMapValue is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.LogAPI.GetMapValue is not implemented"))
 }
 
 func (UnimplementedLogAPIHandler) GetMHLogConsistencyProof(context.Context, *connect_go.Request[api.GetLogConsistencyProofRequest]) (*connect_go.Response[api.ProofResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogAPI.GetMHLogConsistencyProof is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.LogAPI.GetMHLogConsistencyProof is not implemented"))
 }
 
 func (UnimplementedLogAPIHandler) GetMHLogAuditProof(context.Context, *connect_go.Request[api.GetLogAuditProofRequest]) (*connect_go.Response[api.ProofResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogAPI.GetMHLogAuditProof is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.LogAPI.GetMHLogAuditProof is not implemented"))
 }
 
 func (UnimplementedLogAPIHandler) GetMHLogEntries(context.Context, *connect_go.Request[api.GetLogEntriesRequest]) (*connect_go.Response[api.LogEntriesResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix.LogAPI.GetMHLogEntries is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("trustix_api.v1.LogAPI.GetMHLogEntries is not implemented"))
 }

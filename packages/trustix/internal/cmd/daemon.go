@@ -207,7 +207,7 @@ var daemonCmd = &cobra.Command{
 
 			for _, subscriberConfig := range config.Subscribers {
 				subConf := subscriberConfig
-				logInitExecutor.Add(func() error {
+				logInitExecutor.Add(func() error { // nolint:errcheck
 					pubBytes, err := subConf.PublicKey.Decode()
 					if err != nil {
 						return err
@@ -254,7 +254,7 @@ var daemonCmd = &cobra.Command{
 			for i, publisherConfig := range config.Publishers {
 				i := i
 				publisherConfig := publisherConfig
-				logInitExecutor.Add(func() error {
+				logInitExecutor.Add(func() error { // nolint:errcheck
 					logID := *logsPublished[i].LogID
 
 					log.WithFields(log.Fields{

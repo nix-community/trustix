@@ -1,0 +1,2 @@
+serve: npm install && npm run dev
+proto: (proto_script=$(readlink -f ./mk-proto); cd ../trustix-nix-r13y/reprod-api && reflex -r '\.proto$' "$proto_script")

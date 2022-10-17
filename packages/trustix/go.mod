@@ -9,9 +9,9 @@ require (
 	github.com/dop251/goja v0.0.0-20221003171542-5ea1285e6c91
 	github.com/hashicorp/go-memdb v1.3.3
 	github.com/lazyledger/smt v0.2.0
-	github.com/nix-community/trustix/packages/go-lib v0.0.0-20221006094532-116e5118302b
-	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20221006094532-116e5118302b
-	github.com/nix-community/trustix/packages/unixtransport v0.0.0-20221006094532-116e5118302b
+	github.com/nix-community/trustix/packages/go-lib v0.0.0-20221010024647-1705ebe5aa6d
+	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20221010024647-1705ebe5aa6d
+	github.com/nix-community/trustix/packages/unixtransport v0.0.0-20221010024647-1705ebe5aa6d
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
@@ -34,8 +34,8 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
-	golang.org/x/exp v0.0.0-20221004215720-b9f4876ce741 // indirect
-	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
+	golang.org/x/exp v0.0.0-20221010202428-3a778c567f61 // indirect
+	golang.org/x/sys v0.0.0-20221010170243-090e33056c14 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

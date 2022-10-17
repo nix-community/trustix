@@ -16,7 +16,7 @@ The main documentation package that aggregates documentation from the various su
 This is a supplemental daemon to the main Trustix daemon that layers some knowledge about Nix on top of the generic log functionality.
 It contains a [post-build hook](https://www.tweag.io/blog/2019-11-21-untrusted-ci/) used to submit newly built packages to the logs, a binary cache HTTP interface and a development tool to submit already built closures.
 
-- [trustix-nix-reprod](https://github.com/nix-community/trustix/blob/master/packages/trustix-nix-reprod)
+- [trustix-nix-r13y](https://github.com/nix-community/trustix/blob/master/packages/trustix-nix-r13y)
 
 This package is an implementation of a reproducibility tracker backed by logs.
 

@@ -1,0 +1,14 @@
+[cron]
+eval_index = 3600
+log_index = 900
+
+[lognames]
+e0f263745e4e3ab07ab5275b00b44f594e0b6d2bd35892a8ebd10a7f86322eb7 = "cache.nixos.org"
+
+[attrs]
+nixos-unstable = [ "jq", "hello" ]
+
+[channels.hydra.nixos-unstable]
+base_url = "https://hydra.nixos.org"
+jobset = "trunk-combined"
+project = "nixos"

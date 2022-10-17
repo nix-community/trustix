@@ -10,26 +10,29 @@ import "api/api.proto";
 
 option go_package = "github.com/nix-community/trustix/packages/trustix-proto/rpc";
 
-package trustix;
+package trustix_rpc.v1;
 
 // RPCApi are "private" rpc methods for an instance.
 // This should only be available to trusted parties.
 service RPCApi {
   // Get a list of all logs published/subscribed by this node
-  rpc Logs(LogsRequest) returns (LogsResponse) {}
+  rpc Logs(trustix_api.v1.LogsRequest) returns (trustix_api.v1.LogsResponse) {}
 
   // Decide on an output for key based on the configured decision method
   rpc Decide(DecideRequest) returns (DecisionResponse) {}
 
   // Get values by their content-address
-  rpc GetValue(ValueRequest) returns (ValueResponse) {}
+  rpc GetValue(trustix_api.v1.ValueRequest)
+      returns (trustix_api.v1.ValueResponse) {}
 }
 
 // RPCApi are "private" rpc methods for an instance related to a specific log.
 // This should only be available to trusted parties.
 service LogRPC {
-  rpc GetHead(LogHeadRequest) returns (LogHead) {}
-  rpc GetLogEntries(GetLogEntriesRequest) returns (LogEntriesResponse) {}
+  rpc GetHead(trustix_api.v1.LogHeadRequest)
+      returns (trustix_schema.v1.LogHead) {}
+  rpc GetLogEntries(trustix_api.v1.GetLogEntriesRequest)
+      returns (trustix_api.v1.LogEntriesResponse) {}
   rpc Submit(SubmitRequest) returns (SubmitResponse) {}
   rpc Flush(FlushRequest) returns (FlushResponse) {}
 }
@@ -41,7 +44,7 @@ message DecideRequest {
 
 message EntriesResponse {
   required bytes Key = 1;
-  map<string, MapEntry> Entries = 2;
+  map<string, trustix_schema.v1.MapEntry> Entries = 2;
 }
 
 message LogValueResponse {
@@ -68,7 +71,7 @@ message DecisionResponse {
 
 message SubmitRequest {
   required string LogID = 1;
-  repeated KeyValuePair Items = 2;
+  repeated trustix_api.v1.KeyValuePair Items = 2;
 }
 
 message SubmitResponse {

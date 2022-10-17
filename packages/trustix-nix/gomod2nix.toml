@@ -47,8 +47,8 @@ schema = 3
     version = "v0.5.10"
     hash = "sha256-bogOwQNmQVS7W+C7wci7XEUeYm9TB7PnxnyBIXKYbm0="
   [mod."golang.org/x/sys"]
-    version = "v0.0.0-20220928140112-f11e5e49a4ec"
-    hash = "sha256-Xu81/C0U3hGOIG2Z0AK/1ahyrQgTbP6oagMIrN25zXU="
+    version = "v0.0.0-20221010170243-090e33056c14"
+    hash = "sha256-0QvEbu4o68ESEiocyqD/kFbDjRdnGbJWGIazHdsaIYQ="
   [mod."google.golang.org/protobuf"]
     version = "v1.28.1"
     hash = "sha256-sTJYgvlv5is7vHNxcuigF2lNASp0QonhUgnrguhfHSU="

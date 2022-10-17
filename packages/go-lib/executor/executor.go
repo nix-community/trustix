@@ -31,7 +31,11 @@ func NewParallellExecutor() *ParallellExecutor {
 	}
 }
 
-func (e *ParallellExecutor) Add(fn func() error) {
+func (e *ParallellExecutor) Add(fn func() error) error {
+	if e.err != nil {
+		return e.err
+	}
+
 	e.wg.Add(1)
 
 	go func() {
@@ -42,6 +46,8 @@ func (e *ParallellExecutor) Add(fn func() error) {
 			e.errChan <- err
 		}
 	}()
+
+	return nil
 }
 
 func (e *ParallellExecutor) Wait() error {
