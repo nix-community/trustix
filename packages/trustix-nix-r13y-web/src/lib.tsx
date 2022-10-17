@@ -1,3 +1,7 @@
+// Copyright © 2020-2022 The Trustix Authors
+//
+// SPDX-License-Identifier: GPL-3.0-only
+
 export class NameValuePair<T> {
   public name: string;
   public value: T;

@@ -1,3 +1,7 @@
+// Copyright © 2020-2022 The Trustix Authors
+//
+// SPDX-License-Identifier: GPL-3.0-only
+
 import type { Component } from "solid-js";
 import { lazy, onMount, For } from "solid-js";
 import { Routes, Route, A } from "@solidjs/router";
