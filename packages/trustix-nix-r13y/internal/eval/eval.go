@@ -45,6 +45,16 @@ func Eval(ctx context.Context, config *EvalConfig) (chan *lib.Result[*EvalResult
 		return nil, err
 	}
 
+	// If a custom eval store is used create it first
+	if config.EvalStore != "" {
+		cmd := exec.CommandContext(ctx, "nix", "store", "ping", "--store", config.EvalStore)
+
+		err = cmd.Run()
+		if err != nil {
+			return nil, fmt.Errorf("error creating store: %w", err)
+		}
+	}
+
 	cmd := exec.CommandContext(ctx, "nix-eval-jobs", args...)
 	if config.NixPath != "" {
 		cmd.Env = os.Environ()

@@ -32,18 +32,31 @@ type HydraEval struct {
 	EvalInputs map[string]*JobsetEvalInput `json:"jobsetevalinputs"`
 }
 
-type HydraEvalResponse struct {
-	Next  string       `json:"next"`
-	First string       `json:"first"`
-	Evals []*HydraEval `json:"evals"`
+type NixPath map[string]string
 
-	baseURL string
-	project string
-	jobset  string
+func (n *NixPath) String() string {
+	var b strings.Builder
+
+	nInputs := len(*n)
+
+	i := 0
+	for k, v := range *n {
+		if i >= 1 && i <= nInputs-1 {
+			b.WriteRune(':')
+		}
+
+		b.WriteString(k)
+		b.WriteRune('=')
+		b.WriteString(v)
+
+		i++
+	}
+
+	return b.String()
 }
 
 // Get NIX_PATH from a Hydra evaluation
-func (e *HydraEval) NixPath() (string, error) {
+func (e *HydraEval) NixPath() (NixPath, error) {
 
 	// We need resolved local paths, and the only reasonable way to download them is to feed them to a nix expression
 	var expr string
@@ -58,19 +71,19 @@ func (e *HydraEval) NixPath() (string, error) {
 				continue
 			case "git":
 			default:
-				return "", fmt.Errorf("unsupported hydra input type: %s", v.Type)
+				return nil, fmt.Errorf("unsupported hydra input type: %s", v.Type)
 			}
 
 			// Sanity check URI to prevent command injections
 			_, err := url.Parse(v.URI)
 			if err != nil {
-				return "", fmt.Errorf("error parsing URL: %w", err)
+				return nil, fmt.Errorf("error parsing URL: %w", err)
 			}
 
 			// Sanity check rev to prevent command injections
 			_, err = hex.DecodeString(v.Revision)
 			if err != nil {
-				return "", fmt.Errorf("error parsing revision: %w", err)
+				return nil, fmt.Errorf("error parsing revision: %w", err)
 			}
 
 			b.WriteString(fmt.Sprintf("  %s = builtins.fetchGit { url = \"%s\"; rev = \"%s\"; allRefs = true; };", fmt.Sprintf("%q", k), v.URI, v.Revision))
@@ -81,7 +94,7 @@ func (e *HydraEval) NixPath() (string, error) {
 		expr = b.String()
 	}
 
-	var nixpath map[string]string
+	var nixpath NixPath
 	{
 		var stdout bytes.Buffer
 
@@ -90,30 +103,37 @@ func (e *HydraEval) NixPath() (string, error) {
 
 		err := cmd.Run()
 		if err != nil {
-			return "", fmt.Errorf("error downloading path: %w", err)
+			return nil, fmt.Errorf("error downloading path: %w", err)
 		}
 
 		s := ""
 		err = json.Unmarshal(stdout.Bytes(), &s)
 		if err != nil {
-			return "", fmt.Errorf("error decoding wrapping string for nixpath map: %w", err)
+			return nil, fmt.Errorf("error decoding wrapping string for nixpath map: %w", err)
 		}
 
 		err = json.Unmarshal([]byte(s), &nixpath)
 		if err != nil {
-			return "", fmt.Errorf("error decoding nixpath map: %w", err)
+			return nil, fmt.Errorf("error decoding nixpath map: %w", err)
 		}
 	}
 
-	var b strings.Builder
+	return nixpath, nil
+}
 
-	for k, v := range nixpath {
-		b.WriteString(k)
-		b.WriteRune('=')
-		b.WriteString(v)
-	}
+type HydraEvalResponse struct {
+	Next  string       `json:"next"`
+	First string       `json:"first"`
+	Evals []*HydraEval `json:"evals"`
 
-	return b.String(), nil
+	baseURL string
+	project string
+	jobset  string
+}
+
+type HydraJobset struct {
+	NixExprInput string `json:"nixexprinput"`
+	NixExprPath  string `json:"nixexprpath"`
 }
 
 func (h *HydraEvalResponse) NextPage() (*HydraEvalResponse, error) {
@@ -185,4 +205,43 @@ func getEvaluations(baseURL string, project string, jobset string, urlParamsQuer
 // Get evaluation metadata from hydra jobset
 func GetEvaluations(baseURL string, project string, jobset string) (*HydraEvalResponse, error) {
 	return getEvaluations(baseURL, project, jobset, "")
+}
+
+// Get a hydra project
+func GetJobset(baseURL string, project string, jobset string) (*HydraJobset, error) {
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing baseURL: %w", err)
+	}
+
+	u.Path = path.Join("jobset", project, jobset)
+
+	l := log.WithFields(log.Fields{
+		"url": u.String(),
+	})
+
+	l.Info("Requesting hydra jobset")
+
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("could not create request: %w", err)
+	}
+
+	req.Header.Set("accept", "application/json")
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("could not perform request: %w", err)
+	}
+
+	var r *HydraJobset
+
+	err = json.NewDecoder(resp.Body).Decode(&r)
+	if err != nil {
+		return nil, fmt.Errorf("could not decode response: %w", err)
+	}
+
+	return r, nil
 }

@@ -7,25 +7,33 @@ package config
 import "fmt"
 
 type HydraJobset struct {
-	BaseURL string `toml:"base_url" json:"base_url"`
-	Project string `toml:"project" json:"project"`
-	Jobset  string `toml:"jobset" json:"jobset"`
+	BaseURL      string `toml:"base_url" json:"base_url"`
+	Project      string `toml:"project" json:"project"`
+	Jobset       string `toml:"jobset" json:"jobset"`
+	PollInterval int64  `toml:"interval" json:"interval"`
 }
 
-func (c *HydraJobset) Validate() error {
-	if c.BaseURL == "" {
+func (j *HydraJobset) Validate() error {
+	if j.BaseURL == "" {
 		return fmt.Errorf("missing baseURL")
 	}
 
-	if c.Project == "" {
+	if j.Project == "" {
 		return fmt.Errorf("missing project")
 	}
 
-	if c.Jobset == "" {
+	if j.Jobset == "" {
 		return fmt.Errorf("missing jobset")
 	}
 
 	return nil
+}
+
+func (j *HydraJobset) init() {
+	// Every hour by default
+	if j.PollInterval == 0 {
+		j.PollInterval = 60 * 60
+	}
 }
 
 type Channels struct {
@@ -35,6 +43,10 @@ type Channels struct {
 func (c *Channels) init() {
 	if c.Hydra == nil {
 		c.Hydra = make(map[string]*HydraJobset)
+	}
+
+	for _, hydraJobset := range c.Hydra {
+		hydraJobset.init()
 	}
 }
 

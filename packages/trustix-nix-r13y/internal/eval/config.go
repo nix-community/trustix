@@ -12,9 +12,14 @@ import (
 )
 
 type EvalConfig struct {
-	Expr   string
-	Arg    map[string]string
-	ArgStr map[string]string
+	ExprPath string
+	Expr     string
+	Arg      map[string]string
+	ArgStr   map[string]string
+
+	EvalStore string
+
+	ForceRecurse bool
 
 	Flake string
 
@@ -27,7 +32,7 @@ type EvalConfig struct {
 }
 
 func NewConfig() *EvalConfig {
-	workers := 4
+	workers := 2
 	maxMemorySize := 0
 
 	// Max a rough estimate at a reasonable default evaluator memory usage
@@ -78,6 +83,10 @@ func (c *EvalConfig) toArgs() ([]string, error) {
 		args = append(args, "--argstr", arg, value)
 	}
 
+	if c.EvalStore != "" {
+		args = append(args, "--eval-store", c.EvalStore)
+	}
+
 	if c.Workers > 0 {
 		args = append(args, "--workers", strconv.Itoa(c.Workers))
 	}
@@ -86,10 +95,27 @@ func (c *EvalConfig) toArgs() ([]string, error) {
 		args = append(args, "--max-memory-size", strconv.Itoa(c.MaxMemorySize))
 	}
 
-	if c.Expr == "" {
-		return nil, fmt.Errorf("Missing expression to evaluate")
+	if c.ForceRecurse {
+		args = append(args, "--force-recurse")
 	}
-	args = append(args, "--expr", c.Expr)
+
+	// Expression
+	{
+		if c.ExprPath == "" && c.Expr == "" {
+			return nil, fmt.Errorf("Missing expression to evaluate")
+		}
+		if c.ExprPath != "" && c.Expr != "" {
+			return nil, fmt.Errorf("Ambigious expression, has both expression and expression path")
+		}
+
+		if c.Expr != "" {
+			args = append(args, "--expr", c.Expr)
+		}
+
+		if c.ExprPath != "" {
+			args = append(args, c.ExprPath)
+		}
+	}
 
 	return args, nil
 }
