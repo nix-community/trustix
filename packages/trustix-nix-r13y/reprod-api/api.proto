@@ -69,9 +69,7 @@ message DiffRequest {
 
 message DiffResponse { string HTMLDiff = 1; }
 
-message AttrReproducibilityTimeSeriesGroupedbyChannelRequest {
-}
-
+message AttrReproducibilityTimeSeriesGroupedbyChannelRequest {}
 
 message AttrReproducibilityTimeSeriesGroupedbyChannelResponse {
   message Channel {
@@ -88,7 +86,8 @@ service ReproducibilityAPI {
   rpc AttrReproducibilityTimeSeries(AttrReproducibilityTimeSeriesRequest)
       returns (AttrReproducibilityTimeSeriesResponse) {}
 
-  rpc AttrReproducibilityTimeSeriesGroupedbyChannel(AttrReproducibilityTimeSeriesGroupedbyChannelRequest)
+  rpc AttrReproducibilityTimeSeriesGroupedbyChannel(
+      AttrReproducibilityTimeSeriesGroupedbyChannelRequest)
       returns (AttrReproducibilityTimeSeriesGroupedbyChannelResponse) {}
 
   rpc SuggestAttribute(SuggestsAttributeRequest)

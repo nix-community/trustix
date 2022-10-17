@@ -22,14 +22,17 @@ service RPCApi {
   rpc Decide(DecideRequest) returns (DecisionResponse) {}
 
   // Get values by their content-address
-  rpc GetValue(trustix_api.v1.ValueRequest) returns (trustix_api.v1.ValueResponse) {}
+  rpc GetValue(trustix_api.v1.ValueRequest)
+      returns (trustix_api.v1.ValueResponse) {}
 }
 
 // RPCApi are "private" rpc methods for an instance related to a specific log.
 // This should only be available to trusted parties.
 service LogRPC {
-  rpc GetHead(trustix_api.v1.LogHeadRequest) returns (trustix_schema.v1.LogHead) {}
-  rpc GetLogEntries(trustix_api.v1.GetLogEntriesRequest) returns (trustix_api.v1.LogEntriesResponse) {}
+  rpc GetHead(trustix_api.v1.LogHeadRequest)
+      returns (trustix_schema.v1.LogHead) {}
+  rpc GetLogEntries(trustix_api.v1.GetLogEntriesRequest)
+      returns (trustix_api.v1.LogEntriesResponse) {}
   rpc Submit(SubmitRequest) returns (SubmitResponse) {}
   rpc Flush(FlushRequest) returns (FlushResponse) {}
 }
