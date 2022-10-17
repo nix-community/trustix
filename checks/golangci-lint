@@ -10,5 +10,5 @@ args="./... --out-format github-actions"
 
 ls ./packages/*/go.mod | xargs dirname | while read pkgdir; do
     echo "Checking $pkgdir"
-    nix-shell "$pkgdir/shell.nix" --run "cd $pkgdir && golangci-lint run $args"
+    nix-shell "$pkgdir/shell.nix" --run "cd $pkgdir && golangci-lint run --timeout 15m0s $args"
 done
