@@ -8,6 +8,7 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:solid/recommended",
+    "plugin:sonarjs/recommended",
   ],
   overrides: [],
   parser: "@typescript-eslint/parser",
@@ -15,6 +16,11 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: ["@typescript-eslint", "solid"],
+  plugins: [
+    "@typescript-eslint",
+    "solid",
+    "sonarjs",
+    "@typescript-eslint/tslint",
+  ],
   rules: {},
 };
