@@ -396,7 +396,7 @@ This component is generic and doesn't know anything about any Nix or other packa
 <p>This is a supplemental daemon to the main Trustix daemon that layers some knowledge about Nix on top of the generic log functionality.
 It contains a <a href="https://www.tweag.io/blog/2019-11-21-untrusted-ci/">post-build hook</a> used to submit newly built packages to the logs, a binary cache HTTP interface and a development tool to submit already built closures.</p>
 <ul>
-<li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix-nix-reprod">trustix-nix-reprod</a></li>
+<li><a href="https://github.com/nix-community/trustix/blob/master/packages/trustix-nix-r13y">trustix-nix-r13y</a></li>
 </ul>
 <p>This package is an implementation of a reproducibility tracker backed by logs.</p>
 <ul>
@@ -470,67 +470,67 @@ This is mostly outputing markdown files in the relevant location for the <code>t
 <p><a href="api.html#api_api-proto">api/api.proto</a></p>
 <ul>
 <li>
-<p><a href="api.html#trustix-GetLogAuditProofRequest">GetLogAuditProofRequest</a></p>
+<p><a href="api.html#trustix_api-v1-GetLogAuditProofRequest">GetLogAuditProofRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></p>
+<p><a href="api.html#trustix_api-v1-GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-GetLogEntriesRequest">GetLogEntriesRequest</a></p>
+<p><a href="api.html#trustix_api-v1-GetLogEntriesRequest">GetLogEntriesRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-GetMapValueRequest">GetMapValueRequest</a></p>
+<p><a href="api.html#trustix_api-v1-GetMapValueRequest">GetMapValueRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-KeyValuePair">KeyValuePair</a></p>
+<p><a href="api.html#trustix_api-v1-KeyValuePair">KeyValuePair</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-Log">Log</a></p>
+<p><a href="api.html#trustix_api-v1-Log">Log</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-Log-MetaEntry">Log.MetaEntry</a></p>
+<p><a href="api.html#trustix_api-v1-Log-MetaEntry">Log.MetaEntry</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogEntriesResponse">LogEntriesResponse</a></p>
+<p><a href="api.html#trustix_api-v1-LogEntriesResponse">LogEntriesResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogHeadRequest">LogHeadRequest</a></p>
+<p><a href="api.html#trustix_api-v1-LogHeadRequest">LogHeadRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogSigner">LogSigner</a></p>
+<p><a href="api.html#trustix_api-v1-LogSigner">LogSigner</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogsRequest">LogsRequest</a></p>
+<p><a href="api.html#trustix_api-v1-LogsRequest">LogsRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogsResponse">LogsResponse</a></p>
+<p><a href="api.html#trustix_api-v1-LogsResponse">LogsResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-MapValueResponse">MapValueResponse</a></p>
+<p><a href="api.html#trustix_api-v1-MapValueResponse">MapValueResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-ProofResponse">ProofResponse</a></p>
+<p><a href="api.html#trustix_api-v1-ProofResponse">ProofResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-SparseCompactMerkleProof">SparseCompactMerkleProof</a></p>
+<p><a href="api.html#trustix_api-v1-SparseCompactMerkleProof">SparseCompactMerkleProof</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-ValueRequest">ValueRequest</a></p>
+<p><a href="api.html#trustix_api-v1-ValueRequest">ValueRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-ValueResponse">ValueResponse</a></p>
+<p><a href="api.html#trustix_api-v1-ValueResponse">ValueResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-Log-LogModes">Log.LogModes</a></p>
+<p><a href="api.html#trustix_api-v1-Log-LogModes">Log.LogModes</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogSigner-KeyTypes">LogSigner.KeyTypes</a></p>
+<p><a href="api.html#trustix_api-v1-LogSigner-KeyTypes">LogSigner.KeyTypes</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogAPI">LogAPI</a></p>
+<p><a href="api.html#trustix_api-v1-LogAPI">LogAPI</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-NodeAPI">NodeAPI</a></p>
+<p><a href="api.html#trustix_api-v1-NodeAPI">NodeAPI</a></p>
 </li>
 </ul>
 </li>
@@ -538,68 +538,68 @@ This is mostly outputing markdown files in the relevant location for the <code>t
 <p><a href="api.html#rpc_rpc-proto">rpc/rpc.proto</a></p>
 <ul>
 <li>
-<p><a href="api.html#trustix-DecideRequest">DecideRequest</a></p>
+<p><a href="api.html#trustix_rpc-v1-DecideRequest">DecideRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-DecisionResponse">DecisionResponse</a></p>
+<p><a href="api.html#trustix_rpc-v1-DecisionResponse">DecisionResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-EntriesResponse">EntriesResponse</a></p>
+<p><a href="api.html#trustix_rpc-v1-EntriesResponse">EntriesResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-EntriesResponse-EntriesEntry">EntriesResponse.EntriesEntry</a></p>
+<p><a href="api.html#trustix_rpc-v1-EntriesResponse-EntriesEntry">EntriesResponse.EntriesEntry</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-FlushRequest">FlushRequest</a></p>
+<p><a href="api.html#trustix_rpc-v1-FlushRequest">FlushRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-FlushResponse">FlushResponse</a></p>
+<p><a href="api.html#trustix_rpc-v1-FlushResponse">FlushResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogValueDecision">LogValueDecision</a></p>
+<p><a href="api.html#trustix_rpc-v1-LogValueDecision">LogValueDecision</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogValueResponse">LogValueResponse</a></p>
+<p><a href="api.html#trustix_rpc-v1-LogValueResponse">LogValueResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-SubmitRequest">SubmitRequest</a></p>
+<p><a href="api.html#trustix_rpc-v1-SubmitRequest">SubmitRequest</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-SubmitResponse">SubmitResponse</a></p>
+<p><a href="api.html#trustix_rpc-v1-SubmitResponse">SubmitResponse</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-SubmitResponse-Status">SubmitResponse.Status</a></p>
+<p><a href="api.html#trustix_rpc-v1-SubmitResponse-Status">SubmitResponse.Status</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-LogRPC">LogRPC</a></p>
+<p><a href="api.html#trustix_rpc-v1-LogRPC">LogRPC</a></p>
 </li>
 <li>
-<p><a href="api.html#trustix-RPCApi">RPCApi</a></p>
+<p><a href="api.html#trustix_rpc-v1-RPCApi">RPCApi</a></p>
 </li>
 </ul>
 </li>
 <li>
 <p><a href="api.html#schema_loghead-proto">schema/loghead.proto</a></p>
 <ul>
-<li><a href="api.html#-LogHead">LogHead</a></li>
+<li><a href="api.html#trustix_schema-v1-LogHead">LogHead</a></li>
 </ul>
 </li>
 <li>
 <p><a href="api.html#schema_logleaf-proto">schema/logleaf.proto</a></p>
 <ul>
-<li><a href="api.html#-LogLeaf">LogLeaf</a></li>
+<li><a href="api.html#trustix_schema-v1-LogLeaf">LogLeaf</a></li>
 </ul>
 </li>
 <li>
 <p><a href="api.html#schema_mapentry-proto">schema/mapentry.proto</a></p>
 <ul>
-<li><a href="api.html#-MapEntry">MapEntry</a></li>
+<li><a href="api.html#trustix_schema-v1-MapEntry">MapEntry</a></li>
 </ul>
 </li>
 <li>
 <p><a href="api.html#schema_queue-proto">schema/queue.proto</a></p>
 <ul>
-<li><a href="api.html#-SubmitQueue">SubmitQueue</a></li>
+<li><a href="api.html#trustix_schema-v1-SubmitQueue">SubmitQueue</a></li>
 </ul>
 </li>
 <li>
@@ -609,7 +609,7 @@ This is mostly outputing markdown files in the relevant location for the <code>t
 <p><a name="api_api-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="apiapiproto"><a class="header" href="#apiapiproto">api/api.proto</a></h2>
-<p><a name="trustix-GetLogAuditProofRequest"></a></p>
+<p><a name="trustix_api-v1-GetLogAuditProofRequest"></a></p>
 <h3 id="getlogauditproofrequest"><a class="header" href="#getlogauditproofrequest">GetLogAuditProofRequest</a></h3>
 <p>Get log audit proof for a given tree</p>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
@@ -618,7 +618,7 @@ This is mostly outputing markdown files in the relevant location for the <code>t
 <tr><td>TreeSize</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>Tree size (proof reference)</td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-GetLogConsistencyProofRequest"></a></p>
+<p><a name="trustix_api-v1-GetLogConsistencyProofRequest"></a></p>
 <h3 id="getlogconsistencyproofrequest"><a class="header" href="#getlogconsistencyproofrequest">GetLogConsistencyProofRequest</a></h3>
 <p>Get a consistency proof between two given log sizes</p>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
@@ -627,7 +627,7 @@ This is mostly outputing markdown files in the relevant location for the <code>t
 <tr><td>SecondSize</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>To tree size</td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-GetLogEntriesRequest"></a></p>
+<p><a name="trustix_api-v1-GetLogEntriesRequest"></a></p>
 <h3 id="getlogentriesrequest"><a class="header" href="#getlogentriesrequest">GetLogEntriesRequest</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td>Log identifier</td></tr>
@@ -635,7 +635,7 @@ This is mostly outputing markdown files in the relevant location for the <code>t
 <tr><td>Finish</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td>Get entries to</td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-GetMapValueRequest"></a></p>
+<p><a name="trustix_api-v1-GetMapValueRequest"></a></p>
 <h3 id="getmapvaluerequest"><a class="header" href="#getmapvaluerequest">GetMapValueRequest</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td>Log identifier</td></tr>
@@ -643,76 +643,76 @@ This is mostly outputing markdown files in the relevant location for the <code>t
 <tr><td>MapRoot</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Map root hash to derive proof from</td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-KeyValuePair"></a></p>
+<p><a name="trustix_api-v1-KeyValuePair"></a></p>
 <h3 id="keyvaluepair"><a class="header" href="#keyvaluepair">KeyValuePair</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Key</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Map key</td></tr>
 <tr><td>Value</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Map value</td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-Log"></a></p>
+<p><a name="trustix_api-v1-Log"></a></p>
 <h3 id="log"><a class="header" href="#log">Log</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
-<tr><td>Mode</td><td><a href="api.html#trustix-Log-LogModes">Log.LogModes</a></td><td>required</td><td></td></tr>
+<tr><td>Mode</td><td><a href="api.html#trustix_api-v1-Log-LogModes">Log.LogModes</a></td><td>required</td><td></td></tr>
 <tr><td>Protocol</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
-<tr><td>Signer</td><td><a href="api.html#trustix-LogSigner">LogSigner</a></td><td>required</td><td></td></tr>
-<tr><td>Meta</td><td><a href="api.html#trustix-Log-MetaEntry">Log.MetaEntry</a></td><td>repeated</td><td></td></tr>
+<tr><td>Signer</td><td><a href="api.html#trustix_api-v1-LogSigner">LogSigner</a></td><td>required</td><td></td></tr>
+<tr><td>Meta</td><td><a href="api.html#trustix_api-v1-Log-MetaEntry">Log.MetaEntry</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-Log-MetaEntry"></a></p>
+<p><a name="trustix_api-v1-Log-MetaEntry"></a></p>
 <h3 id="logmetaentry"><a class="header" href="#logmetaentry">Log.MetaEntry</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>key</td><td><a href="api.html#string">string</a></td><td>optional</td><td></td></tr>
 <tr><td>value</td><td><a href="api.html#string">string</a></td><td>optional</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-LogEntriesResponse"></a></p>
+<p><a name="trustix_api-v1-LogEntriesResponse"></a></p>
 <h3 id="logentriesresponse"><a class="header" href="#logentriesresponse">LogEntriesResponse</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>Leaves</td><td><a href="api.html#LogLeaf">LogLeaf</a></td><td>repeated</td><td></td></tr>
+<tr><td>Leaves</td><td><a href="api.html#trustix_schema-v1-LogLeaf">trustix_schema.v1.LogLeaf</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-LogHeadRequest"></a></p>
+<p><a name="trustix_api-v1-LogHeadRequest"></a></p>
 <h3 id="logheadrequest"><a class="header" href="#logheadrequest">LogHeadRequest</a></h3>
 <p>Request a signed head for a given log</p>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td>Log identifier</td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-LogSigner"></a></p>
+<p><a name="trustix_api-v1-LogSigner"></a></p>
 <h3 id="logsigner"><a class="header" href="#logsigner">LogSigner</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>KeyType</td><td><a href="api.html#trustix-LogSigner-KeyTypes">LogSigner.KeyTypes</a></td><td>required</td><td></td></tr>
+<tr><td>KeyType</td><td><a href="api.html#trustix_api-v1-LogSigner-KeyTypes">LogSigner.KeyTypes</a></td><td>required</td><td></td></tr>
 <tr><td>Public</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-LogsRequest"></a></p>
+<p><a name="trustix_api-v1-LogsRequest"></a></p>
 <h3 id="logsrequest"><a class="header" href="#logsrequest">LogsRequest</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Protocols</td><td><a href="api.html#string">string</a></td><td>repeated</td><td>Allow to filter logs response based on the protocol identifier</td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-LogsResponse"></a></p>
+<p><a name="trustix_api-v1-LogsResponse"></a></p>
 <h3 id="logsresponse"><a class="header" href="#logsresponse">LogsResponse</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>Logs</td><td><a href="api.html#trustix-Log">Log</a></td><td>repeated</td><td></td></tr>
+<tr><td>Logs</td><td><a href="api.html#trustix_api-v1-Log">Log</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-MapValueResponse"></a></p>
+<p><a name="trustix_api-v1-MapValueResponse"></a></p>
 <h3 id="mapvalueresponse"><a class="header" href="#mapvalueresponse">MapValueResponse</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Value</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Note that the Value field is actually a MapEntry but we need to return the marshaled version as that's what the proof is created from</td></tr>
-<tr><td>Proof</td><td><a href="api.html#trustix-SparseCompactMerkleProof">SparseCompactMerkleProof</a></td><td>required</td><td></td></tr>
+<tr><td>Proof</td><td><a href="api.html#trustix_api-v1-SparseCompactMerkleProof">SparseCompactMerkleProof</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-ProofResponse"></a></p>
+<p><a name="trustix_api-v1-ProofResponse"></a></p>
 <h3 id="proofresponse"><a class="header" href="#proofresponse">ProofResponse</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Proof</td><td><a href="api.html#bytes">bytes</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-SparseCompactMerkleProof"></a></p>
+<p><a name="trustix_api-v1-SparseCompactMerkleProof"></a></p>
 <h3 id="sparsecompactmerkleproof"><a class="header" href="#sparsecompactmerkleproof">SparseCompactMerkleProof</a></h3>
 <p>Sparse merkle tree proof</p>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
@@ -722,95 +722,95 @@ This is mostly outputing markdown files in the relevant location for the <code>t
 <tr><td>NumSideNodes</td><td><a href="api.html#uint64">uint64</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-ValueRequest"></a></p>
+<p><a name="trustix_api-v1-ValueRequest"></a></p>
 <h3 id="valuerequest"><a class="header" href="#valuerequest">ValueRequest</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Digest</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-ValueResponse"></a></p>
+<p><a name="trustix_api-v1-ValueResponse"></a></p>
 <h3 id="valueresponse"><a class="header" href="#valueresponse">ValueResponse</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Value</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-Log-LogModes"></a></p>
+<p><a name="trustix_api-v1-Log-LogModes"></a></p>
 <h3 id="loglogmodes"><a class="header" href="#loglogmodes">Log.LogModes</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
 <tr><td>Log</td><td>0</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-LogSigner-KeyTypes"></a></p>
+<p><a name="trustix_api-v1-LogSigner-KeyTypes"></a></p>
 <h3 id="logsignerkeytypes"><a class="header" href="#logsignerkeytypes">LogSigner.KeyTypes</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
 <tr><td>ed25519</td><td>0</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-LogAPI"></a></p>
+<p><a name="trustix_api-v1-LogAPI"></a></p>
 <h3 id="logapi"><a class="header" href="#logapi">LogAPI</a></h3>
 <p>LogAPI is a logical grouping for RPC methods that are specific to a given
 log.</p>
 <div class="table-wrapper"><table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
-<tr><td>GetHead</td><td><a href="api.html#trustix-LogHeadRequest">LogHeadRequest</a></td><td><a href="api.html#LogHead">.LogHead</a></td><td>Get signed head</td></tr>
-<tr><td>GetLogConsistencyProof</td><td><a href="api.html#trustix-GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></td><td><a href="api.html#trustix-ProofResponse">ProofResponse</a></td><td></td></tr>
-<tr><td>GetLogAuditProof</td><td><a href="api.html#trustix-GetLogAuditProofRequest">GetLogAuditProofRequest</a></td><td><a href="api.html#trustix-ProofResponse">ProofResponse</a></td><td></td></tr>
-<tr><td>GetLogEntries</td><td><a href="api.html#trustix-GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix-LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
-<tr><td>GetMapValue</td><td><a href="api.html#trustix-GetMapValueRequest">GetMapValueRequest</a></td><td><a href="api.html#trustix-MapValueResponse">MapValueResponse</a></td><td></td></tr>
-<tr><td>GetMHLogConsistencyProof</td><td><a href="api.html#trustix-GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></td><td><a href="api.html#trustix-ProofResponse">ProofResponse</a></td><td></td></tr>
-<tr><td>GetMHLogAuditProof</td><td><a href="api.html#trustix-GetLogAuditProofRequest">GetLogAuditProofRequest</a></td><td><a href="api.html#trustix-ProofResponse">ProofResponse</a></td><td></td></tr>
-<tr><td>GetMHLogEntries</td><td><a href="api.html#trustix-GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix-LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
+<tr><td>GetHead</td><td><a href="api.html#trustix_api-v1-LogHeadRequest">LogHeadRequest</a></td><td><a href="api.html#trustix_schema-v1-LogHead">.trustix_schema.v1.LogHead</a></td><td>Get signed head</td></tr>
+<tr><td>GetLogConsistencyProof</td><td><a href="api.html#trustix_api-v1-GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></td><td><a href="api.html#trustix_api-v1-ProofResponse">ProofResponse</a></td><td></td></tr>
+<tr><td>GetLogAuditProof</td><td><a href="api.html#trustix_api-v1-GetLogAuditProofRequest">GetLogAuditProofRequest</a></td><td><a href="api.html#trustix_api-v1-ProofResponse">ProofResponse</a></td><td></td></tr>
+<tr><td>GetLogEntries</td><td><a href="api.html#trustix_api-v1-GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix_api-v1-LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
+<tr><td>GetMapValue</td><td><a href="api.html#trustix_api-v1-GetMapValueRequest">GetMapValueRequest</a></td><td><a href="api.html#trustix_api-v1-MapValueResponse">MapValueResponse</a></td><td></td></tr>
+<tr><td>GetMHLogConsistencyProof</td><td><a href="api.html#trustix_api-v1-GetLogConsistencyProofRequest">GetLogConsistencyProofRequest</a></td><td><a href="api.html#trustix_api-v1-ProofResponse">ProofResponse</a></td><td></td></tr>
+<tr><td>GetMHLogAuditProof</td><td><a href="api.html#trustix_api-v1-GetLogAuditProofRequest">GetLogAuditProofRequest</a></td><td><a href="api.html#trustix_api-v1-ProofResponse">ProofResponse</a></td><td></td></tr>
+<tr><td>GetMHLogEntries</td><td><a href="api.html#trustix_api-v1-GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix_api-v1-LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-NodeAPI"></a></p>
+<p><a name="trustix_api-v1-NodeAPI"></a></p>
 <h3 id="nodeapi"><a class="header" href="#nodeapi">NodeAPI</a></h3>
 <p>NodeAPI is a logical grouping for RPC methods that are for the entire node
 rather than individual logs.</p>
 <div class="table-wrapper"><table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
-<tr><td>Logs</td><td><a href="api.html#trustix-LogsRequest">LogsRequest</a></td><td><a href="api.html#trustix-LogsResponse">LogsResponse</a></td><td>Get a list of all logs published by this node</td></tr>
-<tr><td>GetValue</td><td><a href="api.html#trustix-ValueRequest">ValueRequest</a></td><td><a href="api.html#trustix-ValueResponse">ValueResponse</a></td><td>Get values by their content-address</td></tr>
+<tr><td>Logs</td><td><a href="api.html#trustix_api-v1-LogsRequest">LogsRequest</a></td><td><a href="api.html#trustix_api-v1-LogsResponse">LogsResponse</a></td><td>Get a list of all logs published by this node</td></tr>
+<tr><td>GetValue</td><td><a href="api.html#trustix_api-v1-ValueRequest">ValueRequest</a></td><td><a href="api.html#trustix_api-v1-ValueResponse">ValueResponse</a></td><td>Get values by their content-address</td></tr>
 </tbody></table>
 </div>
 <p><a name="rpc_rpc-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="rpcrpcproto"><a class="header" href="#rpcrpcproto">rpc/rpc.proto</a></h2>
-<p><a name="trustix-DecideRequest"></a></p>
+<p><a name="trustix_rpc-v1-DecideRequest"></a></p>
 <h3 id="deciderequest"><a class="header" href="#deciderequest">DecideRequest</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Key</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 <tr><td>Protocol</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-DecisionResponse"></a></p>
+<p><a name="trustix_rpc-v1-DecisionResponse"></a></p>
 <h3 id="decisionresponse"><a class="header" href="#decisionresponse">DecisionResponse</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>Decision</td><td><a href="api.html#trustix-LogValueDecision">LogValueDecision</a></td><td>required</td><td></td></tr>
-<tr><td>Mismatches</td><td><a href="api.html#trustix-LogValueResponse">LogValueResponse</a></td><td>repeated</td><td>Non-matches (hash mismatch)</td></tr>
+<tr><td>Decision</td><td><a href="api.html#trustix_rpc-v1-LogValueDecision">LogValueDecision</a></td><td>required</td><td></td></tr>
+<tr><td>Mismatches</td><td><a href="api.html#trustix_rpc-v1-LogValueResponse">LogValueResponse</a></td><td>repeated</td><td>Non-matches (hash mismatch)</td></tr>
 <tr><td>Misses</td><td><a href="api.html#string">string</a></td><td>repeated</td><td>Full misses (log ids missing log entry entirely)</td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-EntriesResponse"></a></p>
+<p><a name="trustix_rpc-v1-EntriesResponse"></a></p>
 <h3 id="entriesresponse"><a class="header" href="#entriesresponse">EntriesResponse</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Key</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
-<tr><td>Entries</td><td><a href="api.html#trustix-EntriesResponse-EntriesEntry">EntriesResponse.EntriesEntry</a></td><td>repeated</td><td></td></tr>
+<tr><td>Entries</td><td><a href="api.html#trustix_rpc-v1-EntriesResponse-EntriesEntry">EntriesResponse.EntriesEntry</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-EntriesResponse-EntriesEntry"></a></p>
+<p><a name="trustix_rpc-v1-EntriesResponse-EntriesEntry"></a></p>
 <h3 id="entriesresponseentriesentry"><a class="header" href="#entriesresponseentriesentry">EntriesResponse.EntriesEntry</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>key</td><td><a href="api.html#string">string</a></td><td>optional</td><td></td></tr>
-<tr><td>value</td><td><a href="api.html#MapEntry">MapEntry</a></td><td>optional</td><td></td></tr>
+<tr><td>value</td><td><a href="api.html#trustix_schema-v1-MapEntry">trustix_schema.v1.MapEntry</a></td><td>optional</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-FlushRequest"></a></p>
+<p><a name="trustix_rpc-v1-FlushRequest"></a></p>
 <h3 id="flushrequest"><a class="header" href="#flushrequest">FlushRequest</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-FlushResponse"></a></p>
+<p><a name="trustix_rpc-v1-FlushResponse"></a></p>
 <h3 id="flushresponse"><a class="header" href="#flushresponse">FlushResponse</a></h3>
-<p><a name="trustix-LogValueDecision"></a></p>
+<p><a name="trustix_rpc-v1-LogValueDecision"></a></p>
 <h3 id="logvaluedecision"><a class="header" href="#logvaluedecision">LogValueDecision</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogIDs</td><td><a href="api.html#string">string</a></td><td>repeated</td><td></td></tr>
@@ -819,57 +819,57 @@ rather than individual logs.</p>
 <tr><td>Value</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-LogValueResponse"></a></p>
+<p><a name="trustix_rpc-v1-LogValueResponse"></a></p>
 <h3 id="logvalueresponse"><a class="header" href="#logvalueresponse">LogValueResponse</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
 <tr><td>Digest</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-SubmitRequest"></a></p>
+<p><a name="trustix_rpc-v1-SubmitRequest"></a></p>
 <h3 id="submitrequest"><a class="header" href="#submitrequest">SubmitRequest</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>LogID</td><td><a href="api.html#string">string</a></td><td>required</td><td></td></tr>
-<tr><td>Items</td><td><a href="api.html#trustix-KeyValuePair">KeyValuePair</a></td><td>repeated</td><td></td></tr>
+<tr><td>Items</td><td><a href="api.html#trustix_api-v1-KeyValuePair">trustix_api.v1.KeyValuePair</a></td><td>repeated</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-SubmitResponse"></a></p>
+<p><a name="trustix_rpc-v1-SubmitResponse"></a></p>
 <h3 id="submitresponse"><a class="header" href="#submitresponse">SubmitResponse</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
-<tr><td>status</td><td><a href="api.html#trustix-SubmitResponse-Status">SubmitResponse.Status</a></td><td>required</td><td></td></tr>
+<tr><td>status</td><td><a href="api.html#trustix_rpc-v1-SubmitResponse-Status">SubmitResponse.Status</a></td><td>required</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-SubmitResponse-Status"></a></p>
+<p><a name="trustix_rpc-v1-SubmitResponse-Status"></a></p>
 <h3 id="submitresponsestatus"><a class="header" href="#submitresponsestatus">SubmitResponse.Status</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Number</th><th>Description</th></tr></thead><tbody>
 <tr><td>OK</td><td>0</td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-LogRPC"></a></p>
+<p><a name="trustix_rpc-v1-LogRPC"></a></p>
 <h3 id="logrpc"><a class="header" href="#logrpc">LogRPC</a></h3>
 <p>RPCApi are &quot;private&quot; rpc methods for an instance related to a specific log.
 This should only be available to trusted parties.</p>
 <div class="table-wrapper"><table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
-<tr><td>GetHead</td><td><a href="api.html#trustix-LogHeadRequest">LogHeadRequest</a></td><td><a href="api.html#LogHead">.LogHead</a></td><td></td></tr>
-<tr><td>GetLogEntries</td><td><a href="api.html#trustix-GetLogEntriesRequest">GetLogEntriesRequest</a></td><td><a href="api.html#trustix-LogEntriesResponse">LogEntriesResponse</a></td><td></td></tr>
-<tr><td>Submit</td><td><a href="api.html#trustix-SubmitRequest">SubmitRequest</a></td><td><a href="api.html#trustix-SubmitResponse">SubmitResponse</a></td><td></td></tr>
-<tr><td>Flush</td><td><a href="api.html#trustix-FlushRequest">FlushRequest</a></td><td><a href="api.html#trustix-FlushResponse">FlushResponse</a></td><td></td></tr>
+<tr><td>GetHead</td><td><a href="api.html#trustix_api-v1-LogHeadRequest">.trustix_api.v1.LogHeadRequest</a></td><td><a href="api.html#trustix_schema-v1-LogHead">.trustix_schema.v1.LogHead</a></td><td></td></tr>
+<tr><td>GetLogEntries</td><td><a href="api.html#trustix_api-v1-GetLogEntriesRequest">.trustix_api.v1.GetLogEntriesRequest</a></td><td><a href="api.html#trustix_api-v1-LogEntriesResponse">.trustix_api.v1.LogEntriesResponse</a></td><td></td></tr>
+<tr><td>Submit</td><td><a href="api.html#trustix_rpc-v1-SubmitRequest">SubmitRequest</a></td><td><a href="api.html#trustix_rpc-v1-SubmitResponse">SubmitResponse</a></td><td></td></tr>
+<tr><td>Flush</td><td><a href="api.html#trustix_rpc-v1-FlushRequest">FlushRequest</a></td><td><a href="api.html#trustix_rpc-v1-FlushResponse">FlushResponse</a></td><td></td></tr>
 </tbody></table>
 </div>
-<p><a name="trustix-RPCApi"></a></p>
+<p><a name="trustix_rpc-v1-RPCApi"></a></p>
 <h3 id="rpcapi"><a class="header" href="#rpcapi">RPCApi</a></h3>
 <p>RPCApi are &quot;private&quot; rpc methods for an instance.
 This should only be available to trusted parties.</p>
 <div class="table-wrapper"><table><thead><tr><th>Method Name</th><th>Request Type</th><th>Response Type</th><th>Description</th></tr></thead><tbody>
-<tr><td>Logs</td><td><a href="api.html#trustix-LogsRequest">LogsRequest</a></td><td><a href="api.html#trustix-LogsResponse">LogsResponse</a></td><td>Get a list of all logs published/subscribed by this node</td></tr>
-<tr><td>Decide</td><td><a href="api.html#trustix-DecideRequest">DecideRequest</a></td><td><a href="api.html#trustix-DecisionResponse">DecisionResponse</a></td><td>Decide on an output for key based on the configured decision method</td></tr>
-<tr><td>GetValue</td><td><a href="api.html#trustix-ValueRequest">ValueRequest</a></td><td><a href="api.html#trustix-ValueResponse">ValueResponse</a></td><td>Get values by their content-address</td></tr>
+<tr><td>Logs</td><td><a href="api.html#trustix_api-v1-LogsRequest">.trustix_api.v1.LogsRequest</a></td><td><a href="api.html#trustix_api-v1-LogsResponse">.trustix_api.v1.LogsResponse</a></td><td>Get a list of all logs published/subscribed by this node</td></tr>
+<tr><td>Decide</td><td><a href="api.html#trustix_rpc-v1-DecideRequest">DecideRequest</a></td><td><a href="api.html#trustix_rpc-v1-DecisionResponse">DecisionResponse</a></td><td>Decide on an output for key based on the configured decision method</td></tr>
+<tr><td>GetValue</td><td><a href="api.html#trustix_api-v1-ValueRequest">.trustix_api.v1.ValueRequest</a></td><td><a href="api.html#trustix_api-v1-ValueResponse">.trustix_api.v1.ValueResponse</a></td><td>Get values by their content-address</td></tr>
 </tbody></table>
 </div>
 <p><a name="schema_loghead-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="schemalogheadproto"><a class="header" href="#schemalogheadproto">schema/loghead.proto</a></h2>
-<p><a name="-LogHead"></a></p>
+<p><a name="trustix_schema-v1-LogHead"></a></p>
 <h3 id="loghead"><a class="header" href="#loghead">LogHead</a></h3>
 <p>Log</p>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
@@ -884,7 +884,7 @@ This should only be available to trusted parties.</p>
 <p><a name="schema_logleaf-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="schemalogleafproto"><a class="header" href="#schemalogleafproto">schema/logleaf.proto</a></h2>
-<p><a name="-LogLeaf"></a></p>
+<p><a name="trustix_schema-v1-LogLeaf"></a></p>
 <h3 id="logleaf"><a class="header" href="#logleaf">LogLeaf</a></h3>
 <p>Leaf value of a merkle tree</p>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
@@ -896,7 +896,7 @@ This should only be available to trusted parties.</p>
 <p><a name="schema_mapentry-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="schemamapentryproto"><a class="header" href="#schemamapentryproto">schema/mapentry.proto</a></h2>
-<p><a name="-MapEntry"></a></p>
+<p><a name="trustix_schema-v1-MapEntry"></a></p>
 <h3 id="mapentry"><a class="header" href="#mapentry">MapEntry</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
 <tr><td>Digest</td><td><a href="api.html#bytes">bytes</a></td><td>required</td><td>Value digest of tree node</td></tr>
@@ -906,7 +906,7 @@ This should only be available to trusted parties.</p>
 <p><a name="schema_queue-proto"></a></p>
 <p align="right"><a href="api.html#top">Top</a></p>
 <h2 id="schemaqueueproto"><a class="header" href="#schemaqueueproto">schema/queue.proto</a></h2>
-<p><a name="-SubmitQueue"></a></p>
+<p><a name="trustix_schema-v1-SubmitQueue"></a></p>
 <h3 id="submitqueue"><a class="header" href="#submitqueue">SubmitQueue</a></h3>
 <p>This type is internal only and not guaranteed stable</p>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Label</th><th>Description</th></tr></thead><tbody>
