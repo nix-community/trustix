@@ -81,9 +81,12 @@ const renderChannel = (
     labels.push(labels[0]);
   }
 
-  const datasets = attrKeys.map((attrKey) => {
-    const points = timestamps.map((ts) => pointsByTimestamp[ts][attrKey]);
+  const chartColours = palette("tol", attrKeys.length).map(
+    (hex) => `#${hex}`,
+  );
 
+  const datasets = attrKeys.map((attrKey, i) => {
+    const points = timestamps.map((ts) => pointsByTimestamp[ts][attrKey]);
     return {
       label: attrKey,
       data: points.map((point) =>
@@ -92,7 +95,8 @@ const renderChannel = (
       "x-r13y-drv": points.map((point) =>
         point == undefined ? point : point.DrvPath,
       ),
-      backgroundColor: palette("tol", points.length).map((hex) => `#${hex}`),
+      backgroundColor: chartColours[i],
+      borderColor: chartColours[i],
       spanGaps: true,
     };
   });
@@ -157,7 +161,6 @@ const renderChannel = (
   const [chart] = createStore(chartSettings);
 
   const attrsList = NameValuePair.fromMap(attrs);
-  console.log(attrsList);
 
   return (
     <>
@@ -178,8 +181,6 @@ const renderChannel = (
               height: 300,
             }}
           />
-
-          <div class="divider" />
 
           <div class="overflow-x-auto">
             <table class="table w-full">
