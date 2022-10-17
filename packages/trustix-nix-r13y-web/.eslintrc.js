@@ -20,7 +20,6 @@ module.exports = {
     "@typescript-eslint",
     "solid",
     "sonarjs",
-    "@typescript-eslint/tslint",
   ],
   rules: {},
 };
