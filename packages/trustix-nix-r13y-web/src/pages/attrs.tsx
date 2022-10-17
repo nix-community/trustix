@@ -29,6 +29,8 @@ const fetchAttrsByChannel = async (): DerivationReproducibilityResponse => {
   return await client.attrReproducibilityTimeSeriesGroupedbyChannel(req);
 };
 
+const drvLink = (storePath): string => `/drv?storePath=${encodeURIComponent(encodeURIComponent(storePath))}`
+
 /* eslint-disable sonarjs/cognitive-complexity */
 const renderChannel = (
   channel: string,
@@ -103,6 +105,12 @@ const renderChannel = (
 
   const [redirStorePath, setRedirStorePath] = createSignal();
 
+  const [multiChartSelection, setMultiChartSelection] = createSignal([]);
+  const multiChartSelectionID = `multi-point-chart-selection-${channel}`
+  const multiChartSelectionInput = (
+    <input type="checkbox" id={multiChartSelectionID} className="modal-toggle" />
+  )
+
   const chartSettings: SolidChartProps = {
     type: "line",
     data: {
@@ -112,13 +120,24 @@ const renderChannel = (
     options: {
       onClick: (event, elements) => {
         const drvPaths = new Set<string>();
+        const attrs: { [key: string]: string[] } = {}
 
         for (const elem of elements) {
-          const i = elem.index;
-          const dsi = elem.datasetIndex;
+          const dataset = datasets[elem.datasetIndex]
+          const attr = dataset["label"]
 
-          const drvPath = datasets[dsi]["x-r13y-drv"][i];
+          let attrDrvs: string[] = []
+          if(attr in attrs) {
+            attrDrvs = attrs[attr]
+          } else {
+            attrDrvs = []
+            attrs[attr] = attrDrvs
+          }
+
+          const drvPath = dataset["x-r13y-drv"][elem.index];
+
           drvPaths.add(drvPath);
+          attrDrvs.push(drvPath)
         }
 
         switch (drvPaths.size) {
@@ -128,7 +147,8 @@ const renderChannel = (
             setRedirStorePath(Array.from(drvPaths)[0]);
             return;
           default:
-            alert("multiple derivations at selection point");
+            setMultiChartSelection(NameValuePair.fromMap(attrs))
+            multiChartSelectionInput.checked = true
             break;
         }
       },
@@ -168,10 +188,56 @@ const renderChannel = (
         <div class="card-body">
           <h2 class="card-title">{channel}</h2>
 
+          {/* when multiple points on the chart occupy the same space in the chart ask the user to clarify selection */}
+          {multiChartSelectionInput}
+          <div className="modal">
+            <div className="modal-box w-11/12 max-w-5xl">
+              <h3 class="text-lg font-bold">Multiple derivations found at chart point.</h3>
+
+              <table class="table w-full">
+                <thead>
+                  <tr>
+                    <th>Attribute</th>
+                    <th>Derivations</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <For each={multiChartSelection()}>
+                    {({name, value}) => {
+                      const attr: string = name
+                      const drvs: string[] = value
+
+                      return (
+                        <tr>
+                          <td>{attr}</td>
+                          <td>
+                            <For each={drvs}>
+                              {(drvPath) => (
+                                <>
+                                  <A href={drvLink(drvPath)}>
+                                    {drvPath}
+                                  </A>
+                                </>
+                              )}
+                            </For>
+                          </td>
+                        </tr>
+                      )
+                    }}
+                  </For>
+
+                </tbody>
+              </table>
+
+              <div className="modal-action">
+                <label htmlFor={multiChartSelectionID} className="btn">Close</label>
+              </div>
+            </div>
+          </div>
+
           <Show when={redirStorePath()}>
-            <Navigate
-              href={`/drv?storePath=${encodeURIComponent(redirStorePath())}`}
-            />
+            <Navigate href={drvLink(redirStorePath())} />
           </Show>
 
           <SolidChart
@@ -210,27 +276,44 @@ const renderChannel = (
                               tabIndex={0}
                               class="collapse collapse-arrow pl-0"
                             >
+                              <input type="checkbox" />
+
                               <div class="collapse-title pl-0">
                                 {derivationsText}
                               </div>
+
                               <div class="collapse-content">
-                                <For each={points}>
-                                  {(p) => {
-                                    return (
-                                      <>
-                                        <A
-                                          href={`/drv?storePath=${encodeURIComponent(
-                                            p.DrvPath,
-                                          )}`}
-                                        >
-                                          <p>{p.DrvPath}</p>
-                                        </A>
-                                        <p>ji</p>
-                                      </>
-                                    );
-                                  }}
-                                </For>
+
+                                <table class="table w-full">
+                                  <thead>
+                                    <tr>
+                                      <th>Timestamp</th>
+                                      <th>Derivation</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+
+                                    <For each={points}>
+                                      {(p) => {
+                                        const evalDate = new Date(Number(p.EvalTimestamp) * 1000)
+                                        const evalDateISO = evalDate.toISOString()
+
+                                        return (
+                                          <tr>
+                                            <td>{evalDateISO}</td>
+                                            <td>
+                                              <A href={drvLink(p.DrvPath)}>
+                                                {p.DrvPath}
+                                              </A>
+                                            </td>
+                                          </tr>
+                                        );
+                                      }}
+                                    </For>
+                                  </tbody>
+                                </table>
                               </div>
+
                             </div>
                           </td>
                         </tr>
@@ -244,7 +327,7 @@ const renderChannel = (
         </div>
       </div>
     </>
-  );
+              );
 };
 
 const renderChannels = (resp: DerivationReproducibilityResponse): Component => {
