@@ -16,18 +16,13 @@ import (
 )
 
 type Config struct {
-	Channels *Channels           `toml:"channels" json:"channels"`
-	Cron     *Cron               `toml:"cron" json:"cron"`
-	Lognames map[string]string   `toml:"lognames" json:"lognames"`
-	Attrs    map[string][]string `toml:"attrs" json:"attrs"`
+	Channels        *Channels           `toml:"channels" json:"channels"`
+	Lognames        map[string]string   `toml:"lognames" json:"lognames"`
+	Attrs           map[string][]string `toml:"attrs" json:"attrs"`
+	LogPollInterval int64               `toml:"log_poll_interval" json:"log_poll_interval"`
 }
 
 func (c *Config) init() {
-	if c.Cron == nil {
-		c.Cron = &Cron{}
-	}
-	c.Cron.init()
-
 	if c.Channels == nil {
 		c.Channels = &Channels{}
 	}
@@ -39,6 +34,11 @@ func (c *Config) init() {
 
 	if c.Attrs == nil {
 		c.Attrs = make(map[string][]string)
+	}
+
+	// Every 15 minutes by default
+	if c.LogPollInterval == 0 {
+		c.LogPollInterval = 15 * 60
 	}
 }
 

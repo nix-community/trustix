@@ -49,7 +49,7 @@ var serveCommand = &cobra.Command{
 		}
 
 		// config options
-		logIndexCronInterval := time.Second * time.Duration(conf.Cron.LogInterval)
+		logIndexCronInterval := time.Second * time.Duration(conf.LogPollInterval)
 
 		dbs, err := setupDatabases(stateDirectory)
 		if err != nil {
