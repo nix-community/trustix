@@ -9,8 +9,9 @@ nixos-unstable = [
   "nixos.iso_minimal.x86_64-linux"
 ]
 
-[channels.hydra.nixos-unstable]
-base_url = "https://hydra.nixos.org"
-jobset = "trunk-combined"
-project = "nixos"
-interval = 3600
+# Note that this is the correct schema but as this file is used for the development config the hydra import is commented out.
+# [channels.hydra.nixos-unstable]
+# base_url = "https://hydra.nixos.org"
+# jobset = "trunk-combined"
+# project = "nixos"
+# interval = 3600
