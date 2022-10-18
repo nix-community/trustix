@@ -112,11 +112,7 @@ const renderChannel = (
   const [multiChartSelection, setMultiChartSelection] = createSignal([]);
   const multiChartSelectionID = `multi-point-chart-selection-${channel}`;
   const multiChartSelectionInput = (
-    <input
-      type="checkbox"
-      id={multiChartSelectionID}
-      class="modal-toggle"
-    />
+    <input type="checkbox" id={multiChartSelectionID} class="modal-toggle" />
   );
 
   const chartSettings: SolidChartProps = {

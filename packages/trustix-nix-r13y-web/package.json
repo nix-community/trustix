@@ -37,6 +37,7 @@
     "google-palette": "^1.1.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
+    "solid-icons": "^1.0.2",
     "solid-js": "^1.5.1",
     "theme-change": "^2.2.0"
   }

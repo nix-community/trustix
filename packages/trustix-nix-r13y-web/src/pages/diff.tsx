@@ -49,7 +49,7 @@ const Diff: Component = () => {
                         iframe.contentDocument || iframe.contentWindow.document;
                       domDoc.write(diff()?.HTMLDiff);
                     }}
-                   />
+                  />
                 );
 
                 return <>{iframe}</>;
