@@ -65,19 +65,21 @@ var serveCommand = &cobra.Command{
 
 		// Start indexing logs
 		{
-			log.WithFields(log.Fields{
+			l := log.WithFields(log.Fields{
 				"interval": logIndexCronInterval,
-			}).Info("Starting log index cron")
+				"name":     "log",
+			})
 
 			logIndexCron := cron.NewSingletonCronJob("log_index", logIndexCronInterval, func(ctx context.Context) {
-				log.Info("Triggering log index cron job")
+				l.Info("Triggering log index cron job")
 
 				err = index.IndexLogs(ctx, dbs.dbRW, client)
 				if err != nil {
-					panic(err)
+					l.Error(err)
+					return
 				}
 
-				log.Info("Done executing log index cron job")
+				l.Info("Done executing log index cron job")
 			})
 			defer logIndexCron.Close()
 		}
