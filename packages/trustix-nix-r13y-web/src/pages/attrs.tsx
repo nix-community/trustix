@@ -48,6 +48,7 @@ const renderChannel = (
       attrKeys
         .map((attrKey) => attrs[attrKey])
         .map((attr) => attr.Points.map((p) => p.EvalTimestamp))
+        .flat()
         .map(Number),
     ),
   ];
