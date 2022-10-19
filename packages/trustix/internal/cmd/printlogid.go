@@ -79,7 +79,7 @@ var printLogIdCmd = &cobra.Command{
 		pubKey := conf.PublicKey{Type: printLogIdPublicKeyType, Pub: printLogIdPublicKey}
 		pubBytes, err := pubKey.Decode()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("error decoding public key: ", err)
 		}
 
 		logID := protocol.LogID(printLogIdPublicKeyType, pubBytes, api.Log_LogModes(mode))
