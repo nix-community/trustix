@@ -78,6 +78,11 @@ func indexHydraJobset(ctx context.Context, db *sql.DB, channel string, baseURL s
 			continue
 		}
 
+		log.WithFields(log.Fields{
+			"DrvPath": result.DrvPath,
+			"Attr":    result.Attr,
+		}).Info("collected attribute")
+
 		evalAttrs = append(evalAttrs, &index.EvalAttribute{
 			DrvPath: result.DrvPath,
 			Attr:    result.Attr,
