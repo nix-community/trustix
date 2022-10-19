@@ -3,8 +3,9 @@
 let
   cfg = config.services.trustix-nix-build-hook;
 
-  hook-script = pkgs.writeScript "trustix-hook"
+  hook-script = pkgs.writeShellScript "trustix-hook"
     ''
+      set -euo pipefail
       LOG_ID=${
         if builtins.isString cfg.publisher
         then cfg.publisher
