@@ -31,6 +31,8 @@
       nixosModules = {
         trustix = import ./nixos;
       };
+      overlays.default = final: prev: import ./default.nix { };
+
     } // (flake-utils.lib.eachDefaultSystem
       (system:
         let

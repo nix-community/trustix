@@ -1,7 +1,9 @@
 { config, lib, pkgs, ... }:
 
 {
-  # nixpkgs.overlays = import ../nix/overlays.nix;
+  nixpkgs.overlays = [
+    (final: prev: import ../default.nix { })
+  ];
 
   imports = [
     ../packages/trustix/nixos
