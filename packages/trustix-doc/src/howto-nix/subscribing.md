@@ -1,8 +1,11 @@
-# Trustix - Using with Nix
-
-The easiest way to use Trustix is via the NixOS modules.
-
+# Trustix - Subscribing
 This document walks you through how to subscribe to an already published binary cache.
+
+## Requisites
+- A local Trustix instance
+- A remote log's metadata
+  - Public key
+  - URL
 
 ## Configuring
 
@@ -19,7 +22,6 @@ This document walks you through how to subscribe to an already published binary 
         protocol = "nix";
         publicKey = {
           type = "ed25519";
-          # Contents of the generated trustix-pub
           key = "2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=";
         };
       }
@@ -27,7 +29,7 @@ This document walks you through how to subscribe to an already published binary 
 
     # A remote can expose many logs and they are not neccesarily created by the remote in question
     remotes = [
-      "grpc+https://trustix.example.com"
+      "https://demo.trustix.dev"
     ];
 
   };
