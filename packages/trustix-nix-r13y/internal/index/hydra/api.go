@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"os/exec"
 	"path"
 	"strings"
@@ -100,6 +101,7 @@ func (e *HydraEval) NixPath() (NixPath, error) {
 
 		cmd := exec.Command("nix-instantiate", "--eval", "--expr", expr)
 		cmd.Stdout = &stdout
+		cmd.Stderr = os.Stderr
 
 		err := cmd.Run()
 		if err != nil {
