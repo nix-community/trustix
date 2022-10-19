@@ -5,6 +5,7 @@
 , nix-eval-jobs
 , nix
 , diffoscope
+, git
 }:
 
 let
@@ -12,7 +13,10 @@ let
     nix
     nix-eval-jobs
     diffoscope
+    git
   ];
+
+  inherit (lib) hasSuffix;
 
 in
 buildGoApplication {
@@ -21,7 +25,10 @@ buildGoApplication {
   pwd = ./.;
   modules = ./gomod2nix.toml;
   src = lib.cleanSourceWith {
-    filter = name: type: ! lib.hasSuffix "tests" name;
+    filter = name: type: (
+      ! hasSuffix "tests" name
+      && ! hasSuffix "nixos" name
+    );
     src = gitignoreSource ./.;
   };
 
