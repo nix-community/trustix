@@ -19,8 +19,8 @@ type rpcAPIConnectClient struct {
 	client rpcconnect.RPCApiClient
 }
 
-func newRpcAPIConnectClient(client *http.Client, baseURL string) *rpcAPIConnectClient {
-	c := rpcconnect.NewRPCApiClient(client, baseURL)
+func newRpcAPIConnectClient(client *http.Client, baseURL string, options ...connect.ClientOption) *rpcAPIConnectClient {
+	c := rpcconnect.NewRPCApiClient(client, baseURL, options...)
 	return &rpcAPIConnectClient{
 		client: c,
 	}

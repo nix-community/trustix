@@ -18,8 +18,8 @@ type nodeAPIConnectClient struct {
 	client apiconnect.NodeAPIClient
 }
 
-func newNodeAPIConnectClient(client *http.Client, baseURL string) *nodeAPIConnectClient {
-	c := apiconnect.NewNodeAPIClient(client, baseURL)
+func newNodeAPIConnectClient(client *http.Client, baseURL string, options ...connect.ClientOption) *nodeAPIConnectClient {
+	c := apiconnect.NewNodeAPIClient(client, baseURL, options...)
 	return &nodeAPIConnectClient{
 		client: c,
 	}

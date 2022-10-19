@@ -71,6 +71,9 @@ func initCommands() {
 
 	rootCmd.AddCommand(docCommand)
 	initDoc()
+
+	rootCmd.AddCommand(generateTokenCmd)
+	initGenerateToken()
 }
 
 func Execute() {

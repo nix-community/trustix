@@ -51,7 +51,12 @@ var submitCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		c, err := client.CreateClient(dialAddress)
+		interceptors, err := getAuthInterceptors()
+		if err != nil {
+			log.Fatalf("Could not get auth interceptor: %w", err)
+		}
+
+		c, err := client.CreateClient(dialAddress, interceptors)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}

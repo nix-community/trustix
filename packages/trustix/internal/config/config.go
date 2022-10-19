@@ -24,6 +24,7 @@ type Config struct {
 	Signers     map[string]*signer.Signer     `toml:"signers" json:"signers"`
 	Storage     *Storage                      `toml:"storage" json:"storage"`
 	Remotes     []string                      `toml:"remotes" json:"remotes"`
+	WriteTokens []string                      `toml:"write_tokens" json:"write_tokens"`
 }
 
 func (c *Config) Validate() error {
