@@ -41,7 +41,7 @@ in
 
     lognames = mkOption {
       type = types.attrsOf types.str;
-      default = {};
+      default = { };
       example = lib.literalExpression ''
         {
           "e0f263745e4e3ab07ab5275b00b44f594e0b6d2bd35892a8ebd10a7f86322eb7" = "trustix-demo";
@@ -54,7 +54,7 @@ in
 
     attrs = mkOption {
       type = types.attrsOf (types.listOf types.str);
-      default = [];
+      default = [ ];
       example = lib.literalExpression ''
         {
           nixos-unstable = [ "hello" "jq" ];
@@ -66,7 +66,7 @@ in
     };
 
     channels = mkOption {
-      default = {};
+      default = { };
       description = lib.mdDoc ''
         Configuration for derivation imports.
       '';
@@ -144,11 +144,14 @@ in
       description = "Trustix-Nix reproducibility tracker";
       wantedBy = [ "multi-user.target" ];
       # requires = [ "trustix-nix.socket" "trustix.socket" ];
-
-      # binary-cache-proxy --address unix://${cfg.trustix-rpc} --listen ${cfg.listen}:${(toString cfg.port)} --privkey ${cfg.private-key}";
+      environment = {
+        NIX_REMOTE = "daemon";
+        HOME = "/var/cache/trustix-nix-r13y"; # For git checkouts and such
+      };
       serviceConfig = {
         Type = "simple";
         StateDirectory = "trustix-nix-r13y";
+        CacheDirectory = "trustix-nix-r13y";
         ExecStart = "${lib.getBin cfg.package}/bin/trustix-nix-r13y serve --state /var/lib/trustix-nix-r13y --config ${configFile} --listen http://localhost:${toString port}";
         DynamicUser = true;
       };
