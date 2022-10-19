@@ -96,12 +96,12 @@ var daemonCmd = &cobra.Command{
 			if defaultTokenPath != "" {
 				f, err := os.Open(defaultTokenPath)
 				if err != nil {
-					log.Fatalf("Error opening private token file '%s': %w", defaultTokenPath, err)
+					log.Fatalf("Error opening private token file '%s': %v", defaultTokenPath, err)
 				}
 
 				tok, err := auth.NewPublicTokenFromPriv(f)
 				if err != nil {
-					log.Fatalf("Error creating token: %w", err)
+					log.Fatalf("Error creating token: %v", err)
 				}
 
 				writeTokens[tok.Name] = tok
@@ -110,7 +110,7 @@ var daemonCmd = &cobra.Command{
 			for _, publicTokenStr := range config.WriteTokens {
 				tok, err := auth.NewPublicTokenFromPub(publicTokenStr)
 				if err != nil {
-					log.Fatalf("Error creating token: %w", err)
+					log.Fatalf("Error creating token: %v", err)
 				}
 
 				_, ok := writeTokens[tok.Name]

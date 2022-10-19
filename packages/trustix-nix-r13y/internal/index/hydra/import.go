@@ -22,8 +22,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const requestPoolSize = 15
-
 func indexHydraJobset(ctx context.Context, db *sql.DB, channel string, baseURL string, hydraJobset *HydraJobset, hydraEval *HydraEval) error {
 	timestamp := time.Unix(hydraEval.Timestamp, 0)
 

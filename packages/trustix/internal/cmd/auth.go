@@ -22,7 +22,7 @@ func getAuthInterceptors() (connect.Option, error) {
 
 	f, err := os.Open(defaultTokenPath)
 	if err != nil {
-		log.Fatalf("Error opening private token file '%s': %w", defaultTokenPath, err)
+		log.Fatalf("Error opening private token file '%s': %v", defaultTokenPath, err)
 	}
 
 	tok, err := auth.NewPrivateToken(f)

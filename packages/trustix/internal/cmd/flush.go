@@ -25,7 +25,7 @@ var flushCommand = &cobra.Command{
 
 		interceptors, err := getAuthInterceptors()
 		if err != nil {
-			log.Fatalf("Could not get auth interceptor: %w", err)
+			log.Fatalf("Could not get auth interceptor: %v", err)
 		}
 
 		c, err := client.CreateClient(dialAddress, interceptors)
