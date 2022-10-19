@@ -7,6 +7,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	connect "github.com/bufbuild/connect-go"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
@@ -85,7 +86,9 @@ func (l *LogRPCServer) GetLogEntries(ctx context.Context, req *connect.Request[a
 func (l *LogRPCServer) Submit(ctx context.Context, req *connect.Request[rpc.SubmitRequest]) (*connect.Response[rpc.SubmitResponse], error) {
 	msg := req.Msg
 
-	// TODO: Auth check
+	if req.Header().Get("X-TRUSTIX-AUTH") != "1" {
+		return nil, fmt.Errorf("unauthenticated write call attempted")
+	}
 
 	q, err := l.publishers.Get(*msg.LogID)
 	if err != nil {
@@ -103,7 +106,9 @@ func (l *LogRPCServer) Submit(ctx context.Context, req *connect.Request[rpc.Subm
 func (l *LogRPCServer) Flush(ctx context.Context, req *connect.Request[rpc.FlushRequest]) (*connect.Response[rpc.FlushResponse], error) {
 	msg := req.Msg
 
-	// TODO: Auth check
+	if req.Header().Get("X-TRUSTIX-AUTH") != "1" {
+		return nil, fmt.Errorf("unauthenticated write call attempted")
+	}
 
 	q, err := l.publishers.Get(*msg.LogID)
 	if err != nil {

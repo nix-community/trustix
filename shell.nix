@@ -102,4 +102,7 @@ pkgs.mkShell {
 
   inherit STATE_DIR TRUSTIX_RPC TRUSTIX_ROOT;
 
+  # Write token used for log submission
+  TRUSTIX_TOKEN = "${builtins.toString ./packages/trustix/dev/token-priv}";
+
 }

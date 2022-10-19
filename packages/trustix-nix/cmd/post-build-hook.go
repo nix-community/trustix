@@ -79,7 +79,12 @@ var nixHookCommand = &cobra.Command{
 			log.Fatalf("Could not hash store path: %v", err)
 		}
 
-		c, err := client.CreateClient(dialAddress)
+		interceptors, err := getAuthInterceptors()
+		if err != nil {
+			log.Fatalf("Could not get auth interceptor: %v", err)
+		}
+
+		c, err := client.CreateClient(dialAddress, interceptors)
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}

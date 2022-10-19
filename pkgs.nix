@@ -8,20 +8,10 @@ in
 
 import nixpkgs {
   inherit system;
-  config.allowAliases = false;
   overlays = [
     (import "${gomod2nix}/overlay.nix")
 
     (final: prev: (import "${gitignore}" { inherit (final) lib; }))
-
-    (final: prev: {
-      # Prevent the entirety of hydra to be in $PATH/runtime closure
-      # We only want the evaluator
-      hydra-eval-jobs = prev.runCommand "hydra-eval-jobs-${prev.hydra_unstable.version}" { } ''
-        mkdir -p $out/bin
-        cp -s ${prev.hydra_unstable}/bin/hydra-eval-jobs $out/bin/
-      '';
-    })
 
     (final: prev: {
       npmlock2nix = import npmlock2nix { pkgs = final; };

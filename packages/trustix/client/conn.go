@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	connect "github.com/bufbuild/connect-go"
 	"github.com/nix-community/trustix/packages/unixtransport"
 	log "github.com/sirupsen/logrus"
 )
@@ -19,7 +20,7 @@ import (
 var initOnce sync.Once
 var client *http.Client
 
-func CreateClient(URL string) (*Client, error) {
+func CreateClient(URL string, options ...connect.ClientOption) (*Client, error) {
 	initOnce.Do(func() {
 		t := &http.Transport{}
 		unixtransport.Register(t)
@@ -31,10 +32,10 @@ func CreateClient(URL string) (*Client, error) {
 	}).Debug("Creating client for remote")
 
 	return &Client{
-		LogAPI:  newLogAPIConnectClient(client, URL),
-		RpcAPI:  newRpcAPIConnectClient(client, URL),
-		NodeAPI: newNodeAPIConnectClient(client, URL),
-		LogRPC:  newLogRPCConnectClient(client, URL),
+		LogAPI:  newLogAPIConnectClient(client, URL, options...),
+		RpcAPI:  newRpcAPIConnectClient(client, URL, options...),
+		NodeAPI: newNodeAPIConnectClient(client, URL, options...),
+		LogRPC:  newLogRPCConnectClient(client, URL, options...),
 	}, nil
 }
 

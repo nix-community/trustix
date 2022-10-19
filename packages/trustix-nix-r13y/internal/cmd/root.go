@@ -53,7 +53,6 @@ func initCommands() {
 	log.SetLevel(log.DebugLevel)
 	log.SetOutput(os.Stderr)
 
-	rootCmd.AddCommand(indexEvalCommand)
 	rootCmd.AddCommand(indexLogsCommand)
 	rootCmd.AddCommand(serveCommand)
 

@@ -20,8 +20,8 @@ type logRPCConnectClient struct {
 	client rpcconnect.LogRPCClient
 }
 
-func newLogRPCConnectClient(client *http.Client, baseURL string) *logRPCConnectClient {
-	c := rpcconnect.NewLogRPCClient(client, baseURL)
+func newLogRPCConnectClient(client *http.Client, baseURL string, options ...connect.ClientOption) *logRPCConnectClient {
+	c := rpcconnect.NewLogRPCClient(client, baseURL, options...)
 	return &logRPCConnectClient{
 		client: c,
 	}

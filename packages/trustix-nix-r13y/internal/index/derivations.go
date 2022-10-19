@@ -17,8 +17,6 @@ import (
 	"github.com/nix-community/trustix/packages/go-lib/set"
 	idb "github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/db"
 	drvparse "github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/derivation"
-	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/eval"
-	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/hydra"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,18 +28,11 @@ const (
 	errorID = -1
 )
 
-type EvalMetaDataTypes interface {
-	*hydra.HydraEval
-}
+type CreateConcreteEvalFunc = func(context.Context, idb.Evaluation, *idb.Queries) error
 
-func IndexEval[T EvalMetaDataTypes](ctx context.Context, db *sql.DB, nixPath string, channel string, timestamp time.Time, evalMeta T) error {
-	evalConfig := eval.NewConfig()
-	evalConfig.Expr = "import <nixpkgs> { }"
-	evalConfig.NixPath = nixPath
-
+func IndexEval(ctx context.Context, db *sql.DB, channel string, timestamp time.Time, attributes []*EvalAttribute, createConcreteEval CreateConcreteEvalFunc) error {
 	l := log.WithFields(log.Fields{
 		"channel": channel,
-		"nixPath": nixPath,
 	})
 
 	l.Info("importing evaluation")
@@ -62,79 +53,18 @@ func IndexEval[T EvalMetaDataTypes](ctx context.Context, db *sql.DB, nixPath str
 
 	var dbEval idb.Evaluation
 	{
-		// nolint
-		createEvalMetaByIngestFunc := func(dbEval idb.Evaluation) error {
-			return nil
+		dbEval, err = qtx.CreateEval(ctx, idb.CreateEvalParams{
+			Channel:   channel,
+			Timestamp: timestamp,
+		})
+		if err != nil {
+			return fmt.Errorf("error creating evaluation: %w", err)
 		}
 
-		if evalMeta == nil {
-			return fmt.Errorf("evaluation metadata was nil")
+		err = createConcreteEval(ctx, dbEval, qtx)
+		if err != nil {
+			return fmt.Errorf("error creating evaluation metadata: %w", err)
 		}
-
-		// Get the evaluation differently depending on the ingest method
-		switch any(evalMeta).(type) {
-
-		case *hydra.HydraEval:
-			dbEval, err = qtx.GetEvalByHydraID(ctx, idb.GetEvalByHydraIDParams{
-				Channel: channel,
-			})
-
-			createEvalMetaByIngestFunc = func(dbEval idb.Evaluation) error {
-				hydraEvalMeta := any(evalMeta).(*hydra.HydraEval)
-
-				var revision string
-				for _, input := range hydraEvalMeta.EvalInputs {
-					if input.Type != "git" {
-						continue
-					}
-
-					if input.Revision != "" {
-						revision = input.Revision
-						break
-					}
-				}
-
-				if revision == "" {
-					return fmt.Errorf("No revision could be extracted from hydra inputs")
-				}
-
-				_, err = qtx.CreateHydraEval(ctx, idb.CreateHydraEvalParams{
-					Evaluation:  dbEval.ID,
-					HydraEvalID: hydraEvalMeta.ID,
-					Revision:    revision,
-				})
-
-				return err
-			}
-
-		default:
-			return fmt.Errorf("unhandled eval meta data type: %v", evalMeta)
-		}
-
-		if err == nil {
-			l.Info("eval already indexed")
-			return nil
-		} else if err == sql.ErrNoRows {
-			dbEval, err = qtx.CreateEval(ctx, idb.CreateEvalParams{
-				Channel:   channel,
-				Timestamp: timestamp,
-			})
-			if err != nil {
-				return fmt.Errorf("error creating evaluation: %w", err)
-			}
-
-			err = createEvalMetaByIngestFunc(dbEval)
-			if err != nil {
-				return fmt.Errorf("error creating evaluation metadata: %w", err)
-			}
-		} else {
-			return fmt.Errorf("error retrieving eval from db: %w", err)
-		}
-	}
-
-	results, err := eval.Eval(ctx, evalConfig)
-	if err != nil {
-		return fmt.Errorf("error initialising eval: %w", err)
 	}
 
 	drvParser, err := drvparse.NewCachedDrvParser(drvCacheSize)
@@ -308,38 +238,31 @@ func IndexEval[T EvalMetaDataTypes](ctx context.Context, db *sql.DB, nixPath str
 
 	e := executor.NewLimitedParallellExecutor(15)
 
-	for wrappedResult := range results {
-		result, err := wrappedResult.Unwrap()
-		if err != nil {
-			panic(err)
-		}
-
-		if result.Error != "" || result.DrvPath == "" {
-			continue
-		}
+	for _, drvAttr := range attributes {
+		drvAttr := drvAttr
 
 		// Index the derivation + attribute mappings
 		err = e.Add(func() error {
 			// Index the derivation
-			drvID, err := indexDrv(result.DrvPath)
+			drvID, err := indexDrv(drvAttr.DrvPath)
 			if err != nil {
-				return fmt.Errorf("error indexing derivation %s: %w", result.DrvPath, err)
+				return fmt.Errorf("error indexing derivation %s: %w", drvAttr.DrvPath, err)
 			}
 
 			// Add mapping from attribute to derivation
-			if result.Attr != "" {
+			if drvAttr.Attr != "" {
 				err = qtx.CreateDerivationAttr(ctx, idb.CreateDerivationAttrParams{
-					Attr:         result.Attr,
+					Attr:         drvAttr.Attr,
 					DerivationID: drvID,
 				})
 				if err != nil {
-					return fmt.Errorf("error creating attr reference for drv %s (%d): %w", result.DrvPath, drvID, err)
+					return fmt.Errorf("error creating attr reference for drv %s (%d): %w", drvAttr.DrvPath, drvID, err)
 				}
 			}
 
 			l.WithFields(log.Fields{
-				"attr":    result.Attr,
-				"drvPath": result.DrvPath,
+				"attr":    drvAttr.Attr,
+				"drvPath": drvAttr.DrvPath,
 				"drvID":   drvID,
 			}).Info("indexed attribute")
 

@@ -27,7 +27,11 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, gomod2nix, npmlock2nix, gitignore, nix-eval-jobs }@flakeInputs:
-    (flake-utils.lib.eachDefaultSystem
+    {
+      nixosModules = {
+        trustix = import ./nixos;
+      };
+    } // (flake-utils.lib.eachDefaultSystem
       (system:
         let
           pkgs = import ./pkgs.nix {

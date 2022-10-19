@@ -16,10 +16,6 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: [
-    "@typescript-eslint",
-    "solid",
-    "sonarjs",
-  ],
+  plugins: ["@typescript-eslint", "solid", "sonarjs"],
   rules: {},
 };

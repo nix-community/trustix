@@ -130,15 +130,14 @@ const renderDerivationOutput = (
     const [a, b] = checked;
 
     setDiffItems({
-      "a": a,
-      "b": b,
-    })
+      a: a,
+      b: b,
+    });
   };
 
   return (
     <>
       <div class="card bg-base-200 shadow-xl m-3">
-
         <Show when={diffItems()}>
           <Navigate href={`/diff?a=${diffItems()?.a}&b=${diffItems()?.b}`} />
         </Show>

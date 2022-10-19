@@ -19,12 +19,14 @@ import (
 	"syscall"
 	"time"
 
+	connect "github.com/bufbuild/connect-go"
 	"github.com/coreos/go-systemd/activation"
 	"github.com/nix-community/trustix/packages/go-lib/executor"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/api/apiconnect"
 	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 	"github.com/nix-community/trustix/packages/trustix-proto/rpc/rpcconnect"
+	"github.com/nix-community/trustix/packages/trustix/auth"
 	"github.com/nix-community/trustix/packages/trustix/client"
 	tapi "github.com/nix-community/trustix/packages/trustix/internal/api"
 	conf "github.com/nix-community/trustix/packages/trustix/internal/config"
@@ -81,6 +83,45 @@ var daemonCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalf("Could not initialise store: %v", err)
 			}
+		}
+
+		// Set up write access tokens
+		var authInterceptor connect.UnaryInterceptorFunc
+		{
+			writeTokens := make(map[string]*auth.PublicToken)
+
+			// From the TRUSTIX_TOKEN env var
+			// This is the default token used.
+			defaultTokenPath := os.Getenv("TRUSTIX_TOKEN")
+			if defaultTokenPath != "" {
+				f, err := os.Open(defaultTokenPath)
+				if err != nil {
+					log.Fatalf("Error opening private token file '%s': %v", defaultTokenPath, err)
+				}
+
+				tok, err := auth.NewPublicTokenFromPriv(f)
+				if err != nil {
+					log.Fatalf("Error creating token: %v", err)
+				}
+
+				writeTokens[tok.Name] = tok
+			}
+
+			for _, publicTokenStr := range config.WriteTokens {
+				tok, err := auth.NewPublicTokenFromPub(publicTokenStr)
+				if err != nil {
+					log.Fatalf("Error creating token: %v", err)
+				}
+
+				_, ok := writeTokens[tok.Name]
+				if ok {
+					log.Fatalf("Naming collision in tokens: '%s' exists more than once", tok.Name)
+				}
+
+				writeTokens[tok.Name] = tok
+			}
+
+			authInterceptor = auth.NewAuthInterceptor(nil, writeTokens)
 		}
 
 		signers := make(map[string]crypto.Signer)
@@ -358,19 +399,16 @@ var daemonCmd = &cobra.Command{
 
 		errChan := make(chan error)
 
-		createServer := func(lis net.Listener) *http.Server {
-			_, isUnix := lis.(*net.UnixListener)
+		interceptors := connect.WithInterceptors(authInterceptor)
 
+		createServer := func(lis net.Listener) *http.Server {
 			mux := http.NewServeMux()
 
-			// TODO: Better auth method than socket type
-			if isUnix {
-				mux.Handle(rpcconnect.NewLogRPCHandler(logRpcServer))
-				mux.Handle(rpcconnect.NewRPCApiHandler(rpcServer))
-			}
+			mux.Handle(rpcconnect.NewLogRPCHandler(logRpcServer, interceptors))
+			mux.Handle(rpcconnect.NewRPCApiHandler(rpcServer, interceptors))
 
-			mux.Handle(apiconnect.NewLogAPIHandler(logAPIServer))
-			mux.Handle(apiconnect.NewNodeAPIHandler(nodeAPIServer))
+			mux.Handle(apiconnect.NewLogAPIHandler(logAPIServer, interceptors))
+			mux.Handle(apiconnect.NewNodeAPIHandler(nodeAPIServer, interceptors))
 
 			server := &http.Server{Handler: h2c.NewHandler(mux, &http2.Server{})}
 

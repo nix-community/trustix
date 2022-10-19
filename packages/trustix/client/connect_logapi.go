@@ -19,8 +19,8 @@ type logAPIConnectClient struct {
 	client apiconnect.LogAPIClient
 }
 
-func newLogAPIConnectClient(client *http.Client, baseURL string) *logAPIConnectClient {
-	c := apiconnect.NewLogAPIClient(client, baseURL)
+func newLogAPIConnectClient(client *http.Client, baseURL string, options ...connect.ClientOption) *logAPIConnectClient {
+	c := apiconnect.NewLogAPIClient(client, baseURL, options...)
 	return &logAPIConnectClient{
 		client: c,
 	}

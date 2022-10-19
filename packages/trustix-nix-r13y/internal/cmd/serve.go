@@ -22,6 +22,7 @@ import (
 	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/config"
 	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/cron"
 	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/index"
+	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/index/hydra"
 	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/server"
 	apiconnect "github.com/nix-community/trustix/packages/trustix-nix-r13y/reprod-api/reprod_apiconnect"
 	tclient "github.com/nix-community/trustix/packages/trustix/client"
@@ -48,8 +49,7 @@ var serveCommand = &cobra.Command{
 		}
 
 		// config options
-		logIndexCronInterval := time.Second * time.Duration(conf.Cron.LogInterval)
-		evalIndexCronInterval := time.Second * time.Duration(conf.Cron.EvalInterval)
+		logIndexCronInterval := time.Second * time.Duration(conf.LogPollInterval)
 
 		dbs, err := setupDatabases(stateDirectory)
 		if err != nil {
@@ -65,54 +65,54 @@ var serveCommand = &cobra.Command{
 
 		// Start indexing logs
 		{
-			log.WithFields(log.Fields{
+			l := log.WithFields(log.Fields{
 				"interval": logIndexCronInterval,
-			}).Info("Starting log index cron")
+				"name":     "log",
+			})
 
 			logIndexCron := cron.NewSingletonCronJob("log_index", logIndexCronInterval, func(ctx context.Context) {
-				log.Info("Triggering log index cron job")
+				l.Info("Triggering log index cron job")
 
 				err = index.IndexLogs(ctx, dbs.dbRW, client)
 				if err != nil {
-					panic(err)
+					l.Error(err)
+					return
 				}
 
-				log.Info("Done executing log index cron job")
+				l.Info("Done executing log index cron job")
 			})
 			defer logIndexCron.Close()
 		}
 
 		// Start indexing evaluations
 		{
-			log.WithFields(log.Fields{
-				"interval": evalIndexCronInterval,
-			}).Info("Starting evaluation index cron")
 
-			evalIndexCron := cron.NewSingletonCronJob("eval_index", evalIndexCronInterval, func(ctx context.Context) {
-				indexedEvals := 0
+			for channelName, hydraJobset := range conf.Channels.Hydra {
+				cronInterval := time.Second * time.Duration(hydraJobset.PollInterval)
 
-				for channel, channelConfig := range conf.Channels.Hydra {
-					l := log.WithFields(log.Fields{
-						"channel": channel,
-					})
+				log.WithFields(log.Fields{
+					"channel":     channelName,
+					"hydraJobset": hydraJobset,
+					"interval":    cronInterval,
+				}).Info("scheduling hydra jobset poll cron")
 
-					l.Info("indexing channel")
-
-					n, err := index.IndexHydraJobset(ctx, dbs.dbRW, channel, channelConfig)
+				cronJob := cron.NewSingletonCronJob(fmt.Sprintf("channels.hydra.%s", channelName), cronInterval, func(ctx context.Context) {
+					n, err := hydra.IndexHydraJobset(ctx, dbs.dbRW, channelName, hydraJobset)
 					if err != nil {
-						l.WithFields(log.Fields{
-							"erroro": err,
+						log.WithFields(log.Fields{
+							"channel": channelName,
+							"error":   err,
 						}).Error("error indexing channel")
 					}
 
-					indexedEvals += n
-				}
-
-				log.WithFields(log.Fields{
-					"num_evals": indexedEvals,
-				}).Info("done executing evaluation index cron job")
-			})
-			defer evalIndexCron.Close()
+					if n <= 0 {
+						log.WithFields(log.Fields{
+							"channel": channelName,
+						}).Info("evaluations up to date, skipping update")
+					}
+				})
+				defer cronJob.Close()
+			}
 		}
 
 		apiServer := server.NewAPIServer(dbs.dbRO, dbs.cacheDbRW, dbs.cacheDbRO, client, conf.Lognames, conf.Attrs)
