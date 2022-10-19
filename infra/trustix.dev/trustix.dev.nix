@@ -6,6 +6,13 @@
     root = pkgs.trustix-doc;
   };
 
+  # Redirect old build-transparency.org domain to trustix.dev
+  services.nginx.virtualHosts."build-transparency.org" = {
+    extraConfig = ''
+      return 302 https://trustix.dev$request_uri;
+    '';
+  };
+
   # Reproducibility dashboard
   services.trustix-nix-r13y = {
     enable = true;
