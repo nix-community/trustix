@@ -59,6 +59,14 @@ const About: Component = () => {
           Another thing you can do is to report issues and help to fix them at <A class="underline" href={homepageURL}>{homepageURL}</A>.
         </p>
       </span>
+
+      <span class="py-4 mx-1">
+        <h2 class="text-lg font-bold">What about the name?</h2>
+        <p>
+          It's a homage to <A href="https://r13y.com">r13y.com</A> by <A href="https://github.com/grahamc">@grahamc</A> which started the reproducibility tracking effort for Nix/NixOS.
+        </p>
+      </span>
+
     </>
   );
 };
