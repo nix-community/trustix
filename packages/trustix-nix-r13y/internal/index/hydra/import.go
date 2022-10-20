@@ -22,6 +22,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// This stubs out
+const fetchedHydraInputArgTpl = `
+{
+  outPath = "%s";
+  revCount = 0;
+  shortRev = "";
+}
+`
+
 func indexHydraJobset(ctx context.Context, db *sql.DB, channel string, baseURL string, hydraJobset *HydraJobset, hydraEval *HydraEval) error {
 	timestamp := time.Unix(hydraEval.Timestamp, 0)
 
@@ -56,13 +65,18 @@ func indexHydraJobset(ctx context.Context, db *sql.DB, channel string, baseURL s
 
 	// Add jobset inputs as parameters
 	for k, v := range nixpath {
-		evalConfig.AddArgStr(k, v)
+		evalConfig.AddArg(k, fmt.Sprintf(fetchedHydraInputArgTpl, v))
 	}
 
 	evalResults, err := eval.Eval(ctx, evalConfig)
 	if err != nil {
 		return fmt.Errorf("error initialising eval: %w", err)
 	}
+
+	log.WithFields(log.Fields{
+		"nixpath":  nixpath,
+		"exprPath": evalConfig.ExprPath,
+	}).Info("starting evaluation")
 
 	// For simplicity gather all builds up-front
 	evalAttrs := []*index.EvalAttribute{}
@@ -73,6 +87,10 @@ func indexHydraJobset(ctx context.Context, db *sql.DB, channel string, baseURL s
 		}
 
 		if result.Error != "" || result.DrvPath == "" {
+			log.WithFields(log.Fields{
+				"result": result,
+			}).Info("skipping result (with error or empty drv path)")
+
 			continue
 		}
 
