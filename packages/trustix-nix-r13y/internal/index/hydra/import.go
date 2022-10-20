@@ -156,6 +156,10 @@ func IndexHydraJobset(ctx context.Context, db *sql.DB, channel string, jobsetCon
 		return 0, fmt.Errorf("error getting response from Hydra at '%s': %w", jobsetConfig.BaseURL, err)
 	}
 
+	if len(evalResp.Evals) == 0 {
+		return 0, nil
+	}
+
 	// Create a list of evaluations to index
 	evals := []*HydraEval{}
 	if isNew {
