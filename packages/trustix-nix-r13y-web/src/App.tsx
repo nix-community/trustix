@@ -84,7 +84,7 @@ const App: Component = () => {
           </div>
         </nav>
 
-        <div class="flex justify-evenly place-items-center">
+        <div class="flex justify-evenly place-items-center flex-col">
           <Routes>
             <Route
               path="/"
