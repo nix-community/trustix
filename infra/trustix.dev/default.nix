@@ -15,12 +15,20 @@ in
 
   boot.loader.grub.enable = true;
   boot.loader.grub.version = 2;
-  boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
+  boot.loader.grub.devices = [
+    "/dev/disk/by-id/nvme-eui.002538b621b589f0"
+    "/dev/disk/by-id/nvme-eui.002538b621b589f2"
+  ];
+
+  fileSystems = {
+    "/".options = [ "compress=zstd" "noatime" ];
+  };
 
   networking.hostName = "trustixdotdev";
 
   networking.usePredictableInterfaceNames = false;
   networking.dhcpcd.enable = false;
+  systemd.services.systemd-networkd.stopIfChanged = true;
   systemd.network = {
     enable = true;
     networks."ethernet".extraConfig = ''
@@ -28,7 +36,7 @@ in
       Type = ether
       [Network]
       DHCP = ipv4
-      Address = 2a01:4f9:c012:7359::1/64
+      Address = 2a01:4f9:3051:4ee1::2/64
       Gateway = fe80::1
     '';
   };
@@ -46,7 +54,6 @@ in
       })
       servedDomains);
   };
-
 
   services.openssh = {
     enable = true;
