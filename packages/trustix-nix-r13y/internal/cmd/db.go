@@ -82,7 +82,7 @@ func setupDB(stateDirectory string, filename string, migrationFS embed.FS, reado
 	if readonly {
 		dbPath += "&mode=ro"
 	} else {
-		dbPath += "&mode=rwc"
+		dbPath += "&mode=rwc&_auto_vacuum=full"
 	}
 
 	l := log.WithFields(log.Fields{
