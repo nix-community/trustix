@@ -88,6 +88,9 @@ var serveCommand = &cobra.Command{
 		{
 
 			for channelName, hydraJobset := range conf.Channels.Hydra {
+				channelName := channelName
+				hydraJobset := hydraJobset
+
 				cronInterval := time.Second * time.Duration(hydraJobset.PollInterval)
 
 				log.WithFields(log.Fields{
