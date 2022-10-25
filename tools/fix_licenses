@@ -327,6 +327,7 @@ RULES: List[Rule] = [
     # Github actions are CC licensed so they can be easily copied without retaining licensing
     Rule(
         dirs=[".github"],
+        ignore_suffixes=[".nix"],  # Nix files are already MIT treewide
         license="CC0-1.0",
     ),
     # These file types are not copyrighted
