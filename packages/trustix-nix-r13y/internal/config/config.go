@@ -16,6 +16,7 @@ import (
 )
 
 type Config struct {
+	Eval            *Eval               `toml:"eval" json:"eval"`
 	Channels        *Channels           `toml:"channels" json:"channels"`
 	Lognames        map[string]string   `toml:"lognames" json:"lognames"`
 	Attrs           map[string][]string `toml:"attrs" json:"attrs"`

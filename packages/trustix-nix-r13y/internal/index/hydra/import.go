@@ -22,7 +22,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// This stubs out
 const fetchedHydraInputArgTpl = `
 {
   outPath = "%s";

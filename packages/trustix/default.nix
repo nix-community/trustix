@@ -1,4 +1,4 @@
-{ buildGoApplication, lib, pkg-config, gitignoreSource }:
+{ buildGoApplication, lib, pkg-config, gitignoreSource, callPackage, pkgs }:
 
 buildGoApplication {
   pname = "trustix";
@@ -19,4 +19,5 @@ buildGoApplication {
 
   CGO_ENABLED = "1";
 
+  passthru.tests = import ./tests { inherit pkgs; };
 }
