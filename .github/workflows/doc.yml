@@ -1,8 +1,8 @@
 name: Build/Deploy GH Pages
 
 on:
-  pull_request:
   push:
+    branches: master
 
 jobs:
   docs:
