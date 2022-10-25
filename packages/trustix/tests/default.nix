@@ -1,4 +1,4 @@
-{ pkgs ? import ../../../nix }:
+{ pkgs ? import ../../../pkgs.nix { } }:
 let
   inherit (pkgs) trustix lib;
 
@@ -8,6 +8,8 @@ let
     }
     (lib.concatStringsSep "\n" [
       ''
+        export TRUSTIX_TOKEN=${../dev/token-priv}
+
         export HOME=$(mktemp -d)
         ln -s ${./fixtures} fixtures
         set -x
@@ -28,19 +30,21 @@ in
     expected="5768f7201db3dccf3ec8c5ec2be5108c411396ad8c1351d89294f515456cdc23"
     log_id="5fea3cb44ef951dfb2a2ec37ebfd759174003ea9300756e26128dceb0987a30a"
 
-    export TRUSTIX_RPC=unix://./sock
+    export TRUSTIX_RPC=unix://$(pwd)/sock.sock
 
-    systemfd -s ./sock -- trustix daemon --config ${./config-simple.toml} &
+    systemfd -s $(pwd)/sock.sock -- trustix daemon --config ${./config-simple.toml} &
 
     trustix --log-id "$log_id" submit --key "$key" --value "$value"
     trustix --log-id "$log_id" flush
 
-    echo "Checking input equality"
-    test $(trustix --log-id "$log_id" query --key "$key" | cut -d' ' -f 3) = "$expected"
+    output=$(trustix --log-id "$log_id" query --key "$key" | cut -d" " -f 3)
+    test "$output" = "$expected"
   '';
 
   # Test comparing multiple logs
   comparison = mkTest "compare" ''
+    export TRUSTIX_TOKEN=${../dev/token-priv}
+
     key="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"
     output_hash="28899cec2bd12feeabb5d82a3b1eafd23221798ac30a20f449144015746e2321"
     evil_hash="053e399dbbdd74b10ad6d2cfa28ab4aab7e342d613a731c7dc4b66c2283e0757"
@@ -59,14 +63,14 @@ in
     (cd ${compare-fixtures/log3}; systemfd -s $build_dir/3.sock -- trustix daemon --state $TMPDIR/log3-state --config ./config.toml) &
 
     # Submit hashes
-    trustix --log-id "$log_id_1" submit --key "$key" --value "$output_hash" --address "unix://./1.sock"
-    trustix --log-id "$log_id_1" flush --address "unix://./1.sock"
+    trustix --log-id "$log_id_1" submit --key "$key" --value "$output_hash" --address "unix://$build_dir/1.sock"
+    trustix --log-id "$log_id_1" flush --address "unix://$build_dir/1.sock"
 
-    trustix --log-id "$log_id_2" submit --key "$key" --value "$output_hash" --address "unix://./2.sock"
-    trustix --log-id "$log_id_2" flush --address "unix://./2.sock"
+    trustix --log-id "$log_id_2" submit --key "$key" --value "$output_hash" --address "unix://$build_dir/2.sock"
+    trustix --log-id "$log_id_2" flush --address "unix://$build_dir/2.sock"
 
-    trustix --log-id "$log_id_3" submit --key "$key" --value "$evil_hash" --address "unix://./3.sock"
-    trustix --log-id "$log_id_3" flush --address "unix://./3.sock"
+    trustix --log-id "$log_id_3" submit --key "$key" --value "$evil_hash" --address "unix://$build_dir/3.sock"
+    trustix --log-id "$log_id_3" flush --address "unix://$build_dir/3.sock"
 
     (cd ${compare-fixtures/log-agg}; systemfd -s $build_dir/agg.sock -- trustix daemon --interval 1 --state $TMPDIR/log-agg-state --config ./config.toml) &
 
@@ -75,11 +79,7 @@ in
     # about what that would look like
     sleep 5
 
-    trustix decide --protocol test --key "$key" --address "unix://./agg.sock" > output
-
-    echo "Decision output:"
-    cat output
-    echo "---"
+    trustix decide --protocol test --key "$key" --address "unix://$build_dir/agg.sock" > output
 
     # Assert correct output
     grep "Found mismatched digest '7ab45a4e40d2c0e72291ad824f8a4b208b2921e44c283022a66e87ab7c61ee38' in log '$log_id_3'" output > /dev/null

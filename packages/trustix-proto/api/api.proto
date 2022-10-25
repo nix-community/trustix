@@ -73,7 +73,7 @@ message GetMapValueRequest {
 // Sparse merkle tree proof
 message SparseCompactMerkleProof {
   repeated bytes SideNodes = 1;
-  required bytes NonMembershipLeafData = 2;
+  optional bytes NonMembershipLeafData = 2;
   required bytes BitMask = 3;
   required uint64 NumSideNodes = 4;
 }

@@ -303,7 +303,7 @@ Sparse merkle tree proof
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | SideNodes | [bytes](#bytes) | repeated |  |
-| NonMembershipLeafData | [bytes](#bytes) | required |  |
+| NonMembershipLeafData | [bytes](#bytes) | optional |  |
 | BitMask | [bytes](#bytes) | required |  |
 | NumSideNodes | [uint64](#uint64) | required |  |
 

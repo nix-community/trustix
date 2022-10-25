@@ -32,7 +32,7 @@ type EvalConfig struct {
 }
 
 func NewConfig() *EvalConfig {
-	workers := 1 // Temporary, demo instance OOMs even with 32G RAM...
+	workers := 1 // 1 is the only safe default bet
 	maxMemorySize := 0
 
 	// Max a rough estimate at a reasonable default evaluator memory usage
