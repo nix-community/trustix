@@ -26,6 +26,7 @@ import (
 	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/server"
 	apiconnect "github.com/nix-community/trustix/packages/trustix-nix-r13y/reprod-api/reprod_apiconnect"
 	tclient "github.com/nix-community/trustix/packages/trustix/client"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/http2"
@@ -126,6 +127,9 @@ var serveCommand = &cobra.Command{
 			mux := http.NewServeMux()
 
 			mux.Handle(apiconnect.NewReproducibilityAPIHandler(apiServer))
+
+			// Prometheus metrics
+			mux.Handle("/metrics", promhttp.Handler())
 
 			l := logrusmiddleware.Middleware{
 				Name:   "trustix-nix-r13y",
