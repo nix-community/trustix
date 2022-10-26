@@ -28,6 +28,7 @@ import (
 	pb "github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"github.com/nix-community/trustix/packages/trustix/client"
 	"github.com/nix-community/trustix/packages/trustix/interfaces"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/ulikunitz/xz"
@@ -348,6 +349,8 @@ var binaryCacheCommand = &cobra.Command{
 			Name:   "trustix-binary-cache-proxy",
 			Logger: log.New(),
 		}
+
+		http.Handle("/metrics", promhttp.Handler())
 
 		loggedHandler := l.Handler(http.HandlerFunc(handler), "/")
 

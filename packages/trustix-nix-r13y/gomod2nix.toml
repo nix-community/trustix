@@ -19,6 +19,9 @@ schema = 3
   [mod."github.com/benbjohnson/clock"]
     version = "v1.3.0"
     hash = "sha256-8ukpOZJpT682sQKQMfFEBumEwi6KBzC17cLC0N9bWuA="
+  [mod."github.com/beorn7/perks"]
+    version = "v1.0.1"
+    hash = "sha256-h75GUqfwJKngCJQVE5Ao5wnO3cfKD9lSIteoLp/3xJ4="
   [mod."github.com/bufbuild/connect-go"]
     version = "v1.0.0"
     hash = "sha256-SCTNgBOa8NnU+1OYEUXTHCCcDXVkzVj6wKkbBy+N9TI="
@@ -28,6 +31,9 @@ schema = 3
   [mod."github.com/bytecodealliance/wasmtime-go"]
     version = "v1.0.0"
     hash = "sha256-Pd7O58M+NdANd4nOyaGM7gqC4KO45SZpxmjM2/MB9dU="
+  [mod."github.com/cespare/xxhash/v2"]
+    version = "v2.1.2"
+    hash = "sha256-YV9SmXDtmmgQylQUfrUgQLAPfqYexcHxegMBT+IX9qM="
   [mod."github.com/cloudflare/golz4"]
     version = "v0.0.0-20150217214814-ef862a3cdc58"
     hash = "sha256-we6f7JwDfq9PQ+w9ey8yBwELnBhtmzht0yAApcblcTI="
@@ -79,6 +85,9 @@ schema = 3
   [mod."github.com/mattn/go-sqlite3"]
     version = "v1.14.15"
     hash = "sha256-fSrs2sdBKFTAiffBHNnAkN8kDTqiXgm4HNqzJAOF1RM="
+  [mod."github.com/matttproud/golang_protobuf_extensions"]
+    version = "v1.0.1"
+    hash = "sha256-ystDNStxR90j4CK+AMcEQ5oyYFRgWoGdvWlS0XQMDLQ="
   [mod."github.com/minio/sha256-simd"]
     version = "v1.0.0"
     hash = "sha256-oEo/BoMqSLdwSjrhHTiFjl5Om4MVLNQXDJINk6Z110Y="
@@ -118,6 +127,18 @@ schema = 3
   [mod."github.com/pressly/goose/v3"]
     version = "v3.7.0"
     hash = "sha256-DrrEhyuFyfpfWodBV86LUNGNcRj2WxRfw/D/89C1rn8="
+  [mod."github.com/prometheus/client_golang"]
+    version = "v1.13.0"
+    hash = "sha256-5nC5FuGuAB71k6Dm4vBcmpPpBAKfvArO/yr7e9rfQfg="
+  [mod."github.com/prometheus/client_model"]
+    version = "v0.2.0"
+    hash = "sha256-LTHxYPRgoggl+v89ly2/RkyPIuJlmZRdGs6ZRtK3zkk="
+  [mod."github.com/prometheus/common"]
+    version = "v0.37.0"
+    hash = "sha256-B2v0WsP8uKWYBpZcrog/sQXStIXwWZcVLmfPgnh1ZZA="
+  [mod."github.com/prometheus/procfs"]
+    version = "v0.8.0"
+    hash = "sha256-hgrilokQsXCOCCvwgOSfuErxoFAQpXM/+zNJKcMVHyM="
   [mod."github.com/remyoudompheng/bigfft"]
     version = "v0.0.0-20220927061507-ef77025ab5aa"
     hash = "sha256-9A7mKiLofkxBKRctzSuUEdCiUeApUfp7Tgs/gPpNCzY="

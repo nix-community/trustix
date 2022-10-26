@@ -39,6 +39,7 @@ import (
 	"github.com/nix-community/trustix/packages/trustix/internal/signer"
 	"github.com/nix-community/trustix/packages/trustix/internal/sthsync"
 	"github.com/nix-community/trustix/packages/trustix/internal/storage"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/http2"
@@ -409,6 +410,9 @@ var daemonCmd = &cobra.Command{
 
 			mux.Handle(apiconnect.NewLogAPIHandler(logAPIServer, interceptors))
 			mux.Handle(apiconnect.NewNodeAPIHandler(nodeAPIServer, interceptors))
+
+			// Prometheus metrics
+			mux.Handle("/metrics", promhttp.Handler())
 
 			server := &http.Server{Handler: h2c.NewHandler(mux, &http2.Server{})}
 
