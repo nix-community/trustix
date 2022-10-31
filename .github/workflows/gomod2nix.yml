@@ -19,7 +19,7 @@ jobs:
     - uses: cachix/cachix-action@v10
       with:
         name: nix-community
-        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
     - name: gomod2nix
       run: nix-shell --run "./checks/gomod2nix"
