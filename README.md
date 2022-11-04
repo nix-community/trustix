@@ -63,7 +63,7 @@ This information can now be used by a Trustix user to:
 
 ## Documentation
 
-Documentation is built as a part of CI and published on [Github Pages](https://tweag.github.io/trustix/).
+Documentation is built as a part of CI and published on [Github Pages](https://nix-community.github.io/trustix/).
 
 ## Further resources
 
