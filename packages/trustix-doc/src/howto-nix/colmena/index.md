@@ -43,6 +43,19 @@ $ nix develop  # Pulls in Colmena via Flakes devShells
 $ colmena apply  # Deploy
 ```
 
+## Test the builder
+
+With this simple Nix build, you can test on the builder system if the trustix post-build-hook is run and can connect to the trustix deamon.
+
+```
+[user@nixos:~]$ nix-build '<nixpkgs>' -A hello --no-out-link --check
+...
+running post-build-hook '/nix/store/xqq4fmks5ws1x4nmg27yhv1vq0l5w7mm-trustix-hook'...
+post-build-hook: time="2022-12-07T04:09:36+01:00" level=debug msg="Submitting mapping" storePath=/nix/store/4m1jlh4n5s9wzc802baj4slncmg826vz-hello-2.12
+post-build-hook: time="2022-12-07T04:09:36+01:00" level=debug msg="Dialing remote" address="unix:///run/trustix-daemon.socket"
+/nix/store/4m1jlh4n5s9wzc802baj4slncmg826vz-hello-2.12
+```
+
 ## Spread your log
 In the next chapter we will go over how to use this log from clients.
 The most important thing right now is to make a note of your _public_ key and your _domain name_.
