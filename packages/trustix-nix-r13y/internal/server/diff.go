@@ -24,7 +24,7 @@ import (
 
 	connect "github.com/bufbuild/connect-go"
 	"github.com/nix-community/go-nix/pkg/nar"
-	"github.com/nix-community/go-nix/pkg/nixpath"
+	"github.com/nix-community/go-nix/pkg/storepath"
 	"github.com/nix-community/trustix/packages/go-lib/executor"
 	dbcache "github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/dbcache"
 	"github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/future"
@@ -62,12 +62,12 @@ func downloadNAR(ctx context.Context, client *client.Client, outputHash string) 
 			return nil, fmt.Errorf("error decoding narinfo: %w", err)
 		}
 
-		if !strings.HasPrefix(narinfo.StorePath, nixpath.StoreDir) {
-			return nil, fmt.Errorf("path '%s' not starting with store prefix '%s'", narinfo.StorePath, nixpath.StoreDir)
+		if !strings.HasPrefix(narinfo.StorePath, storepath.StoreDir) {
+			return nil, fmt.Errorf("path '%s' not starting with store prefix '%s'", narinfo.StorePath, storepath.StoreDir)
 		}
 	}
 
-	storePrefixHash := narinfo.StorePath[len(nixpath.StoreDir)+1 : len(nixpath.StoreDir)+32+1]
+	storePrefixHash := narinfo.StorePath[len(storepath.StoreDir)+1 : len(storepath.StoreDir)+32+1]
 
 	u, err := url.Parse("http://localhost:8080")
 	if err != nil {
@@ -217,8 +217,8 @@ func downloadAndUnpackStorePath(downloadExecutor *future.KeyedFutures[*refcount.
 		}
 	}()
 
-	if !strings.HasPrefix(ref.Value.narinfo.StorePath, nixpath.StoreDir) {
-		return "", fmt.Errorf("store path '%s' outside of store dir prefix '%s'", ref.Value.narinfo.StorePath, nixpath.StoreDir)
+	if !strings.HasPrefix(ref.Value.narinfo.StorePath, storepath.StoreDir) {
+		return "", fmt.Errorf("store path '%s' outside of store dir prefix '%s'", ref.Value.narinfo.StorePath, storepath.StoreDir)
 	}
 
 	storeDir := path.Join(tmpDir, ref.Value.narinfo.StorePath[1:len(ref.Value.narinfo.StorePath)])

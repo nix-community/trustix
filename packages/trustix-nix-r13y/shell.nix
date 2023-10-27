@@ -1,17 +1,14 @@
 { pkgs ? import ../../pkgs.nix { } }:
 
-let
-  goEnv = pkgs.mkGoEnv {
-    pwd = ./.;
-  };
-
-in
 pkgs.mkShell {
   buildInputs = [
     pkgs.nix-eval-jobs
-    goEnv
     pkgs.sqlite
     pkgs.diffoscope
+    pkgs.sqlc
+    pkgs.goose
+    pkgs.protoc-gen-go
+    pkgs.protoc-gen-connect-go
   ];
 
   shellHook = ''

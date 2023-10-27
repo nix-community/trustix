@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nix-community/go-nix/pkg/nixpath"
+	"github.com/nix-community/go-nix/pkg/storepath"
 	idb "github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/db"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
@@ -73,7 +73,7 @@ func indexLogChunk(ctx context.Context, client *client.Client, log *api.Log, dbL
 	for _, leaf := range resp.Leaves {
 		storePath := string(leaf.Key)
 
-		if !strings.HasPrefix(storePath, nixpath.StoreDir) {
+		if !strings.HasPrefix(storePath, storepath.StoreDir) {
 			continue
 		}
 

@@ -1,11 +1,9 @@
 { pkgs ? import ../../pkgs.nix { } }:
 
-let
-  goEnv = pkgs.mkGoEnv { pwd = ./.; };
-in
 pkgs.mkShell {
   buildInputs = [
-    goEnv
+    pkgs.protoc-gen-go
+    pkgs.protoc-gen-connect-go
     pkgs.protoc-gen-doc
   ];
 }
