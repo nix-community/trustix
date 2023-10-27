@@ -27,7 +27,7 @@ Files: assets/tweag.png
 Copyright: Copyright © 2021 The Tweag IO
 License: LicenseRef-all-rights-reserved
 
-Files: flake.lock packages/go-lib/go.sum packages/go-lib/gomod2nix.toml packages/trustix-nix-r13y-web/package-lock.json packages/trustix-nix-r13y/go.sum packages/trustix-nix-r13y/gomod2nix.toml packages/trustix-nix/go.sum packages/trustix-nix/gomod2nix.toml packages/trustix-proto/go.sum packages/trustix-proto/gomod2nix.toml packages/trustix/go.sum packages/trustix/gomod2nix.toml
+Files: flake.lock renovate.json packages/go-lib/go.sum packages/go-lib/gomod2nix.toml packages/trustix-nix-r13y-web/package-lock.json packages/trustix-nix-r13y/go.sum packages/trustix-nix-r13y/gomod2nix.toml packages/trustix-nix/go.sum packages/trustix-nix/gomod2nix.toml packages/trustix-proto/go.sum packages/trustix-proto/gomod2nix.toml packages/trustix/go.sum packages/trustix/gomod2nix.toml
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC0-1.0
 
