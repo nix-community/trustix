@@ -22,4 +22,4 @@ jobs:
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
     - name: golangci-lint
-      run: nix-shell --run "./checks/golangci-lint"
+      run: nix develop -c ./checks/golangci-lint

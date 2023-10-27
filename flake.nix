@@ -29,6 +29,11 @@
       flake = false;
     };
 
+    nix-github-actions = {
+      url = "github:nix-community/nix-github-actions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     flake-root.url = "github:srid/flake-root";
   };
 
@@ -42,6 +47,7 @@
     , systems
     , treefmt-nix
     , flake-root
+    , nix-github-actions
     } @ inputs:
     let
       inherit (nixpkgs) lib;
@@ -56,6 +62,10 @@
           "x86_64-darwin"
           "aarch64-darwin"
         ];
+
+        flake.githubActions = nix-github-actions.lib.mkGithubMatrix {
+          checks = { inherit (self.checks) x86_64-linux; };
+        };
 
         flake.nixosModules = {
           trustix = import ./nixos self;
