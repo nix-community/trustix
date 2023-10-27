@@ -45,6 +45,8 @@
       };
       overlays.default = final: prev: import ./default.nix { };
 
+      checks = builtins.removeAttrs self.packages [ "default" ];
+
     } // (flake-utils.lib.eachDefaultSystem
       (system:
         let
