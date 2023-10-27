@@ -7,7 +7,7 @@ Files: .envrc Makefile Procfile infra/.envrc packages/go-lib/.envrc packages/go-
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: MIT
 
-Files: .github/workflows/doc.yml .github/workflows/golangci-lint.yml .github/workflows/gomod2nix.yml .github/workflows/licenses.yml .github/workflows/nix-build.yml .github/workflows/python.yml .github/workflows/treefmt.yml
+Files: .github/workflows/*.yml
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC0-1.0
 
