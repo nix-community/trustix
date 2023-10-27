@@ -5,6 +5,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
 
+    # flake-parts = {
+    #   url = "github:hercules-ci/flake-parts";
+    #   inputs.nixpkgs-lib.follows = "nixpkgs";
+    # };
+
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,81 +26,100 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-eval-jobs = {
-      url = "github:nix-community/nix-eval-jobs";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
-
     npmlock2nix = {
       url = "github:nix-community/npmlock2nix/master";
       flake = false;
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, gomod2nix, npmlock2nix, gitignore, nix-eval-jobs, systems, treefmt-nix }@flakeInputs:
+  outputs =
+    { self
+    , nixpkgs
+    , flake-utils
+    , flake-parts
+    , gomod2nix
+    , npmlock2nix
+    , gitignore
+    , systems
+    , treefmt-nix
+    ,
+    } @ flakeInputs:
     let
       eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
       treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./dev/treefmt.nix);
 
+      inherit (nixpkgs) lib;
     in
     {
       nixosModules = {
         trustix = import ./nixos;
       };
       overlays.default = final: prev: import ./default.nix { };
+    }
+    // (
+      flake-utils.lib.eachDefaultSystem
+        (
+          system:
+          let
+            pkgs = import ./pkgs.nix {
+              inherit system flakeInputs;
+            };
+          in
+          rec {
+            packages = {
+              trustix = pkgs.callPackage ./packages/trustix { };
+              trustix-doc = pkgs.callPackage ./packages/trustix-doc { };
+              trustix-nix = pkgs.callPackage ./packages/trustix-nix { };
+              trustix-nix-r13y = pkgs.callPackage ./packages/trustix-nix-r13y { };
+              trustix-nix-r13y-web = pkgs.callPackage ./packages/trustix-nix-r13y-web { };
+            };
 
-    } // (flake-utils.lib.eachDefaultSystem
-      (system:
-        let
-          pkgs = import ./pkgs.nix {
-            inherit system flakeInputs;
+            formatter = treefmtEval.${system}.config.build.wrapper;
 
-          };
-        in
-        rec {
-          packages = import ./default.nix { inherit pkgs; };
+            checks =
+              (builtins.removeAttrs packages [ "default" ])
+              // {
+                reuse = pkgs.runCommand "reuse-lint" { nativeBuildInputs = [ pkgs.reuse ]; } ''
+                  cd ${self}
+                  reuse lint
+                  touch $out
+                '';
+              }
+              // import ./packages/trustix/tests {
+                inherit pkgs;
+                trustix = self.packages.${system}.trustix;
+              };
 
-          formatter = treefmtEval.${system}.config.build.wrapper;
+            # Fake shell derivation that evaluates but doesn't build and producec an error message
+            # explaining the supported setup.
+            devShells.default =
+              let
+                errorMessage = ''
+                  Developing Trustix using Flakes is unsupported.
 
-          checks = (builtins.removeAttrs packages [ "default" ]) // {
-            reuse = pkgs.runCommand "reuse-lint" { nativeBuildInputs = [ pkgs.reuse ]; } ''
-              cd ${self}
-              reuse lint
-              touch $out
-            '';
-          } // import ./packages/trustix/tests { inherit pkgs; };
+                  We are using the stable nix-shell interface together with direnv to recursively
+                  load development shells for subpackages and relying on relative environment variables
+                  for state directories and such, something which is not supported using Flakes.
 
-          # Fake shell derivation that evaluates but doesn't build and producec an error message
-          # explaining the supported setup.
-          devShells.default =
-            let
-              errorMessage = ''
-                Developing Trustix using Flakes is unsupported.
-
-                We are using the stable nix-shell interface together with direnv to recursively
-                load development shells for subpackages and relying on relative environment variables
-                for state directories and such, something which is not supported using Flakes.
-
-                For supported development methods see ./packages/trustix-doc/src/hacking.md.
-              '';
-            in
-            builtins.derivation {
-              name = "flakes-nein-danke-shell";
-              builder = "bash";
-              inherit system;
-              preferLocalBuild = true;
-              allowSubstitutes = false;
-              fail = builtins.derivation {
-                name = "flakes-nein-danke";
-                builder = "/bin/sh";
-                args = [ "-c" "echo '${errorMessage}' && exit 1" ];
+                  For supported development methods see ./packages/trustix-doc/src/hacking.md.
+                '';
+              in
+              builtins.derivation {
+                name = "flakes-nein-danke-shell";
+                builder = "bash";
+                inherit system;
                 preferLocalBuild = true;
                 allowSubstitutes = false;
-                inherit system;
+                fail = builtins.derivation {
+                  name = "flakes-nein-danke";
+                  builder = "/bin/sh";
+                  args = [ "-c" "echo '${errorMessage}' && exit 1" ];
+                  preferLocalBuild = true;
+                  allowSubstitutes = false;
+                  inherit system;
+                };
               };
-            };
-        }
-      )
+          }
+        )
     );
 }

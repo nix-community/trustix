@@ -1,6 +1,10 @@
-{ pkgs ? import ../../../pkgs.nix { } }:
+{ pkgs
+, trustix
+,
+}:
+
 let
-  inherit (pkgs) trustix lib;
+  inherit (pkgs) lib;
 
   mkTest = name: command: pkgs.runCommand "trustix-test-${name}"
     {

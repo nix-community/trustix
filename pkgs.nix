@@ -3,7 +3,7 @@
 }:
 
 let
-  inherit (flakeInputs) nixpkgs gomod2nix npmlock2nix gitignore nix-eval-jobs;
+  inherit (flakeInputs) nixpkgs gomod2nix npmlock2nix gitignore;
 in
 
 import nixpkgs {
@@ -16,22 +16,5 @@ import nixpkgs {
     (final: prev: {
       npmlock2nix = import npmlock2nix { pkgs = final; };
     })
-
-    (final: prev: {
-      nix-eval-jobs = final.callPackage nix-eval-jobs { };
-    })
-
-    (final: prev:
-      let
-        inherit (prev) lib;
-        dirNames = lib.attrNames (lib.filterAttrs (pkgDir: type: type == "directory" && builtins.pathExists (./packages + "/${pkgDir}/default.nix")) (builtins.readDir ./packages));
-      in
-      builtins.listToAttrs (map
-        (pkgDir: {
-          value = final.callPackage (./packages + "/${pkgDir}") { };
-          name = pkgDir;
-        })
-        dirNames)
-    )
   ];
 }
