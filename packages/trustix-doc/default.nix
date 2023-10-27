@@ -1,6 +1,6 @@
-{ pkgs ? import ../../pkgs.nix { }
-, lib ? pkgs.lib
-, gitignoreSource ? pkgs.gitignoreSource
+{ pkgs
+, lib
+, gitignoreSource
 }:
 
 pkgs.stdenv.mkDerivation {
