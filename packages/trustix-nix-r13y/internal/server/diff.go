@@ -22,7 +22,7 @@ import (
 	"strings"
 	"time"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/nix-community/go-nix/pkg/nar"
 	"github.com/nix-community/go-nix/pkg/storepath"
 	"github.com/nix-community/trustix/packages/go-lib/executor"

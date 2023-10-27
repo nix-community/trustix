@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"sync"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/lazyledger/smt"
 	"github.com/nix-community/trustix/packages/go-lib/set"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"

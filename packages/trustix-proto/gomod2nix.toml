@@ -1,12 +1,12 @@
 schema = 3
 
 [mod]
-  [mod."github.com/bufbuild/connect-go"]
-    version = "v1.0.0"
-    hash = "sha256-SCTNgBOa8NnU+1OYEUXTHCCcDXVkzVj6wKkbBy+N9TI="
+  [mod."connectrpc.com/connect"]
+    version = "v1.12.0"
+    hash = "sha256-SBPYRmnrwtE9zyPdHWVGgalrRn5TOeewo6fdAwsNQSk="
   [mod."github.com/hashicorp/go-uuid"]
     version = "v1.0.3"
     hash = "sha256-8893qBbaug2yhxElowSrl3PrfhYlQ7cZ71QBgZWqpHE="
   [mod."google.golang.org/protobuf"]
-    version = "v1.28.1"
-    hash = "sha256-sTJYgvlv5is7vHNxcuigF2lNASp0QonhUgnrguhfHSU="
+    version = "v1.31.0"
+    hash = "sha256-UdIk+xRaMfdhVICvKRk1THe3R1VU+lWD8hqoW/y8jT0="

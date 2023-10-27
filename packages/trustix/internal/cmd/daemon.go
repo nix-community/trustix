@@ -19,7 +19,7 @@ import (
 	"syscall"
 	"time"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/coreos/go-systemd/activation"
 	"github.com/nix-community/trustix/packages/go-lib/executor"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"

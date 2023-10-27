@@ -9,7 +9,7 @@ import (
 	"context"
 	"net/http"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/rpc"
 	"github.com/nix-community/trustix/packages/trustix-proto/rpc/rpcconnect"

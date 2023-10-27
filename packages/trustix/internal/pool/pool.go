@@ -11,7 +11,7 @@ import (
 	"sort"
 	"sync"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	api "github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix/client"
 	log "github.com/sirupsen/logrus"

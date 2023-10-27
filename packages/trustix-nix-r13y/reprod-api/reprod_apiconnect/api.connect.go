@@ -7,7 +7,7 @@ package reprod_apiconnect
 import (
 	context "context"
 	errors "errors"
-	connect_go "github.com/bufbuild/connect-go"
+	connect_go "connectrpc.com/connect"
 	reprod_api "github.com/nix-community/trustix/packages/trustix-nix-r13y/reprod-api"
 	http "net/http"
 	strings "strings"

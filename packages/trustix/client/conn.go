@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/nix-community/trustix/packages/unixtransport"
 	log "github.com/sirupsen/logrus"
 )

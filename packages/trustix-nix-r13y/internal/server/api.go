@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/nix-community/trustix/packages/go-lib/executor"
 	"github.com/nix-community/trustix/packages/go-lib/set"
 	idb "github.com/nix-community/trustix/packages/trustix-nix-r13y/internal/db"

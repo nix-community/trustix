@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/nix-community/trustix/packages/trustix/auth"
 	log "github.com/sirupsen/logrus"
 )
