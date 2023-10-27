@@ -45,8 +45,6 @@
       };
       overlays.default = final: prev: import ./default.nix { };
 
-      checks = builtins.removeAttrs self.packages [ "default" ];
-
     } // (flake-utils.lib.eachDefaultSystem
       (system:
         let
@@ -55,10 +53,18 @@
 
           };
         in
-        {
+        rec {
           packages = import ./default.nix { inherit pkgs; };
 
           formatter = treefmtEval.${system}.config.build.wrapper;
+
+          checks = (builtins.removeAttrs packages [ "default" ]) // {
+            reuse = pkgs.runCommand "reuse-lint" { nativeBuildInputs = [ pkgs.reuse ]; } ''
+              cd ${self}
+              reuse lint
+              touch $out
+            '';
+          } // import ./packages/trustix/tests { inherit pkgs; };
 
           # Fake shell derivation that evaluates but doesn't build and producec an error message
           # explaining the supported setup.
