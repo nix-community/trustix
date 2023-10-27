@@ -5,6 +5,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
 
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     gomod2nix = {
       url = "github:nix-community/gomod2nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -28,7 +33,12 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, gomod2nix, npmlock2nix, gitignore, nix-eval-jobs }@flakeInputs:
+  outputs = { self, nixpkgs, flake-utils, gomod2nix, npmlock2nix, gitignore, nix-eval-jobs, systems, treefmt-nix }@flakeInputs:
+    let
+      eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
+      treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./dev/treefmt.nix);
+
+    in
     {
       nixosModules = {
         trustix = import ./nixos;
@@ -45,6 +55,8 @@
         in
         {
           packages = import ./default.nix { inherit pkgs; };
+
+          formatter = treefmtEval.${system}.config.build.wrapper;
 
           # Fake shell derivation that evaluates but doesn't build and producec an error message
           # explaining the supported setup.

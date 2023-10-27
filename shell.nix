@@ -6,12 +6,6 @@ let
   TRUSTIX_RPC = "unix://${STATE_DIR}/trustix.sock";
   TRUSTIX_ROOT = builtins.toString ./.;
 
-  # Wrap treefmt with a Go compiler so it can do gofmt without recursively loading subprojects
-  treefmt = pkgs.writeShellScriptBin "treefmt" ''
-    export PATH=${pkgs.go}/bin:$PATH
-    exec ${pkgs.treefmt}/bin/treefmt "$@"
-  '';
-
   python = pkgs.python3.override {
     self = python;
     packageOverrides = self: super: {
@@ -48,12 +42,6 @@ let
     ps.pretty-errors
   ]);
 
-  sqlFormatterWriter = pkgs.writeScriptBin "sql-formatter-writer" ''
-    #!${pkgs.runtimeShell}
-    set -euo pipefail
-    exec ${pkgs.nodePackages.sql-formatter}/bin/sql-formatter -l sqlite "$1" | ${pkgs.moreutils}/bin/sponge "$1"
-  '';
-
 in
 pkgs.mkShell {
 
@@ -61,20 +49,8 @@ pkgs.mkShell {
     # Development scripts
     pythonEnv
 
-    # Meta code formatter
-    treefmt
-
     # Only build job if it's not in the binary cache
     pkgs.nix-build-uncached
-
-    # Protobuf formatter (clang-format)
-    pkgs.clang-tools
-
-    # Format Nix expressions
-    pkgs.nixpkgs-fmt
-
-    # Format SQL
-    sqlFormatterWriter
 
     # Procfile process runner
     pkgs.hivemind
