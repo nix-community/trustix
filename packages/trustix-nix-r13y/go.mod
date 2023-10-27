@@ -20,7 +20,7 @@ require (
 	github.com/hashicorp/golang-lru v1.0.2
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/nix-community/go-nix v0.0.0-20231012070617-9b176785e54d
-	github.com/nix-community/trustix/packages/go-lib v0.0.0-20231027042222-1fba619f3548
+	github.com/nix-community/trustix/packages/go-lib v0.0.0-20231027092553-b0e71501e6f6
 	github.com/nix-community/trustix/packages/trustix v0.0.0-20231027092553-b0e71501e6f6
 	github.com/nix-community/trustix/packages/trustix-nix v0.0.0-20231027042222-1fba619f3548
 	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20231027042222-1fba619f3548
