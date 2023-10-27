@@ -81,7 +81,7 @@
           services.trustix-nix-build-hook = {
             enable = true;
             # The logID we got earlier
-            publisher = "453016597475f45532e0a22a448ea7e0fb915e950d3c8930bfd23d962d73f9c1";
+            logID = "453016597475f45532e0a22a448ea7e0fb915e950d3c8930bfd23d962d73f9c1";
           };
 
           deployment = {
