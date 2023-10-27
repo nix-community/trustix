@@ -8,7 +8,7 @@ require (
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
 	github.com/nix-community/go-nix v0.0.0-20231012070617-9b176785e54d
 	github.com/nix-community/trustix/packages/trustix v0.0.0-20231027092553-b0e71501e6f6
-	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20231027042222-1fba619f3548
+	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20231027094355-47e36717bcb8
 	github.com/prometheus/client_golang v1.17.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.7.0

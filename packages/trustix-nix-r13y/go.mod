@@ -23,7 +23,7 @@ require (
 	github.com/nix-community/trustix/packages/go-lib v0.0.0-20231027092553-b0e71501e6f6
 	github.com/nix-community/trustix/packages/trustix v0.0.0-20231027092553-b0e71501e6f6
 	github.com/nix-community/trustix/packages/trustix-nix v0.0.0-20231027042222-1fba619f3548
-	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20231027042222-1fba619f3548
+	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20231027094355-47e36717bcb8
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/pressly/goose/v3 v3.15.1
 	github.com/prometheus/client_golang v1.17.0
