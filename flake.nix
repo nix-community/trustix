@@ -3,12 +3,11 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
 
-    # flake-parts = {
-    #   url = "github:hercules-ci/flake-parts";
-    #   inputs.nixpkgs-lib.follows = "nixpkgs";
-    # };
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
 
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -18,7 +17,6 @@
     gomod2nix = {
       url = "github:nix-community/gomod2nix";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.utils.follows = "flake-utils";
     };
 
     gitignore = {
@@ -30,51 +28,56 @@
       url = "github:nix-community/npmlock2nix/master";
       flake = false;
     };
+
+    flake-root.url = "github:srid/flake-root";
   };
 
   outputs =
     { self
     , nixpkgs
-    , flake-utils
     , flake-parts
     , gomod2nix
     , npmlock2nix
     , gitignore
     , systems
     , treefmt-nix
-    ,
-    } @ flakeInputs:
+    , flake-root
+    } @ inputs:
     let
-      eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
-      treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./dev/treefmt.nix);
-
       inherit (nixpkgs) lib;
+
     in
-    {
-      nixosModules = {
-        trustix = import ./nixos;
-      };
-      overlays.default = final: prev: import ./default.nix { };
-    }
-    // (
-      flake-utils.lib.eachDefaultSystem
-        (
-          system:
+    flake-parts.lib.mkFlake
+      { inherit inputs; }
+      {
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+          "x86_64-darwin"
+          "aarch64-darwin"
+        ];
+
+        flake.nixosModules = {
+          trustix = import ./nixos self;
+        };
+
+        flake.overlays.default = final: prev: import ./default.nix { };
+
+        imports = [
+          inputs.treefmt-nix.flakeModule
+          inputs.flake-root.flakeModule
+        ];
+
+        perSystem = { pkgs, config, system, ... }:
           let
-            pkgs = import ./pkgs.nix {
-              inherit system flakeInputs;
-            };
+            callPackage = lib.callPackageWith (pkgs // {
+              inherit (inputs.gomod2nix.legacyPackages.${system}) buildGoApplication;
+              inherit (inputs.gitignore.lib) gitignoreSource;
+              npmlock2nix = import npmlock2nix { inherit pkgs; };
+            });
           in
           rec {
-            packages = {
-              trustix = pkgs.callPackage ./packages/trustix { };
-              trustix-doc = pkgs.callPackage ./packages/trustix-doc { };
-              trustix-nix = pkgs.callPackage ./packages/trustix-nix { };
-              trustix-nix-r13y = pkgs.callPackage ./packages/trustix-nix-r13y { };
-              trustix-nix-r13y-web = pkgs.callPackage ./packages/trustix-nix-r13y-web { };
-            };
-
-            formatter = treefmtEval.${system}.config.build.wrapper;
+            treefmt.imports = [ ./dev/treefmt.nix ];
 
             checks =
               (builtins.removeAttrs packages [ "default" ])
@@ -88,38 +91,71 @@
               // import ./packages/trustix/tests {
                 inherit pkgs;
                 trustix = self.packages.${system}.trustix;
+              } // {
+                shell = self.devShells.${system}.default;
               };
 
-            # Fake shell derivation that evaluates but doesn't build and producec an error message
-            # explaining the supported setup.
-            devShells.default =
-              let
-                errorMessage = ''
-                  Developing Trustix using Flakes is unsupported.
+            devShells.default = pkgs.mkShell {
+              buildInputs = [
+                # Procfile process runner
+                pkgs.hivemind
 
-                  We are using the stable nix-shell interface together with direnv to recursively
-                  load development shells for subpackages and relying on relative environment variables
-                  for state directories and such, something which is not supported using Flakes.
+                # Nix go modules code generator
+                inputs.gomod2nix.packages.${system}.default
 
-                  For supported development methods see ./packages/trustix-doc/src/hacking.md.
-                '';
-              in
-              builtins.derivation {
-                name = "flakes-nein-danke-shell";
-                builder = "bash";
-                inherit system;
-                preferLocalBuild = true;
-                allowSubstitutes = false;
-                fail = builtins.derivation {
-                  name = "flakes-nein-danke";
-                  builder = "/bin/sh";
-                  args = [ "-c" "echo '${errorMessage}' && exit 1" ];
-                  preferLocalBuild = true;
-                  allowSubstitutes = false;
-                  inherit system;
-                };
-              };
-          }
-        )
-    );
+                # Protobuf
+                pkgs.protobuf
+                pkgs.grpcurl # gRPC CLI
+
+                # Go linters
+                pkgs.golangci-lint # Multi purpose linter
+
+                # File system watchers
+                pkgs.reflex
+                pkgs.entr
+
+                # Docs
+                pkgs.mdbook
+
+                # License management and compliance
+                pkgs.reuse
+
+                # Socket activation testing
+                pkgs.systemfd
+
+                # Dev
+                pkgs.go
+                pkgs.nix-eval-jobs
+                pkgs.sqlite
+                pkgs.diffoscope
+                pkgs.sqlc
+                pkgs.goose
+                pkgs.protoc-gen-go
+                pkgs.protoc-gen-doc
+                pkgs.protoc-gen-connect-go
+                pkgs.nodejs
+              ];
+
+              inputsFrom = [ config.flake-root.devShell ];
+
+              # Write token used for log submission
+              env.TRUSTIX_TOKEN = "${./packages/trustix/dev/token-priv}";
+
+              shellHook = ''
+                export TRUSTIX_RPC="unix://$FLAKE_ROOT/state/trustix.sock"
+                export TRUSTIX_NIX_REPROD_STATE_DIR="$STATE_DIR/nix-reprod"
+                export PATH=${builtins.toString ./packages/trustix-nix-r13y-web}/node_modules/.bin:$PATH
+                export TRUSTIX_STATE_DIR="$FLAKE_ROOT/state/trustix";
+              '';
+            };
+
+            packages = {
+              trustix = callPackage ./packages/trustix { };
+              trustix-doc = callPackage ./packages/trustix-doc { };
+              trustix-nix = callPackage ./packages/trustix-nix { };
+              trustix-nix-r13y = callPackage ./packages/trustix-nix-r13y { };
+              trustix-nix-r13y-web = callPackage ./packages/trustix-nix-r13y-web { };
+            };
+          };
+      };
 }

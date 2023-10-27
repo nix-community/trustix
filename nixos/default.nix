@@ -1,8 +1,9 @@
-{ config, lib, pkgs, ... }:
+flake:
+{ config, lib, pkgs, system, ... }:
 
 {
   nixpkgs.overlays = [
-    (final: prev: import ../default.nix { })
+    (_: _: flake.packages.${system})
   ];
 
   imports = [
