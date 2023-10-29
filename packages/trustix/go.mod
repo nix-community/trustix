@@ -5,10 +5,10 @@ go 1.18
 require (
 	connectrpc.com/connect v1.12.0
 	github.com/BurntSushi/toml v1.3.2
+	github.com/celestiaorg/smt v0.3.0
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
 	github.com/dop251/goja v0.0.0-20231024180952-594410467bc6
 	github.com/hashicorp/go-memdb v1.3.4
-	github.com/lazyledger/smt v0.2.0
 	github.com/nix-community/trustix/packages/go-lib v0.0.0-20231027092553-b0e71501e6f6
 	github.com/nix-community/trustix/packages/trustix-proto v0.0.0-20231027042222-1fba619f3548
 	github.com/nix-community/trustix/packages/unixtransport v0.0.0-20231027042222-1fba619f3548

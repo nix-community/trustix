@@ -13,7 +13,7 @@ import (
 	"sync"
 
 	connect "connectrpc.com/connect"
-	"github.com/lazyledger/smt"
+	"github.com/celestiaorg/smt"
 	"github.com/nix-community/trustix/packages/go-lib/set"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/protocols"

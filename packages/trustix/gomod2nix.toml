@@ -10,6 +10,9 @@ schema = 3
   [mod."github.com/beorn7/perks"]
     version = "v1.0.1"
     hash = "sha256-h75GUqfwJKngCJQVE5Ao5wnO3cfKD9lSIteoLp/3xJ4="
+  [mod."github.com/celestiaorg/smt"]
+    version = "v0.3.0"
+    hash = "sha256-/tdyue7ZNLIZ1yYGKi+4aM0wuUV4virG5ShzPEjNoIM="
   [mod."github.com/cespare/xxhash/v2"]
     version = "v2.2.0"
     hash = "sha256-nPufwYQfTkyrEkbBrpqM3C2vnMxfIz6tAaBmiUP7vd4="
@@ -49,9 +52,6 @@ schema = 3
   [mod."github.com/inconshreveable/mousetrap"]
     version = "v1.1.0"
     hash = "sha256-XWlYH0c8IcxAwQTnIi6WYqq44nOKUylSWxWO/vi+8pE="
-  [mod."github.com/lazyledger/smt"]
-    version = "v0.2.0"
-    hash = "sha256-qjatj7E2LAFAZ4RmO8btm3kGuE0Ns3740FknE/6f56Q="
   [mod."github.com/matttproud/golang_protobuf_extensions/v2"]
     version = "v2.0.0"
     hash = "sha256-gcAN8jKL0ve8pcgDkxr2Lc8CUBG39ri9QAp0zrzchEs="

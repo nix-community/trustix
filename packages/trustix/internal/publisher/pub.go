@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/lazyledger/smt"
+	"github.com/celestiaorg/smt"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 	rpc "github.com/nix-community/trustix/packages/trustix-proto/rpc"
@@ -100,7 +100,9 @@ func NewPublisher(logID string, store storage.Storage, caBucket *storage.Bucket,
 			return err
 		}
 
-		smTree := smt.NewSparseMerkleTree(qm.mapBucket.Txn(txn), pd.NewHash())
+		mapBucketTxn := qm.mapBucket.Txn(txn)
+
+		smTree := smt.NewSparseMerkleTree(mapBucketTxn, mapBucketTxn, pd.NewHash())
 
 		vMapLog, err := vlog.NewVerifiableLog(qm.pd.NewHash, qm.mapLogBucket.Txn(txn), 0)
 		if err != nil {
@@ -263,7 +265,8 @@ func (qm *Publisher) writeItems(txn storage.Transaction, items []*api.KeyValuePa
 
 	// The sparse merkle tree
 	log.Debug("Creating sparse merkle tree from persisted data")
-	smTree := smt.ImportSparseMerkleTree(qm.mapBucket.Txn(txn), qm.pd.NewHash(), sth.MapRoot)
+	mapBucketTxn := qm.mapBucket.Txn(txn)
+	smTree := smt.ImportSparseMerkleTree(mapBucketTxn, mapBucketTxn, qm.pd.NewHash(), sth.MapRoot)
 
 	// The append-only log tracking published map heads
 	vMapLogBucketTxn := qm.mapLogBucket.Txn(txn)

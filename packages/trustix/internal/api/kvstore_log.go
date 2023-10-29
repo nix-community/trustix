@@ -9,7 +9,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lazyledger/smt"
+	"github.com/celestiaorg/smt"
 	"github.com/nix-community/trustix/packages/trustix-proto/api"
 	"github.com/nix-community/trustix/packages/trustix-proto/protocols"
 	"github.com/nix-community/trustix/packages/trustix-proto/schema"
@@ -134,7 +134,7 @@ func (kv *kvStoreLogApi) GetMapValue(ctx context.Context, req *api.GetMapValueRe
 
 	err := kv.store.View(func(txn storage.Transaction) error {
 		mapBucketTxn := kv.mapBucket.Txn(txn)
-		tree := smt.ImportSparseMerkleTree(mapBucketTxn, kv.pd.NewHash(), req.MapRoot)
+		tree := smt.ImportSparseMerkleTree(mapBucketTxn, mapBucketTxn, kv.pd.NewHash(), req.MapRoot)
 
 		v, err := tree.Get(req.Key)
 		if err != nil {
