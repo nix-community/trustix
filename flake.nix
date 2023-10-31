@@ -71,8 +71,6 @@
           trustix = import ./nixos self;
         };
 
-        flake.overlays.default = final: prev: import ./default.nix { };
-
         imports = [
           inputs.treefmt-nix.flakeModule
           inputs.flake-root.flakeModule
@@ -96,6 +94,7 @@
             treefmt.imports = [ ./dev/treefmt.nix ];
 
             checks =
+              # All packages + passthru.tests
               (
                 let
                   packages' = builtins.removeAttrs packages [ "default" ];
@@ -110,6 +109,7 @@
                   )
                 )
               )
+              # Reuse lint
               // {
                 reuse = pkgs.runCommand "reuse-lint" { nativeBuildInputs = [ pkgs.reuse ]; } ''
                   cd ${self}
@@ -117,9 +117,24 @@
                   touch $out
                 '';
               }
+              # Build development shell
               // {
                 shell = self.devShells.${system}.default;
-              };
+              }
+              # NixOS tests
+              // (
+                let
+                  checkArgs = {
+                    inherit pkgs;
+                    inherit system lib;
+                    inherit packages;
+                  };
+                in
+                {
+                  trustix-nixos = import ./packages/trustix/nixos/test.nix checkArgs;
+                }
+              )
+            ;
 
             devShells.default = pkgs.mkShell {
               buildInputs = [

@@ -1,26 +1,21 @@
-{ pkgs, lib }:
+{ pkgs, system, lib, packages }:
 
 let
   testing = import "${pkgs.path}/nixos/lib/testing-python.nix" { inherit pkgs system; };
 
 in
 testing.makeTest {
-
-  inherit pkgs;
-
   name = "trustix";
   meta = {
     maintainers = [ lib.maintainers.adisbladis ];
   };
 
-  machine = { ... }: {
+  nodes.machine = { ... }: {
     imports = [ ./default.nix ];
 
     # Hack around pkgs not working as intended
     nixpkgs.overlays = [
-      (self: super: {
-        inherit (pkgs) trustix;
-      })
+      (_: _: packages)
     ];
 
     services.trustix.enable = true;
