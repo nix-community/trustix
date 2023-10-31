@@ -19,7 +19,7 @@
     "autoprefixer": "^10.4.8",
     "daisyui": "^2.31.0",
     "eslint": "^8.25.0",
-    "eslint-plugin-solid": "^0.7.3",
+    "eslint-plugin-solid": "^0.13.0",
     "eslint-plugin-sonarjs": "^0.16.0",
     "postcss": "^8.4.16",
     "prettier": "2.7.1",
