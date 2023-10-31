@@ -187,6 +187,7 @@
                 export TRUSTIX_NIX_REPROD_STATE_DIR="$FLAKE_ROOT/state/nix-reprod"
                 export PATH=${builtins.toString ./packages/trustix-nix-r13y-web}/node_modules/.bin:$PATH
                 export TRUSTIX_STATE_DIR="$FLAKE_ROOT/state/trustix";
+                export PATH="$FLAKE_ROOT/packages/trustix-nix-r13y-web/node_modules/.bin:$PATH";
               '';
             };
 
