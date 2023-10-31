@@ -1,7 +1,4 @@
-{ pkgs
-, trustix
-,
-}:
+{ pkgs, trustix }:
 
 let
   inherit (pkgs) lib;
@@ -24,9 +21,6 @@ let
 
 in
 {
-
-  inherit trustix;
-
   # A simple submit/get test
   submission = mkTest "submit" ''
     key="bc63f28a4e8dda15107f687e6c3a8848492e89e3bc7726a56a0f1ee68dd9350d"

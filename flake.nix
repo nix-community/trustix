@@ -48,10 +48,10 @@
     , treefmt-nix
     , flake-root
     , nix-github-actions
+    ,
     } @ inputs:
     let
       inherit (nixpkgs) lib;
-
     in
     flake-parts.lib.mkFlake
       { inherit inputs; }
@@ -78,9 +78,15 @@
           inputs.flake-root.flakeModule
         ];
 
-        perSystem = { pkgs, config, system, ... }:
+        perSystem =
+          { pkgs
+          , config
+          , system
+          , ...
+          }:
           let
-            callPackage = lib.callPackageWith (pkgs // {
+            callPackage = lib.callPackageWith (pkgs
+              // {
               inherit (inputs.gomod2nix.legacyPackages.${system}) buildGoApplication;
               inherit (inputs.gitignore.lib) gitignoreSource;
               npmlock2nix = import npmlock2nix { inherit pkgs; };
@@ -90,7 +96,20 @@
             treefmt.imports = [ ./dev/treefmt.nix ];
 
             checks =
-              (builtins.removeAttrs packages [ "default" ])
+              (
+                let
+                  packages' = builtins.removeAttrs packages [ "default" ];
+                in
+                lib.listToAttrs (
+                  lib.flatten (
+                    lib.mapAttrsToList
+                      (name: value: [ (lib.nameValuePair name value) ] ++ lib.mapAttrsToList (test: drv: lib.nameValuePair "${name}-${test}" drv)
+                        (value.passthru.tests or { })
+                      )
+                      packages'
+                  )
+                )
+              )
               // {
                 reuse = pkgs.runCommand "reuse-lint" { nativeBuildInputs = [ pkgs.reuse ]; } ''
                   cd ${self}
@@ -98,10 +117,7 @@
                   touch $out
                 '';
               }
-              // import ./packages/trustix/tests {
-                inherit pkgs;
-                trustix = self.packages.${system}.trustix;
-              } // {
+              // {
                 shell = self.devShells.${system}.default;
               };
 

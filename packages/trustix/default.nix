@@ -1,6 +1,6 @@
 { buildGoApplication, lib, pkg-config, gitignoreSource, callPackage, pkgs }:
 
-buildGoApplication {
+lib.fix (self: buildGoApplication {
   pname = "trustix";
   version = "dev";
 
@@ -19,5 +19,8 @@ buildGoApplication {
 
   CGO_ENABLED = "1";
 
-  passthru.tests = import ./tests { inherit pkgs; };
-}
+  passthru.tests = import ./tests {
+    inherit pkgs;
+    trustix = self;
+  };
+})
