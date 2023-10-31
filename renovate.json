@@ -11,5 +11,8 @@
   },
   "nix": {
     "enabled": true
+  },
+  "gomod": {
+    "enabled": false
   }
 }
