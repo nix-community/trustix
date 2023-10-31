@@ -29,4 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: cachix/install-nix-action@v23
+      - run: |
+        mkdir -p ~/.config/nix
+        echo "system-features = kvm nixos-test" >> ~/.config/nix/nix.conf
       - run: nix build -L ".#${{ matrix.attr }}"
