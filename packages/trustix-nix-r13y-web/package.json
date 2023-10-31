@@ -33,7 +33,7 @@
     "@bufbuild/connect-web": "^0.2.1",
     "@bufbuild/protobuf": "^0.1.1",
     "@solidjs/router": "^0.8.3",
-    "chart.js": "^3.9.1",
+    "chart.js": "^4.4.0",
     "google-palette": "^1.1.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
