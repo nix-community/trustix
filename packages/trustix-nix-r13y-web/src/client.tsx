@@ -4,9 +4,11 @@
 
 import { ReproducibilityAPI } from "./api/api_connectweb";
 import {
-  createConnectTransport,
   createPromiseClient,
-} from "@bufbuild/connect-web";
+} from "@connectrpc/connect";
+import {
+  createConnectTransport,
+} from "@connectrpc/connect-web";
 
 const client = createPromiseClient(
   ReproducibilityAPI,

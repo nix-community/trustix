@@ -4,6 +4,6 @@ cd "$(dirname "$0")"
 exec protoc -I ../trustix-nix-r13y/reprod-api \
   --es_out src/api \
   --es_opt target=ts \
-  --connect-web_out src/api \
-  --connect-web_opt target=ts \
+  --connect-es_out src/api \
+  --connect-es_opt target=ts \
   ../trustix-nix-r13y/reprod-api/*.proto
