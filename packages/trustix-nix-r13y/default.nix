@@ -6,13 +6,16 @@
 , nix
 , diffoscope
 , git
+, stdenv
 }:
 
 let
   runtimeDeps = [
     nix
     nix-eval-jobs
-    diffoscope
+    (diffoscope.override {
+      enableBloat = ! stdenv.isDarwin;
+    })
     git
   ];
 

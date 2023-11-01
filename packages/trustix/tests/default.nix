@@ -6,6 +6,10 @@ let
   mkTest = name: command: pkgs.runCommand "trustix-test-${name}"
     {
       nativeBuildInputs = [ trustix pkgs.systemfd ];
+      meta = {
+        # Does not work on darwin because of socket paths being incorrect
+        platforms = builtins.filter (system: ! lib.elem system lib.platforms.darwin) lib.platforms.unix;
+      };
     }
     (lib.concatStringsSep "\n" [
       ''
@@ -51,7 +55,7 @@ in
     log_id_2="421c8bb7aeb86eeb426cd8094e9e7cd0ad4171ce5ccd550ae622ceee7631d97c"
     log_id_3="d76ddf6362f03ae5f357fb90c37e402299578912331fa8fcd560e3df686831cc"
 
-    build_dir=$(pwd)
+    build_dir=$NIX_BUILD_TOP
 
     # Spin up 3 log instances
     (cd ${compare-fixtures/log1}; systemfd -s $build_dir/1.sock -- trustix daemon --state $TMPDIR/log1-state --config ./config.toml) &

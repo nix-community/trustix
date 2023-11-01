@@ -3,6 +3,6 @@
 npmlock2nix.v2.build {
   src = gitignoreSource ./.;
   installPhase = "cp -r dist $out";
-  buildCommands = [ "npm run build" ];
+  buildCommands = [ "env HOME=$(mktemp -d) npm run build" ];
   inherit nodejs;
 }
