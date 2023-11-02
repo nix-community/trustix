@@ -35,17 +35,13 @@ Files: packages/trustix-doc/book.toml packages/trustix-doc/doc_old/numeric.csl p
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC-BY-SA-4.0
 
-Files: packages/trustix-nix-r13y-web/src/api/api_connectweb.ts packages/trustix-nix-r13y-web/src/api/api_pb.ts packages/trustix-nix-r13y/reprod-api/api.pb.go packages/trustix-nix-r13y/reprod-api/reprod_apiconnect/api.connect.go packages/trustix-nix-r13y/sql-cache/queries/diffoscope.sql packages/trustix-nix-r13y/sql-cache/schema/20221005142925_initial.sql packages/trustix-nix-r13y/sql/queries/derivations.sql packages/trustix-nix-r13y/sql/queries/eval.sql packages/trustix-nix-r13y/sql/queries/logs.sql packages/trustix-nix-r13y/sql/queries/reprod.sql packages/trustix-nix-r13y/sql/queries/suggest.sql packages/trustix-nix-r13y/sql/schema/20220818142927_initial.sql packages/trustix-nix-r13y/sql/schema/20220904150640_logs.sql
+Files: packages/trustix-nix-r13y/sql-cache/queries/diffoscope.sql packages/trustix-nix-r13y/sql-cache/schema/20221005142925_initial.sql packages/trustix-nix-r13y/sql/queries/derivations.sql packages/trustix-nix-r13y/sql/queries/eval.sql packages/trustix-nix-r13y/sql/queries/logs.sql packages/trustix-nix-r13y/sql/queries/reprod.sql packages/trustix-nix-r13y/sql/queries/suggest.sql packages/trustix-nix-r13y/sql/schema/20220818142927_initial.sql
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: GPL-3.0-only
 
 Files: packages/trustix-nix-r13y/examples/config.toml packages/trustix-nix-r13y/sqlc.yaml packages/trustix-nix/dev/cache-priv-key.pem packages/trustix-nix/dev/cache-pub-key.pem packages/trustix/config.toml treefmt.toml
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC0-1.0
-
-Files: packages/trustix-proto/api/apiconnect/api.connect.go packages/trustix-proto/rpc/rpcconnect/rpc.connect.go
-Copyright: Copyright © 2020-2022 The Trustix Authors
-License: MIT
 
 Files: packages/trustix/dev/priv packages/trustix/dev/pub packages/trustix/dev/token-priv packages/trustix/dev/token-pub
 Copyright: Copyright © 2020-2022 The Trustix Authors
