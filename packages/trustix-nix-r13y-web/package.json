@@ -19,7 +19,7 @@
     "daisyui": "^3.9.4",
     "eslint": "^8.25.0",
     "eslint-plugin-solid": "^0.13.0",
-    "eslint-plugin-sonarjs": "^0.22.0",
+    "eslint-plugin-sonarjs": "^0.23.0",
     "postcss": "^8.4.16",
     "prettier": "3.0.3",
     "tailwindcss": "^3.3.5",
