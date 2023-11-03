@@ -31,3 +31,41 @@ jobs:
       - uses: cachix/install-nix-action@v23
       - run: mkdir -p ~/.config/nix && echo "system-features = kvm nixos-test" >> ~/.config/nix/nix.conf
       - run: nix build -L ".#${{ matrix.attr }}"
+
+  # Check gomod2nix up to date
+  gomod2nix:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v23
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    - uses: cachix/cachix-action@v12
+      with:
+        name: nix-community
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - name: gomod2nix
+      run: nix develop -c ./checks/gomod2nix
+
+  golangci-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v23
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    - uses: cachix/cachix-action@v12
+      with:
+        name: nix-community
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - name: golangci-lint
+      run: nix develop -c ./checks/golangci-lint
+
+  collect:
+    runs-on: ubuntu-latest
+    needs:
+      - nix-build
+      - gomod2nix
+      - golangci-lint
+    steps:
+      - run: exit 0
