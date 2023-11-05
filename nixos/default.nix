@@ -1,9 +1,9 @@
 flake:
-{ config, lib, pkgs, system, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   nixpkgs.overlays = [
-    (_: _: flake.packages.${system})
+    (_: prev: builtins.removeAttrs flake.packages.${prev.stdenv.targetPlatform.system} [ "default" ])
   ];
 
   imports = [

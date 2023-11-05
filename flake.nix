@@ -87,6 +87,7 @@
           { pkgs
           , config
           , system
+          , self'
           , ...
           }:
           let
@@ -97,14 +98,14 @@
               npmlock2nix = import npmlock2nix { inherit pkgs; };
             });
           in
-          rec {
+          {
             treefmt.imports = [ ./dev/treefmt.nix ];
 
             checks =
               # All packages + passthru.tests
               (
                 let
-                  packages' = builtins.removeAttrs packages [ "default" ];
+                  packages' = builtins.removeAttrs (self'.packages) [ "default" ];
                 in
                 lib.listToAttrs (
                   lib.flatten (
@@ -134,7 +135,7 @@
                   checkArgs = {
                     inherit pkgs;
                     inherit system lib;
-                    inherit packages;
+                    inherit (self') packages;
                   };
                 in
                 {
@@ -202,6 +203,7 @@
             };
 
             packages = {
+              default = self'.packages.trustix;
               trustix = callPackage ./packages/trustix { };
               trustix-doc = callPackage ./packages/trustix-doc { };
               trustix-nix = callPackage ./packages/trustix-nix { };
