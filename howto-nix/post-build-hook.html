@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Subscribing - Trustix Doc</title>
+        <title>Post build hook - Trustix Doc</title>
 
 
         <!-- Custom HTML head -->
@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../about.html"><strong aria-hidden="true">1.</strong> About</a></li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">2.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../howto-nix/index.html"><strong aria-hidden="true">3.</strong> How to use Trustix with Nix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../howto-nix/setup.html"><strong aria-hidden="true">3.1.</strong> Basic setup</a></li><li class="chapter-item expanded "><a href="../howto-nix/post-build-hook.html"><strong aria-hidden="true">3.2.</strong> Post build hook</a></li><li class="chapter-item expanded "><a href="../howto-nix/subscribing.html" class="active"><strong aria-hidden="true">3.3.</strong> Subscribing</a></li><li class="chapter-item expanded "><a href="../howto-nix/binarycache.html"><strong aria-hidden="true">3.4.</strong> Usage as a binary cache</a></li></ol></li><li class="chapter-item expanded "><a href="../hacking.html"><strong aria-hidden="true">4.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="../api.html"><strong aria-hidden="true">5.</strong> API docs</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../about.html"><strong aria-hidden="true">1.</strong> About</a></li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">2.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../howto-nix/index.html"><strong aria-hidden="true">3.</strong> How to use Trustix with Nix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../howto-nix/setup.html"><strong aria-hidden="true">3.1.</strong> Basic setup</a></li><li class="chapter-item expanded "><a href="../howto-nix/post-build-hook.html" class="active"><strong aria-hidden="true">3.2.</strong> Post build hook</a></li><li class="chapter-item expanded "><a href="../howto-nix/subscribing.html"><strong aria-hidden="true">3.3.</strong> Subscribing</a></li><li class="chapter-item expanded "><a href="../howto-nix/binarycache.html"><strong aria-hidden="true">3.4.</strong> Usage as a binary cache</a></li></ol></li><li class="chapter-item expanded "><a href="../hacking.html"><strong aria-hidden="true">4.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="../api.html"><strong aria-hidden="true">5.</strong> API docs</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -171,57 +171,31 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="trustix---subscribing"><a class="header" href="#trustix---subscribing">Trustix - Subscribing</a></h1>
-<p>This document walks you through how to subscribe to an already published binary cache.</p>
+                        <h1 id="trustix---usage-via-nix"><a class="header" href="#trustix---usage-via-nix">Trustix - Usage via Nix</a></h1>
+<p>In the previous chapter we set up the main Trustix daemon. It's now time to actually start using it to publish build results.</p>
 <h2 id="requisites"><a class="header" href="#requisites">Requisites</a></h2>
 <ul>
-<li>A local Trustix instance</li>
-<li>A remote log's metadata
+<li>A NixOS installation using Flakes</li>
+<li>The basic setup from the previous chapter</li>
+</ul>
+<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
 <ul>
-<li>Public key</li>
-<li>URL</li>
+<li><code>configuration.nix</code>:</li>
 </ul>
-</li>
-</ul>
-<h2 id="configuring"><a class="header" href="#configuring">Configuring</a></h2>
-<ul>
-<li>Add log(s) to your <code>configuration.nix</code></li>
-</ul>
-<pre><code class="language-nix">{ pkgs, config, ... }:
-{
-
-  services.trustix = {
-    enable = true;
-
-    subscribers = [
-      {
-        protocol = &quot;nix&quot;;
-        publicKey = {
-          type = &quot;ed25519&quot;;
-          key = &quot;2uy8gNIOYEewTiV7iB7cUxBGpXxQtdlFepFoRvJTCJo=&quot;;
-        };
-      }
-    ];
-
-    # A remote can expose many logs and they are not neccesarily created by the remote in question
-    remotes = [
-      &quot;https://demo.trustix.dev&quot;
-    ];
-
-  };
-
-}
+<pre><code class="language-nix">{{#include ../../../../examples/02_post_build/configuration.nix}}
 </code></pre>
+<h2 id="effect"><a class="header" href="#effect">Effect</a></h2>
+<p>This sets up Nix with a post build hook that publishes any builds performed locally to your locally running log.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../howto-nix/post-build-hook.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../howto-nix/setup.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../howto-nix/binarycache.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../howto-nix/subscribing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -231,11 +205,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../howto-nix/post-build-hook.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../howto-nix/setup.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../howto-nix/binarycache.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../howto-nix/subscribing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

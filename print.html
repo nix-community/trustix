@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="about.html"><strong aria-hidden="true">1.</strong> About</a></li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">2.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="howto-nix/index.html"><strong aria-hidden="true">3.</strong> How to use Trustix with Nix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="howto-nix/setup.html"><strong aria-hidden="true">3.1.</strong> Basic setup</a></li><li class="chapter-item expanded "><a href="howto-nix/colmena/index.html"><strong aria-hidden="true">3.2.</strong> Builder setup (using Colmena)</a></li><li class="chapter-item expanded "><a href="howto-nix/subscribing.html"><strong aria-hidden="true">3.3.</strong> Subscribing</a></li><li class="chapter-item expanded "><a href="howto-nix/binarycache.html"><strong aria-hidden="true">3.4.</strong> Usage as a binary cache</a></li></ol></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">4.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">5.</strong> API docs</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="about.html"><strong aria-hidden="true">1.</strong> About</a></li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">2.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="howto-nix/index.html"><strong aria-hidden="true">3.</strong> How to use Trustix with Nix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="howto-nix/setup.html"><strong aria-hidden="true">3.1.</strong> Basic setup</a></li><li class="chapter-item expanded "><a href="howto-nix/post-build-hook.html"><strong aria-hidden="true">3.2.</strong> Post build hook</a></li><li class="chapter-item expanded "><a href="howto-nix/subscribing.html"><strong aria-hidden="true">3.3.</strong> Subscribing</a></li><li class="chapter-item expanded "><a href="howto-nix/binarycache.html"><strong aria-hidden="true">3.4.</strong> Usage as a binary cache</a></li></ol></li><li class="chapter-item expanded "><a href="hacking.html"><strong aria-hidden="true">4.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="api.html"><strong aria-hidden="true">5.</strong> API docs</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -242,63 +242,7 @@ above's example.</li>
 <p>How to actually publish/subscribe are laid out in other documents.</p>
 <h2 id="requisites"><a class="header" href="#requisites">Requisites</a></h2>
 <ul>
-<li>A NixOS installation (flakes based optional)</li>
-</ul>
-<h2 id="strategies"><a class="header" href="#strategies">Strategies</a></h2>
-<h3 id="classical-nix"><a class="header" href="#classical-nix">Classical Nix</a></h3>
-<p>It's highly recommended to use some automated tool like <a href="https://github.com/nmattia/niv">niv</a> to ensure you are up to date with your external dependencies, here we'll show you how to integrate Trustix in your NixOS configuration <em>manually</em> using no external tooling.</p>
-<p>From within your configuration directory, clone Trustix:</p>
-<pre><code class="language-sh">$ git clone https://github.com/nix-community/trustix.git
-</code></pre>
-<p>And add it to your NixOS configuration like:</p>
-<pre><code>{ config, pkgs, lib, ... }:
-{
-  imports = [ ./trustix/nixos ];
-}
-</code></pre>
-<h3 id="flakes"><a class="header" href="#flakes">Flakes</a></h3>
-<p>This is a minimal <code>flake.nix</code> for using Trustix with Flakes:</p>
-<pre><code>
-{
-  inputs = {
-    nixpkgs.url = &quot;github:NixOS/nixpkgs/nixos-unstable&quot;;
-    flake-utils.url = &quot;github:numtide/flake-utils&quot;;
-
-    trustix = {
-      url = &quot;github:nix-community/trustix&quot;;
-      inputs.nixpkgs.follows = &quot;nixpkgs&quot;;
-    };
-  };
-  outputs = { nixpkgs, flake-utils, trustix, ... }: {
-
-    nixosConfigurations.trustix-example = nixpkgs.lib.nixosSystem {
-      system = &quot;x86_64-linux&quot;;
-      modules =
-        [ ({ pkgs, ... }: {
-            # import trustix modules
-            imports = [ trustix.nixosModules.trustix ];
-          })
-        ];
-    };
-
-  };
-}
-</code></pre>
-<h2 id="effect"><a class="header" href="#effect">Effect</a></h2>
-<p>This will add all relevant services to your system (but not enable them) and adds packages to the pkgs set via an overlay.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="trustix---builder-setup-with-colmena-flake-based"><a class="header" href="#trustix---builder-setup-with-colmena-flake-based">Trustix - Builder setup with Colmena (flake based)</a></h1>
-<p>Up until now we have talked about components in isolation, let's take a stab at a real deployment using <a href="https://github.com/zhaofengli/colmena">Colmena</a>.
-Once we're done we will have:</p>
-<ul>
-<li>A Trustix instance that others can subscribe to</li>
-<li>A local post build hook that publishes builds</li>
-</ul>
-<p>Most of the contents in this article will be applicable to other deployment systems too with only minimal changes, the biggest difference should be how they deal with key material (secrets).</p>
-<h2 id="requisites--assumptions"><a class="header" href="#requisites--assumptions">Requisites / assumptions</a></h2>
-<ul>
-<li>You need a recent Nix with Flakes enabled</li>
-<li>We start off in an empty git repository</li>
-<li>Our domain name is <code>demo.trustix.dev</code></li>
+<li>A NixOS installation using Flakes</li>
 </ul>
 <h2 id="create-keys"><a class="header" href="#create-keys">Create keys</a></h2>
 <p>All Trustix build logs are first and foremost identified by their key pair, which will be the first thing we have to generate.</p>
@@ -311,136 +255,62 @@ If a key is used for multiple protocols (not just Nix) those logs will have a di
 This ID is what <em>subscribers</em> use to indicate what they want to subscribe to.</p>
 <p>To find out the log ID for the key pair you just generated:
 <code>$ nix run github:nix-community/trustix#trustix -- print-log-id --protocol nix --pubkey $(cat secrets/log-pub)</code></p>
-<h2 id="create-a-deployment"><a class="header" href="#create-a-deployment">Create a deployment</a></h2>
-<p>In your <code>flake.nix</code> put:</p>
+<h2 id="flakes"><a class="header" href="#flakes">Flakes</a></h2>
+<ul>
+<li><code>flake.nix</code></li>
+</ul>
 <pre><code class="language-nix">{
   inputs = {
     nixpkgs.url = &quot;github:NixOS/nixpkgs/nixos-unstable&quot;;
-    flake-utils.url = &quot;github:numtide/flake-utils&quot;;
 
     trustix = {
       url = &quot;github:nix-community/trustix&quot;;
       inputs.nixpkgs.follows = &quot;nixpkgs&quot;;
     };
   };
-  outputs = { nixpkgs, flake-utils, trustix, ... }:
-    let
-      hostName = &quot;demo.trustix.dev&quot;;
-    in
-
-    # Provide colmena
-    (flake-utils.lib.eachDefaultSystem
-      (system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        {
-          devShells.default = pkgs.mkShell {
-            packages = [ pkgs.colmena ];
-          };
-        })
-    ) // {
-
-      # Our actual deployment
-      colmena = {
-        meta = {
-          nixpkgs = import nixpkgs {
-            system = &quot;x86_64-linux&quot;;
-            # Note that the overlay has to be applied manually when using Colmena
-            overlays = [ trustix.overlays.default ];
-          };
-        };
-
-        # Import the Trustix NixOS modules on all machines
-        defaults = { pkgs, ... }: {
-          imports = [
-            trustix.nixosModules.trustix
-          ];
-        };
-
-        &quot;${hostName}&quot; = {
-
-          # Main Trustix daemon configuration
-          services.trustix = {
-            enable = true;
-
-            # Signers &amp; publishers are separate concepts as the same key
-            # could potentially be used to publish multiple logs under different Trustix subprotocols.
-            #
-            # If you don't know what this means: While Trustix is build for Nix first, the core can be used for other ecosystems too, not just Nix.
-            signers.my-signer = {
-              type = &quot;ed25519&quot;;
-              ed25519.private-key-path = &quot;/var/lib/my-trustix-key&quot;;
-            };
-
-            publishers = [
-              {
-                signer = &quot;my-signer&quot;; # Use the key configured above
-                protocol = &quot;nix&quot;; # This publisher is using the Nix subprotocol
-
-                # An arbitrary (string -&gt; string) attrset with metadata about this log
-                meta = {
-                  upstream = &quot;https://cache.nixos.org&quot;;
-                };
-
-                publicKey = {
-                  type = &quot;ed25519&quot;;
-                  key = builtins.readFile ./secrets/log-pub;
-                };
-              }
+  outputs = { nixpkgs, flake-utils, trustix, ... }: {
+    nixosConfigurations.trustix-example = nixpkgs.lib.nixosSystem {
+      system = &quot;x86_64-linux&quot;;
+      modules =
+        [ ({ pkgs, ... }: {
+            # import trustix modules
+            imports = [
+              trustix.nixosModules.trustix
+              ./configuration.nix
             ];
-
-          };
-
-          # Enable the post build hook to push builds to the main Trustix daemon
-          services.trustix-nix-build-hook = {
-            enable = true;
-            # The logID we got earlier
-            logID = &quot;453016597475f45532e0a22a448ea7e0fb915e950d3c8930bfd23d962d73f9c1&quot;;
-          };
-
-          deployment = {
-            targetHost = hostName;
-            targetUser = &quot;root&quot;;
-
-            # We are using the Colmena secrets facility to upload the keys to the remote
-            # without ending up world readable in the Nix store.
-            keys = {
-              my-trustix-key = {
-                keyFile = ./secrets/log-priv;
-
-                # This mode is too open for a real world deployment but we don't want to deal
-                # with the complexities of secrets management here.
-                permissions = &quot;0644&quot;;
-                destDir = &quot;/var/lib&quot;;
-              };
-            };
-
-          };
-        };
-      };
+          })
+        ];
     };
+
+  };
 }
 </code></pre>
-<p>Enter the development shell and deploy:</p>
-<pre><code>$ nix develop  # Pulls in Colmena via Flakes devShells
-$ colmena apply  # Deploy
+<ul>
+<li><code>configuration.nix</code>:</li>
+</ul>
+<pre><code class="language-nix">{{#include ../../../../examples/01_basic/configuration.nix}}
 </code></pre>
-<h2 id="test-the-builder"><a class="header" href="#test-the-builder">Test the builder</a></h2>
-<p>With this simple Nix build, you can test on the builder system if the trustix post-build-hook is run and can connect to the trustix deamon.</p>
-<pre><code>[user@nixos:~]$ nix-build '&lt;nixpkgs&gt;' -A hello --no-out-link --check
-...
-running post-build-hook '/nix/store/xqq4fmks5ws1x4nmg27yhv1vq0l5w7mm-trustix-hook'...
-post-build-hook: time=&quot;2022-12-07T04:09:36+01:00&quot; level=debug msg=&quot;Submitting mapping&quot; storePath=/nix/store/4m1jlh4n5s9wzc802baj4slncmg826vz-hello-2.12
-post-build-hook: time=&quot;2022-12-07T04:09:36+01:00&quot; level=debug msg=&quot;Dialing remote&quot; address=&quot;unix:///run/trustix-daemon.socket&quot;
-/nix/store/4m1jlh4n5s9wzc802baj4slncmg826vz-hello-2.12
+<h2 id="effect"><a class="header" href="#effect">Effect</a></h2>
+<p>This will set up an instance of Trustix on your system.
+In the next chapter we will look at using the post build hook to publish results to our local log.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="trustix---usage-via-nix-1"><a class="header" href="#trustix---usage-via-nix-1">Trustix - Usage via Nix</a></h1>
+<p>In the previous chapter we set up the main Trustix daemon. It's now time to actually start using it to publish build results.</p>
+<h2 id="requisites-1"><a class="header" href="#requisites-1">Requisites</a></h2>
+<ul>
+<li>A NixOS installation using Flakes</li>
+<li>The basic setup from the previous chapter</li>
+</ul>
+<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
+<ul>
+<li><code>configuration.nix</code>:</li>
+</ul>
+<pre><code class="language-nix">{{#include ../../../../examples/02_post_build/configuration.nix}}
 </code></pre>
-<h2 id="spread-your-log"><a class="header" href="#spread-your-log">Spread your log</a></h2>
-<p>In the next chapter we will go over how to use this log from clients.
-The most important thing right now is to make a note of your <em>public</em> key and your <em>domain name</em>.</p>
+<h2 id="effect-1"><a class="header" href="#effect-1">Effect</a></h2>
+<p>This sets up Nix with a post build hook that publishes any builds performed locally to your locally running log.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="trustix---subscribing"><a class="header" href="#trustix---subscribing">Trustix - Subscribing</a></h1>
 <p>This document walks you through how to subscribe to an already published binary cache.</p>
-<h2 id="requisites-1"><a class="header" href="#requisites-1">Requisites</a></h2>
+<h2 id="requisites-2"><a class="header" href="#requisites-2">Requisites</a></h2>
 <ul>
 <li>A local Trustix instance</li>
 <li>A remote log's metadata
@@ -482,7 +352,7 @@ The most important thing right now is to make a note of your <em>public</em> key
 <div style="break-before: page; page-break-before: always;"></div><h1 id="trustix---binary-cache-setup"><a class="header" href="#trustix---binary-cache-setup">Trustix - Binary cache setup</a></h1>
 <p>The easiest way to use Trustix is via the NixOS modules, though even they require some manual preparation in terms of generating keys.</p>
 <p>This document walks you through how to configure your local system as a binary cache.</p>
-<h2 id="requisites-2"><a class="header" href="#requisites-2">Requisites</a></h2>
+<h2 id="requisites-3"><a class="header" href="#requisites-3">Requisites</a></h2>
 <p>We are assuming you have already followed the steps to set up one or more subscribers to your local Trustix instance.</p>
 <ul>
 <li>Generate a public/private keypair to use with your local binary cache.</li>

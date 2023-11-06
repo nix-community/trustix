@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../about.html"><strong aria-hidden="true">1.</strong> About</a></li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">2.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../howto-nix/index.html"><strong aria-hidden="true">3.</strong> How to use Trustix with Nix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../howto-nix/setup.html" class="active"><strong aria-hidden="true">3.1.</strong> Basic setup</a></li><li class="chapter-item expanded "><a href="../howto-nix/colmena/index.html"><strong aria-hidden="true">3.2.</strong> Builder setup (using Colmena)</a></li><li class="chapter-item expanded "><a href="../howto-nix/subscribing.html"><strong aria-hidden="true">3.3.</strong> Subscribing</a></li><li class="chapter-item expanded "><a href="../howto-nix/binarycache.html"><strong aria-hidden="true">3.4.</strong> Usage as a binary cache</a></li></ol></li><li class="chapter-item expanded "><a href="../hacking.html"><strong aria-hidden="true">4.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="../api.html"><strong aria-hidden="true">5.</strong> API docs</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../about.html"><strong aria-hidden="true">1.</strong> About</a></li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">2.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../howto-nix/index.html"><strong aria-hidden="true">3.</strong> How to use Trustix with Nix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../howto-nix/setup.html" class="active"><strong aria-hidden="true">3.1.</strong> Basic setup</a></li><li class="chapter-item expanded "><a href="../howto-nix/post-build-hook.html"><strong aria-hidden="true">3.2.</strong> Post build hook</a></li><li class="chapter-item expanded "><a href="../howto-nix/subscribing.html"><strong aria-hidden="true">3.3.</strong> Subscribing</a></li><li class="chapter-item expanded "><a href="../howto-nix/binarycache.html"><strong aria-hidden="true">3.4.</strong> Usage as a binary cache</a></li></ol></li><li class="chapter-item expanded "><a href="../hacking.html"><strong aria-hidden="true">4.</strong> Hacking</a></li><li class="chapter-item expanded "><a href="../api.html"><strong aria-hidden="true">5.</strong> API docs</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -177,27 +177,26 @@
 <p>How to actually publish/subscribe are laid out in other documents.</p>
 <h2 id="requisites"><a class="header" href="#requisites">Requisites</a></h2>
 <ul>
-<li>A NixOS installation (flakes based optional)</li>
+<li>A NixOS installation using Flakes</li>
 </ul>
-<h2 id="strategies"><a class="header" href="#strategies">Strategies</a></h2>
-<h3 id="classical-nix"><a class="header" href="#classical-nix">Classical Nix</a></h3>
-<p>It's highly recommended to use some automated tool like <a href="https://github.com/nmattia/niv">niv</a> to ensure you are up to date with your external dependencies, here we'll show you how to integrate Trustix in your NixOS configuration <em>manually</em> using no external tooling.</p>
-<p>From within your configuration directory, clone Trustix:</p>
-<pre><code class="language-sh">$ git clone https://github.com/nix-community/trustix.git
+<h2 id="create-keys"><a class="header" href="#create-keys">Create keys</a></h2>
+<p>All Trustix build logs are first and foremost identified by their key pair, which will be the first thing we have to generate.</p>
+<p>Let's start by generating a key pair for our log:</p>
+<pre><code>$ mkdir secrets
+$ nix run github:nix-community/trustix#trustix -- generate-key --privkey secrets/log-priv --pubkey secrets/log-pub
 </code></pre>
-<p>And add it to your NixOS configuration like:</p>
-<pre><code>{ config, pkgs, lib, ... }:
-{
-  imports = [ ./trustix/nixos ];
-}
-</code></pre>
-<h3 id="flakes"><a class="header" href="#flakes">Flakes</a></h3>
-<p>This is a minimal <code>flake.nix</code> for using Trustix with Flakes:</p>
-<pre><code>
-{
+<p>Additionally logs are identified not just by their key, but how that key is used.
+If a key is used for multiple protocols (not just Nix) those logs will have a different ID.
+This ID is what <em>subscribers</em> use to indicate what they want to subscribe to.</p>
+<p>To find out the log ID for the key pair you just generated:
+<code>$ nix run github:nix-community/trustix#trustix -- print-log-id --protocol nix --pubkey $(cat secrets/log-pub)</code></p>
+<h2 id="flakes"><a class="header" href="#flakes">Flakes</a></h2>
+<ul>
+<li><code>flake.nix</code></li>
+</ul>
+<pre><code class="language-nix">{
   inputs = {
     nixpkgs.url = &quot;github:NixOS/nixpkgs/nixos-unstable&quot;;
-    flake-utils.url = &quot;github:numtide/flake-utils&quot;;
 
     trustix = {
       url = &quot;github:nix-community/trustix&quot;;
@@ -205,13 +204,15 @@
     };
   };
   outputs = { nixpkgs, flake-utils, trustix, ... }: {
-
     nixosConfigurations.trustix-example = nixpkgs.lib.nixosSystem {
       system = &quot;x86_64-linux&quot;;
       modules =
         [ ({ pkgs, ... }: {
             # import trustix modules
-            imports = [ trustix.nixosModules.trustix ];
+            imports = [
+              trustix.nixosModules.trustix
+              ./configuration.nix
+            ];
           })
         ];
     };
@@ -219,8 +220,14 @@
   };
 }
 </code></pre>
+<ul>
+<li><code>configuration.nix</code>:</li>
+</ul>
+<pre><code class="language-nix">{{#include ../../../../examples/01_basic/configuration.nix}}
+</code></pre>
 <h2 id="effect"><a class="header" href="#effect">Effect</a></h2>
-<p>This will add all relevant services to your system (but not enable them) and adds packages to the pkgs set via an overlay.</p>
+<p>This will set up an instance of Trustix on your system.
+In the next chapter we will look at using the post build hook to publish results to our local log.</p>
 
                     </main>
 
@@ -230,7 +237,7 @@
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../howto-nix/colmena/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../howto-nix/post-build-hook.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -244,7 +251,7 @@
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../howto-nix/colmena/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../howto-nix/post-build-hook.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
