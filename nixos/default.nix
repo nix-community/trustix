@@ -3,7 +3,7 @@ flake:
 
 {
   nixpkgs.overlays = [
-    (_: prev: builtins.removeAttrs flake.packages.${prev.stdenv.targetPlatform.system} [ "default" ])
+    (_: prev: builtins.removeAttrs (flake.packages.${prev.stdenv.targetPlatform.system} or { }) [ "default" ])
   ];
 
   imports = [
