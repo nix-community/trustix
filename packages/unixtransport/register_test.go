@@ -19,7 +19,7 @@ func TestBasics(t *testing.T) {
 	// This first server will do HTTP.
 	var (
 		tempdir = t.TempDir()
-		socket1 = filepath.Join(tempdir, "1.sock")
+		socket1 = filepath.Join(tempdir, "1.socket")
 	)
 	{
 		ln, err := net.Listen("unix", socket1)

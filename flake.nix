@@ -194,7 +194,7 @@
               env.TRUSTIX_TOKEN = "${./packages/trustix/dev/token-priv}";
 
               shellHook = ''
-                export TRUSTIX_RPC="unix://$FLAKE_ROOT/state/trustix.sock"
+                export TRUSTIX_RPC="unix://$FLAKE_ROOT/state/trustix.socket"
                 export TRUSTIX_NIX_REPROD_STATE_DIR="$FLAKE_ROOT/state/nix-reprod"
                 export PATH=${builtins.toString ./packages/trustix-nix-r13y-web}/node_modules/.bin:$PATH
                 export TRUSTIX_STATE_DIR="$FLAKE_ROOT/state/trustix";

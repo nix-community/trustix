@@ -14,7 +14,7 @@ import (
 //
 // We can work around this issue by enforcing a file extension
 // that makes it possible to separate the two.
-var socketSuffixes = []string{".sock", ".socket"}
+var socketSuffixes = []string{".socket"}
 
 // Register adds a protocol handler to the provided transport that can serve
 // requests to Unix domain sockets via the "unix" or "https+unix" schemes.

@@ -7,6 +7,8 @@ package cmd
 
 import (
 	"crypto"
+	"crypto/ed25519"
+	"encoding/base64"
 	"fmt"
 	"math"
 	"net"
@@ -94,7 +96,27 @@ var daemonCmd = &cobra.Command{
 			// From the TRUSTIX_TOKEN env var
 			// This is the default token used.
 			defaultTokenPath := os.Getenv("TRUSTIX_TOKEN")
-			if defaultTokenPath != "" {
+
+			// If we're not getting a default token from the env
+			// we generate one and put it in the daemon state directory
+			// with very strict permissions.
+			if defaultTokenPath == "" {
+				defaultTokenPath = path.Join(daemonStateDirectory, "/trustix.token")
+
+				_, priv, err := ed25519.GenerateKey(nil)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				privEncoded := "default:" + base64.StdEncoding.EncodeToString(priv)
+				err = os.WriteFile(defaultTokenPath, []byte(privEncoded), 0600)
+				if err != nil {
+					log.Fatalf("Error generating token: %v", err)
+				}
+			}
+
+			// Use the default token
+			{
 				f, err := os.Open(defaultTokenPath)
 				if err != nil {
 					log.Fatalf("Error opening private token file '%s': %v", defaultTokenPath, err)
@@ -106,6 +128,7 @@ var daemonCmd = &cobra.Command{
 				}
 
 				writeTokens[tok.Name] = tok
+
 			}
 
 			for _, publicTokenStr := range config.WriteTokens {
@@ -123,6 +146,12 @@ var daemonCmd = &cobra.Command{
 			}
 
 			authInterceptor = auth.NewAuthInterceptor(nil, writeTokens)
+
+			for name := range writeTokens {
+				log.WithFields(log.Fields{
+					"name": name,
+				}).Info("Adding write token")
+			}
 		}
 
 		signers := make(map[string]crypto.Signer)

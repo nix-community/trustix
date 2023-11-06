@@ -15,7 +15,7 @@ Files: .gitignore .reuse/dep5 packages/trustix-doc/.gitignore packages/trustix-d
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC0-1.0
 
-Files: README.md examples/colmena/secrets/log-priv examples/colmena/secrets/log-pub packages/go-lib/README.md packages/trustix-doc/doc_old/comparison.md packages/trustix-doc/src/SUMMARY.md packages/trustix-doc/src/about.md packages/trustix-doc/src/api.md packages/trustix-doc/src/binarycache.md packages/trustix-doc/src/hacking.md packages/trustix-doc/src/howto-nix/binarycache.md packages/trustix-doc/src/howto-nix/builder-colmena-nixos.md packages/trustix-doc/src/howto-nix/colmena/index.md packages/trustix-doc/src/howto-nix/colmena/secrets/log-priv packages/trustix-doc/src/howto-nix/colmena/secrets/log-pub packages/trustix-doc/src/howto-nix/index.md packages/trustix-doc/src/howto-nix/setup.md packages/trustix-doc/src/howto-nix/subscribing.md packages/trustix-doc/src/intro.md packages/trustix-nix-r13y-web/README.md packages/trustix-nix-r13y-web/src/chart/README.md packages/trustix-proto/doc.md packages/unixtransport/README.md
+Files: README.md packages/go-lib/README.md packages/trustix-doc/doc_old/comparison.md packages/trustix-doc/src/SUMMARY.md packages/trustix-doc/src/about.md packages/trustix-doc/src/api.md packages/trustix-doc/src/binarycache.md packages/trustix-doc/src/hacking.md packages/trustix-doc/src/howto-nix/binarycache.md packages/trustix-doc/src/howto-nix/builder-colmena-nixos.md packages/trustix-doc/src/howto-nix/colmena/index.md packages/trustix-doc/src/howto-nix/colmena/secrets/log-priv packages/trustix-doc/src/howto-nix/colmena/secrets/log-pub packages/trustix-doc/src/howto-nix/index.md packages/trustix-doc/src/howto-nix/setup.md packages/trustix-doc/src/howto-nix/subscribing.md packages/trustix-doc/src/intro.md packages/trustix-nix-r13y-web/README.md packages/trustix-nix-r13y-web/src/chart/README.md packages/trustix-proto/doc.md packages/unixtransport/README.md
 Copyright: Copyright © 2020-2022 The Trustix Authors
 License: CC-BY-SA-4.0
 
@@ -49,6 +49,10 @@ License: CC0-1.0
 
 Files: packages/trustix/internal/config/fixtures/example.toml
 Copyright: Copyright © 2020-2022 The Trustix Authors
+License: CC0-1.0
+
+Files: examples-old/** examples/**
+Copyright: Copyright © 2020-2023 The Trustix Authors
 License: CC0-1.0
 
 Files: packages/trustix/internal/signer/fixtures/priv packages/trustix/internal/signer/fixtures/pub
