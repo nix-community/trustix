@@ -1,16 +1,12 @@
 { pkgs
 , lib
-, gitignoreSource
 }:
 
 pkgs.stdenv.mkDerivation {
   pname = "trustix-doc";
   version = "dev";
 
-  src = lib.cleanSourceWith {
-    filter = name: type: ! lib.hasSuffix "tests" name;
-    src = gitignoreSource ./.;
-  };
+  src = ../..;
 
   nativeBuildInputs = [
     pkgs.mdbook
@@ -19,7 +15,7 @@ pkgs.stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    ln -s ${lib.cleanSource ../trustix-proto} ../trustix-proto
+    cd packages/trustix-doc
     mdbook build
 
     runHook postBuild
