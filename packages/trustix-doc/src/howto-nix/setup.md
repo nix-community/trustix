@@ -7,34 +7,32 @@ This document will guide you through the very basic NixOS setup required both by
 How to actually publish/subscribe are laid out in other documents.
 
 ## Requisites
-- A NixOS installation (flakes based optional)
+- A NixOS installation using Flakes
 
-## Strategies
+## Create keys
 
-### Classical Nix
-It's highly recommended to use some automated tool like [niv](https://github.com/nmattia/niv) to ensure you are up to date with your external dependencies, here we'll show you how to integrate Trustix in your NixOS configuration _manually_ using no external tooling.
+All Trustix build logs are first and foremost identified by their key pair, which will be the first thing we have to generate.
 
-From within your configuration directory, clone Trustix:
-``` sh
-$ git clone https://github.com/nix-community/trustix.git
+Let's start by generating a key pair for our log:
+```
+$ mkdir secrets
+$ nix run github:nix-community/trustix#trustix -- generate-key --privkey secrets/log-priv --pubkey secrets/log-pub
 ```
 
-And add it to your NixOS configuration like:
-```
-{ config, pkgs, lib, ... }:
-{
-  imports = [ ./trustix/nixos ];
-}
-```
+Additionally logs are identified not just by their key, but how that key is used.
+If a key is used for multiple protocols (not just Nix) those logs will have a different ID.
+This ID is what _subscribers_ use to indicate what they want to subscribe to.
 
-### Flakes
-This is a minimal `flake.nix` for using Trustix with Flakes:
-```
+To find out the log ID for the key pair you just generated:
+`$ nix run github:nix-community/trustix#trustix -- print-log-id --protocol nix --pubkey $(cat secrets/log-pub)`
 
+## Flakes
+
+- `flake.nix`
+``` nix
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
 
     trustix = {
       url = "github:nix-community/trustix";
@@ -42,13 +40,15 @@ This is a minimal `flake.nix` for using Trustix with Flakes:
     };
   };
   outputs = { nixpkgs, flake-utils, trustix, ... }: {
-
     nixosConfigurations.trustix-example = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules =
         [ ({ pkgs, ... }: {
             # import trustix modules
-            imports = [ trustix.nixosModules.trustix ];
+            imports = [
+              trustix.nixosModules.trustix
+              ./configuration.nix
+            ];
           })
         ];
     };
@@ -57,5 +57,11 @@ This is a minimal `flake.nix` for using Trustix with Flakes:
 }
 ```
 
+- `configuration.nix`:
+``` nix
+{{#include ../../../../examples/01_basic/configuration.nix}}
+```
+
 ## Effect
-This will add all relevant services to your system (but not enable them) and adds packages to the pkgs set via an overlay.
+This will set up an instance of Trustix on your system.
+In the next chapter we will look at using the post build hook to publish results to our local log.

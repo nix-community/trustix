@@ -6,7 +6,7 @@
 
 - [How to use Trustix with Nix](./howto-nix/index.md)
   - [Basic setup](./howto-nix/setup.md)
-  - [Builder setup (using Colmena)](./howto-nix/colmena/index.md)
+  - [Post build hook](./howto-nix/post-build-hook.md)
   - [Subscribing](./howto-nix/subscribing.md)
   - [Usage as a binary cache](./howto-nix/binarycache.md)
 
