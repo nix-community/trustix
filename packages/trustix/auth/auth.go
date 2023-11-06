@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	connect "connectrpc.com/connect"
 )
@@ -85,7 +86,7 @@ func NewAuthInterceptor(privateToken *PrivateToken, writeTokens map[string]*Publ
 				if !ok {
 					return nil, connect.NewError(
 						connect.CodeUnauthenticated,
-						errors.New("request signed with unknown key"),
+						fmt.Errorf("request signed with unknown key: %s", hdr.Name),
 					)
 				}
 
