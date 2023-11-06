@@ -223,7 +223,46 @@ This ID is what <em>subscribers</em> use to indicate what they want to subscribe
 <ul>
 <li><code>configuration.nix</code>:</li>
 </ul>
-<pre><code class="language-nix">{{#include ../../../../examples/01_basic/configuration.nix}}
+<pre><code class="language-nix">{ config, pkgs, lib, ... }:
+{
+  services.trustix = {
+    enable = true;
+
+    # Trustix differentiates between the concepts of a &quot;signer&quot; and a &quot;publisher&quot;.
+    # A signer refers to a private key implementation.
+    # These can be file based or use hardware tokens.
+    signers.my-signer = {
+      type = &quot;ed25519&quot;;
+      # Configuring the private key like this by path is bad practice because the key ends up world readable in /nix/store.
+      # You should either:
+      # - Put the key in a persistent path and reference it like: `ed25519.private-key-path = &quot;/path/to/key&quot;`
+      # - Use a secrets management solution like sops-nix or agenix.
+      ed25519.private-key-path = ./secrets/log-priv;
+    };
+
+    publishers = [
+      {
+        # Use the key configured above
+        signer = &quot;my-signer&quot;;
+
+        # Trustix is built first and foremost for Nix, but could also be used for verifying other package ecosystems.
+        protocol = &quot;nix&quot;;
+
+        # An arbitrary (string -&gt; string) attrset with metadata about this log.
+        # This isn't used by the Trustix logs but is used to inform the Nix binary cache proxy about possible substitution sources.
+        meta = {
+          upstream = &quot;https://cache.nixos.org&quot;;
+        };
+
+        # The public key identifying this log.
+        publicKey = {
+          type = &quot;ed25519&quot;;
+          key = builtins.readFile ./secrets/log-pub;
+        };
+      }
+    ];
+  };
+}
 </code></pre>
 <h2 id="effect"><a class="header" href="#effect">Effect</a></h2>
 <p>This will set up an instance of Trustix on your system.
