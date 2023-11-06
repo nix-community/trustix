@@ -6,6 +6,7 @@ let
   hook-script = pkgs.writeShellScript "trustix-hook"
     ''
       set -euo pipefail
+      export TRUSTIX_TOKEN="${cfg.token-path}"
       LOG_ID=${
         if builtins.isString cfg.publisher
         then cfg.publisher
@@ -56,6 +57,11 @@ in
       description = "Which Trustix socket to connect to.";
     };
 
+    token-path = mkOption {
+      type = types.path;
+      default = "/var/lib/trustix/trustix.token";
+      description = "Path to write token.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
