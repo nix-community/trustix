@@ -22,7 +22,7 @@ jobs:
       run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
       shell: bash
     - name: Checkout code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
     - name: Fmt
       if: matrix.platform != 'windows-latest' # :(
       run: "F=$(gofmt -l .) ; if [[ $F ]] ; then echo $F ; exit 1 ; fi"
