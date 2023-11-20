@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "buildNodeModules": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1700449523,
+        "narHash": "sha256-i4d12jwoLeC8T2A7Q9G4dubCKQDfNpj7uXFAjFu0Hjw=",
+        "owner": "adisbladis",
+        "repo": "buildNodeModules",
+        "rev": "6a53ed1530ddc2e79ae16fa316d0c1bd4d8eda99",
+        "type": "github"
+      },
+      "original": {
+        "owner": "adisbladis",
+        "repo": "buildNodeModules",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -130,32 +150,15 @@
         "type": "github"
       }
     },
-    "npmlock2nix": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1673447413,
-        "narHash": "sha256-sJM82Sj8yfQYs9axEmGZ9Evzdv/kDcI9sddqJ45frrU=",
-        "owner": "nix-community",
-        "repo": "npmlock2nix",
-        "rev": "9197bbf397d76059a76310523d45df10d2e4ca81",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "ref": "master",
-        "repo": "npmlock2nix",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
+        "buildNodeModules": "buildNodeModules",
         "flake-parts": "flake-parts",
         "flake-root": "flake-root",
         "gitignore": "gitignore",
         "gomod2nix": "gomod2nix",
         "nix-github-actions": "nix-github-actions",
         "nixpkgs": "nixpkgs",
-        "npmlock2nix": "npmlock2nix",
         "systems": "systems_2",
         "treefmt-nix": "treefmt-nix"
       }

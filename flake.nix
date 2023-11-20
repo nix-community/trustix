@@ -24,9 +24,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    npmlock2nix = {
-      url = "github:nix-community/npmlock2nix/master";
-      flake = false;
+    buildNodeModules = {
+      url = "github:adisbladis/buildNodeModules";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-github-actions = {
@@ -42,13 +42,12 @@
     , nixpkgs
     , flake-parts
     , gomod2nix
-    , npmlock2nix
     , gitignore
     , systems
     , treefmt-nix
     , flake-root
     , nix-github-actions
-    ,
+    , ...
     } @ inputs:
     let
       inherit (nixpkgs) lib;
@@ -91,11 +90,12 @@
           , ...
           }:
           let
+            buildNodeModules = inputs.buildNodeModules.lib.${system};
             callPackage = lib.callPackageWith (pkgs
               // {
               inherit (inputs.gomod2nix.legacyPackages.${system}) buildGoApplication;
               inherit (inputs.gitignore.lib) gitignoreSource;
-              npmlock2nix = import npmlock2nix { inherit pkgs; };
+              inherit buildNodeModules;
             });
           in
           {
@@ -186,6 +186,9 @@
                 pkgs.protoc-gen-doc
                 pkgs.protoc-gen-connect-go
                 pkgs.nodejs
+
+                # Link node_modules into $npmRoot/node_modules
+                buildNodeModules.hooks.linkNodeModulesHook
               ];
 
               inputsFrom = [ config.flake-root.devShell ];
@@ -193,10 +196,11 @@
               # Write token used for log submission
               env.TRUSTIX_TOKEN = "${./packages/trustix/dev/token-priv}";
 
+              env.npmRoot = "./packages/trustix-nix-r13y-web";
+
               shellHook = ''
                 export TRUSTIX_RPC="unix://$FLAKE_ROOT/state/trustix.socket"
                 export TRUSTIX_NIX_REPROD_STATE_DIR="$FLAKE_ROOT/state/nix-reprod"
-                export PATH=${builtins.toString ./packages/trustix-nix-r13y-web}/node_modules/.bin:$PATH
                 export TRUSTIX_STATE_DIR="$FLAKE_ROOT/state/trustix";
                 export PATH="$FLAKE_ROOT/packages/trustix-nix-r13y-web/node_modules/.bin:$PATH";
               '';

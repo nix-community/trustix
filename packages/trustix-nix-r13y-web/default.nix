@@ -1,8 +1,18 @@
-{ npmlock2nix, lib, gitignoreSource, nodejs }:
+{ stdenv, buildNodeModules, lib, nodejs, npmHooks }:
 
-npmlock2nix.v2.build {
-  src = gitignoreSource ./.;
-  installPhase = "cp -r dist $out";
-  buildCommands = [ "env HOME=$(mktemp -d) npm run build" ];
-  inherit nodejs;
+stdenv.mkDerivation {
+  pname = "trustix-nix-r13y-web";
+  version = "0.1.0";
+
+  src = ./.;
+
+  nativeBuildInputs = [
+    buildNodeModules.hooks.npmConfigHook
+    nodejs
+    npmHooks.npmInstallHook
+  ];
+
+  nodeModules = buildNodeModules.fetchNodeModules {
+    packageRoot = ./.;
+  };
 }
