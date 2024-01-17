@@ -21,7 +21,7 @@
     "eslint-plugin-solid": "^0.13.0",
     "eslint-plugin-sonarjs": "^0.23.0",
     "postcss": "^8.4.16",
-    "prettier": "3.2.3",
+    "prettier": "3.2.4",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.2.2",
     "vite": "^4.5.0",
