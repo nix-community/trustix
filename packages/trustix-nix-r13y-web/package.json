@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.4.1",
-    "@solidjs/router": "^0.10.0",
+    "@solidjs/router": "^0.11.0",
     "chart.js": "^4.4.0",
     "google-palette": "^1.1.0",
     "lodash.clonedeep": "^4.5.0",
