@@ -30,7 +30,7 @@
     "@connectrpc/protoc-gen-connect-es": "^1.1.2"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.4.1",
+    "@bufbuild/protobuf": "^2.0.0",
     "@solidjs/router": "^0.14.0",
     "chart.js": "^4.4.0",
     "google-palette": "^1.1.0",
